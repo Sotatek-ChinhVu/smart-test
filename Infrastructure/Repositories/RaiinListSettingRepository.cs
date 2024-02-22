@@ -16,14 +16,10 @@ namespace Infrastructure.Repositories
     {
         private readonly StackExchange.Redis.IDatabase _cache;
         private readonly string key;
-        private string RaiinListMstCacheKey
-        {
-            get => $"{key}-RaiinListMstCacheKey";
-        }
 
         public RaiinListSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            key = GetCacheKey().Replace(this.GetType().Name, typeof(FlowSheetRepository).Name);
+            key = GetCacheKey();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
@@ -1832,7 +1828,8 @@ namespace Infrastructure.Repositories
             // Clear RaiinListMstCache
             if (resultSave)
             {
-                _cache.KeyDelete(RaiinListMstCacheKey);
+                var raiinListMstCacheKey = $"{key}-RaiinListMstCacheKey" + "-" + hpId;
+                _cache.KeyDelete(raiinListMstCacheKey);
             }
 
             return resultSave;

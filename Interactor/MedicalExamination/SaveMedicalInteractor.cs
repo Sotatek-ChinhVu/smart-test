@@ -776,7 +776,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
         if (inputDatas.TantoId > 0)
         {
-            var checkHokenId = _userRepository.CheckExistedUserId(inputDatas.TantoId);
+            var checkHokenId = _userRepository.CheckExistedUserId(inputDatas.HpId, inputDatas.TantoId);
             if (!checkHokenId)
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist;

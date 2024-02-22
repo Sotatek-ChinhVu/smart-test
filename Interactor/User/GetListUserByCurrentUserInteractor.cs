@@ -27,7 +27,7 @@ namespace Interactor.User
 
                 var users = _userRepository.GetUsersByPermission(input.HpId, input.ManagerKbn);
                 bool getShowRenkei = _userRepository.GetShowRenkeiCd1ColumnSetting(input.HpId);
-                var currentInfo = _userRepository.GetByUserId(input.UserId);
+                var currentInfo = _userRepository.GetByUserId(input.HpId, input.UserId);
                 if (users.Any())
                     return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.Successful, users, getShowRenkei, currentInfo.ManagerKbn);
                 else

@@ -226,7 +226,7 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
 
             // delete cache key
-            string finalKey = key + ptId;
+            string finalKey = key + ptId + "-" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 _cache.KeyDelete(finalKey);
@@ -899,7 +899,7 @@ namespace Infrastructure.Repositories
             List<NextOrderModel> result;
 
             // check if exit cache, get data from cache
-            string finalKey = key + ptId;
+            string finalKey = key + ptId + "-" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).ToString();
@@ -908,7 +908,7 @@ namespace Infrastructure.Repositories
             }
 
             // if not exist cache, get data from database
-            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
+            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.PtId == ptId && rsv.HpId == hpId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
             result = allRsvkrtMst?.Select(rsv => ConvertToModel(rsv)).ToList() ?? new();
 
             // set cache data

@@ -120,7 +120,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
-        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(hpId, userId))
         .Returns(true);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -243,7 +243,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
-        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(hpId, userId))
         .Returns(false);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -370,7 +370,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
-        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(hpId, userId))
         .Returns(true);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -480,7 +480,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
-        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(hpId, userId))
         .Returns(true);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -553,7 +553,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
-        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(hpId, userId))
         .Returns(true);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -680,7 +680,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
-        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(hpId, userId))
         .Returns(true);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1187,7 +1187,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
-        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(hpId, userId))
         .Returns(true);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1284,7 +1284,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
-        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(hpId, userId))
         .Returns(true);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();

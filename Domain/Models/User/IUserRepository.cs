@@ -8,37 +8,37 @@ namespace Domain.Models.User
     {
         void Create(UserMstModel user);
 
-        IEnumerable<UserMstModel> GetDoctorsList(int userId);
+        IEnumerable<UserMstModel> GetDoctorsList(int hpId, int userId);
 
-        IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds);
+        IEnumerable<UserMstModel> GetDoctorsList(int hpId, List<int> userIds);
 
-        IEnumerable<UserMstModel> GetListAnyUser(List<int> userIds);
+        IEnumerable<UserMstModel> GetListAnyUser(int hpId, List<int> userIds);
 
         List<UserMstModel> GetAll(int hpId, int sinDate, bool isDoctorOnly, bool isAll);
 
-        int MaxUserId();
+        int MaxUserId(int hpId);
 
-        UserMstModel GetByUserId(int userId);
+        UserMstModel GetByUserId(int hpId, int userId);
 
-        UserMstModel GetByUserId(int userId, int sinDate);
+        UserMstModel GetByUserId(int hpId, int userId, int sinDate);
 
         UserMstModel? GetByLoginId(string loginId, string password);
 
-        bool CheckExistedId(List<long> ids);
+        bool CheckExistedId(int hpId, List<long> ids);
 
         bool Upsert(int hpId, List<UserMstModel> upsertUserList, int userId);
 
-        bool CheckExistedUserId(int userId);
+        bool CheckExistedUserId(int hpId, int userId);
 
-        bool CheckExistedUserIdCreate(List<int> userIds);
+        bool CheckExistedUserIdCreate(int hpId, List<int> userIds);
 
-        bool CheckExistedUserIdUpdate(List<long> ids, List<int> userIds);
+        bool CheckExistedUserIdUpdate(int hpId, List<long> ids, List<int> userIds);
 
-        bool CheckExistedLoginIdCreate(List<string> loginIds);
+        bool CheckExistedLoginIdCreate(int hpId, List<string> loginIds);
 
         bool CheckExistedJobCd(int hpId, List<int> jobCds);
 
-        bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds);
+        bool CheckExistedLoginIdUpdate(int hpId, List<long> ids, List<string> loginIds);
 
         bool CheckLoginInfo(string userName, string password);
 
@@ -58,7 +58,7 @@ namespace Domain.Models.User
 
         bool GetShowRenkeiCd1ColumnSetting(int hpId);
 
-        bool UserIdIsExistInDb(int userId);
+        bool UserIdIsExistInDb(int hpId, int userId);
 
         List<int> ListDepartmentValid(int hpId);
 

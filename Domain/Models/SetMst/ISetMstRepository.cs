@@ -20,5 +20,5 @@ public interface ISetMstRepository : IRepositoryBase
 
     IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId);
 
-    void DeleteKey(int generationId);
+    void DeleteKey(int generationId, int hpId);
 }

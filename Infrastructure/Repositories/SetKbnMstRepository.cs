@@ -35,7 +35,7 @@ namespace Infrastructure.Repositories
                 RedisConnectorHelper.RedisHost = connection;
             }
         }
-        private IEnumerable<SetKbnMstModel> ReloadCache(int hpId)
+        private IEnumerable<SetKbnMstModel> ReloadCache(int hpId, string keySetKbn)
         {
             var setKbnMstList = NoTrackingDataContext.SetKbnMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).Select(s =>
                     new SetKbnMstModel(
@@ -50,14 +50,14 @@ namespace Infrastructure.Repositories
                     )
                   ).ToList();
             var json = JsonSerializer.Serialize(setKbnMstList);
-            _cache.StringSet(key, json);
+            _cache.StringSet(keySetKbn, json);
 
             return setKbnMstList;
         }
 
-        private IEnumerable<SetKbnMstModel> ReadCache()
+        private IEnumerable<SetKbnMstModel> ReadCache(string keySetKbn)
         {
-            var results = _cache.StringGet(key);
+            var results = _cache.StringGet(keySetKbn);
             var json = results.AsString();
             var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SetKbnMstModel>>(json) : new();
             return datas ?? new();
@@ -65,14 +65,15 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
+            var keySetKbn = key + "_" + hpId;
             IEnumerable<SetKbnMstModel> setKbnMstList;
-            if (!_cache.KeyExists(key))
+            if (!_cache.KeyExists(keySetKbn))
             {
-                setKbnMstList = ReloadCache(hpId);
+                setKbnMstList = ReloadCache(hpId, keySetKbn);
             }
             else
             {
-                setKbnMstList = ReadCache();
+                setKbnMstList = ReadCache(keySetKbn);
             }
 
             return setKbnMstList!.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
@@ -127,7 +128,8 @@ namespace Infrastructure.Repositories
             var check = TrackingDataContext.SaveChanges() > 0;
             if (check)
             {
-                ReloadCache(hpId);
+                var keySetKbn = key + "_" + hpId;
+                ReloadCache(hpId, keySetKbn);
             }
             return check;
         }

@@ -43,7 +43,7 @@ namespace Interactor.NextOrder
                 {
                     return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidPtId, new(), new(), new(), new());
                 }
-                if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
+                if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.HpId, inputData.UserId))
                 {
                     return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidUserId, new(), new(), new(), new());
                 }

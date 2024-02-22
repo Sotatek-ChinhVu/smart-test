@@ -53,7 +53,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId)
     {
-        var finalKey = key + "_" + generationId;
+        var finalKey = key + "_" + generationId + "_" + hpId;
         var setMstModelList =
                 NoTrackingDataContext.SetMsts
                 .Where(s => s.HpId == hpId
@@ -82,15 +82,14 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMstModelList;
     }
 
-    public void DeleteKey(int generationId)
+    public void DeleteKey(int generationId, int hpId)
     {
-        var finalKey = key + "_" + generationId;
+        var finalKey = key + "_" + generationId + "_" + hpId;
         _cache.KeyDelete(finalKey);
     }
 
-    private IEnumerable<SetMstModel> ReadCache(int generationId)
+    private IEnumerable<SetMstModel> ReadCache(string finalKey)
     {
-        var finalKey = key + "_" + generationId;
         var results = _cache.StringGet(finalKey);
         var json = results.AsString();
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SetMstModel>>(json) : new();
@@ -99,7 +98,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public List<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
     {
-        var finalKey = key + "_" + generationId;
+        var finalKey = key + "_" + generationId + "_" + hpId;
         IEnumerable<SetMstModel> setMstModelList;
         if (!_cache.KeyExists(finalKey))
         {
@@ -107,7 +106,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         else
         {
-            setMstModelList = ReadCache(generationId);
+            setMstModelList = ReadCache(finalKey);
         }
         List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
@@ -473,7 +472,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            ReloadCache(1, setMst.GenerationId);
+            ReloadCache(hpId, setMst.GenerationId);
         }
     }
 
@@ -758,7 +757,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             generationId = dragItem?.GenerationId ?? 0;
             if (generationId > 0)
             {
-                var setMsts = ReloadCache(1, generationId);
+                var setMsts = ReloadCache(hpId, generationId);
                 setMstModels = GetDataAfterDragDrop(setMsts, dragItem ?? new(), dropItem ?? new(), originDragLevel1 ?? 0, originDropLevel1 ?? 0);
             }
         }
@@ -853,7 +852,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            var setMsts = ReloadCache(1, generationId);
+            var setMsts = ReloadCache(hpId, generationId);
             var rootSet = setMsts.FirstOrDefault(s => s.SetCd == setCd);
             setMstModels = setMsts.Where(s => s.HpId == rootSet?.HpId && s.SetKbn == rootSet.SetKbn && s.SetKbnEdaNo == rootSet.SetKbnEdaNo && s.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && s.Level1 == rootSet.Level1))).ToList();
         }

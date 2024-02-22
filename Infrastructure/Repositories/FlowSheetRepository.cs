@@ -31,10 +31,6 @@ namespace Infrastructure.Repositories
         private readonly string syosaisinKbn = "syosaisinkbn";
         private readonly string comment = "comment";
 
-        private string RaiinListMstCacheKey
-        {
-            get => $"{key}-RaiinListMstCacheKey";
-        }
 
         private readonly TenantDataContext _tenantHistory;
         private readonly TenantDataContext _tenantNextOrder;
@@ -221,7 +217,7 @@ namespace Infrastructure.Repositories
 
         #region RaiinListMst
 
-        private List<RaiinListMstModel> ReloadRaiinListMstCache(int hpId)
+        private List<RaiinListMstModel> ReloadRaiinListMstCache(int hpId, string raiinListMstCacheKey)
         {
             var raiinListMst = NoTrackingDataContext.RaiinListMsts.Where(m => m.HpId == hpId && m.IsDeleted == DeleteTypes.None).ToList();
             var raiinListDetail = NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None).ToList();
@@ -235,30 +231,31 @@ namespace Infrastructure.Repositories
                 .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Mst.IsDeleted, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
                 .ToList();
             var json = JsonSerializer.Serialize(raiinListMstModelList);
-            _cache.StringSet(RaiinListMstCacheKey, json);
+            _cache.StringSet(raiinListMstCacheKey, json);
 
             return raiinListMstModelList;
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
         {
+            var raiinListMstCacheKey = $"{key}-RaiinListMstCacheKey" + "-" + hpId;
             var stopwatch = Stopwatch.StartNew();
             List<RaiinListMstModel> setKbnMstList;
-            if (!_cache.KeyExists(RaiinListMstCacheKey))
+            if (!_cache.KeyExists(raiinListMstCacheKey))
             {
-                setKbnMstList = ReloadRaiinListMstCache(hpId);
+                setKbnMstList = ReloadRaiinListMstCache(hpId, raiinListMstCacheKey);
             }
             else
             {
-                setKbnMstList = ReadCacheRaiinListMst();
+                setKbnMstList = ReadCacheRaiinListMst(raiinListMstCacheKey);
             }
             Console.WriteLine($"End RaiinListMst - {stopwatch.ElapsedMilliseconds}");
             return setKbnMstList!;
         }
 
-        private List<RaiinListMstModel> ReadCacheRaiinListMst()
+        private List<RaiinListMstModel> ReadCacheRaiinListMst(string raiinListMstCacheKey)
         {
-            var results = _cache.StringGet(RaiinListMstCacheKey);
+            var results = _cache.StringGet(raiinListMstCacheKey);
             var json = results.AsString();
             var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<RaiinListMstModel>>(json) : new();
             return datas ?? new();

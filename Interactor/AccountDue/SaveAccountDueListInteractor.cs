@@ -182,7 +182,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         {
             return SaveAccountDueListStatus.InvalidHpId;
         }
-        else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
+        else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.HpId, inputData.UserId))
         {
             return SaveAccountDueListStatus.InvalidUserId;
         }

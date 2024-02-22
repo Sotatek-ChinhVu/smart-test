@@ -27,7 +27,7 @@ namespace Interactor.SpecialNote
 
                 var datas = inputDatas.DataList.Distinct();
                 var ptId = datas?.FirstOrDefault()?.PtId;
-                var alrgyDrugOlds = ptId == null ? new List<PtAlrgyDrugModel>() : _importantNoteRepository.GetAlrgyDrugList(long.Parse(ptId.ToString() ?? string.Empty));
+                var alrgyDrugOlds = ptId == null ? new List<PtAlrgyDrugModel>() : _importantNoteRepository.GetAlrgyDrugList(inputDatas.HpId, long.Parse(ptId.ToString() ?? string.Empty));
 
                 var count = 0;
                 var alrgyDrugs = datas?.Select(

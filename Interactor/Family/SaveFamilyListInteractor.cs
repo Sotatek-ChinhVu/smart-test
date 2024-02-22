@@ -123,7 +123,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         {
             return ValidateFamilyListStatus.InvalidHpId;
         }
-        else if (input.UserId <= 0 || !_userRepository.CheckExistedUserId(input.UserId))
+        else if (input.UserId <= 0 || !_userRepository.CheckExistedUserId(input.HpId, input.UserId))
         {
             return ValidateFamilyListStatus.InvalidUserId;
         }

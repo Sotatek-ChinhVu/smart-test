@@ -1427,15 +1427,15 @@ namespace Infrastructure.Repositories
 
         public List<KohiPriorityModel> GetKohiPriorityList(int hpId)
         {
-            var key = GetCacheKey() + CacheKeyConstant.KohiPriority;
+            var key = GetCacheKey() + CacheKeyConstant.KohiPriority + "-" + hpId;
             IEnumerable<KohiPriorityModel> kohiPriorityList;
-            if (!_cache.KeyExists(key + hpId))
+            if (!_cache.KeyExists(key))
             {
                 kohiPriorityList = ReloadCache_KohiPriority(key, hpId);
             }
             else
             {
-                kohiPriorityList = ReadCache_KohiPriority(key + hpId);
+                kohiPriorityList = ReadCache_KohiPriority(key);
             }
             return kohiPriorityList.ToList();
         }
