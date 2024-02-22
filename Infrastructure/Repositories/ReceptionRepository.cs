@@ -1090,7 +1090,7 @@ namespace Infrastructure.Repositories
                 DataRaiinInf.TantoId);
         }
 
-        public ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor)
+        public ReceptionModel GetDataDefaultReception(int hpId, long ptId, int sinDate, int defaultSettingDoctor)
         {
             var tantoId = 0;
             var kaId = 0;
