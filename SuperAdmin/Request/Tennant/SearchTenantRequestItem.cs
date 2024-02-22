@@ -10,9 +10,5 @@ public class SearchTenantRequestItem
 
     public DateTime? ToDate { get; set; }
 
-    public int Type { get; set; }
-
     public int StatusTenant { get; set; }
-
-    public List<StorageFullEnum> StorageFull { get; set; } = new();
 }
