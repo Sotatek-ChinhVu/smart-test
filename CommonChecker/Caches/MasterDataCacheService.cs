@@ -38,8 +38,8 @@ namespace CommonChecker.Caches
 
         public void InitCache(int hpId, List<string> itemCodeList, int sinday, long ptId)
         {
-            _systemConfig = new SystemConfig(_hpId, _tenantNoTrackingDataContext);
             _hpId = hpId;
+            _systemConfig = new SystemConfig(_hpId, _tenantNoTrackingDataContext);
             _sinday = sinday;
             _ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete == 0);
             AddCacheList(hpId, itemCodeList);
