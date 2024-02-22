@@ -123,15 +123,15 @@ namespace SuperAdminAPI.Controllers
             return new ActionResult<Response<ToggleTenantResponse>>(presenter.Result);
         }
 
-        [HttpPost("RestoreTenant")]
-        public ActionResult<Response<RestoreTenantResponse>> RestoreTenant([FromBody] RestoreTenantRequest request)
-        {
-            var input = new RestoreTenantInputData(request.TenantId, _webSocketService);
-            var output = _bus.Handle(input);
-            var presenter = new RestoreTenantPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<RestoreTenantResponse>>(presenter.Result);
-        }
+        //[HttpPost("RestoreTenant")]
+        //public ActionResult<Response<RestoreTenantResponse>> RestoreTenant([FromBody] RestoreTenantRequest request)
+        //{
+        //    var input = new RestoreTenantInputData(request.TenantId, _webSocketService);
+        //    var output = _bus.Handle(input);
+        //    var presenter = new RestoreTenantPresenter();
+        //    presenter.Complete(output);
+        //    return new ActionResult<Response<RestoreTenantResponse>>(presenter.Result);
+        //}
 
         [HttpPost("RestoreObjectS3Tenant")]
         public ActionResult<Response<RestoreObjectS3TenantResponse>> RestoreObjectS3Tenant([FromBody] RestoreObjectS3TenantRequest request)
