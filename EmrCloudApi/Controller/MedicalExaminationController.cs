@@ -361,7 +361,7 @@ namespace EmrCloudApi.Controllers
         [HttpGet(ApiPath.GetMaxAuditTrailLogDateForPrint)]
         public ActionResult<Response<GetMaxAuditTrailLogDateForPrintResponse>> GetMaxAuditTrailLogDateForPrint([FromQuery] GetMaxAuditTrailLogDateForPrintRequest request)
         {
-            var input = new GetMaxAuditTrailLogDateForPrintInputData(request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetMaxAuditTrailLogDateForPrintInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
             var presenter = new GetMaxAuditTrailLogDateForPrintPresenter();
             presenter.Complete(output);

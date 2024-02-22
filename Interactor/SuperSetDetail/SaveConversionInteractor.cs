@@ -19,15 +19,15 @@ public class SaveConversionInteractor : ISaveConversionInputPort
     {
         try
         {
-            if (!_mstItemRepository.CheckItemCd(inputData.ConversionItemCd))
+            if (!_mstItemRepository.CheckItemCd(inputData.HpId, inputData.ConversionItemCd))
             {
                 return new SaveConversionOutputData(SaveConversionStatus.InvalidConversionItemCd);
             }
-            else if (!_mstItemRepository.CheckItemCd(inputData.SourceItemCd))
+            else if (!_mstItemRepository.CheckItemCd(inputData.HpId, inputData.SourceItemCd))
             {
                 return new SaveConversionOutputData(SaveConversionStatus.InvalidSourceItemCd);
             }
-            else if (_mstItemRepository.GetCheckItemCds(inputData.DeleteConversionItemCdList).Count != inputData.DeleteConversionItemCdList.Distinct().Count())
+            else if (_mstItemRepository.GetCheckItemCds(inputData.HpId, inputData.DeleteConversionItemCdList).Count != inputData.DeleteConversionItemCdList.Distinct().Count())
             {
                 return new SaveConversionOutputData(SaveConversionStatus.InvalidDeleteConversionItemCd);
             }

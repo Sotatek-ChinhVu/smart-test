@@ -167,15 +167,15 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool IsInUseGroupName(int groupId, string groupCode)
+        public bool IsInUseGroupName(int hpId, int groupId, string groupCode)
         {
-            var count = NoTrackingDataContext.PtGrpInfs.Count(pt => pt.IsDeleted == 0 && pt.GroupId == groupId && !string.IsNullOrEmpty(pt.GroupCode));
+            var count = NoTrackingDataContext.PtGrpInfs.Count(pt => pt.HpId == hpId && pt.IsDeleted == 0 && pt.GroupId == groupId && !string.IsNullOrEmpty(pt.GroupCode));
             return count > 0;
         }
 
-        public bool IsInUseGroupItem(int groupId, string groupCode)
+        public bool IsInUseGroupItem(int hpId, int groupId, string groupCode)
         {
-            var count = NoTrackingDataContext.PtGrpInfs.Count(pt => pt.IsDeleted == 0 && pt.GroupId == groupId && pt.GroupCode == groupCode);
+            var count = NoTrackingDataContext.PtGrpInfs.Count(pt => pt.HpId == hpId && pt.IsDeleted == 0 && pt.GroupId == groupId && pt.GroupCode == groupCode);
             return count > 0;
         }
     }

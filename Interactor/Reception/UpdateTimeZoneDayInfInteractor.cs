@@ -26,7 +26,7 @@ public class UpdateTimeZoneDayInfInteractor : IUpdateTimeZoneDayInfInputPort
             {
                 return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidHpId);
             }
-            else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
+            else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.HpId, inputData.UserId))
             {
                 return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidUserId);
             }

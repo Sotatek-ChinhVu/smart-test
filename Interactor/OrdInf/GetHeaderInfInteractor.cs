@@ -40,7 +40,7 @@ namespace Interactor.OrdInfs
                     return new GetHeaderInfOutputData(GetHeaderInfStatus.InvalidSinDate);
                 }
 
-                var reception = _receptionRepository.Get(inputData.RaiinNo);
+                var reception = _receptionRepository.Get(inputData.HpId, inputData.RaiinNo);
                 var odrInf = _ordInfRepository.GetHeaderInfo(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
                 var raiinTag = _raiinListTagRepository.Get(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
 

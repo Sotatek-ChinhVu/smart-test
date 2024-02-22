@@ -24,7 +24,7 @@ public class RaiinFilterController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList + "Mst")]
     public ActionResult<Response<GetRaiinFilterMstListResponse>> GetList()
     {
-        var input = new GetRaiinFilterMstListInputData();
+        var input = new GetRaiinFilterMstListInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetRaiinFilterMstListPresenter();
         presenter.Complete(output);

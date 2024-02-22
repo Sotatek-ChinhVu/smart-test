@@ -17,17 +17,17 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<RaiinKubunMstModel> GetList(bool isDeleted)
+        public List<RaiinKubunMstModel> GetList(int hpId, bool isDeleted)
         {
             List<RaiinKbnMst> raiinKubunMstList = NoTrackingDataContext.RaiinKbnMsts
-                .Where(r => isDeleted || r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && isDeleted || r.IsDeleted == 0)
                 .OrderBy(r => r.SortNo)
                 .ToList();
 
             List<int> groupIdList = raiinKubunMstList.Select(r => r.GrpCd).ToList();
 
             List<RaiinKbnDetail> raiinKubunDetailList = NoTrackingDataContext.RaiinKbnDetails
-                .Where(r => groupIdList.Contains(r.GrpCd) && (isDeleted || r.IsDeleted == 0))
+                .Where(r => r.HpId == hpId && groupIdList.Contains(r.GrpCd) && (isDeleted || r.IsDeleted == 0))
                 .ToList();
 
             List<RaiinKubunMstModel> result = new();
@@ -116,7 +116,7 @@ namespace Infrastructure.Repositories
 
 
             var itemCdList = query.Where(x => x.kbnItem != null).Select(item => item.kbnItem.ItemCd).Distinct().ToList();
-            var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.IsDeleted == 0 && itemCdList.Contains(item.ItemCd)).ToList();
+            var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0 && itemCdList.Contains(item.ItemCd)).ToList();
 
             var raiinKbnItemList = query.Where(x => x.kbnItem != null).Select(x => new RaiinKbnItemModel(
                 x.kbnItem.HpId,
@@ -173,11 +173,11 @@ namespace Infrastructure.Repositories
         public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId, int hpId)
         {
             List<string> result = new();
-            var currentKubunMstList = TrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunDetailList = TrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunKouiList = TrackingDataContext.RaiinKbnKouis.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunItemList = TrackingDataContext.RaiinKbItems.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunYoyakuList = TrackingDataContext.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunMstList = TrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var currentKubunDetailList = TrackingDataContext.RaiinKbnDetails.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var currentKubunKouiList = TrackingDataContext.RaiinKbnKouis.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var currentKubunItemList = TrackingDataContext.RaiinKbItems.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var currentKubunYoyakuList = TrackingDataContext.RaiinKbnYayokus.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
 
             result = ValidateRaiinKbnMst(raiinKubunMstModels);
 

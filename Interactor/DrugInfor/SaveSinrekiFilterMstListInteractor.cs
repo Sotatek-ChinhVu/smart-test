@@ -86,7 +86,7 @@ public class SaveSinrekiFilterMstListInteractor : ISaveSinrekiFilterMstListInput
         kouiSeqNoList = kouiSeqNoList.Distinct().ToList();
         itemCdList = itemCdList.Distinct().ToList();
         idDetailList = idDetailList.Distinct().ToList();
-        if (_mstItemRepository.GetCheckItemCds(itemCdList).Count != itemCdList.Count)
+        if (_mstItemRepository.GetCheckItemCds(inputData.HpId, itemCdList).Count != itemCdList.Count)
         {
             return SaveSinrekiFilterMstListStatus.InvalidItemCd;
         }

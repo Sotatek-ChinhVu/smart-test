@@ -24,7 +24,7 @@ namespace Interactor.MstItem
                 if (inputData.SetKbn < 0)
                     return new GetTreeListSetOutputData(new List<ListSetMstModel>(), GetTreeListSetStatus.InvalidKouiKbn);
 
-                int generationId = _treeListSetRepository.GetGenerationId(inputData.SinDate);
+                int generationId = _treeListSetRepository.GetGenerationId(inputData.HpId, inputData.SinDate);
 
                 List<ListSetMstModel> result = new List<ListSetMstModel>();
                 List<ListSetMstModel> rootSubs = new List<ListSetMstModel>();
@@ -34,7 +34,7 @@ namespace Interactor.MstItem
                 {
                     result.Add(rootLevel);
                     return new GetTreeListSetOutputData(result, GetTreeListSetStatus.DataNotFound);
-                }                                   
+                }
                 rootLevel.Childrens = rootSubs;
                 result.Add(rootLevel);
                 return new GetTreeListSetOutputData(result, GetTreeListSetStatus.Successed);

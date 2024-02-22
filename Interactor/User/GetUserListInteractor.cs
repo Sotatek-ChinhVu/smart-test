@@ -21,7 +21,7 @@ public class GetUserListInteractor : IGetUserListInputPort
                 return new GetUserListOutputData(GetUserListStatus.InvalidSinDate);
             }
 
-            var users = _userRepository.GetAll(input.SinDate, input.IsDoctorOnly, input.IsAll);
+            var users = _userRepository.GetAll(input.HpId, input.SinDate, input.IsDoctorOnly, input.IsAll);
             return new GetUserListOutputData(GetUserListStatus.Success, users);
         }
         finally

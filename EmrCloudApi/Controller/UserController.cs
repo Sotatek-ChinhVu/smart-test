@@ -48,7 +48,7 @@ public class UserController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetUserListResponse>> GetList([FromQuery] GetUserListRequest req)
     {
-        var input = new GetUserListInputData(req.SinDate, req.IsDoctorOnly, req.IsAll);
+        var input = new GetUserListInputData(HpId, req.SinDate, req.IsDoctorOnly, req.IsAll);
         var output = _bus.Handle(input);
 
         var presenter = new GetUserListPresenter();
@@ -61,7 +61,7 @@ public class UserController : AuthorizeControllerBase
     public ActionResult<Response<UpsertUserResponse>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
         var upsertUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u, HpId)).ToList();
-        var input = new UpsertUserListInputData(upsertUserList, UserId);
+        var input = new UpsertUserListInputData(HpId, upsertUserList, UserId);
         var output = _bus.Handle(input);
         var presenter = new UpsertUserListPresenter();
         presenter.Complete(output);

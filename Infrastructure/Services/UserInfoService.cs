@@ -57,9 +57,9 @@ namespace Infrastructure.Services
             return userInfo.Name ?? string.Empty;
         }
 
-        public List<UserMst> AllUserMstList()
+        public List<UserMst> AllUserMstList(int hpId)
         {
-            return _userInfoList;
+            return _userInfoList.Where(i => i.HpId == hpId).ToList();
         }
 
         public void Reload()

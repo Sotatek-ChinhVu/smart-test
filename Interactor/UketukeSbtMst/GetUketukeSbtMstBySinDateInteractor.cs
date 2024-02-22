@@ -25,7 +25,7 @@ public class GetUketukeSbtMstBySinDateInteractor : IGetUketukeSbtMstBySinDateInp
                 return new GetUketukeSbtMstBySinDateOutputData(GetUketukeSbtMstBySinDateStatus.InvalidSinDate);
             }
 
-            var receptionType = GetReceptionTypeBySinDate(input.SinDate);
+            var receptionType = GetReceptionTypeBySinDate(input.HpId, input.SinDate);
             var status = receptionType is null ? GetUketukeSbtMstBySinDateStatus.NotFound : GetUketukeSbtMstBySinDateStatus.Success;
             return new GetUketukeSbtMstBySinDateOutputData(status, receptionType);
         }
@@ -36,10 +36,10 @@ public class GetUketukeSbtMstBySinDateInteractor : IGetUketukeSbtMstBySinDateInp
         }
     }
 
-    private UketukeSbtMstModel? GetReceptionTypeBySinDate(int sinDate)
+    private UketukeSbtMstModel? GetReceptionTypeBySinDate(int hpId, int sinDate)
     {
-        var uketukeSbtMsts = _uketukeSbtMstRepository.GetList();
-        var uketukeSbtDayInfs = _uketukeSbtDayInfRepository.GetListBySinDate(sinDate);
+        var uketukeSbtMsts = _uketukeSbtMstRepository.GetList(hpId);
+        var uketukeSbtDayInfs = _uketukeSbtDayInfRepository.GetListBySinDate(hpId, sinDate);
         // Inner join
         var mstBySinDateQuery =
             from mst in uketukeSbtMsts

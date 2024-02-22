@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
                             on m28DrugMst.KikinCd equals tenItem.ItemCd
                             join m34DrugInfoMain in NoTrackingDataContext.M34DrugInfoMains.Where(m => m.HpId == hpId)
                             on m28DrugMst.YjCd equals m34DrugInfoMain.YjCd
-                            join tekiouByomei in NoTrackingDataContext.TekiouByomeiMsts
+                            join tekiouByomei in NoTrackingDataContext.TekiouByomeiMsts.Where(m => m.HpId == hpId)
                                on tenItem.ItemCd equals tekiouByomei.ItemCd into listtekiouByomeis
                             where string.IsNullOrEmpty(itemCd) || tenItem.ItemCd == itemCd
                             select new
@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             // piczai pichou
             string pathServerDefault = _configuration["PathImageDrugFolder"] ?? string.Empty;
 
-            var pathConfDb = NoTrackingDataContext.PathConfs.Where(p => p.GrpCd == PicImageConstant.GrpCodeDefault || p.GrpCd == PicImageConstant.GrpCodeCustomDefault).ToList();
+            var pathConfDb = NoTrackingDataContext.PathConfs.Where(p => p.HpId == hpId && p.GrpCd == PicImageConstant.GrpCodeDefault || p.GrpCd == PicImageConstant.GrpCodeCustomDefault).ToList();
 
             var pathConfDf = pathConfDb.FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
 
@@ -248,7 +248,7 @@ namespace Infrastructure.Repositories
                                                                                                          && grpCdList.Contains(item.GrpCd)
                                                                                                          && item.IsDeleted == 0)
                                                                                           .ToList();
-            var allGrpCd = NoTrackingDataContext.SinrekiFilterMsts.Select(item => item.GrpCd).ToList();
+            var allGrpCd = NoTrackingDataContext.SinrekiFilterMsts.Where(i => i.HpId == hpId).Select(item => item.GrpCd).ToList();
             int maxGrpCd = allGrpCd != null && allGrpCd.Any() ? allGrpCd.Max() : 0;
             bool saveSuccess = false;
 
