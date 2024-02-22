@@ -57,7 +57,7 @@ namespace Infrastructure.Repositories
             return new(ptInfModel, true);
         }
 
-        public List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
+        public List<PatientInforModel> SearchContainPtNum(long ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
             List<PatientInforModel> result = new();
             var ptInfWithLastVisitDate =

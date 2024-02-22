@@ -9,7 +9,7 @@ namespace UseCase.VisitingList.ReceptionLock
 {
     public class GetReceptionLockInputData : IInputData<GetReceptionLockOutputData>
     {
-        public GetReceptionLockInputData(long sinDate, long ptId, long raiinNo, string functionCd)
+        public GetReceptionLockInputData(int sinDate, long ptId, long raiinNo, string functionCd)
         {
             SinDate = sinDate;
             PtId = ptId;
@@ -17,9 +17,9 @@ namespace UseCase.VisitingList.ReceptionLock
             FunctionCd = functionCd;
         }
 
-        public long SinDate { get; set; }
+        public int SinDate { get; set; }
         public long PtId { get; set; }
         public long RaiinNo { get; private set; }
-        public string FunctionCd { get; set; } = string.Empty;
+        public string FunctionCd { get; set; }
     }
 }

@@ -1198,7 +1198,7 @@ public class ReportService : IReportService
         return _kensaIraiCoReportService.GetKensalraiData(hpId, systemDate, fromDate, toDate, centerCd);
     }
 
-    //public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, List<long> printPtIds)
+    //public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, long ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, List<long> printPtIds)
     //{
     //    return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos, printPtIds);
     //}
@@ -1223,7 +1223,7 @@ public class ReportService : IReportService
         return _drugNoteSealCoReportService.GetDrugNoteSealPrintData(hpId, ptId, sinDate, raiinNo);
     }
 
-    public CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo)
+    public CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, long raiinNo)
     {
         return _yakutaiCoReportService.GetYakutaiReportingData(hpId, ptId, sinDate, raiinNo);
     }

@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.GetValidGairaiRiha
 {
     public class GetValidGairaiRihaInputData : IInputData<GetValidGairaiRihaOutputData>
     {
-        public GetValidGairaiRihaInputData(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
+        public GetValidGairaiRihaInputData(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
         {
             HpId = hpId;
             PtId = ptId;
@@ -15,7 +15,7 @@ namespace UseCase.MedicalExamination.GetValidGairaiRiha
         }
 
         public int HpId { get; private set; }
-        public int PtId { get; private set; }
+        public long PtId { get; private set; }
         public long RaiinNo { get; private set; }
         public int SinDate { get; private set; }
         public int SyosaiKbn { get; private set; }

@@ -4,7 +4,7 @@ namespace UseCase.RaiinKbn.GetPatientRaiinKubunList
 {
     public class GetPatientRaiinKubunListInputData : IInputData<GetPatientRaiinKubunListOutputData>
     {
-        public GetPatientRaiinKubunListInputData(int hpId, long ptId, int raiinNo, int sinDate)
+        public GetPatientRaiinKubunListInputData(int hpId, long ptId, long raiinNo, int sinDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -16,7 +16,7 @@ namespace UseCase.RaiinKbn.GetPatientRaiinKubunList
 
         public long PtId { get; private set; }
 
-        public int RaiinNo { get; private set; }
+        public long RaiinNo { get; private set; }
 
         public int SinDate { get; private set; }
 

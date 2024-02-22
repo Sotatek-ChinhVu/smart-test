@@ -350,7 +350,7 @@ namespace Infrastructure.Repositories
             return kensaInKensaMst.ToList();
         }
 
-        public bool UpdateKensaInfDetail(int hpId, int userId, int ptId, long inputDataIraiCd, int inputDataIraiDate, List<KensaInfDetailUpdateModel> kensaInfDetails)
+        public bool UpdateKensaInfDetail(int hpId, int userId, long ptId, long inputDataIraiCd, int inputDataIraiDate, List<KensaInfDetailUpdateModel> kensaInfDetails)
         {
             bool successed = false;
             long iraiCd = inputDataIraiCd;
