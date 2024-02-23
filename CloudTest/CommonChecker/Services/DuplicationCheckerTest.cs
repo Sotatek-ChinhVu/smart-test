@@ -289,7 +289,7 @@ public class DuplicationCheckerTest : BaseUT
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //Setup CheckDupicatedSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 4);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 4);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -299,7 +299,7 @@ public class DuplicationCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 4,
                 CreateDate = DateTime.UtcNow,
@@ -397,7 +397,7 @@ public class DuplicationCheckerTest : BaseUT
         };
 
         duplicationChecker.CurrentListOrder = currentList;
-        duplicationChecker.HpID = 999;
+        duplicationChecker.HpID = hpId;
         duplicationChecker.PtID = 1231;
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();

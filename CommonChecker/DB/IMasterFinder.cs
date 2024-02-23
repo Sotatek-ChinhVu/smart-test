@@ -7,7 +7,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
     {
         SanteiGrpDetailModel FindSanteiGrpDetail(int hpId, string itemCd);
         SanteiCntCheckModel FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate);
-        double GetOdrCountInMonth(long ptId, int sinDate, string itemCd);
+        double GetOdrCountInMonth(int hpId, long ptId, int sinDate, string itemCd);
         TenMstModel FindTenMst(int hpId, string itemCd, int sinDate);
         IpnNameMstModel FindIpnNameMst(int hpId, string ipnNameCd, int sinDate);
     }
