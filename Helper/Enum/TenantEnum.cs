@@ -7,5 +7,8 @@ public enum TenantEnum
     Domain = 3,
     AdminId = 4,
     HospitalName = 5,
-    StatusTenant = 6,
+    Type = 6,
+    Size = 7,
+    StorageFull = 8,
+    StatusTenant = 9,
 }
