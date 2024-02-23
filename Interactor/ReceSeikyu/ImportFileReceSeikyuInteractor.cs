@@ -262,6 +262,7 @@ namespace Interactor.ReceSeikyu
                     }
                 }
             }
+            Console.WriteLine("areCnt: " + areCnt);
 
             string path = $"{CommonConstants.Tempotary}/{CommonConstants.ReceiptcHen}/{aSeikyuYm}/";
             string fileNameUpload = $"{CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd_HHmmss_")}{fileName}";
