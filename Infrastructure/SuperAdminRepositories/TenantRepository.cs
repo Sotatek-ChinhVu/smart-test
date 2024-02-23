@@ -176,7 +176,7 @@ namespace Infrastructure.SuperAdminRepositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status, byte type)
+        public TenantModel UpdateTenant(int tenantId, string subDomain, string hospital, int adminId, string password, string endSubDomain, byte status)
         {
             try
             {
@@ -186,15 +186,10 @@ namespace Infrastructure.SuperAdminRepositories
                     return new();
                 }
 
-                if (status == 1 || status == 9 || status == 14) // Check tenant available, storage-full, stoped
+                if (status == 1 || status == 14) // Check tenant available, storage-full, stoped
                 {
-                    tenant.EndPointDb = endPoint;
-                    tenant.Type = type;
                     tenant.Status = status;
                     tenant.SubDomain = subDomain;
-                    tenant.Size = size;
-                    tenant.SizeType = sizeType;
-                    tenant.RdsIdentifier = dbIdentifier;
                     tenant.AdminId = adminId;
                     tenant.Password = password;
                     tenant.EndSubDomain = endSubDomain;

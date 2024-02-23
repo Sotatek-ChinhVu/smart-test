@@ -660,7 +660,7 @@ namespace Interactor.SuperAdmin
                 {
                     if (listTenantDb.Contains(tenant.Db))
                     {
-                        deleteRDSAction = _awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect, 1);
+                        deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect, 1);
                     }
                     else
                     {

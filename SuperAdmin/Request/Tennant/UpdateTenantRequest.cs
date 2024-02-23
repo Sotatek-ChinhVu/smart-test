@@ -6,12 +6,6 @@
 
         public string SubDomain { get; set; } = string.Empty;
 
-        public int Size { get; set; }
-
-        public int SizeType { get; set; }
-
-        public byte Type { get; set; }
-
         public string Hospital { get; set; } = string.Empty;
 
         public int AdminId { get; set; }
