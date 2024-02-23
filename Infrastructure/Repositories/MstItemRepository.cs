@@ -123,14 +123,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.Where(m => m.HpId == hpId).AsQueryable();
         var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.Where(u => u.HpId == hpId && string.IsNullOrEmpty(searchValue.Trim()) || (u.IndexWord ?? string.Empty).Contains(searchValue.Trim())).OrderBy(u => u.SeibunCd).ThenBy(u => u.IndexWord).ThenBy(u => u.TokuhoFlg);
         var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.Where(m => m.HpId == hpId).AsQueryable();
-        var indexDefJoinIngreQueryList = from indexCode in listSuppleIndexCode
-                                         join ingre in listSuppleIngre on indexCode.SeibunCd equals ingre.SeibunCd into suppleIngreList
-                                         from ingreItem in suppleIngreList.DefaultIfEmpty()
-                                         select new
-                                         {
-                                             IndexCode = indexCode,
-                                             Ingre = ingreItem,
-                                         };
+        var indexDefJoinIngreQueryList = (from indexCode in listSuppleIndexCode
+                                          join ingre in listSuppleIngre on indexCode.SeibunCd equals ingre.SeibunCd into suppleIngreList
+                                          from ingreItem in suppleIngreList.DefaultIfEmpty()
+                                          select new
+                                          {
+                                              IndexCode = indexCode,
+                                              Ingre = ingreItem,
+                                          });
 
         var query = from indexDef in listSuppleIndexDef
                     join indexDefJoinIngreQuery in indexDefJoinIngreQueryList on indexDef.SeibunCd equals indexDefJoinIngreQuery.IndexCode.IndexCd into supplementList
@@ -144,7 +144,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var result = query
               .AsEnumerable()
-              .Select(data => new SearchSupplementModel(data.Ingre.SeibunCd, data.Ingre.Seibun ?? string.Empty, data.IndexDef.IndexWord ?? string.Empty, data.IndexDef.TokuhoFlg ?? string.Empty, data.IndexCode.IndexCd, string.Empty))
+              .Select(data => new SearchSupplementModel(data.Ingre?.SeibunCd ?? string.Empty, data.Ingre?.Seibun ?? string.Empty, data.IndexDef?.IndexWord ?? string.Empty, data.IndexDef?.TokuhoFlg ?? string.Empty, data.IndexCode?.IndexCd ?? string.Empty, string.Empty))
               .OrderBy(data => data.IndexWord)
               .ThenBy(data => data.SeibunCd)
               .ToList();
