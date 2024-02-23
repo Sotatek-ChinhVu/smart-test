@@ -4,7 +4,7 @@ namespace EmrCloudApi.Requests.KensaHistory
 {
     public class UpdateKensaInfDetailRequest
     {
-        public int PtId { get; set; }
+        public long PtId { get; set; }
 
         public int IraiCd { get; set; }
 

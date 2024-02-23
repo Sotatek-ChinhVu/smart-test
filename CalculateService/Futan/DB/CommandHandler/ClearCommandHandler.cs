@@ -16,7 +16,7 @@ namespace CalculateService.Futan.DB.CommandHandler
             _emrLogger = emrLogger;
         }
 
-        public void ClearCalculate(long hpId, long ptId, int sinday, List<long> raiinNos)
+        public void ClearCalculate(int hpId, long ptId, int sinday, List<long> raiinNos)
         {
             const string conFncName = nameof(ClearCalculate);
             try

@@ -427,7 +427,7 @@ namespace Infrastructure.Repositories
             return raiinKbns;
         }
 
-        public IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, int raiinNo, int sinDate)
+        public IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, long raiinNo, int sinDate)
         {
             var raiinKbnMst = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == DeleteStatus.None && x.HpId == hpId).ToList();
 

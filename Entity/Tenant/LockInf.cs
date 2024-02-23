@@ -39,7 +39,7 @@ namespace Entity.Tenant
 
         [Column("sin_date", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
-        public long SinDate { get; set; }
+        public int SinDate { get; set; }
 
         /// <summary>
         /// 来院番号

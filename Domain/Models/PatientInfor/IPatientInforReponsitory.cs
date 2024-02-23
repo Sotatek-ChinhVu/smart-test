@@ -15,7 +15,7 @@ namespace Domain.Models.PatientInfor
 
         (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId, int sinDate);
 
-        List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
+        List<PatientInforModel> SearchContainPtNum(long ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
         List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 

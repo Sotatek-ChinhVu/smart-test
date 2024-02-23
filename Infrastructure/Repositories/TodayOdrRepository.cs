@@ -1728,7 +1728,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
     /// 外来リハ初再診チェック
     /// </summary>
     /// Item1: ItemCd, Item2: ItemName
-    public List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems)
+    public List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems)
     {
         List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> result = new();
         var checkGairaiRiha = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>

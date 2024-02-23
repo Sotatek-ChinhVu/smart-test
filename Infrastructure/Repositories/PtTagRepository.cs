@@ -13,13 +13,13 @@ public class PtTagRepository : RepositoryBase, IPtTagRepository
     {
     }
 
-    public List<StickyNoteModel> SearchByPtId(int hpId, int ptId)
+    public List<StickyNoteModel> SearchByPtId(int hpId, long ptId)
     {
         return NoTrackingDataContext.PtTag.Where(x => x.HpId == hpId && x.PtId == ptId && (x.IsDeleted == 0 || x.IsDeleted == 1))
             .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo ?? string.Empty, x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor ?? string.Empty, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
             .ToList();
     }
-    public bool UpdateIsDeleted(int hpId, int ptId, int seqNo, int isDeleted, int userId)
+    public bool UpdateIsDeleted(int hpId, long ptId, int seqNo, int isDeleted, int userId)
     {
         var ptTag = NoTrackingDataContext.PtTag.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo);
 

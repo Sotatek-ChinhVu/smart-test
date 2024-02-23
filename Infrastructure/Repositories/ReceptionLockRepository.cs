@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<ReceptionLockModel> ReceptionLockModel(int hpId, long sinDate, long ptId, long raiinNo, string functionCd)
+        public List<ReceptionLockModel> ReceptionLockModel(int hpId, int sinDate, long ptId, long raiinNo, string functionCd)
         {
             var listData = NoTrackingDataContext.LockInfs
                 .Where(x => x.HpId == hpId && x.SinDate == sinDate && x.PtId == ptId && x.RaiinNo == raiinNo && x.FunctionCd == functionCd)

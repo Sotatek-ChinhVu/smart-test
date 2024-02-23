@@ -60,7 +60,7 @@ namespace Reporting.Yakutai.Service
         private int _sinDate;
         private int _hpId;
         private long _ptId;
-        private int _raiinNo;
+        private long _raiinNo;
         private string _formFileName;
 
         private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM = new Dictionary<int, Dictionary<string, string>>();
@@ -77,7 +77,7 @@ namespace Reporting.Yakutai.Service
             _readRseReportFileService = readRseReportFileService;
         }
 
-        public CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo)
+        public CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, long raiinNo)
         {
             try
             {

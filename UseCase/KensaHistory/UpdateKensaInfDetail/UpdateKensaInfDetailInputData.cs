@@ -5,7 +5,7 @@ namespace UseCase.KensaHistory.UpdateKensaInfDetail
 {
     public class UpdateKensaInfDetailInputData : IInputData<UpdateKensaInfDetailOutputData>
     {
-        public UpdateKensaInfDetailInputData(int hpId, int userId, int ptId, int iraiCd, int iraiDate, List<KensaInfDetailUpdateModel> kensaInfDetails)
+        public UpdateKensaInfDetailInputData(int hpId, int userId, long ptId, int iraiCd, int iraiDate, List<KensaInfDetailUpdateModel> kensaInfDetails)
         {
             HpId = hpId;
             UserId = userId;
@@ -19,7 +19,7 @@ namespace UseCase.KensaHistory.UpdateKensaInfDetail
 
         public int UserId { get; private set; }
 
-        public int PtId { get; private set; }
+        public long PtId { get; private set; }
 
         public int IraiCd { get; private set; }
 
