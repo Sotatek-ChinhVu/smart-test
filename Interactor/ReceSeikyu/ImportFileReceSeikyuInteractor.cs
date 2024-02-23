@@ -9,6 +9,7 @@ using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Text;
+using System.Text.Json;
 using UseCase.ReceSeikyu.ImportFile;
 
 namespace Interactor.ReceSeikyu
@@ -38,9 +39,10 @@ namespace Interactor.ReceSeikyu
                 if (inputData.HpId <= 0)
                     return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.InvalidHpId, string.Empty);
 
-                if (fileContent == null || fileContent.Count() == 0)
+                if (fileContent == null || fileContent.Count == 0)
                     return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.InvalidContentFile, string.Empty);
 
+                Console.Write("Data test import: " + JsonSerializer.Serialize(fileContent));
                 return HandlerImportFileRece(fileName, fileContent, inputData.HpId, inputData.UserId, inputData.File.OpenReadStream());
             }
             finally
@@ -69,7 +71,7 @@ namespace Interactor.ReceSeikyu
             bool IsReInvalid = false;
             if (fileName.ToUpper().Equals("RRECEC.HEN"))
             {
-                for (int iRow = 0; iRow < fileContent.Count(); iRow++)
+                for (int iRow = 0; iRow < fileContent.Count; iRow++)
                 {
                     if (string.IsNullOrEmpty(fileContent[iRow])) continue;
                     List<string> slCol = fileContent[iRow].Split(new[] { "," }, StringSplitOptions.None).ToList();
@@ -126,8 +128,9 @@ namespace Interactor.ReceSeikyu
             }
             else
             {
-                for (int iRow = 0; iRow < fileContent.Count(); iRow++)
+                for (int iRow = 0; iRow < fileContent.Count; iRow++)
                 {
+                    var dataTest = fileContent[iRow];
                     if (string.IsNullOrEmpty(fileContent[iRow])) continue;
                     List<string> slCol = fileContent[iRow].Split(new[] { "," }, StringSplitOptions.None).ToList();
                     if (IsReInvalid && slCol[0] != "RE") continue;
@@ -223,7 +226,7 @@ namespace Interactor.ReceSeikyu
 
                         // Save reki
                         rekiList.Add(fileContent[iRow]);
-                        if (iRow + 1 < fileContent.Count())
+                        if (iRow + 1 < fileContent.Count)
                         {
                             var slColNext = fileContent[iRow + 1].Split(new[] { "," }, StringSplitOptions.None).ToList();
                             if (CIUtil.StrToIntDef(slColNext[0], 0) < 1)
