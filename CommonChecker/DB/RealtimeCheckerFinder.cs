@@ -9,8 +9,8 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using Infrastructure.Services;
-using PostgreDataContext;
+using Infrastructure.Base;
+using Infrastructure.Interfaces;
 using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
 using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
@@ -20,13 +20,11 @@ using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleMo
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public class RealtimeCheckerFinder : IRealtimeCheckerFinder
+    public class RealtimeCheckerFinder : RepositoryBase, IRealtimeCheckerFinder
     {
-        public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
         private readonly IMasterDataCacheService _tenMstCacheService;
-        public RealtimeCheckerFinder(TenantNoTrackingDataContext noTrackingDataContext, IMasterDataCacheService tenMstCacheService)
+        public RealtimeCheckerFinder(ITenantProvider tenantProvider, IMasterDataCacheService tenMstCacheService) : base(tenantProvider)
         {
-            NoTrackingDataContext = noTrackingDataContext;
             _tenMstCacheService = tenMstCacheService;
         }
 
@@ -91,11 +89,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return listFilteredBySinData;
         }
 
-        public KensaInfDetail GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode)
+        public KensaInfDetail? GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode)
         {
             return NoTrackingDataContext.KensaInfDetails
                 .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == kensaItemCode && k.ResultVal != null && k.ResultVal != string.Empty)
-                .OrderByDescending(k => k.IraiDate).FirstOrDefault() ?? new KensaInfDetail();
+                .OrderByDescending(k => k.IraiDate).FirstOrDefault();
         }
 
         public PhysicalAverage GetCommonBodyInfo(int hpId, int birthDay, int sinday)
@@ -1558,18 +1556,18 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     {
                         continue;
                     }
-                    var check1 = 
+                    var check1 =
                         NoTrackingDataContext.M01Kinki
                         .Where
                         (
                             k =>
                             k.HpId == hpID &&
                             ((
-                                k.ACd == addedOrderSubYjCode.YjCd7 
+                                k.ACd == addedOrderSubYjCode.YjCd7
                             )
                             &&
                             (
-                                k.BCd == currentOrderSubYjCode.YjCd7 
+                                k.BCd == currentOrderSubYjCode.YjCd7
                             ))
                         ).ToList();
 
@@ -1840,7 +1838,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToList();
 
             List<KinkiResultModel> result = new();
-            
+
             foreach (var addedOrderItemCode in addedOrderItemCodeList)
             {
                 var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode.ItemCd);
@@ -1848,7 +1846,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     continue;
                 }
-                
+
                 foreach (var seibunInfo in listSeibunInfo)
                 {
                     string seibunCd = seibunInfo.SeibunCd;
@@ -2215,8 +2213,6 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         dosageResultModel.UnitName = itemInfo?.UnitName ?? string.Empty;
                         dosageResultModel.ItemName = itemInfo?.ItemName ?? string.Empty;
                         dosageResultModel.IsFromUserDefined = true;
-                        dosageResultModel.Weight = weight;
-                        dosageResultModel.Height = height;
                         checkedResult.Add(dosageResultModel);
                     }
                 }
@@ -2492,7 +2488,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     }
                 }
 
-                void _additionDosageResult(ref DosageResultModel dosageResult, double weight, double height)
+                void _additionDosageResult(ref DosageResultModel dosageResult)
                 {
                     dosageResult.Id = firstDosageInfo.Id;
                     dosageResult.ItemCd = firstDosageInfo.ItemCd;
@@ -2500,8 +2496,6 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     dosageResult.CurrentValue = itemInfo.Suryo;
                     dosageResult.UnitName = itemInfo.UnitName;
                     dosageResult.ItemName = itemInfo.ItemName;
-                    dosageResult.Weight = weight;
-                    dosageResult.Height = height;
                 }
                 // Execute checking
                 DosageResultModel? dosageResultModel = null;
@@ -2565,7 +2559,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                     if (dosageResultModel != null)
                     {
-                        _additionDosageResult(ref dosageResultModel,  weight, height);
+                        _additionDosageResult(ref dosageResultModel);
                         checkedResult.Add(dosageResultModel);
                     }
 
@@ -2574,7 +2568,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     {
                         dosageResultModel = new DosageResultModel() { LabelChecking = DosageLabelChecking.TermLimit };
                         dosageResultModel.SuggestedValue = GetSuggestedValue(limitByTerm, factor, odrCnv, false);
-                        _additionDosageResult(ref dosageResultModel, weight,  height);
+                        _additionDosageResult(ref dosageResultModel);
                         dosageResultModel.CurrentValue = itemInfo.Suryo * itemInfo.UsageQuantity;
                         checkedResult.Add(dosageResultModel);
                     }
@@ -2595,7 +2589,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                     if (dosageResultModel != null)
                     {
-                        _additionDosageResult(ref dosageResultModel, weight, height);
+                        _additionDosageResult(ref dosageResultModel);
                         checkedResult.Add(dosageResultModel);
                     }
                 }
@@ -2626,7 +2620,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                     if (dosageResultModel != null)
                     {
-                        _additionDosageResult(ref dosageResultModel, weight, height);
+                        _additionDosageResult(ref dosageResultModel);
                         checkedResult.Add(dosageResultModel);
                     }
                 }
@@ -2662,7 +2656,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             var listItemCodeByUserSetting = dayLimitInfoByUser.Select(d => d.ItemCd).Distinct().ToList();
             var listRestedItemCode = listAddedOrderCodes.Where(c => !listItemCodeByUserSetting.Contains(c.ItemCd)).ToList();
-            
+
             var listRestedItemCd = listRestedItemCode.Select(x => x.ItemCd).Distinct().ToList();
             var dayLimitInfo =
                 (
@@ -2875,6 +2869,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 // 切捨て（上限に対して使用)
                 return CIUtil.RoundDown(range * (1 / factor) * (1 / odrCnv), 4);
             }
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
         #endregion
     }

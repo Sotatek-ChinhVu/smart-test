@@ -1,4 +1,5 @@
-﻿using Infrastructure.Base;
+﻿using Domain.Models.PatientInfor;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
 namespace CommonChecker.DB
@@ -368,6 +369,22 @@ namespace CommonChecker.DB
         public bool IsNoMasterData(int hpId)
         {
             return NoTrackingDataContext.M56ExEdIngredients.Count(item => item.HpId == hpId) == 0;
+        }
+
+        public PatientInforModel? FindPatientByPtId(int hpId, long ptId)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete != 1);
+            if (ptInf == null)
+            {
+                return null;
+            }
+            return new PatientInforModel(ptInf.PtId,
+                                         ptInf.PtNum,
+                                         ptInf.Name ?? string.Empty,
+                                         ptInf.KanaName ?? string.Empty,
+                                         ptInf.Sex,
+                                         ptInf.Birthday
+                                         );
         }
 
         public void ReleaseResource()

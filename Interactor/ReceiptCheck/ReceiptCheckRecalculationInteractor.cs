@@ -1,6 +1,7 @@
 ﻿using CommonChecker.DB;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Domain.CalculationInf;
@@ -18,15 +19,15 @@ using Helper.Constants;
 using Helper.Extension;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
+using System.Text;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.ReceiptCheck.Recalculation;
 using Request = UseCase.Receipt.Recalculation;
-using System.Linq;
-using System.Text;
 
 namespace Interactor.ReceiptCheck
 {
@@ -49,6 +50,7 @@ namespace Interactor.ReceiptCheck
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly ICommonMedicalCheck _commonMedicalCheck;
         private readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
+        private readonly IRealtimeCheckerFinder _realtimeCheckerFinder;
         private readonly ITenantProvider _tenantProvider;
         private readonly IReceiptRepository _receiptRepository;
         private readonly ILoggingHandler _loggingHandler;
@@ -69,6 +71,7 @@ namespace Interactor.ReceiptCheck
             ISystemConfRepository systemConfRepository,
             ICommonMedicalCheck commonMedicalCheck,
             IRealtimeOrderErrorFinder realtimeOrderErrorFinder,
+            IRealtimeCheckerFinder realtimeCheckerFinder,
             ITenantProvider tenantProvider,
             IReceiptRepository receiptRepository)
         {
@@ -77,6 +80,7 @@ namespace Interactor.ReceiptCheck
             _systemConfRepository = systemConfRepository;
             _commonMedicalCheck = commonMedicalCheck;
             _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
+            _realtimeCheckerFinder = realtimeCheckerFinder;
             _tenantProvider = tenantProvider;
             _receiptRepository = receiptRepository;
             _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
@@ -1923,7 +1927,7 @@ namespace Interactor.ReceiptCheck
             dayLimitChecker.PtID = ptId;
             dayLimitChecker.Sinday = sinDate;
 
-            var commonMedicalCheck = new CommonMedicalCheck(_tenantProvider, _realtimeOrderErrorFinder);
+            var commonMedicalCheck = new CommonMedicalCheck(_tenantProvider, _realtimeOrderErrorFinder, _realtimeCheckerFinder);
 
             commonMedicalCheck.InitUnitCheck(dayLimitChecker);
 

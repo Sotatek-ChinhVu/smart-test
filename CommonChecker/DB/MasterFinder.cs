@@ -5,16 +5,13 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public class MasterFinder: IMasterFinder
+    public class MasterFinder : RepositoryBase, IMasterFinder
     {
-        public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
-        public MasterFinder(TenantNoTrackingDataContext noTrackingDataContext)
+        public MasterFinder(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            NoTrackingDataContext = noTrackingDataContext;
         }
 
         public IpnNameMstModel FindIpnNameMst(int hpId, string ipnNameCd, int sinDate)
@@ -96,6 +93,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 allDetail.AddRange(detailList);
             }
             return allDetail.Sum(d => (d.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(d.ItemCd ?? string.Empty)) ? 1 : d.Suryo);
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

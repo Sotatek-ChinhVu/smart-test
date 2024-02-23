@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.PatientInfor;
 
 namespace CommonChecker.DB
 {
@@ -69,5 +70,7 @@ namespace CommonChecker.DB
         string GetUsageDosage(int hpId, string yjCd);
 
         Dictionary<string, string> GetUsageDosageDic(int hpId, List<string> yjCdList);
+
+        PatientInforModel? FindPatientByPtId(int hpId, long ptId);
     }
 }

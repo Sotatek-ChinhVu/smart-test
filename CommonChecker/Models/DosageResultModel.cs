@@ -16,10 +16,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public string UnitName { get; set; } = string.Empty;
 
-        public double Weight { get; set; } = 0;
-
-        public double Height { get; set; } = 0;
-
         public DosageLabelChecking LabelChecking { get; set; }
 
         public bool IsFromUserDefined { get; set; }
