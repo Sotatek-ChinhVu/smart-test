@@ -156,7 +156,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                                     && item.SeqNo == seqNo
                                                                                     && item.HpId == hpId
                                                                                     && item.IsDeleted == 0);
-        var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.PtId == ptId && item.IsDelete == 0);
+        var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId && item.IsDelete == 0);
         if (yousiki1Inf == null || ptInf == null)
         {
             return new();
@@ -267,7 +267,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         var userMstRespo = NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0);
         var kaMstRespo = NoTrackingDataContext.KaMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0);
         var uketukesbtMstRespo = NoTrackingDataContext.UketukeSbtMsts.Where(uketuke => uketuke.HpId == hpId && uketuke.IsDeleted == 0);
-        var ptCmtInfRespo = NoTrackingDataContext.PtCmtInfs.Where(item => item.Id == hpId && item.IsDeleted == DeleteTypes.None);
+        var ptCmtInfRespo = NoTrackingDataContext.PtCmtInfs.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
         var result = (from raiinInf in raiinInfsInMonth
                       join ptInf in ptInfRespo on
                            new { raiinInf.HpId, raiinInf.PtId } equals

@@ -16,14 +16,10 @@ namespace Infrastructure.Repositories
     {
         private readonly StackExchange.Redis.IDatabase _cache;
         private readonly string key;
-        private string RaiinListMstCacheKey
-        {
-            get => $"{key}-RaiinListMstCacheKey";
-        }
 
         public RaiinListSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            key = GetCacheKey().Replace(this.GetType().Name, typeof(FlowSheetRepository).Name);
+            key = GetCacheKey();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
@@ -181,7 +177,7 @@ namespace Infrastructure.Repositories
                              select new
                              {
                                  RaiinkbItem = raiinkbItem,
-                                 TenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.StartDate <= stDate && t.EndDate >= stDate && t.ItemCd == raiinkbItem.ItemCd)
+                                 TenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.StartDate <= stDate && t.EndDate >= stDate && t.ItemCd == raiinkbItem.ItemCd)
                              };
 
             return joinQuerry.AsEnumerable().Select(x => new RaiinListItemModel(x.RaiinkbItem.HpId,
@@ -1164,7 +1160,7 @@ namespace Infrastructure.Repositories
                                            + " SELECT \"hp_id\", \"pt_id\", \"sin_date\", \"raiin_no\""
                                            + $" , {koui.GrpId}, {koui.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.KOUI_KBN}"
                                            + " FROM \"public\".\"odr_inf\""
-                                           + " WHERE \"hp_id\" = 1 AND \"is_deleted\" = 0"
+                                           + " WHERE \"hp_id\" = " + hpId + " AND \"is_deleted\" = 0"
                                            + $" AND \"odr_koui_kbn\" IN ({kouiInCondition})"
                                            + " GROUP BY \"hp_id\", \"sin_date\", \"raiin_no\", \"pt_id\" "
                                            + " )  ON CONFLICT DO NOTHING;";
@@ -1192,7 +1188,7 @@ namespace Infrastructure.Repositories
                                            + " JOIN \"public\".\"odr_inf_detail\" DETAIL"
                                            + " ON ODR.\"raiin_no\"  = DETAIL.\"raiin_no\"  "
                                            + " AND ODR.\"rp_no\" = DETAIL.\"rp_no\" and ODR.\"rp_eda_no\" = DETAIL.\"rp_eda_no\" "
-                                           + " WHERE ODR.\"hp_id\" = 1 AND ODR.\"is_deleted\" = 0"
+                                           + " WHERE ODR.\"hp_id\" = " + hpId + " AND ODR.\"is_deleted\" = 0"
                                            + $" AND DETAIL.\"item_cd\" IN ({itemInCondition})"
                                            + " GROUP BY ODR.\"hp_id\", ODR.\"sin_date\", ODR.\"raiin_no\", ODR.\"pt_id\" "
                                            + " )  ON CONFLICT DO NOTHING;";
@@ -1217,7 +1213,7 @@ namespace Infrastructure.Repositories
                                             + " SELECT DOC.\"hp_id\", DOC.\"pt_id\", DOC.\"sin_date\", DOC.\"raiin_no\""
                                             + $" , {doc.GrpId}, {doc.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.DOCUMENT_KBN}"
                                             + " FROM \"public\".\"doc_inf\" DOC"
-                                            + " WHERE DOC.\"hp_id\" = 1 AND DOC.\"is_deleted\" = 0"
+                                            + " WHERE DOC.\"hp_id\" = " + hpId + " AND DOC.\"is_deleted\" = 0"
                                             + $" AND DOC.\"category_cd\" IN ({docInCondition})"
                                             + " GROUP BY DOC.\"hp_id\", DOC.\"sin_date\", DOC.\"raiin_no\", DOC.\"pt_id\" "
                                             + " )  ON CONFLICT DO NOTHING;";
@@ -1242,7 +1238,7 @@ namespace Infrastructure.Repositories
                                             + " SELECT FILE.\"hp_id\", FILE.\"pt_id\", FILE.\"get_date\""
                                             + $", 0, {file.GrpId}, {file.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.FILE_KBN}"
                                             + " FROM \"public\".\"filing_inf\" FILE"
-                                            + " WHERE FILE.\"hp_id\" = 1 AND FILE.\"is_deleted\" = 0"
+                                            + " WHERE FILE.\"hp_id\" = " + hpId + " AND FILE.\"is_deleted\" = 0"
                                             + $" AND FILE.\"category_cd\" IN ({fileInCondition})"
                                             + " GROUP BY FILE.\"hp_id\", FILE.\"get_date\", FILE.\"pt_id\" "
                                             + " )  ON CONFLICT DO NOTHING;";
@@ -1753,7 +1749,7 @@ namespace Infrastructure.Repositories
                         TrackingDataContext.SaveChanges();
 
                         // Delete by all detail
-                        string queryDelete = "DELETE FROM \"public\".\"raiin_list_inf\" WHERE FALSE";
+                        string queryDelete = "DELETE FROM \"public\".\"raiin_list_inf\" WHERE FALSE AND \"hp_id\" = " + hpId + " ";
                         StringBuilder queryStringBuilder = new();
                         queryStringBuilder.Append(queryDelete);
                         detailDeletedList.AddRange(detailDeleteds);
@@ -1832,7 +1828,8 @@ namespace Infrastructure.Repositories
             // Clear RaiinListMstCache
             if (resultSave)
             {
-                _cache.KeyDelete(RaiinListMstCacheKey);
+                var raiinListMstCacheKey = $"{key}-RaiinListMstCacheKey" + "-" + hpId;
+                _cache.KeyDelete(raiinListMstCacheKey);
             }
 
             return resultSave;

@@ -8,8 +8,8 @@ namespace Domain.Models.PtGroupMst
 
         List<GroupNameMstModel> GetListGroupNameMst(int hpId);
 
-        bool IsInUseGroupName(int groupId, string groupCode);
+        bool IsInUseGroupName(int hpId, int groupId, string groupCode);
 
-        bool IsInUseGroupItem(int groupId, string groupCode);
+        bool IsInUseGroupItem(int hpId, int groupId, string groupCode);
     }
 }

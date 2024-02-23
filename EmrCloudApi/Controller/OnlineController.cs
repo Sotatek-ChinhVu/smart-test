@@ -88,7 +88,7 @@ public class OnlineController : AuthorizeControllerBase
     [HttpPost(ApiPath.UpdateOnlineHistoryById)]
     public ActionResult<Response<UpdateOnlineHistoryByIdResponse>> UpdateOnlineHistoryById([FromBody] UpdateOnlineHistoryByIdRequest request)
     {
-        var input = new UpdateOnlineHistoryByIdInputData(UserId, request.Id, request.PtId, request.UketukeStatus, request.ConfirmationType);
+        var input = new UpdateOnlineHistoryByIdInputData(HpId, UserId, request.Id, request.PtId, request.UketukeStatus, request.ConfirmationType);
         var output = _bus.Handle(input);
 
         var presenter = new UpdateOnlineHistoryByIdPresenter();
@@ -188,7 +188,7 @@ public class OnlineController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetListOnlineConfirmationHistoryByPtId)]
     public ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>> GetListOnlineConfirmationHistoryByPtId([FromQuery] GetListOnlineConfirmationHistoryByPtIdRequest request)
     {
-        var input = new GetListOnlineConfirmationHistoryModelInputData(UserId, request.PtId, new(), new());
+        var input = new GetListOnlineConfirmationHistoryModelInputData(HpId, UserId, request.PtId, new(), new());
         var output = _bus.Handle(input);
 
         var presenter = new GetListOnlineConfirmationHistoryModelPresenter();
@@ -217,7 +217,7 @@ public class OnlineController : AuthorizeControllerBase
         {
             onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
         }
-        var input = new GetListOnlineConfirmationHistoryModelInputData(UserId, 0, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var input = new GetListOnlineConfirmationHistoryModelInputData(HpId, UserId, 0, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
         var output = _bus.Handle(input);
 
         var presenter = new GetListOnlineConfirmationHistoryModelPresenter();
@@ -250,7 +250,7 @@ public class OnlineController : AuthorizeControllerBase
     [HttpPost(ApiPath.UpdateOnlineConsents)]
     public ActionResult<Response<UpdateOnlineConsentsResponse>> UpdateOnlineConsents([FromBody] UpdateOnlineConsentsRequest request)
     {
-        var input = new UpdateOnlineConsentsInputData(UserId, request.PtId, request.ResponseList);
+        var input = new UpdateOnlineConsentsInputData(HpId, UserId, request.PtId, request.ResponseList);
         var output = _bus.Handle(input);
 
         var presenter = new UpdateOnlineConsentsPresenter();

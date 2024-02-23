@@ -264,7 +264,7 @@ namespace Interactor.MedicalExamination
             var hokenPids = inputDataList.Select(i => i.HokenPid).Distinct().ToList();
             var checkHokens = _insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>());
             object obj = new();
-            for(var index = 0; index < inputDataList.Count; index++)
+            for (var index = 0; index < inputDataList.Count; index++)
             {
                 var item = inputDataList[index];
 
@@ -348,7 +348,7 @@ namespace Interactor.MedicalExamination
 
             if (inputDatas.HokenPid > 0)
             {
-                var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HokenPid);
+                var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HpId, inputDatas.HokenPid);
                 if (!checkHokenId)
                 {
                     raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;
@@ -357,7 +357,7 @@ namespace Interactor.MedicalExamination
 
             if (inputDatas.TantoId > 0)
             {
-                var checkHokenId = _userRepository.CheckExistedUserId(inputDatas.TantoId);
+                var checkHokenId = _userRepository.CheckExistedUserId(inputDatas.HpId, inputDatas.TantoId);
                 if (!checkHokenId)
                 {
                     raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist;
@@ -366,7 +366,7 @@ namespace Interactor.MedicalExamination
 
             if (inputDatas.KaId > 0)
             {
-                var checkHokenId = _kaRepository.CheckKaId(inputDatas.KaId);
+                var checkHokenId = _kaRepository.CheckKaId(inputDatas.HpId, inputDatas.KaId);
                 if (!checkHokenId)
                 {
                     raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist;
@@ -399,8 +399,8 @@ namespace Interactor.MedicalExamination
             else
             {
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
-                var checkPtId = _patientInforRepository.CheckExistIdList(new List<long> { ptId });
-                var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
+                var checkPtId = _patientInforRepository.CheckExistIdList(hpId, new List<long> { ptId });
+                var checkRaiinNo = _receptionRepository.CheckListNo(hpId, new List<long> { raiinNo });
 
                 if (!checkHpId)
                 {

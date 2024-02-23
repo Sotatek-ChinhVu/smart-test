@@ -34,33 +34,33 @@ public class KaRepository : RepositoryBase, IKaRepository
         }
     }
 
-    public bool CheckKaId(int kaId)
+    public bool CheckKaId(int hpId, int kaId)
     {
         // get KaMstList from kaService
-        var check = _kaService.AllKaMstList().Any(k => k.KaId == kaId && k.IsDeleted == 0);
+        var check = _kaService.AllKaMstList().Any(k => k.HpId == hpId && k.KaId == kaId && k.IsDeleted == 0);
         return check;
     }
-    public bool CheckKaId(List<int> kaIds)
+    public bool CheckKaId(List<int> kaIds, int hpId)
     {
         kaIds = kaIds.Distinct().ToList();
 
         // get KaMstList from kaService
-        var countKaMsts = _kaService.AllKaMstList().Count(u => kaIds.Contains(u.KaId));
+        var countKaMsts = _kaService.AllKaMstList().Count(u => u.HpId == hpId && kaIds.Contains(u.KaId));
         return kaIds.Count == countKaMsts;
     }
 
-    public KaMstModel GetByKaId(int kaId)
+    public KaMstModel GetByKaId(int hpId, int kaId)
     {
         // get KaMstList from kaService
-        var entity = _kaService.AllKaMstList().FirstOrDefault(k => k.KaId == kaId && k.IsDeleted == DeleteTypes.None);
+        var entity = _kaService.AllKaMstList().FirstOrDefault(k => k.HpId == hpId && k.KaId == kaId && k.IsDeleted == DeleteTypes.None);
         return entity is null ? new KaMstModel() : ConvertToKaMstModel(entity);
     }
 
-    public List<KaMstModel> GetList(int isDeleted)
+    public List<KaMstModel> GetList(int hpId, int isDeleted)
     {
         // get KaMstList from kaService
         return _kaService.AllKaMstList()
-               .Where(k => (isDeleted == 2 || k.IsDeleted == isDeleted))
+               .Where(k => k.HpId == hpId && (isDeleted == 2 || k.IsDeleted == isDeleted))
                .OrderBy(k => k.SortNo)
                .Select(k => ConvertToKaMstModel(k)).ToList();
     }
@@ -80,7 +80,7 @@ public class KaRepository : RepositoryBase, IKaRepository
 
     public bool SaveKaMst(int hpId, int userId, List<KaMstModel> kaMstModels)
     {
-        var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
+        var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.HpId == hpId && item.IsDeleted != 1).ToList();
         int sortNo = 1;
         List<KaMst> listAddNews = new();
         foreach (var model in kaMstModels)

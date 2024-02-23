@@ -275,7 +275,8 @@ namespace Infrastructure.Repositories
             IQueryable<HokenMst> query;
 
             query = NoTrackingDataContext.HokenMsts.Where(kohiInf =>
-                (kohiInf.HokenSbtKbn == 2 || kohiInf.HokenSbtKbn == 5 || kohiInf.HokenSbtKbn == 6 || kohiInf.HokenSbtKbn == 7)
+                kohiInf.HpId == hpId
+                && (kohiInf.HokenSbtKbn == 2 || kohiInf.HokenSbtKbn == 5 || kohiInf.HokenSbtKbn == 6 || kohiInf.HokenSbtKbn == 7)
                 && kohiInf.StartDate < sinDate
                 && kohiInf.EndDate > sinDate
                 && (kohiInf.PrefNo == prefCd || kohiInf.PrefNo == 0 || kohiInf.IsOtherPrefValid == 1)
@@ -749,7 +750,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExcepHokenSyas.Where(x => x.Id == 0).Select(x => new ExceptHokensya()
+                    TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExcepHokenSyas.Where(x => x.HpId == hpId && x.Id == 0).Select(x => new ExceptHokensya()
                     {
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,

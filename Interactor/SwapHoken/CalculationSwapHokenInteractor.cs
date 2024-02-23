@@ -2194,7 +2194,7 @@ namespace Interactor.SwapHoken
             foreach (var receInfModel in receInfModels)
             {
                 var receStatus = _receiptRepository.GetReceStatus(hpId, ptId, seikyuYm, receInfModel.SinYm, receInfModel.HokenId);
-                bool hasError = _receiptRepository.HasErrorCheck(receInfModel.SinYm, receInfModel.PtId, receInfModel.HokenId);
+                bool hasError = _receiptRepository.HasErrorCheck(hpId, receInfModel.SinYm, receInfModel.PtId, receInfModel.HokenId);
                 if (receStatus == null || receStatus.PtId == 0)
                 {
                     if (hasError)

@@ -37,10 +37,10 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         }
     }
 
-    public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)
+    public List<UserConfModel> GetList(int hpId, int userId, int fromGrpCd, int toGrpCd)
     {
         return NoTrackingDataContext.UserConfs
-            .Where(u => u.UserId == userId && u.GrpCd >= fromGrpCd && u.GrpCd <= toGrpCd)
+            .Where(u => u.HpId == hpId && u.UserId == userId && u.GrpCd >= fromGrpCd && u.GrpCd <= toGrpCd)
             .AsEnumerable().Select(u => ToModel(u)).ToList();
     }
 

@@ -4,8 +4,9 @@ namespace UseCase.OrdInfs.ValidationTodayOrd
 {
     public class ValidationTodayOrdInputData : IInputData<ValidationTodayOrdOutputData>
     {
-        public ValidationTodayOrdInputData(int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<ValidationOdrInfItem> odrInfs, ValidationKarteItem karte)
+        public ValidationTodayOrdInputData(int hpId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<ValidationOdrInfItem> odrInfs, ValidationKarteItem karte)
         {
+            HpId = hpId;
             SyosaiKbn = syosaiKbn;
             JikanKbn = jikanKbn;
             HokenPid = hokenPid;
@@ -19,6 +20,7 @@ namespace UseCase.OrdInfs.ValidationTodayOrd
             Karte = karte;
         }
 
+        public int HpId { get; private set; }
         public int SyosaiKbn { get; private set; }
         public int JikanKbn { get; private set; }
         public int HokenPid { get; private set; }

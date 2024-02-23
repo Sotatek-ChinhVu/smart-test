@@ -13,9 +13,9 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool CheckExistedTodoGrpNo(List<int> todoGrpNos)
+        public bool CheckExistedTodoGrpNo(int hpId, List<int> todoGrpNos)
         {
-            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Where(x => todoGrpNos.Distinct().Contains(x.TodoGrpNo)).ToList();
+            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Where(x => x.HpId == hpId && todoGrpNos.Distinct().Contains(x.TodoGrpNo)).ToList();
             var countTodoGrpNoIsDeleteds = countTodoGrpNos.Where(x => x.IsDeleted == 1);
             return countTodoGrpNoIsDeleteds.Any();
         }
@@ -24,7 +24,7 @@ namespace Infrastructure.Repositories
         {
             foreach (var input in upsertTodoGrpMstList)
             {
-                var todoGrpMsts = TrackingDataContext.TodoGrpMsts.FirstOrDefault(x => x.TodoGrpNo == input.TodoGrpNo && x.IsDeleted == DeleteTypes.None);
+                var todoGrpMsts = TrackingDataContext.TodoGrpMsts.FirstOrDefault(x => x.HpId == hpId && x.TodoGrpNo == input.TodoGrpNo && x.IsDeleted == DeleteTypes.None);
                 if (input.IsDeleted == DeleteTypes.Deleted)
                 {
                     if (todoGrpMsts != null)

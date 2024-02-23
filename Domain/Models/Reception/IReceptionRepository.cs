@@ -10,7 +10,7 @@ namespace Domain.Models.Reception
 
         bool Update(ReceptionSaveDto dto, int hpId, int userId);
 
-        ReceptionModel Get(long raiinNo, bool flag = false);
+        ReceptionModel Get(int hpId, long raiinNo, bool flag = false);
 
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false);
 
@@ -38,7 +38,7 @@ namespace Domain.Models.Reception
 
         bool UpdateKaId(int hpId, long raiinNo, int kaId, int userId);
 
-        bool CheckListNo(List<long> raininNos);
+        bool CheckListNo(int hpId, List<long> raininNos);
 
         int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate);
 
@@ -56,7 +56,7 @@ namespace Domain.Models.Reception
 
         List<Tuple<int, long, long>> Delete(bool flag, int hpId, long ptId, int userId, int sinDate, List<Tuple<long, long, int>> receptions);
 
-        bool CheckExistOfRaiinNos(List<long> raininNos);
+        bool CheckExistOfRaiinNos(int hpId, List<long> raininNos);
 
         List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
 

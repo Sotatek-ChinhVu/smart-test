@@ -5,7 +5,7 @@ namespace Domain.Models.RaiinKubunMst
 {
     public interface IRaiinKubunMstRepository : IRepositoryBase
     {
-        List<RaiinKubunMstModel> GetList(bool isDeleted);
+        List<RaiinKubunMstModel> GetList(int hpId, bool isDeleted);
 
         List<RaiinKubunMstModel> LoadDataKubunSetting(int hpId, int userId);
 

@@ -73,7 +73,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
 
     private SaveSyoukiInfListStatus ValidateInput(SaveSyoukiInfListInputData inputData)
     {
-        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return SaveSyoukiInfListStatus.InvalidPtId;
         }
@@ -81,7 +81,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
         {
             return SaveSyoukiInfListStatus.InvalidSinYm;
         }
-        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
+        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HpId, inputData.HokenId))
         {
             return SaveSyoukiInfListStatus.InvalidHokenId;
         }
