@@ -79,6 +79,16 @@ namespace AWSSDK.Services
                 // Connection string format for SQL Server
                 string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
 
+                string FormartNameZTable(string tableName)
+                {
+                    int indexOfZ = tableName.IndexOf('z');
+                    if (indexOfZ != -1 && indexOfZ + 1 < tableName.Length)
+                    {
+                        string modifiedString = tableName.Remove(indexOfZ, 2);
+                    }
+                    return string.Empty;
+                }
+
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
@@ -92,15 +102,15 @@ namespace AWSSDK.Services
                             foreach (string table in ConfigConstant.listTableMaster)
                             {
                                 // Delete data table
-                                command.CommandText += $"DELETE FROM public.{table} WHERE hp_id = {hpId};\n";
+                                //command.CommandText += $"DELETE FROM public.{table} WHERE hp_id = {hpId};\n";
                                 // Drop partition
                                 if (table.StartsWith("z")) // Drop partition with z_table
                                 {
-                                    command.CommandText += $"DROP TABLE public.z_p_{table}_{hpId};\n";
+                                    command.CommandText += $"DROP TABLE IF EXISTS public.z_p_{FormartNameZTable(table)}_{hpId};\n";
                                 }
                                 else
                                 {
-                                    command.CommandText += $"DROP TABLE public.p_{table}_{hpId};\n";
+                                    command.CommandText += $"DROP TABLE IF EXISTS public.p_{table}_{hpId};\n";
                                 }
                             }
                             command.CommandText += "COMMIT;";

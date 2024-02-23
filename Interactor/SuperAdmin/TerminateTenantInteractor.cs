@@ -43,8 +43,6 @@ namespace Interactor.SuperAdmin
         {
             try
             {
-                _memoryCache.Remove("test");
-                _awsSdkService.DeleteDataMasterTenant("localhost", "test02", ConfigConstant.PgUserDefault, "1234$", 1);
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
 

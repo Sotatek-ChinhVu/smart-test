@@ -222,7 +222,7 @@ namespace Interactor.SuperAdmin
                                     if (listTenantDb.Count > 1)
                                     {
                                         Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
-                                        _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
+                                        _awsSdkService.DeleteDataMasterTenant(oldTenant.EndPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect, oldTenant.TenantId);
                                     }
 
                                     // Deleted RDS
