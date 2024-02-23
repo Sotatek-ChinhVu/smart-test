@@ -13,6 +13,9 @@ public static class ColumnCsvName
                 { TenantEnum.Domain, "ドメイン" },
                 { TenantEnum.AdminId, "管理者ID" },
                 { TenantEnum.HospitalName, "医療機関名" },
+                { TenantEnum.Type, "RDSクラスターモード" },
+                { TenantEnum.Size, "利用量" },
+                { TenantEnum.StorageFull, "利用量（％）" },
                 { TenantEnum.StatusTenant, "ステータス" }
             };
             return result;
