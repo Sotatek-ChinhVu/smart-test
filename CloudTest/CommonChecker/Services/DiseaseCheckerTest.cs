@@ -43,7 +43,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(diseaseChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        diseaseChecker.InitFinder(tenantNoTracking, cache);
+        diseaseChecker.InitFinder(TenantProvider, cache);
 
         //DiseaseLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
@@ -140,7 +140,7 @@ public class DiseaseCheckerTest : BaseUT
         // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
         try
         {
@@ -228,7 +228,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(diseaseChecker.HpID, new List<string>() { "936DIS003" }, 20230505, 1231);
-        diseaseChecker.InitFinder(tenantNoTracking, cache);
+        diseaseChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -337,7 +337,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(diseaseChecker.HpID, new List<string>() { "936DIS005" }, 20230505, 1231);
-        diseaseChecker.InitFinder(tenantNoTracking, cache);
+        diseaseChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -390,7 +390,7 @@ public class DiseaseCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var tenMsts = CommonCheckerData.ReadTenMst("DIS006", "DIS006",hpId);
+        var tenMsts = CommonCheckerData.ReadTenMst("DIS006", "DIS006", hpId);
         var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS006");
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS006");
         var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
@@ -425,7 +425,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(diseaseChecker.HpID, new List<string>() { "936DIS005" }, 20230505, 1231);
-        diseaseChecker.InitFinder(tenantNoTracking, cache);
+        diseaseChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -515,7 +515,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(diseaseChecker.HpID, new List<string>() { "937DIS007" }, 20230505, 1231);
-        diseaseChecker.InitFinder(tenantNoTracking, cache);
+        diseaseChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -608,7 +608,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(diseaseChecker.HpID, new List<string>() { "937DIS008" }, 20230505, 1231);
-        diseaseChecker.InitFinder(tenantNoTracking, cache);
+        diseaseChecker.InitFinder(TenantProvider, cache);
 
         try
         {

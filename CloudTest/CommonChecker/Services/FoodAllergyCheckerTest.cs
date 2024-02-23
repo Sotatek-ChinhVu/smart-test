@@ -71,7 +71,7 @@ public class FoodAllergyCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        foodAllergyChecker.InitFinder(tenantNoTracking, cache);
+        foodAllergyChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -146,7 +146,7 @@ public class FoodAllergyCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        foodAllergyChecker.InitFinder(tenantNoTracking, cache);
+        foodAllergyChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -247,7 +247,7 @@ public class FoodAllergyCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        foodAllergyChecker.InitFinder(tenantNoTracking, cache);
+        foodAllergyChecker.InitFinder(TenantProvider, cache);
         try
         {
             // Act
@@ -325,7 +325,7 @@ public class FoodAllergyCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        foodAllergyChecker.InitFinder(tenantNoTracking, cache);
+        foodAllergyChecker.InitFinder(TenantProvider, cache);
         try
         {
             // Act

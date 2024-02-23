@@ -37,7 +37,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             // Arrange
-            var realtimcheckerfinder = new MasterFinder(TenantProvider.GetNoTrackingDataContext());
+            var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
@@ -81,7 +81,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimcheckerfinder = new MasterFinder(TenantProvider.GetNoTrackingDataContext());
+            var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
@@ -122,7 +122,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimcheckerfinder = new MasterFinder(TenantProvider.GetNoTrackingDataContext());
+            var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
@@ -153,7 +153,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             // Arrange
-            var realtimcheckerfinder = new MasterFinder(TenantProvider.GetNoTrackingDataContext());
+            var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {

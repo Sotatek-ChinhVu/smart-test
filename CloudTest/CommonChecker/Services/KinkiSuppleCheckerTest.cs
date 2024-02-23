@@ -67,7 +67,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -156,7 +156,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         }
 
         var cache = new MasterDataCacheService(TenantProvider);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
         //Setup Data test
         var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
         var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
@@ -253,7 +253,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -348,7 +348,7 @@ public class KinkiSuppleCheckerTest : BaseUT
 
 
         var cache = new MasterDataCacheService(TenantProvider);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -432,7 +432,7 @@ public class KinkiSuppleCheckerTest : BaseUT
 
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(kinkiSuppleChecker.HpID, new List<string>() { "936DIS003" }, 20230505, 1231);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {

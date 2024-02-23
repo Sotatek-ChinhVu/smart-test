@@ -49,7 +49,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -102,7 +102,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -152,7 +152,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -200,7 +200,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -258,7 +258,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -319,7 +319,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -382,7 +382,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -429,7 +429,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -481,7 +481,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -552,7 +552,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -604,7 +604,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2704", "UT2705" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -656,7 +656,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2704", "UT2704" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -708,7 +708,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2704", "UT2705" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -761,7 +761,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2706", "UT2707" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -811,7 +811,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2706", "UT2707" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -859,7 +859,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2709", "UT2710" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -906,7 +906,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2711", "UT2712" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -953,7 +953,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2711", "UT2713" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1000,7 +1000,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2711", "UT2714" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1051,7 +1051,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 // Arrange
                 var cache = new MasterDataCacheService(TenantProvider);
                 cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
-                var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+                var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
 
                 //Act
@@ -1105,7 +1105,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1160,7 +1160,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1200,7 +1200,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
             var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki(hpId);
             var ptFamilies = CommonCheckerData.ReadPtFamily(hpId);
-      
+
             tenantTracking.PtKioRekis.AddRange(ptKioRekis);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
@@ -1227,7 +1227,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1280,7 +1280,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             ///Act
             try
@@ -1329,7 +1329,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             ///Act
             try
@@ -1378,7 +1378,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             ///Act
             try
@@ -1426,7 +1426,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             ///Act
             try
@@ -1474,7 +1474,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             ///Act
             try
@@ -1521,7 +1521,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "6111029", "6404029" }, sinDay, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
             try
             {
                 //Act
@@ -1565,7 +1565,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "6111029", "6404029" }, sinDay, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
             try
             {
                 //Act
@@ -1607,7 +1607,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2714" }, sinDay, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1651,7 +1651,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2714" }, sinDay, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1700,7 +1700,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2714" }, sinDay, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1749,7 +1749,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT777777" }, sinDay, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1798,7 +1798,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimcheckerfinder.CheckAge(hpId, ptId, sinDay, level, ageTypeCheckSetting, listItemCode, kensaInfDetailModels, isDataOfDb);
@@ -1837,7 +1837,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimcheckerfinder.CheckAge(hpId, ptId, sinDay, level, ageTypeCheckSetting, listItemCode, kensaInfDetailModels, isDataOfDb);
@@ -1885,7 +1885,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -1944,7 +1944,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2003,7 +2003,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2063,7 +2063,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2123,7 +2123,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2183,7 +2183,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2242,7 +2242,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2301,7 +2301,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2361,7 +2361,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2422,7 +2422,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2485,7 +2485,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2548,7 +2548,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2577,7 +2577,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var mockTenMstCacheService = new Mock<IMasterDataCacheService>();
             var cache = new MasterDataCacheService(TenantProvider);
             // cache.InitCache(hpId,new List<string>() { }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             mockTenMstCacheService.Setup(x => x.GetPtInf()).Returns((PtInf?)null);
 
@@ -2620,7 +2620,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2680,7 +2680,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2781,7 +2781,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2882,7 +2882,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -2984,7 +2984,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -3089,7 +3089,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -3203,7 +3203,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -3317,7 +3317,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -3431,7 +3431,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -3547,7 +3547,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -3665,7 +3665,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -3783,7 +3783,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -3899,7 +3899,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4015,7 +4015,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4131,7 +4131,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4248,7 +4248,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4365,7 +4365,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4483,7 +4483,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4598,7 +4598,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4716,7 +4716,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4831,7 +4831,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -4945,7 +4945,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5059,7 +5059,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5173,7 +5173,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5287,7 +5287,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5401,7 +5401,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5516,7 +5516,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5631,7 +5631,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5746,7 +5746,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5861,7 +5861,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -5977,7 +5977,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6093,7 +6093,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6209,7 +6209,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6325,7 +6325,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6441,7 +6441,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6557,7 +6557,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6673,7 +6673,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6789,7 +6789,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6906,7 +6906,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -6967,7 +6967,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7027,7 +7027,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7087,7 +7087,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7145,7 +7145,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7202,7 +7202,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7259,7 +7259,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7316,7 +7316,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7379,7 +7379,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7423,7 +7423,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7479,7 +7479,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7512,7 +7512,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
 
             // Act
@@ -7576,7 +7576,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7612,7 +7612,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, ptAlrgyDrugModels, isDataOfDb);
@@ -7672,7 +7672,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7742,7 +7742,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7798,7 +7798,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7860,7 +7860,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7922,7 +7922,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -7985,7 +7985,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8048,7 +8048,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8114,7 +8114,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8180,7 +8180,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8208,7 +8208,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // YYYY = 0 , MM = 0
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
@@ -8227,7 +8227,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // YYYY = 0 , MM = 3
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
@@ -8246,7 +8246,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // YYYY = 0 , MM = 3
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
@@ -8265,7 +8265,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // YYYY = 0 , MM = 4
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
@@ -8284,7 +8284,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // YYYY = 14 , MM = 4
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
@@ -8303,7 +8303,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // YYYY = 14 , MM = 4
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
@@ -8366,7 +8366,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8437,7 +8437,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8512,7 +8512,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8590,7 +8590,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
 
                 var cache = new MasterDataCacheService(TenantProvider);
-                var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+                var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
                 // Act
                 var sex = 1;
@@ -8662,7 +8662,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var sex = 1;
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8697,7 +8697,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var sex = 1;
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -8720,7 +8720,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             double weight = 69.7; double height = 176.5;
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             double age = 6;
             // Act
@@ -8742,7 +8742,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             double weight = 69.7; double height = 176.5;
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
 
             // Act
@@ -8765,7 +8765,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             double weight = 69.7; double height = 176.5;
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
 
             // Act
@@ -8797,7 +8797,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
 
             // Act
@@ -8836,7 +8836,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT27201" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             // Act
             var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
@@ -8925,7 +8925,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9024,7 +9024,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9123,7 +9123,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9223,7 +9223,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9323,7 +9323,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9424,7 +9424,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9526,7 +9526,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9627,7 +9627,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9728,7 +9728,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9830,7 +9830,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -9931,7 +9931,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10032,7 +10032,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10134,7 +10134,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10236,7 +10236,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10338,7 +10338,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10443,7 +10443,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10548,7 +10548,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10653,7 +10653,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10758,7 +10758,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10864,7 +10864,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -10970,7 +10970,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11076,7 +11076,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11182,7 +11182,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11289,7 +11289,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11397,7 +11397,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11507,7 +11507,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11617,7 +11617,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11727,7 +11727,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11838,7 +11838,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -11949,7 +11949,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -12061,7 +12061,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -12172,7 +12172,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -12283,7 +12283,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -12394,7 +12394,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -12505,7 +12505,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
-            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
