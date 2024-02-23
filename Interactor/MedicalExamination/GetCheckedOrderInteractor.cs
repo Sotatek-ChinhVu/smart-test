@@ -265,7 +265,7 @@ namespace Interactor.MedicalExamination
                         maxRpNo++;
                     }
 
-                    var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
+                    var raiinInf = _receptionRepository.Get(inputData.HpId, inputData.RaiinNo);
                     var requestRaiinInf = new ReceptionItem(raiinInf);
                     var runTraialCalculateRequest = new RunTraialCalculateRequest(
                             inputData.HpId,

@@ -17,7 +17,7 @@ public class GetDiseaseListInteractor : IGetDiseaseListInputPort
         try
         {
             var itemCdList = inputData.ItemCdList.Distinct().ToList();
-            var result = _inputItemRepository.DiseaseSearch(itemCdList);
+            var result = _inputItemRepository.DiseaseSearch(inputData.HpId, itemCdList);
             return new GetDiseaseListOutputData(result, GetDiseaseListStatus.Successed);
         }
         finally

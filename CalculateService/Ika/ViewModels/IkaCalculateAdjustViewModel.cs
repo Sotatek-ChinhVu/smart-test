@@ -177,13 +177,14 @@ namespace CalculateService.Ika.ViewModels
 
         /// <summary>
         /// 包括背反処理
+        /// <param name="hpId">HospitalID</param>
         /// <param name="first">true - 初回チェック（可能性はなし、ログ展開なし）</param>
         /// </summary>
-        public void Adjust(bool first)
+        public void Adjust(int hpId, bool first)
         {
             const string conFncName = nameof(Adjust);
 
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             // 注加算チェック
             TyuKasan();
@@ -221,6 +222,9 @@ namespace CalculateService.Ika.ViewModels
                 Handan();
             }
 
+            // 労災電子化加算
+            RousaiDensika();
+
             // 削除をワークに反映(IS_DELETED)
             WrkDelete();
 
@@ -236,7 +240,7 @@ namespace CalculateService.Ika.ViewModels
                 Saiketu();
 
                 // 最後に検査まるめの処理を行う
-                Marume();
+                Marume(hpId);
 
                 // 逓減項目チェック
                 Teigen();
@@ -244,8 +248,11 @@ namespace CalculateService.Ika.ViewModels
                 // 同日再診チェック
                 DoujituSaisin();
 
-                // 労災電子化加算
-                RousaiDensika();
+                // 多剤投与チェック
+                NaifukuTazai();
+
+                //// 労災電子化加算
+                //RousaiDensika();
 
                 // 削除をワークに反映(IS_DELETED)
                 WrkDelete();
@@ -314,7 +321,8 @@ namespace CalculateService.Ika.ViewModels
                             new { rpNo = wrkDtlDel.RpNo, seqNo = wrkDtlDel.SeqNo, rowNo = wrkDtlDel.RowNo } into subs
                         from sub in subs.DefaultIfEmpty()
                         select
-                            new {
+                            new
+                            {
                                 wrkDtl,
                                 sub
                             }
@@ -378,6 +386,7 @@ namespace CalculateService.Ika.ViewModels
                                     isWarning: 0,
                                     termCnt: 1,
                                     termSbt: 1,
+                                    existTermSbt: 1,
                                     isAutoAdd: chukasanDtl.IsAutoAdd,
                                     hokenId: _common.Wrk.GetWrkKouiHokenId(chukasanDtl.RpNo, chukasanDtl.SeqNo));
                     }
@@ -395,6 +404,7 @@ namespace CalculateService.Ika.ViewModels
                                     isWarning: 1,
                                     termCnt: 1,
                                     termSbt: 1,
+                                    existTermSbt: 1,
                                     isAutoAdd: chukasanDtl.IsAutoAdd,
                                     hokenId: _common.Wrk.GetWrkKouiHokenId(chukasanDtl.RpNo, chukasanDtl.SeqNo));
                     }
@@ -439,6 +449,7 @@ namespace CalculateService.Ika.ViewModels
                                     isWarning: 0,
                                     termCnt: 1,
                                     termSbt: 1,
+                                    existTermSbt: 1,
                                     isAutoAdd: chukasanDtl.IsAutoAdd,
                                     hokenId: _common.Wrk.GetWrkKouiHokenId(chukasanDtl.RpNo, chukasanDtl.SeqNo));
                     }
@@ -456,6 +467,7 @@ namespace CalculateService.Ika.ViewModels
                                     isWarning: 1,
                                     termCnt: 1,
                                     termSbt: 1,
+                                    existTermSbt: 1,
                                     isAutoAdd: chukasanDtl.IsAutoAdd,
                                     hokenId: _common.Wrk.GetWrkKouiHokenId(chukasanDtl.RpNo, chukasanDtl.SeqNo));
                     }
@@ -525,7 +537,7 @@ namespace CalculateService.Ika.ViewModels
                     bool checkDone = false;
 
                     List<int> checkSanteiKbnsLocal = new List<int>();
-                    
+
                     if (_common.Wrk.GetSanteiKbn(wrkDtl.RaiinNo, wrkDtl.RpNo) == SanteiKbnConst.Jihi)
                     {
                         // 自費分点の場合は自費分点だけ
@@ -535,7 +547,7 @@ namespace CalculateService.Ika.ViewModels
                     {
                         checkSanteiKbnsLocal.AddRange(checkSanteiKbn);
 
-                        if(wrkDtl.HokenKbn == HokenKbn.Jihi && checkSanteiKbnsLocal.Any(p=>p == HokenKbn.Jihi) == false)
+                        if (wrkDtl.HokenKbn == HokenKbn.Jihi && checkSanteiKbnsLocal.Any(p => p == HokenKbn.Jihi) == false)
                         {
                             // 自費保険の場合、自費算定の項目もチェック
                             checkSanteiKbnsLocal.Add(SanteiKbnConst.Jihi);
@@ -598,34 +610,36 @@ namespace CalculateService.Ika.ViewModels
                                                     isWarning: isWarning,
                                                     termCnt: 1,
                                                     termSbt: 1,
+                                                    existTermSbt: 1,
                                                     isAutoAdd: wrkDtl.IsAutoAdd,
                                                     hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                         if (isWarning == 0)
                                         {
                                             // 削除される項目が削除していた項目があれば、削除しておく
-                                            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                            {
-                                                foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                {
-                                                    if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                        p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
-                                                        !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                    {
-                                                        dtl.IsDeleted = 0;
+                                            RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                            //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                            //{
+                                            //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                            //    {
+                                            //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                            //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
+                                            //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                            //        {
+                                            //            dtl.IsDeleted = 0;
 
-                                                        foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                        {
-                                                            koui.IsDeleted = 0;
-                                                        }
-                                                        foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                        {
-                                                            rp.IsDeleted = 0;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                            //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                            //            {
+                                            //                koui.IsDeleted = 0;
+                                            //            }
+                                            //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                            //            {
+                                            //                rp.IsDeleted = 0;
+                                            //            }
+                                            //        }
+                                            //    }
+                                            //}
+                                            //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
 
                                             if (_systemConfigProvider.GetHoukatuHaihanCheckMode() == 1)
                                             {
@@ -707,34 +721,36 @@ namespace CalculateService.Ika.ViewModels
                                                                 isWarning: isWarning,
                                                                 termCnt: 1,
                                                                 termSbt: 2,
+                                                                existTermSbt: 2,
                                                                 isAutoAdd: wrkDtl.IsAutoAdd,
                                                                 hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                                     if (isWarning == 0)
                                                     {
                                                         // 削除される項目が削除していた項目があれば、削除しておく
-                                                        foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                                        {
-                                                            foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                            {
-                                                                if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                                    p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
-                                                                    !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                                {
-                                                                    dtl.IsDeleted = 0;
+                                                        RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                                        //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                                        //{
+                                                        //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                        //    {
+                                                        //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                                        //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
+                                                        //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                                        //        {
+                                                        //            dtl.IsDeleted = 0;
 
-                                                                    foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                    {
-                                                                        koui.IsDeleted = 0;
-                                                                    }
-                                                                    foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                    {
-                                                                        rp.IsDeleted = 0;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                        //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                        //            {
+                                                        //                koui.IsDeleted = 0;
+                                                        //            }
+                                                        //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                        //            {
+                                                        //                rp.IsDeleted = 0;
+                                                        //            }
+                                                        //        }
+                                                        //    }
+                                                        //}
+                                                        //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
 
                                                         if (_systemConfigProvider.GetHoukatuHaihanCheckMode() == 1)
                                                         {
@@ -800,34 +816,36 @@ namespace CalculateService.Ika.ViewModels
                                                         isWarning: isWarning,
                                                         termCnt: 1,
                                                         termSbt: termSbt,
+                                                        existTermSbt: santeiDay.SinDate == _common.sinDate ? 2 : termSbt,
                                                         isAutoAdd: wrkDtl.IsAutoAdd,
                                                         hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                                 if (isWarning == 0)
                                                 {
                                                     // 削除される項目が削除していた項目があれば、削除しておく
-                                                    foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                                    {
-                                                        foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                        {
-                                                            if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                                p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
-                                                                !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                            {
-                                                                dtl.IsDeleted = 0;
+                                                    RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                                    //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                                    //{
+                                                    //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                    //    {
+                                                    //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                                    //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
+                                                    //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                                    //        {
+                                                    //            dtl.IsDeleted = 0;
 
-                                                                foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                {
-                                                                    koui.IsDeleted = 0;
-                                                                }
-                                                                foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                {
-                                                                    rp.IsDeleted = 0;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                    //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                    //            {
+                                                    //                koui.IsDeleted = 0;
+                                                    //            }
+                                                    //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                    //            {
+                                                    //                rp.IsDeleted = 0;
+                                                    //            }
+                                                    //        }
+                                                    //    }
+                                                    //}
+                                                    //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
 
                                                     if (_systemConfigProvider.GetHoukatuHaihanCheckMode() == 1)
                                                     {
@@ -848,6 +866,7 @@ namespace CalculateService.Ika.ViewModels
 
             _emrLogger.WriteLogEnd(this, conFncName, "");
         }
+
         private void KouiHoukatu(bool excludeMaybe)
         {
             const string conFncName = nameof(KouiHoukatu);
@@ -889,7 +908,7 @@ namespace CalculateService.Ika.ViewModels
         {
             const string conFncName = nameof(Haihan);
 
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             // 電子点数表背反マスタ
             List<DensiHaihanMstModel> densiHaihans = new List<DensiHaihanMstModel>();
@@ -945,7 +964,7 @@ namespace CalculateService.Ika.ViewModels
                     bool checkDone = false;
 
                     List<int> checkSanteiKbnsLocal = new List<int>();
-                    
+
                     if (_common.Wrk.GetSanteiKbn(wrkDtl.RaiinNo, wrkDtl.RpNo) == SanteiKbnConst.Jihi)
                     {
                         // 自費分点の場合は自費分点だけ
@@ -1026,34 +1045,40 @@ namespace CalculateService.Ika.ViewModels
                                                  isWarning: isWarning,
                                                  termCnt: haihan.TermCnt,
                                                  termSbt: haihan.termSbt,
+                                                 existTermSbt: 1,
                                                  isAutoAdd: wrkDtl.IsAutoAdd,
                                                  hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                         if (isWarning == 0)
                                         {
                                             // 削除される項目が削除していた項目があれば、削除しておく
-                                            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                            {
-                                                foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                {
-                                                    if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                        p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
-                                                        !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                    {
-                                                        dtl.IsDeleted = 0;
+                                            RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                            //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                            //{
+                                            //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                            //    {
+                                            //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                            //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
+                                            //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                            //        {
+                                            //                dtl.IsDeleted = 0;
 
-                                                        foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                        {
-                                                            koui.IsDeleted = 0;
-                                                        }
-                                                        foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                        {
-                                                            rp.IsDeleted = 0;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                            //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                            //            {
+                                            //                koui.IsDeleted = 0;
+                                            //            }
+                                            //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                            //            {
+                                            //                rp.IsDeleted = 0;
+                                            //            }
+                                            //        }
+                                            //    }
+                                            //}
+                                            //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                            //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1))
+                                            //{
+                                            //    del.IsDeleted = DeleteStatus.DeleteFlag;
+                                            //}
 
                                             if (_systemConfigProvider.GetHoukatuHaihanCheckMode() == 1)
                                             {
@@ -1143,34 +1168,40 @@ namespace CalculateService.Ika.ViewModels
                                                              isWarning: isWarning,
                                                              termCnt: haihan.TermCnt,
                                                              termSbt: haihan.termSbt,
+                                                             existTermSbt: haihan.termSbt,
                                                              isAutoAdd: wrkDtl.IsAutoAdd,
                                                              hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                                     if (isWarning == 0)
                                                     {
                                                         // 削除される項目が削除していた項目があれば、削除しておく
-                                                        foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                                        {
-                                                            foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                            {
-                                                                if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                                    p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
-                                                                    !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                                {
-                                                                    dtl.IsDeleted = 0;
+                                                        RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                                        //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                                        //{
+                                                        //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                        //    {
+                                                        //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                                        //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
+                                                        //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                                        //        {
+                                                        //            dtl.IsDeleted = 0;
 
-                                                                    foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                    {
-                                                                        koui.IsDeleted = 0;
-                                                                    }
-                                                                    foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                    {
-                                                                        rp.IsDeleted = 0;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                        //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                        //            {
+                                                        //                koui.IsDeleted = 0;
+                                                        //            }
+                                                        //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                        //            {
+                                                        //                rp.IsDeleted = 0;
+                                                        //            }
+                                                        //        }
+                                                        //    }
+                                                        //}
+                                                        //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                        //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1))
+                                                        //{
+                                                        //    del.IsDeleted = DeleteStatus.DeleteFlag;
+                                                        //}
 
                                                         if (_systemConfigProvider.GetHoukatuHaihanCheckMode() == 1)
                                                         {
@@ -1258,34 +1289,40 @@ namespace CalculateService.Ika.ViewModels
                                                      isWarning: isWarning,
                                                      termCnt: haihan.TermCnt,
                                                      termSbt: haihan.termSbt,
+                                                     existTermSbt: santeiDay.SinDate == _common.sinDate ? 2 : 6,
                                                      isAutoAdd: wrkDtl.IsAutoAdd,
                                                      hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                                 if (isWarning == 0)
                                                 {
                                                     // 削除される項目が削除していた項目があれば、削除しておく
-                                                    foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                                    {
-                                                        foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                        {
-                                                            dtl.IsDeleted = 0;
+                                                    RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                                    //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                                    //{
+                                                    //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                    //    {
+                                                    //        dtl.IsDeleted = 0;
 
-                                                            if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                                p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
-                                                                !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                            {
-                                                                foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                {
-                                                                    koui.IsDeleted = 0;
-                                                                }
-                                                                foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                {
-                                                                    rp.IsDeleted = 0;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                    //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                                    //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
+                                                    //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                                    //        {
+                                                    //                foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                    //            {
+                                                    //                koui.IsDeleted = 0;
+                                                    //            }
+                                                    //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                    //            {
+                                                    //                rp.IsDeleted = 0;
+                                                    //            }
+                                                    //        }
+                                                    //    }
+                                                    //}
+                                                    //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                    //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1))
+                                                    //{
+                                                    //    del.IsDeleted = DeleteStatus.DeleteFlag;
+                                                    //}
 
                                                     if (_systemConfigProvider.GetHoukatuHaihanCheckMode() == 1)
                                                     {
@@ -1402,34 +1439,40 @@ namespace CalculateService.Ika.ViewModels
                                                                  isWarning: isWarning,
                                                                  termCnt: haihan.TermCnt,
                                                                  termSbt: haihan.termSbt,
+                                                                 existTermSbt: haihan.termSbt,
                                                                  isAutoAdd: wrkDtl.IsAutoAdd,
                                                                  hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                                         if (isWarning == 0)
                                                         {
                                                             // 削除される項目が削除していた項目があれば、削除しておく
-                                                            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                                            {
-                                                                foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                {
-                                                                    dtl.IsDeleted = 0;
+                                                            RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                                            //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                                            //{
+                                                            //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                            //    {
+                                                            //        dtl.IsDeleted = 0;
 
-                                                                    if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                                        p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
-                                                                        !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                                    {
-                                                                        foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                        {
-                                                                            koui.IsDeleted = 0;
-                                                                        }
-                                                                        foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                        {
-                                                                            rp.IsDeleted = 0;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                            _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                            //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                                            //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
+                                                            //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                                            //        {
+                                                            //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                            //            {
+                                                            //                koui.IsDeleted = 0;
+                                                            //            }
+                                                            //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                            //            {
+                                                            //                rp.IsDeleted = 0;
+                                                            //            }
+                                                            //        }
+                                                            //    }
+                                                            //}
+                                                            //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                            //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1))
+                                                            //{
+                                                            //    del.IsDeleted = DeleteStatus.DeleteFlag;
+                                                            //}
 
                                                             if (_systemConfigProvider.GetHoukatuHaihanCheckMode() == 1)
                                                             {
@@ -1488,34 +1531,40 @@ namespace CalculateService.Ika.ViewModels
                                                              isWarning: isWarning,
                                                              termCnt: haihan.TermCnt,
                                                              termSbt: haihan.termSbt,
+                                                             existTermSbt: santeiDay.SinDate == _common.sinDate ? 2 : 6,
                                                              isAutoAdd: wrkDtl.IsAutoAdd,
                                                              hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                                         if (isWarning == 0)
                                                         {
                                                             // 削除される項目が削除していた項目があれば、削除しておく
-                                                            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                                            {
-                                                                foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                {
-                                                                    if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                                        p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
-                                                                        !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                                    {
-                                                                        dtl.IsDeleted = 0;
+                                                            RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                                            //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                                            //{
+                                                            //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                            //    {
+                                                            //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                                            //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
+                                                            //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                                            //        {
+                                                            //            dtl.IsDeleted = 0;
 
-                                                                        foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                        {
-                                                                            koui.IsDeleted = 0;
-                                                                        }
-                                                                        foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                                        {
-                                                                            rp.IsDeleted = 0;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                            _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                            //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                            //            {
+                                                            //                koui.IsDeleted = 0;
+                                                            //            }
+                                                            //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                            //            {
+                                                            //                rp.IsDeleted = 0;
+                                                            //            }
+                                                            //        }
+                                                            //    }
+                                                            //}
+                                                            //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                            //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1))
+                                                            //{
+                                                            //    del.IsDeleted = DeleteStatus.DeleteFlag;
+                                                            //}
 
                                                             if (_systemConfigProvider.GetHoukatuHaihanCheckMode() == 1)
                                                             {
@@ -1760,6 +1809,7 @@ namespace CalculateService.Ika.ViewModels
                                                  isWarning: isWarning,
                                                  termCnt: data.TermCnt,
                                                  termSbt: data.TermSbt,
+                                                 existTermSbt: data.TermSbt,
                                                  isAutoAdd: wrkDtl.IsAutoAdd,
                                                  hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo),
                                                  delItemCds: _delItemCds);
@@ -1767,28 +1817,29 @@ namespace CalculateService.Ika.ViewModels
                                             if (isWarning == 0)
                                             {
                                                 // 削除される項目が削除していた項目があれば、削除しておく
-                                                foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
-                                                {
-                                                    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                    {
-                                                        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
-                                                            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                        {
-                                                            dtl.IsDeleted = 0;
+                                                RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1 });
+                                                //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog))
+                                                //{
+                                                //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                //    {
+                                                //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                                //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
+                                                //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                                //        {
+                                                //            dtl.IsDeleted = 0;
 
-                                                            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                            {
-                                                                koui.IsDeleted = 0;
-                                                            }
-                                                            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                            {
-                                                                rp.IsDeleted = 0;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
+                                                //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                //            {
+                                                //                koui.IsDeleted = 0;
+                                                //            }
+                                                //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                                //            {
+                                                //                rp.IsDeleted = 0;
+                                                //            }
+                                                //        }
+                                                //    }
+                                                //}
+                                                //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && p.TermSbt == 1 && p.DelSbt != DelSbtConst.NoLog);
                                             }
                                             break;
                                         }
@@ -1874,6 +1925,9 @@ namespace CalculateService.Ika.ViewModels
                 Online();
             }
 
+            // 特処
+            Tokusyo();
+
             // 外来感染対策向上加算
             TokusyuKansenKojo();
 
@@ -1888,7 +1942,7 @@ namespace CalculateService.Ika.ViewModels
 
             TokusyuJibaiBunsyo();
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
@@ -2045,9 +2099,26 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiCovGairai,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiGairaiCyuwa,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiNyuyojiKasan,
-                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanKinkyuOusinTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanSisetunaiTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanOnlineTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiNyuyojiKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiSyoniKasan,
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoKinkyu,
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoTokurei,
+                    ItemCdConst.SonotaSeisinSikkanTokurei,
+                    ItemCdConst.SonotaTriajiZaitakuTokurei2310,
+                    ItemCdConst.SonotaTriajiOnlineTokurei2310
                 }
-                );
+            );
+
+            // 新型コロナ 抗ウイルス剤に係る特例（別途、薬剤料を算定可）
+            if (_common.sinDate >= KaiseiDate.d20230508)
+            {
+                excludeItemCds.AddRange(ItemCdConst.SARSCov2AntiViralDrugs);
+            }
+
             DelWrkDetail(
                 checkItemCds: checkItemCds,
                 delKouis: delKoui,
@@ -2099,9 +2170,25 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiCovGairai,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiGairaiCyuwa,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiNyuyojiKasan,
-                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanKinkyuOusinTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanSisetunaiTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanOnlineTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiNyuyojiKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiSyoniKasan,
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoKinkyu,
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoTokurei,
+                    ItemCdConst.SonotaSeisinSikkanTokurei,
+                    ItemCdConst.SonotaTriajiZaitakuTokurei2310,
+                    ItemCdConst.SonotaTriajiOnlineTokurei2310
                 }
                 );
+
+            // 新型コロナ 抗ウイルス剤に係る特例（別途、薬剤料を算定可）
+            if (_common.sinDate >= KaiseiDate.d20230508)
+            {
+                excludeItemCds.AddRange(ItemCdConst.SARSCov2AntiViralDrugs);
+            }
 
             DelWrkDetail(
                 checkItemCds: checkItemCds,
@@ -2277,7 +2364,17 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiCovGairai,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiGairaiCyuwa,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiNyuyojiKasan,
-                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanKinkyuOusinTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanSisetunaiTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanOnlineTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiNyuyojiKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiSyoniKasan,
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoKinkyu,
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoTokurei,
+                    ItemCdConst.SonotaSeisinSikkanTokurei,
+                    ItemCdConst.SonotaTriajiZaitakuTokurei2310,
+                    ItemCdConst.SonotaTriajiOnlineTokurei2310
                 }
                 );
             DelWrkDetail(
@@ -2352,7 +2449,17 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiCovGairai,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiGairaiCyuwa,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiNyuyojiKasan,
-                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanKinkyuOusinTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanSisetunaiTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanOnlineTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiNyuyojiKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiSyoniKasan,
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoKinkyu,
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoTokurei,
+                    ItemCdConst.SonotaSeisinSikkanTokurei,
+                    ItemCdConst.SonotaTriajiZaitakuTokurei2310,
+                    ItemCdConst.SonotaTriajiOnlineTokurei2310
                 }
                 );
             DelWrkDetail(
@@ -2423,7 +2530,25 @@ namespace CalculateService.Ika.ViewModels
             {
                     // 院内トリアージ実施料（診療報酬上臨時的取扱）
                     ItemCdConst.IgakuTriageRinsyo,
-            };
+                    // 院内トリアージ実施料（特例）
+                    ItemCdConst.IgakuTriageTokurei,
+                    // 慢性疾患等の診療（特例）
+                    ItemCdConst.IgakuManseiTokurei,
+                    // 特定疾患療養管理料（１００床未満の病院）（特例）
+                    ItemCdConst.IgakuTokusituTokurei_100,
+                    // 特定疾患療養管理料（１００床未満・療養指導）（特例）
+                    ItemCdConst.IgakuTokusituTokurei_100Sido,
+                    // 特定疾患療養管理料（１００床未満・罹患後症状持続）（特例）
+                    ItemCdConst.IgakuTokusituTokurei_100rakan,
+                    // 特定疾患療養管理料（１００床未満の病院）（特例）（１０月以降）
+                    ItemCdConst.IgakuTokusituTokurei2310,
+                    // 夜間・早朝等加算（特例）（１０月以降）
+                    ItemCdConst.IgakuYasouTokurei2310,
+                    // 看護配置加算（１日につき）（特例）（１０月以降）
+                    ItemCdConst.IgakuKangoTokurei2310,
+                    // 療養情報提供加算（特例）（１０月以降）
+                    ItemCdConst.IgakuRyoyoJyohoTokurei2310
+    };
 
             // SARS-Cov関連項目及びその判断料は包括しない
             excludeItemCds.AddRange(GetSARSCovItemList());
@@ -2437,7 +2562,14 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiCovGairai,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiGairaiCyuwa,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiNyuyojiKasan,
-                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanKinkyuOusinTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanSisetunaiTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanOnlineTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiNyuyojiKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiSyoniKasan,
+                    ItemCdConst.SonotaTriajiZaitakuTokurei2310,
+                    ItemCdConst.SonotaTriajiOnlineTokurei2310
                 }
                 );
 
@@ -2493,8 +2625,38 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.HoumonCommentCancel,
                     // 院内トリアージ実施料（診療報酬上臨時的取扱）
                     ItemCdConst.IgakuTriageRinsyo,
+                    // 院内トリアージ実施料（特例）
+                    ItemCdConst.IgakuTriageTokurei,
+                    // 慢性疾患等の診療（特例）
+                    ItemCdConst.IgakuManseiTokurei,
+                    // 特定疾患療養管理料（１００床未満の病院）（特例）
+                    ItemCdConst.IgakuTokusituTokurei_100,
+                    // 特定疾患療養管理料（１００床未満・療養指導）（特例）
+                    ItemCdConst.IgakuTokusituTokurei_100Sido,
+                    // 特定疾患療養管理料（１００床未満・罹患後症状持続）（特例）
+                    ItemCdConst.IgakuTokusituTokurei_100rakan,
+                    // 救急医療管理加算１（入院調整）（特例）
+                    ItemCdConst.IgakuKyukyuIryoCyosei,
+                    // 特定疾患療養管理料（１００床未満の病院）（特例）（１０月以降）
+                    ItemCdConst.IgakuTokusituTokurei2310,
+                    // 夜間・早朝等加算（特例）（１０月以降）
+                    ItemCdConst.IgakuYasouTokurei2310,
+                    // 看護配置加算（１日につき）（特例）（１０月以降）
+                    ItemCdConst.IgakuKangoTokurei2310,
+                    // 療養情報提供加算（特例）（１０月以降）
+                    ItemCdConst.IgakuRyoyoJyohoTokurei2310,
+                    // 長時間精神科訪問看護・指導加算（緊急）（特例）
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoKinkyu,
+                    // 長時間精神科訪問看護・指導加算（特例）
+                    ItemCdConst.SonotaCyojikanSeisinkaHoumonKangoTokurei,
+                    // 精神疾患の精神療法（特例）
+                    ItemCdConst.SonotaSeisinSikkanTokurei,
+                    //院内トリアージ実施料（在宅）（緊急往診等）（特例）（１０月以降）
+                    ItemCdConst.SonotaTriajiZaitakuTokurei2310,
+                    //院内トリアージ実施料（オンライン）（特例）（１０月以降）
+                    ItemCdConst.SonotaTriajiOnlineTokurei2310,
                     ItemCdConst.Igaku2RuiKansen,
-                    ItemCdConst.Igaku2RuiKansenJyuten,
+                    ItemCdConst.Igaku2RuiKansenJyuten
                  //   // 死亡診断
                  //   ItemCdConst.SiboSindanSyoHoumon,
                  //   ItemCdConst.SiboSindanSyoZaigan,
@@ -2561,9 +2723,19 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiCovGairai,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiGairaiCyuwa,
                     ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiNyuyojiKasan,
-                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanRinjiSyoniKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanKinkyuOusinTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanSisetunaiTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanOnlineTokurei,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiNyuyojiKasan,
+                    ItemCdConst.SonotaKyukyuIryoKanriKasanTokureiSyoniKasan
                 }
                 );
+            // 新型コロナ 抗ウイルス剤に係る特例（別途、薬剤料を算定可）
+            if (_common.sinDate >= KaiseiDate.d20230508)
+            {
+                excludeItemCds.AddRange(ItemCdConst.SARSCov2AntiViralDrugs);
+            }
 
             DelWrkDetail(
                 checkItemCds: checkItemCds,
@@ -2596,12 +2768,19 @@ namespace CalculateService.Ika.ViewModels
                     "F"
                 };
 
+            // 新型コロナ 抗ウイルス剤に係る特例（別途、薬剤料を算定可）
+            List<string> excludeItemCds = new List<string>();
+            if (_common.sinDate >= KaiseiDate.d20230508)
+            {
+                excludeItemCds.AddRange(ItemCdConst.SARSCov2AntiViralDrugs);
+            }
+
             DelWrkDetail(
                 checkItemCds: checkItemCds,
                 delKouis: delKoui,
                 delItemCds: null,
                 delCdKbns: delCdKbn,
-                excludeItemCds: null,
+                excludeItemCds: excludeItemCds,
             //    checkTerm: 2);
                 checkTerm: 3);  // 月末まで？
         }
@@ -2664,7 +2843,7 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.ZaiHoumon2ro,
                 };
 
-            if(_systemConfigProvider.GetHoumonKangoSaisinHokatu() == 0)
+            if (_systemConfigProvider.GetHoumonKangoSaisinHokatu() == 0)
             {
                 checkItemCds.AddRange(
                     new List<string>
@@ -2678,7 +2857,15 @@ namespace CalculateService.Ika.ViewModels
                         // 在宅患者訪問看護・指導料（准看護師）（週４日目以降）
                         ItemCdConst.ZaiHoumonKangoJyunkan4_,
                         // 在宅患者訪問看護･指導料(緩和、褥瘡、人工肛門ケア等専門看護師
-                        ItemCdConst.ZaiHoumonKangoKanwa
+                        ItemCdConst.ZaiHoumonKangoKanwa,
+                        // 在宅患者訪問看護・指導料（保健師等・週３日目まで）（特例）
+                        ItemCdConst.ZaiHoumonKangoHoken_3Tokurei,
+                        // 在宅患者訪問看護・指導料（保健師等・週４日目以降）（特例）
+                        ItemCdConst.ZaiHoumonKangoHoken4_Tokurei,
+                        // 在宅患者訪問看護・指導料（准看護師・週３日目まで）（特例）
+                        ItemCdConst.ZaiHoumonKangoJyunkan_3Tokurei,
+                        // 在宅患者訪問看護・指導料（准看護師・週４日目以降）（特例）
+                        ItemCdConst.ZaiHoumonKangoJyunkan4_Tokurei
                     });
             }
 
@@ -2803,6 +2990,65 @@ namespace CalculateService.Ika.ViewModels
 
         }
 
+        private void Tokusyo()
+        {
+            List<string> Syohoryo = new List<string>
+            {
+                ItemCdConst.TouyakuSyohoSonota, // 処方料（その他）
+                ItemCdConst.TouyakuSyohoKousei, // 処方料（向精神薬多剤投与）
+                ItemCdConst.TouyakuSyohoNaifuku,    // 処方料（７種類以上内服薬）
+                ItemCdConst.TouyakuSyohoKouseiChoki,    // 処方料（向精神薬長期処方）
+            };
+
+            List<string> TokusyoInnai = new List<string>
+            {
+                ItemCdConst.TouyakuTokuSyo1Syoho,        // 特定疾患処方管理加算１（処方料）
+                ItemCdConst.TouyakuTokuSyo2Syoho,     // 特定疾患処方管理加算２（処方料）
+            };
+
+            if (_common.Wrk.ExistWrkSinKouiDetailByItemCd(TokusyoInnai))
+            {
+                // 処方料が算定されているか？
+                if (_common.Wrk.wrkSinKouiDetails.Any(p =>
+                                        p.RaiinNo == _common.raiinNo &&
+                                        _common.Wrk.wrkSinKouiDetailDels.Any(
+                                            d => d.RpNo == p.RpNo &&
+                                            d.SeqNo == p.SeqNo &&
+                                            d.RowNo == p.RowNo &&
+                                            d.IsWarning == 0) == false &&
+                                        checkHokenKbn.Contains(p.HokenKbn) &&
+                                        Syohoryo.Contains(p.ItemCd)) == false)
+                {
+                    // 処方料が算定されていない場合
+
+                    // 削除対象外Rpリスト
+
+                    // 削除対象のレコードを探す
+                    List<WrkSinKouiDetailModel> delWrkDtls =
+                        _common.Wrk.wrkSinKouiDetails.FindAll(p =>
+                            p.RaiinNo == _common.raiinNo &&
+                            p.HokenKbn == _common.hokenKbn &&
+                            TokusyoInnai.Contains(p.ItemCd));
+
+                    // 削除対象の項目リストを生成する
+                    List<DelItemRowInf> delRows = MakeDelRows(delWrkDtls);
+
+                    // ワーク診療行為詳細削除に追加
+                    AppendWrkDtlDel(
+                        delRows: delRows,
+                        excludeRows: new List<(int rpNo, int seqNo, int itemSeqNo)>(),
+                        stdTen: 0,
+                        syotei: false,
+                        delItemCd: ItemCdConst.TouyakuSyohoSonota,
+                        santeiDate: 0,
+                        delSbt: DelSbtConst.NoExistsWarning,
+                        termCnt: 1,
+                        termSbt: 1,
+                        isWarning: 1);
+                }
+            }
+        }
+
         /// <summary>
         /// 外来感染対策向上加算
         /// </summary>
@@ -2814,7 +3060,7 @@ namespace CalculateService.Ika.ViewModels
             // 先に算定されたものだけ残す
             // 同日に算定された場合、初診、再診、医学管理、在宅、精神の優先順位で算定する
             for (int i = 0; i < 5; i++)
-            { 
+            {
                 switch (i)
                 {
                     case 0:
@@ -2832,7 +3078,7 @@ namespace CalculateService.Ika.ViewModels
                         // 精神算定不可
                         delItemCds =
                             new List<string>
-                            { 
+                            {
                                 ItemCdConst.SonotaKansenKojo
                             };
                         break;
@@ -2855,7 +3101,7 @@ namespace CalculateService.Ika.ViewModels
                                 ItemCdConst.ZaitakuKansenKojo
                             };
                         break;
-                    case 2: 
+                    case 2:
                         // 医学管理
                         // 他の項目を削除する項目のリスト
                         checkItemCds =
@@ -3189,6 +3435,7 @@ namespace CalculateService.Ika.ViewModels
                 {
                     ItemCdConst.Syosin,
                     ItemCdConst.SyosinCorona,
+                    ItemCdConst.SyosinTokurei,
                     ItemCdConst.SyosinJouhou,
                     ItemCdConst.IgakuSyouniGairaiSyosinKofuAri,
                     ItemCdConst.IgakuSyouniGairaiSyosinKofuNasi,
@@ -3246,7 +3493,7 @@ namespace CalculateService.Ika.ViewModels
                                 _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(_common.Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo)));
                         foreach (WrkSinKouiDetailModel tgtWrkDtl in tgtWrkDtls)
                         {
-                            if(_common.Wrk.ExistWrkSinKouiDetailDel(tgtWrkDtl) == false)
+                            if (_common.Wrk.ExistWrkSinKouiDetailDel(tgtWrkDtl) == false)
                             {
                                 // 初診関連項目を算定している場合、算定不可
                                 endDate = 99999999;
@@ -3268,7 +3515,7 @@ namespace CalculateService.Ika.ViewModels
                                     isWarning = 1;
                                 }
 
-                                if(isWarning == 0)
+                                if (isWarning == 0)
                                 {
                                     _common.Wrk.AppendNewWrkSinKouiDetailDel
                                     (hokenKbn: wrkDtl.HokenKbn,
@@ -3282,38 +3529,40 @@ namespace CalculateService.Ika.ViewModels
                                         isWarning: isWarning,
                                         termCnt: 1,
                                         termSbt: 1,
+                                        existTermSbt: 1,
                                         isAutoAdd: wrkDtl.IsAutoAdd,
                                         hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
                                     if (ret == 2)
                                     {
-                                        //// 削除される項目が削除していた項目があれば、削除しておく
-                                        foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog))
-                                        {
-                                            foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                            {
-                                                if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                    p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
-                                                    !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                                {
-                                                    dtl.IsDeleted = 0;
+                                        // 削除される項目が削除していた項目があれば、削除しておく
+                                        RevertWrkDtlDel(wrkDtl.ItemCd, new int[] { 1, 6 });
+                                        //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog))
+                                        //{
+                                        //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                        //    {
+                                        //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                        //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
+                                        //            !(p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                        //        {
+                                        //            dtl.IsDeleted = 0;
 
-                                                    foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                    {
-                                                        koui.IsDeleted = 0;
-                                                    }
-                                                    foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                    {
-                                                        rp.IsDeleted = 0;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog);
+                                        //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                        //            {
+                                        //                koui.IsDeleted = 0;
+                                        //            }
+                                        //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                        //            {
+                                        //                rp.IsDeleted = 0;
+                                        //            }
+                                        //        }
+                                        //    }
+                                        //}
+                                        //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtl.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog);
                                     }
                                 }
                             }
-                        }                        
+                        }
                     }
                 }
             }
@@ -3327,7 +3576,9 @@ namespace CalculateService.Ika.ViewModels
                     _common.Wrk.wrkSinKouiDetails.FindAll(p =>
                         p.RaiinNo == _common.raiinNo &&
                         p.HokenKbn == _common.hokenKbn &&
-                        (p.TenMst != null && new string[] { "ZZ0", "ZZ1", "A18" }.Contains(p.TenMst.SyukeiSaki)));
+                        (p.TenMst != null &&
+                            (new string[] { "ZZ0", "ZZ1" }.Contains(p.TenMst.SyukeiSaki) ||
+                            (p.TenMst.SyukeiSaki == "A18" && string.IsNullOrEmpty(p.ItemCd) == false && p.ItemCd.StartsWith("S")))));
 
                 // 削除対象の項目リストを生成する
                 List<DelItemRowInf> delRows = MakeDelRows(delWrkDtls);
@@ -3355,6 +3606,7 @@ namespace CalculateService.Ika.ViewModels
                             isWarning: 0,
                             termCnt: 0,
                             termSbt: 0,
+                            existTermSbt: 0,
                             isAutoAdd: delRow.isAutoAdd,
                             hokenId: _common.Wrk.GetWrkKouiHokenId(delRow.rpNo, delRow.seqNo));
                     }
@@ -3485,7 +3737,7 @@ namespace CalculateService.Ika.ViewModels
                             santeiKbns.RemoveAll(p => p == SanteiKbnConst.Jihi);
                         }
                     }
-                    
+
                     //if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                     //         p.RaiinNo == wrkDtl.RaiinNo &&
                     //         p.RpNo == wrkDtl.RpNo &&
@@ -3537,7 +3789,7 @@ namespace CalculateService.Ika.ViewModels
                                 santeiKbns.AddRange(CalcUtils.GetCheckSanteiKbns(wrkDtl.HokenKbn, _systemConfigProvider.GetHokensyuHandling()));
                                 santeiKbns.RemoveAll(p => p == SanteiKbnConst.Jihi);
                             }
-                            
+
                             if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                      p.RpNo == wrkDtl.RpNo && p.SeqNo == wrkDtl.SeqNo && p.RowNo == wrkDtl.RowNo &&
                                      p.ItemCd == wrkDtl.ItemCd && p.IsWarning == 0) == false)
@@ -3591,7 +3843,7 @@ namespace CalculateService.Ika.ViewModels
                     // 同月チェック
                     //List<SanteiDaysModel> santeiDays = _common.GetSanteiDays(_common.SinFirstDateOfMonth, _common.sinDate, checkItemCds);
                     List<SanteiDaysModel> santeiDays = _common.GetSanteiDaysSinYmWithHokenKbn(checkItemCds);
-                    
+
                     if (checkTerm == 1)
                     {
                         // 診療日のみ
@@ -4324,6 +4576,7 @@ namespace CalculateService.Ika.ViewModels
                                                  isWarning: 0,
                                                  termCnt: 1,
                                                  termSbt: 1,
+                                                 existTermSbt: 1,
                                                  isAutoAdd: wrkDtl.IsAutoAdd,
                                                  hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
                     }
@@ -4357,6 +4610,7 @@ namespace CalculateService.Ika.ViewModels
                                                      isWarning: 0,
                                                      termCnt: 1,
                                                      termSbt: 1,
+                                                     existTermSbt: 1,
                                                      isAutoAdd: wrkDtl.IsAutoAdd,
                                                      hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
                         }
@@ -4506,7 +4760,7 @@ namespace CalculateService.Ika.ViewModels
                             {
                                 // 薬剤を除く指定の時、薬剤項目は除く
                             }
-                            else if (excludeTokuzai && (chkWrkDtl != null && chkWrkDtl.MasterSbt == "T"))
+                            else if (excludeTokuzai && (chkWrkDtl != null && chkWrkDtl.IsTokuzai))
                             {
                                 // 特材を除く指定の時、特材項目は除く
                             }
@@ -4538,34 +4792,36 @@ namespace CalculateService.Ika.ViewModels
                                     isWarning: isWarning,
                                     termCnt: termCnt,
                                     termSbt: termSbt,
+                                    existTermSbt: termSbt,
                                     isAutoAdd: delRow.isAutoAdd,
                                     hokenId: _common.Wrk.GetWrkKouiHokenId(delRow.rpNo, delRow.seqNo));
 
                                 if (isWarning == 0)
                                 {
-                                    //// 削除される項目が削除していた項目があれば、削除しておく
-                                    foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == delRow.itemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog))
-                                    {
-                                        foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                        {
-                                            if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                                p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
-                                                !(p.DelItemCd == delRow.itemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog)) == false)
-                                            {
-                                                dtl.IsDeleted = 0;
+                                    // 削除される項目が削除していた項目があれば、削除しておく
+                                    RevertWrkDtlDel(delRow.itemCd, new int[] { 1, 6 });
+                                    //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => p.DelItemCd == delRow.itemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog))
+                                    //{
+                                    //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                    //    {
+                                    //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                    //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
+                                    //            !(p.DelItemCd == delRow.itemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                    //        {
+                                    //            dtl.IsDeleted = 0;
 
-                                                foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                {
-                                                    koui.IsDeleted = 0;
-                                                }
-                                                foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
-                                                {
-                                                    rp.IsDeleted = 0;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == delRow.itemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog);
+                                    //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                    //            {
+                                    //                koui.IsDeleted = 0;
+                                    //            }
+                                    //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                    //            {
+                                    //                rp.IsDeleted = 0;
+                                    //            }
+                                    //        }
+                                    //    }
+                                    //}
+                                    //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == delRow.itemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6) && p.DelSbt != DelSbtConst.NoLog);
                                 }
                             }
                         }
@@ -4633,9 +4889,24 @@ namespace CalculateService.Ika.ViewModels
                             p.RpNo == wrkDtl.RpNo &&
                             p.SeqNo == wrkDtl.SeqNo &&
                             p.RowNo == wrkDtl.RowNo &&
-                            p.IsWarning == 0))
+                            p.IsWarning == 0 &&
+                            p.IsDeleted == DeleteStatus.None))
                 {
                     wrkDtl.IsDeleted = DeleteStatus.DeleteFlag;
+
+                    if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                            p.RaiinNo == wrkDtl.RaiinNo &&
+                            p.HokenKbn == wrkDtl.HokenKbn &&
+                            p.RpNo == wrkDtl.RpNo &&
+                            p.SeqNo == wrkDtl.SeqNo &&
+                            p.RowNo == wrkDtl.RowNo &&
+                            p.IsWarning == 0 &&
+                            p.IsDeleted == DeleteStatus.None &&
+                            p.IsEFIgaku() == false) == false)
+                    {
+                        // 対象医学管理等の項目以外の項目が存在しない（対象医学管理等の項目のみ）
+                        wrkDtl.EfFlg = 1;
+                    }
 
                     // 特定の注コードを持つ基本項目が削除される場合、別Rpの同一注コードを持つ項目も削除
                     List<string> delTyuCds = new List<string>
@@ -4726,9 +4997,42 @@ namespace CalculateService.Ika.ViewModels
                                 isWarning: 0,
                                 termCnt: 0,
                                 termSbt: 0,
+                                existTermSbt: 0,
                                 isAutoAdd: wrkDtlGrpItem.IsAutoAdd,
                                 hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtlGrpItem.RpNo, wrkDtlGrpItem.SeqNo)
                                 );
+
+                                // 削除される項目が削除していた項目があれば、削除しておく
+                                RevertWrkDtlDel(wrkDtlGrpItem.ItemCd, new int[] { 1, 6 }, new int[] { 1 });
+                                //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p =>
+                                //    p.DelItemCd == wrkDtlGrpItem.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6 || p.ExistTermSbt == 1) && p.DelSbt != DelSbtConst.NoLog))
+                                //{
+                                //    foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p =>
+                                //        p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                //    {
+                                //        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                //            p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
+                                //            !(p.DelItemCd == wrkDtlGrpItem.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6 || p.ExistTermSbt == 1) && p.DelSbt != DelSbtConst.NoLog)) == false)
+                                //        {
+                                //            dtl.IsDeleted = 0;
+
+                                //            foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                //            {
+                                //                koui.IsDeleted = 0;
+                                //            }
+                                //            foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                                //            {
+                                //                rp.IsDeleted = 0;
+                                //            }
+                                //        }
+                                //    }
+                                //}
+                                //_common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => p.DelItemCd == wrkDtlGrpItem.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6 || p.ExistTermSbt == 1) && p.DelSbt != DelSbtConst.NoLog);
+                                //foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p =>
+                                //    p.DelItemCd == wrkDtlGrpItem.ItemCd && p.TermCnt == 1 && (p.TermSbt == 1 || p.TermSbt == 6 || p.ExistTermSbt == 1) && p.DelSbt != DelSbtConst.NoLog))
+                                //{
+                                //    del.IsDeleted = DeleteStatus.DeleteFlag;
+                                //}
                             }
                         }
                     }
@@ -4754,6 +5058,9 @@ namespace CalculateService.Ika.ViewModels
                         {
                             wrkDtlGrpItem.IsDeleted = DeleteStatus.DeleteFlag;
 
+                            // 元の項目が医学管理等の項目のみに削除される場合は付随する項目も同様とみなす
+                            wrkDtlGrpItem.EfFlg = wrkDtl.EfFlg;
+
                             if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                         p.RpNo == wrkDtlGrpItem.RpNo && p.SeqNo == wrkDtlGrpItem.SeqNo && p.RowNo == wrkDtlGrpItem.RowNo &&
                                         p.ItemCd == wrkDtlGrpItem.ItemCd && p.IsWarning == 0))
@@ -4774,6 +5081,7 @@ namespace CalculateService.Ika.ViewModels
                                 isWarning: 0,
                                 termCnt: 0,
                                 termSbt: 0,
+                                existTermSbt: 0,
                                 isAutoAdd: wrkDtlGrpItem.IsAutoAdd,
                                 hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtlGrpItem.RpNo, wrkDtlGrpItem.SeqNo)
                                 );
@@ -4801,6 +5109,9 @@ namespace CalculateService.Ika.ViewModels
                                     {
                                         wrkDtlGrpItem.IsDeleted = DeleteStatus.DeleteFlag;
 
+                                        // 元の項目が医学管理等の項目のみに削除される場合は付随する項目も同様とみなす
+                                        wrkDtlGrpItem.EfFlg = wrkDtl.EfFlg;
+
                                         if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                                     p.RpNo == wrkDtlGrpItem.RpNo && p.SeqNo == wrkDtlGrpItem.SeqNo && p.RowNo == wrkDtlGrpItem.RowNo &&
                                                     p.ItemCd == wrkDtlGrpItem.ItemCd && p.IsWarning == 0))
@@ -4821,6 +5132,7 @@ namespace CalculateService.Ika.ViewModels
                                             isWarning: 0,
                                             termCnt: 0,
                                             termSbt: 0,
+                                            existTermSbt: 0,
                                             isAutoAdd: wrkDtlGrpItem.IsAutoAdd,
                                             hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtlGrpItem.RpNo, wrkDtlGrpItem.SeqNo)
                                             );
@@ -4851,6 +5163,9 @@ namespace CalculateService.Ika.ViewModels
                                     {
                                         wrkDtlGrpItem.IsDeleted = DeleteStatus.DeleteFlag;
 
+                                        // 元の項目が医学管理等の項目のみに削除される場合は付随する項目も同様とみなす
+                                        wrkDtlGrpItem.EfFlg = wrkDtl.EfFlg;
+
                                         if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                                     p.RpNo == wrkDtlGrpItem.RpNo && p.SeqNo == wrkDtlGrpItem.SeqNo && p.RowNo == wrkDtlGrpItem.RowNo &&
                                                     p.ItemCd == wrkDtlGrpItem.ItemCd && p.IsWarning == 0))
@@ -4871,6 +5186,7 @@ namespace CalculateService.Ika.ViewModels
                                                 isWarning: 0,
                                                 termCnt: 0,
                                                 termSbt: 0,
+                                                existTermSbt: 0,
                                                 isAutoAdd: wrkDtlGrpItem.IsAutoAdd,
                                                 hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtlGrpItem.RpNo, wrkDtlGrpItem.SeqNo)
                                                 );
@@ -4901,6 +5217,19 @@ namespace CalculateService.Ika.ViewModels
                         wrkDtl.IsDeleted = DeleteStatus.DeleteFlag;
 
                         if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                p.RaiinNo == wrkDtl.RaiinNo &&
+                                p.HokenKbn == wrkDtl.HokenKbn &&
+                                p.RpNo == wrkDtl.RpNo &&
+                                p.SeqNo == wrkDtl.BaseSeqNo &&
+                                p.ItemCd == wrkDtl.BaseItemCd &&
+                                p.IsDeleted == DeleteStatus.None &&
+                                p.IsEFIgaku() == false) == false)
+                        {
+                            // 対象医学管理等の項目以外の項目が存在しない（対象医学管理等の項目のみ）
+                            wrkDtl.EfFlg = 1;
+                        }
+
+                        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                 p.RpNo == wrkDtl.RpNo && p.SeqNo == wrkDtl.SeqNo && p.RowNo == wrkDtl.RowNo &&
                                 p.ItemCd == wrkDtl.ItemCd && p.IsWarning == 0))
                         {
@@ -4920,6 +5249,7 @@ namespace CalculateService.Ika.ViewModels
                                 isWarning: 0,
                                 termCnt: 0,
                                 termSbt: 0,
+                                existTermSbt: 0,
                                 isAutoAdd: wrkDtl.IsAutoAdd,
                                 hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo)
                             );
@@ -4942,6 +5272,19 @@ namespace CalculateService.Ika.ViewModels
                         wrkDtl.IsDeleted = DeleteStatus.DeleteFlag;
 
                         if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                p.RaiinNo == wrkDtl.RaiinNo &&
+                                p.HokenKbn == wrkDtl.HokenKbn &&
+                                p.RpNo == wrkDtl.RpNo &&
+                                p.SeqNo == wrkDtl.SeqNo &&
+                                p.ItemCd == wrkDtl.BaseItemCd &&
+                                p.IsDeleted == DeleteStatus.None &&
+                                p.IsEFIgaku() == false) == false)
+                        {
+                            // 対象医学管理等の項目以外の項目が存在しない（対象医学管理等の項目のみ）
+                            wrkDtl.EfFlg = 1;
+                        }
+
+                        if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                 p.RpNo == wrkDtl.RpNo && p.SeqNo == wrkDtl.SeqNo && p.RowNo == wrkDtl.RowNo &&
                                 p.ItemCd == wrkDtl.ItemCd && p.IsWarning == 0))
                         {
@@ -4961,6 +5304,7 @@ namespace CalculateService.Ika.ViewModels
                                 isWarning: 0,
                                 termCnt: 0,
                                 termSbt: 0,
+                                existTermSbt: 0,
                                 isAutoAdd: wrkDtl.IsAutoAdd,
                                 hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo)
                             );
@@ -5002,6 +5346,7 @@ namespace CalculateService.Ika.ViewModels
                             isWarning: 0,
                             termCnt: 0,
                             termSbt: 0,
+                            existTermSbt: 0,
                             isAutoAdd: wrkDtl.IsAutoAdd,
                             hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo));
 
@@ -5009,6 +5354,79 @@ namespace CalculateService.Ika.ViewModels
                 }
             }
             #endregion
+
+            foreach (WrkSinRpInfModel wrkRp in _common.Wrk.wrkSinRpInfs.FindAll(p => p.IsDeleted == DeleteStatus.None))
+            {
+                if (_common.Wrk.wrkSinKouiDetails.Any(p =>
+                        p.RaiinNo == wrkRp.RaiinNo &&
+                        p.HokenKbn == wrkRp.HokenKbn &&
+                        p.RpNo == wrkRp.RpNo &&
+                        p.EfFlg == 1))
+                {
+                    if (_common.Wrk.wrkSinKouiDetails.Any(p =>
+                        p.RaiinNo == wrkRp.RaiinNo &&
+                        p.HokenKbn == wrkRp.HokenKbn &&
+                        p.RpNo == wrkRp.RpNo &&
+                        p.EfFlg == 0))
+                    {
+                        // このRpの中にEfFlg=0と1のWrkSinKouiDetailが混在する
+                        // EfFlg = 0とEfFlg = 1を分ける
+
+                        _common.Wrk.AppendWrkSinRpInf(_common.Wrk.CopyWrkSinRpInf(wrkRp));
+                        _common.Wrk.wrkSinRpInfs.Last().EfFlg = 1;
+                        _common.Wrk.wrkSinRpInfs.Last().IsDeleted = 1;
+
+                        foreach (WrkSinKouiModel wrkKoui in _common.Wrk.wrkSinKouis.FindAll(p =>
+                            p.RaiinNo == wrkRp.RaiinNo &&
+                            p.HokenKbn == wrkRp.HokenKbn &&
+                            p.RpNo == wrkRp.RpNo &&
+                            p.IsDeleted == DeleteStatus.None))
+                        {
+                            if (_common.Wrk.wrkSinKouiDetails.Any(p =>
+                                    p.RaiinNo == wrkKoui.RaiinNo &&
+                                    p.HokenKbn == wrkKoui.HokenKbn &&
+                                    p.RpNo == wrkKoui.RpNo &&
+                                    p.SeqNo == wrkKoui.SeqNo &&
+                                    p.IsDeleted == DeleteStatus.DeleteFlag &&
+                                    p.EfFlg == 1))
+                            {
+                                _common.Wrk.AppendWrkSinKoui(_common.Wrk.CopyWrkSinKoui(wrkKoui));
+                                _common.Wrk.wrkSinKouis.Last().EfFlg = 1;
+                                _common.Wrk.wrkSinKouis.Last().IsDeleted = 1;
+
+                                foreach (WrkSinKouiDetailModel wrkDtl in _common.Wrk.wrkSinKouiDetails.FindAll(p =>
+                                    p.RaiinNo == wrkKoui.RaiinNo &&
+                                    p.HokenKbn == wrkKoui.HokenKbn &&
+                                    p.RpNo == wrkKoui.RpNo &&
+                                    p.SeqNo == wrkKoui.SeqNo &&
+                                    p.IsDeleted == DeleteStatus.DeleteFlag &&
+                                    p.EfFlg == 1))
+                                {
+                                    _common.Wrk.AppendWrkSinKouiDetail(_common.Wrk.CopyWrkSinKouiDetail(wrkDtl));
+                                    wrkDtl.IsDeleted = 1;
+                                    wrkDtl.EfFlg = 0;
+                                }
+                            }
+                        }
+
+                        _common.Wrk.CommitWrkSinRpInf();
+                    }
+                    else
+                    {
+                        wrkRp.EfFlg = 1;
+                        wrkRp.IsDeleted = 1;
+
+                        foreach (WrkSinKouiModel wrkKoui in _common.Wrk.wrkSinKouis.FindAll(p =>
+                            p.RaiinNo == wrkRp.RaiinNo &&
+                            p.HokenKbn == wrkRp.HokenKbn &&
+                            p.RpNo == wrkRp.RpNo))
+                        {
+                            wrkKoui.EfFlg = 1;
+                            wrkKoui.IsDeleted = 1;
+                        }
+                    }
+                }
+            }
 
             // KOUIの削除
             foreach (WrkSinKouiModel wrkKoui in _common.Wrk.wrkSinKouis.FindAll(p => p.IsDeleted == DeleteStatus.None))
@@ -5027,11 +5445,11 @@ namespace CalculateService.Ika.ViewModels
                             p.HokenKbn == wrkKoui.HokenKbn &&
                             p.RpNo == wrkKoui.RpNo &&
                             p.SeqNo == wrkKoui.SeqNo &&
-                            p.IsDeleted == DeleteStatus.None);
+                            (p.IsDeleted == DeleteStatus.None || p.EfFlg == 1));
 
                     if (wrkDtls.Any() == false)
                     {
-                        // 削除されていない項目が存在しない場合、行為を削除
+                        // 削除されていない項目、またはEF医学管理等の項目のみに削除される項目が存在しない場合、行為を削除
                         wrkKoui.IsDeleted = DeleteStatus.DeleteFlag;
                     }
                     else
@@ -5050,50 +5468,81 @@ namespace CalculateService.Ika.ViewModels
                                 p.RecId != "CO" &&
                                 !(p.RecId == "SI" && new string[] { "7", "9" }.Contains(p.Kokuji1)) &&
                                 p.BuiKbn == 0 &&
-                                p.IsDeleted == DeleteStatus.None) == false                            
+                                p.IsDeleted == DeleteStatus.None) == false
                            )
                         {
                             // 同一Rpに、コメント以外 and 加算項目以外 and 部位以外 の項目がない
-                            bool kouiDel = true;
-                            for (int i = 0; i < wrkDtls.Count; i++)
-                            {
-                                if(_common.Wrk.GetSyukeiSaki(wrkKoui.RaiinNo, wrkKoui.RpNo, wrkKoui.SeqNo) == ReceSyukeisaki.SonotaSyohoSenComment)
-                                {
-                                    // 処方箋のコメントは残す
-                                    kouiDel = false;
-                                    continue;
-                                }
-                                wrkDtls[i].IsDeleted = DeleteStatus.DeleteFlag;
 
-                                if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
-                                         p.RpNo == wrkDtls[i].RpNo && p.SeqNo == wrkDtls[i].SeqNo && p.RowNo == wrkDtls[i].RowNo &&
-                                         p.ItemCd == wrkDtls[i].ItemCd && p.IsWarning == 0))
-                                {
-                                    // 既にWRK_SIN_KOUI_DETAIL_DELに登録がある場合は登録しない
-                                }
-                                else
-                                {
-                                    _common.Wrk.AppendNewWrkSinKouiDetailDel(
-                                        hokenKbn: wrkDtls[i].HokenKbn,
-                                        rpNo: wrkDtls[i].RpNo,
-                                        seqNo: wrkDtls[i].SeqNo,
-                                        rowNo: wrkDtls[i].RowNo,
-                                        itemCd: wrkDtls[i].ItemCd,
-                                        delItemCd: ItemCdConst.NoSantei,
-                                        santeiDate: 0,
-                                        delSbt: DelSbtConst.Fuzui,
-                                        isWarning: 0,
-                                        termCnt: 0,
-                                        termSbt: 0,
-                                        isAutoAdd: wrkDtls[i].IsAutoAdd,
-                                        hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtls[i].RpNo, wrkDtls[i].SeqNo)
-                                        );
-                                }
-                            }
-
-                            if (kouiDel)
+                            if (
+                                _common.Wrk.wrkSinKouiDetails.Any(p =>
+                                    p.RaiinNo == wrkKoui.RaiinNo &&
+                                    p.HokenKbn == wrkKoui.HokenKbn &&
+                                    p.RpNo == wrkKoui.RpNo &&
+                                    p.RecId != "CO" &&
+                                    !(p.RecId == "SI" && new string[] { "7", "9" }.Contains(p.Kokuji1)) &&
+                                    p.BuiKbn == 0 &&
+                                    p.IsDeleted == DeleteStatus.DeleteFlag) == true
+                               )
                             {
-                                wrkKoui.IsDeleted = DeleteStatus.DeleteFlag;
+                                // 手技が削除されている場合
+
+                                bool kouiDel = true;
+                                for (int i = 0; i < wrkDtls.Count; i++)
+                                {
+                                    if (_common.Wrk.GetSyukeiSaki(wrkKoui.RaiinNo, wrkKoui.RpNo, wrkKoui.SeqNo) == ReceSyukeisaki.SonotaSyohoSenComment)
+                                    {
+                                        // 処方箋のコメントは残す
+                                        kouiDel = false;
+                                        continue;
+                                    }
+                                    wrkDtls[i].IsDeleted = DeleteStatus.DeleteFlag;
+
+                                    if (_common.Wrk.wrkSinKouiDetails.Any(p =>
+                                        p.RaiinNo == wrkKoui.RaiinNo &&
+                                        p.HokenKbn == wrkKoui.HokenKbn &&
+                                        p.RpNo == wrkKoui.RpNo &&
+                                        p.RecId != "CO" &&
+                                        !(p.RecId == "SI" && new string[] { "7", "9" }.Contains(p.Kokuji1)) &&
+                                        p.BuiKbn == 0 &&
+                                        p.IsDeleted == DeleteStatus.DeleteFlag &&
+                                        p.EfFlg == 0) == false)
+                                    {
+                                        // 削除された手技がEF医学管理等の項目のみに削除されている場合は、同様とみなす
+                                        wrkDtls[i].EfFlg = 1;
+                                        kouiDel = false;
+                                    }
+
+                                    if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                                             p.RpNo == wrkDtls[i].RpNo && p.SeqNo == wrkDtls[i].SeqNo && p.RowNo == wrkDtls[i].RowNo &&
+                                             p.ItemCd == wrkDtls[i].ItemCd && p.IsWarning == 0))
+                                    {
+                                        // 既にWRK_SIN_KOUI_DETAIL_DELに登録がある場合は登録しない
+                                    }
+                                    else
+                                    {
+                                        _common.Wrk.AppendNewWrkSinKouiDetailDel(
+                                            hokenKbn: wrkDtls[i].HokenKbn,
+                                            rpNo: wrkDtls[i].RpNo,
+                                            seqNo: wrkDtls[i].SeqNo,
+                                            rowNo: wrkDtls[i].RowNo,
+                                            itemCd: wrkDtls[i].ItemCd,
+                                            delItemCd: ItemCdConst.NoSantei,
+                                            santeiDate: 0,
+                                            delSbt: DelSbtConst.Fuzui,
+                                            isWarning: 0,
+                                            termCnt: 0,
+                                            termSbt: 0,
+                                            existTermSbt: 0,
+                                            isAutoAdd: wrkDtls[i].IsAutoAdd,
+                                            hokenId: _common.Wrk.GetWrkKouiHokenId(wrkDtls[i].RpNo, wrkDtls[i].SeqNo)
+                                            );
+                                    }
+                                }
+
+                                if (kouiDel)
+                                {
+                                    wrkKoui.IsDeleted = DeleteStatus.DeleteFlag;
+                                }
                             }
                         }
                     }
@@ -5206,7 +5655,7 @@ namespace CalculateService.Ika.ViewModels
                                 p.RaiinNo == wrkRp.RaiinNo &&
                                 p.HokenKbn == wrkRp.HokenKbn &&
                                 p.RpNo == wrkRp.RpNo &&
-                                p.IsDeleted == DeleteStatus.None);
+                                (p.IsDeleted == DeleteStatus.None || p.EfFlg == 1));
 
                         if (wrkDtls.Any() == false)
                         {
@@ -5306,7 +5755,7 @@ namespace CalculateService.Ika.ViewModels
                 if (_systemConfigProvider.GetHoukatuHaihanSPJyokenLogputMode() == 0)
                 {
                     wrkDtlDells =
-                        wrkDtlDells.FindAll(p => !(new int[] { 0, 1, 2, 4 }.Contains(p.DelSbt) && (new int[] { 1,3 }.Contains(p.IsWarning))));
+                        wrkDtlDells.FindAll(p => !(new int[] { 0, 1, 2, 4 }.Contains(p.DelSbt) && (new int[] { 1, 3 }.Contains(p.IsWarning))));
                 }
 
                 List<(string itemCd, string delItemcd, int delSbt, int isWarning, int termCnt, int termSbt, int isAutoAdd, int hokenId, List<string> delItemCds)> logData =
@@ -5793,18 +6242,18 @@ namespace CalculateService.Ika.ViewModels
             }
         }
 
-        private void Marume()
+        private void Marume(int hpId)
         {
             if (_common.hokenKbn == HokenSyu.Kenpo && _common.syosaiHokenKbn == HokenKbn.Kokho)
             {
                 // 国保
                 if (_systemConfigProvider.GetKensaMarumeBuntenKokuho() == 1)
                 {
-                    MarumeBuntenDevide();
+                    MarumeBuntenDevide(hpId);
                 }
                 else
                 {
-                    MarumeBuntenBundle();
+                    MarumeBuntenBundle(hpId);
                 }
             }
             else
@@ -5812,19 +6261,21 @@ namespace CalculateService.Ika.ViewModels
                 // 国保以外
                 if (_systemConfigProvider.GetKensaMarumeBuntenSyaho() == 1)
                 {
-                    MarumeBuntenDevide();
+                    MarumeBuntenDevide(hpId);
                 }
                 else
                 {
-                    MarumeBuntenBundle();
+                    MarumeBuntenBundle(hpId);
                 }
             }
         }
+
         /// <summary>
         /// 項目数による検査まるめ処理
         /// HOKATU_KENSA が 1,2,3,5,6,7,9,10,12 のもの
         /// </summary>
-        private void MarumeBuntenBundle()
+        /// <param name="hpId">HospitalID</param>
+        private void MarumeBuntenBundle(int hpId)
         {
             #region local method
             // base - minusをして、<0の場合は0を返す
@@ -5999,16 +6450,18 @@ namespace CalculateService.Ika.ViewModels
 
                     if (marume)
                     {
-                        _common.Wrk.InsertNewWrkSinKouiDetailCommentRecord(commentRpNo, commentSeqNo, ItemCdConst.CommentFree, "（" + CIUtil.ToWide(totalCount.ToString()) + "項目）", fmtKbn: 0);
+                        _common.Wrk.InsertNewWrkSinKouiDetailCommentRecord(hpId, commentRpNo, commentSeqNo, ItemCdConst.CommentFree, "（" + CIUtil.ToWide(totalCount.ToString()) + "項目）", fmtKbn: 0);
                     }
                 }
             }
         }
+
         /// <summary>
         /// 項目数による検査まるめ処理
         /// HOKATU_KENSA が 1,2,3,5,6,7,9,10,12 のもの
         /// </summary>
-        private void MarumeBuntenDevide()
+        /// <param name="hpId">HospitalID</param>
+        private void MarumeBuntenDevide(int hpId)
         {
             // まるめ検査項目取得
             List<(List<OdrDtlTenModel> odrDtls, int minIndex, int itemCnt)> marumels = new List<(List<OdrDtlTenModel>, int, int)>();
@@ -6076,7 +6529,7 @@ namespace CalculateService.Ika.ViewModels
                         }
 
                         _common.Wrk.InsertNewWrkSinKouiDetail(wrkKoui.RpNo, wrkKoui.SeqNo, itemCd, autoAdd: 1, isNodspRece: 1, isNodspRyosyu: 1);
-                        _common.Wrk.InsertNewWrkSinKouiDetailCommentRecord(wrkKoui.RpNo, wrkKoui.SeqNo, ItemCdConst.CommentFree, "（" + CIUtil.ToWide(findCount.ToString()) + "項目）", fmtKbn: 1);
+                        _common.Wrk.InsertNewWrkSinKouiDetailCommentRecord(hpId, wrkKoui.RpNo, wrkKoui.SeqNo, ItemCdConst.CommentFree, "（" + CIUtil.ToWide(findCount.ToString()) + "項目）", fmtKbn: 1);
                     }
 
                 }
@@ -6287,8 +6740,85 @@ namespace CalculateService.Ika.ViewModels
             }
 
             delDojituComment(new List<string> { ItemCdConst.CommentSaisinDojitu }, new List<string> { ItemCdConst.SaisinDojitu, ItemCdConst.SaisinDojituRousai });
-            delDojituComment(new List<string> { ItemCdConst.CommentDenwaSaisin }, new List<string> { ItemCdConst.SaisinDenwa, ItemCdConst.SaisinDenwa2, ItemCdConst.SaisinDenwaRousai, ItemCdConst.SaisinDenwa2Rousai });
+            delDojituComment(new List<string> { ItemCdConst.CommentDenwaSaisin }, new List<string> { ItemCdConst.SaisinDenwa, ItemCdConst.SaisinDenwa2, ItemCdConst.SaisinDenwaRousai, ItemCdConst.SaisinDenwa2Rousai, ItemCdConst.SaisinDenwaKeizoku, ItemCdConst.SaisinDenwaTokurei });
             delDojituComment(new List<string> { ItemCdConst.CommentDenwaSaisinDojitu }, new List<string> { ItemCdConst.SaisinDenwaDojitu, ItemCdConst.SaisinDenwaDojituRousai });
+        }
+
+        private void NaifukuTazai()
+        {
+            // 地域包括診療料
+            List<string> TiikiHoukatuls =
+                new List<string>
+                {
+                ItemCdConst.IgakuTiikiHoukatu1,
+                ItemCdConst.IgakuTiikiHoukatu2,
+                };
+            // 地域包括診療加算
+            List<string> TiikiHoukatuKasanls =
+                new List<string>
+                {
+                ItemCdConst.SaisinTiikiHoukatu1,
+                ItemCdConst.SaisinTiikiHoukatu2,
+                };
+            /// <summary>
+            /// 内服多剤の項目リスト
+            /// </summary>
+
+            if (_common.Wrk.wrkSinKouiDetails.FindAll(p =>
+                    p.RaiinNo == _common.raiinNo &&
+                    p.HokenKbn == _common.hokenKbn &&
+                    (TiikiHoukatuKasanls.Contains(p.ItemCd) || TiikiHoukatuls.Contains(p.ItemCd)) &&
+                    p.IsDeleted == DeleteStatus.None).Any())
+            {
+                List<(string, string)> ReplaceItems = new List<(string, string)>
+                {
+                    ( ItemCdConst.TouyakuSyohoNaifuku, ItemCdConst.TouyakuSyohoSonota),
+                    ( ItemCdConst.TouyakuSyohosenNaifukuKouseiRefill, ItemCdConst.TouyakuSyohosenSonotaRefill ),
+                    ( ItemCdConst.TouyakuSyohosenNaifukuKousei, ItemCdConst.TouyakuSyohosenSonota)
+                };
+
+                foreach ((string targetItem, string repItem) in ReplaceItems)
+                {
+
+                    List<WrkSinKouiDetailModel> wrkDtls =
+                        _common.Wrk.wrkSinKouiDetails.FindAll(p =>
+                            p.RaiinNo == _common.raiinNo &&
+                            p.HokenKbn == _common.hokenKbn &&
+                            p.ItemCd == targetItem &&
+                            p.IsAutoAdd == 1 &&
+                            p.IsDeleted == DeleteStatus.None);
+
+                    foreach (WrkSinKouiDetailModel wrkDtl in wrkDtls)
+                    {
+                        wrkDtl.IsDeleted = DeleteStatus.DeleteFlag;
+                        _common.Wrk.InsertNewWrkSinKouiDetail(wrkDtl.RpNo, wrkDtl.SeqNo, repItem, autoAdd: 1);
+                    }
+                }
+
+                List<string> delItems = new List<string>
+                {
+                    ItemCdConst.TouyakuTeigenNaifuku,
+                    ItemCdConst.TouyakuYakuGenNaifuku
+                };
+
+                foreach (string delItem in delItems)
+                {
+
+                    List<WrkSinKouiDetailModel> wrkDtls =
+                        _common.Wrk.wrkSinKouiDetails.FindAll(p =>
+                            p.RaiinNo == _common.raiinNo &&
+                            p.HokenKbn == _common.hokenKbn &&
+                            p.ItemCd == delItem &&
+                            p.IsAutoAdd == 1 &&
+                            p.IsDeleted == DeleteStatus.None);
+
+                    foreach (WrkSinKouiDetailModel wrkDtl in wrkDtls)
+                    {
+                        wrkDtl.IsDeleted = DeleteStatus.DeleteFlag;
+                    }
+                }
+
+            }
         }
 
         /// <summary>
@@ -6317,7 +6847,9 @@ namespace CalculateService.Ika.ViewModels
                 {
                     bool santei = false;
 
-                    if (_common.calcMode == CalcModeConst.Trial || _common.Wrk.ExistWrkSinKouiDetailByItemCdRpNo(rosaiDensikals, wrkDtl.RpNo, false) == false)
+                    if (_common.calcMode == CalcModeConst.Trial ||
+                        _common.Wrk.ExistWrkSinKouiDetailByItemCdRpNo(
+                            rosaiDensikals, wrkDtl.RpNo, false, true, false, null, null, _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo)) == false)
                     {
 
                         foreach (WrkSinRpInfModel wrkRp in _common.Wrk.wrkSinRpInfs.FindAll(p =>
@@ -6358,6 +6890,66 @@ namespace CalculateService.Ika.ViewModels
                         wrkDtl.IsDeleted = DeleteStatus.DeleteFlag;
                     }
                 }
+            }
+        }
+        /// <summary>
+        /// 他の項目を削除する項目が削除されることにより、削除されなくなる項目を復活させる
+        /// </summary>
+        /// <param name="delItemCd">削除される項目の診療行為コード</param>
+        /// <param name="termSbt"></param>
+        private void RevertWrkDtlDel(string delItemCd, int[] termSbt, int[] existTermSbt = null)
+        {
+            // 削除される項目が削除していた項目があれば、削除しておく
+            if (existTermSbt == null)
+            {
+                existTermSbt = new int[] { 0, 1, 2, 3, 4, 5, 6, 9 };
+            }
+
+            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p =>
+                p.DelItemCd == delItemCd && p.TermCnt == 1 && (termSbt.Contains(p.TermSbt) || existTermSbt.Contains(p.ExistTermSbt)) && p.DelSbt != DelSbtConst.NoLog))
+            {
+                foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p =>
+                    p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
+                    p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
+                {
+                    // 削除されていた項目を復旧していく
+
+                    if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                        p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
+                        !(p.DelItemCd == delItemCd && p.TermCnt == 1 && (termSbt.Contains(p.TermSbt) || existTermSbt.Contains(p.ExistTermSbt)) && p.IsDeleted == DeleteStatus.DeleteFlag)) == false)
+                    {
+                        // 自分を削除する項目が無くなる場合、IsDeletedを0に戻す
+                        dtl.IsDeleted = 0;
+                        dtl.EfFlg = 0;
+
+                        // 行為の復旧
+                        foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p =>
+                            p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                        {
+                            koui.IsDeleted = 0;
+                            koui.EfFlg = 0;
+                        }
+
+                        // Rpの復旧
+                        foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p =>
+                            p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
+                        {
+                            rp.IsDeleted = 0;
+                            rp.EfFlg = 0;
+                        }
+                    }
+                }
+            }
+
+            // 他の項目を削除するリストから削除（DelSbtがNoLogのものを除く）
+            _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p =>
+                p.DelItemCd == delItemCd && p.TermCnt == 1 && (termSbt.Contains(p.TermSbt) || existTermSbt.Contains(p.ExistTermSbt)) && p.DelSbt != DelSbtConst.NoLog);
+
+            // 他の項目を削除するリストを更新
+            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p =>
+                p.DelItemCd == delItemCd && p.TermCnt == 1 && (termSbt.Contains(p.TermSbt) || existTermSbt.Contains(p.ExistTermSbt))))
+            {
+                del.IsDeleted = DeleteStatus.DeleteFlag;
             }
         }
     }

@@ -29,7 +29,7 @@ public class UketukeSbtController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList + "Mst")]
     public ActionResult<Response<GetUketukeSbtMstListResponse>> GetListMst()
     {
-        var input = new GetUketukeSbtMstListInputData();
+        var input = new GetUketukeSbtMstListInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetUketukeSbtMstListPresenter();
         presenter.Complete(output);
@@ -39,7 +39,7 @@ public class UketukeSbtController : AuthorizeControllerBase
     [HttpGet(ApiPath.Get + "BySinDate")]
     public ActionResult<Response<GetUketukeSbtMstBySinDateResponse>> GetBySinDate([FromQuery] GetUketukeSbtMstBySinDateRequest req)
     {
-        var input = new GetUketukeSbtMstBySinDateInputData(req.SinDate);
+        var input = new GetUketukeSbtMstBySinDateInputData(HpId, req.SinDate);
         var output = _bus.Handle(input);
         var presenter = new GetUketukeSbtMstBySinDatePresenter();
         presenter.Complete(output);
@@ -49,7 +49,7 @@ public class UketukeSbtController : AuthorizeControllerBase
     [HttpGet(ApiPath.Get + "Next")]
     public ActionResult<Response<GetNextUketukeSbtMstResponse>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
     {
-        var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId, UserId);
+        var input = new GetNextUketukeSbtMstInputData(HpId, req.SinDate, req.CurrentKbnId, UserId);
         var output = _bus.Handle(input);
         var presenter = new GetNextUketukeSbtMstPresenter();
         presenter.Complete(output);

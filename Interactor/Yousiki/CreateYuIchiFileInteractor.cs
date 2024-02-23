@@ -133,8 +133,8 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
                 {
                     if (isCheckedTestPatient || !raiinInf.IsTester)
                     {
-                        writer.WriteLine($"{facilityCode},{raiinInf.PtNum.AsString().PadLeft(10, '0')},{raiinInf.SinDate}" +
-                        $",{HenkanJ.Instance.ToFullsize(Regex.Replace(raiinInf.KanaName, @"\s+", string.Empty))},{raiinInf.Sex},{raiinInf.Birthday.AsString().PadLeft(8, '0')}");
+                        writer.Write($"{facilityCode},{raiinInf.PtNum.AsString().PadLeft(10, '0')},{raiinInf.SinDate}" +
+                        $",{HenkanJ.Instance.ToFullsize(Regex.Replace(raiinInf.KanaName, @"\s+", string.Empty))},{raiinInf.Sex},{raiinInf.Birthday.AsString().PadLeft(8, '0')}\r\n");
                     }
                 }
             }

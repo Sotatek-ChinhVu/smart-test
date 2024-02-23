@@ -18,7 +18,7 @@ public class GetListOnlineConfirmationHistoryModelInteractor : IGetListOnlineCon
     public GetListOnlineConfirmationHistoryModelOutputData Handle(GetListOnlineConfirmationHistoryModelInputData inputData)
     {
         List<OnlineConfirmationHistoryModel> result;
-        if (inputData.PtId > 0 && !inputData.OnlQuaResFileDict.Any() && !inputData.OnlQuaConfirmationTypeDict.Any() && !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (inputData.PtId > 0 && !inputData.OnlQuaResFileDict.Any() && !inputData.OnlQuaConfirmationTypeDict.Any() && !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return new GetListOnlineConfirmationHistoryModelOutputData(new(), GetListOnlineConfirmationHistoryModelStatus.InvalidPtId);
         }

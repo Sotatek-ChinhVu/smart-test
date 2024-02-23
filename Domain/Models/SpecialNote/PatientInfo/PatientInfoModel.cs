@@ -25,7 +25,7 @@ public class PatientInfoModel
         FunctionCd = string.Empty;
     }
 
-    public PatientInfoModel(long ptId, string functionCd, long sinDate, long raiinNo, long oyaRaiinNo, string functionName, long ptNum)
+    public PatientInfoModel(long ptId, string functionCd, int sinDate, long raiinNo, long oyaRaiinNo, string functionName, long ptNum)
     {
         PtId = ptId;
         FunctionCd = functionCd;
@@ -46,7 +46,7 @@ public class PatientInfoModel
 
     public long PtNum { get; private set; }
 
-    public long SinDate { get; private set; }
+    public int SinDate { get; private set; }
 
     public string FunctionCd { get; private set; }
 

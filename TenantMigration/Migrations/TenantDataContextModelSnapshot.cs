@@ -75,6 +75,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Emr.DatabaseEntity.KacodeYousikiMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YousikiKaCd")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
@@ -94,10 +98,6 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
-
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id");
 
                     b.Property<string>("KaName")
                         .IsRequired()
@@ -123,7 +123,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("YousikiKaCd");
+                    b.HasKey("HpId", "YousikiKaCd");
 
                     b.ToTable("kacode_yousiki_mst");
                 });
@@ -8969,6 +8969,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.M38Ingredients", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -8985,11 +8989,7 @@ namespace TenantMigration.Migrations
                         .HasColumnName("sbt")
                         .HasColumnOrder(3);
 
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id");
-
-                    b.HasKey("SeibunCd", "SerialNum", "Sbt");
+                    b.HasKey("HpId", "SeibunCd", "SerialNum", "Sbt");
 
                     b.ToTable("m38_ingredients");
                 });

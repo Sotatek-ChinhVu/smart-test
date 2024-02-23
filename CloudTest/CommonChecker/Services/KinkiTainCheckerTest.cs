@@ -36,13 +36,13 @@ public class KinkiTainCheckerTest : BaseUT
         };
 
         //Setup M01_KINKI
-        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.HpId == hpId && p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
+        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.HpId == hpId && p.ACd == "1190700" && p.BCd == "1179001" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
         var m01Kinki = new M01Kinki();
         if (m01 == null)
         {
             m01Kinki.HpId = hpId;
             m01Kinki.ACd = "1190700";
-            m01Kinki.BCd = "1190700";
+            m01Kinki.BCd = "1179001";
             m01Kinki.CmtCd = "D006";
             m01Kinki.SayokijyoCd = "S2001";
             m01Kinki.KyodoCd = "";
@@ -122,7 +122,7 @@ public class KinkiTainCheckerTest : BaseUT
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //Setup KinkiLevelSetting 
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -132,7 +132,7 @@ public class KinkiTainCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -145,11 +145,11 @@ public class KinkiTainCheckerTest : BaseUT
         }
 
         //Setup M01_KINKI
-        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.HpId == 1 && p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
+        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.HpId == hpId && p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
         var m01Kinki = new M01Kinki();
         if (m01 == null)
         {
-            m01Kinki.HpId = 1;
+            m01Kinki.HpId = hpId;
             m01Kinki.ACd = "1190700";
             m01Kinki.BCd = "1190700";
             m01Kinki.CmtCd = "D006";
@@ -164,7 +164,7 @@ public class KinkiTainCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         int ptId = 1233;
-        var tenMsts = CommonCheckerData.ReadTenMst("T3", "");
+        var tenMsts = CommonCheckerData.ReadTenMst("T3", "", hpId);
         var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
@@ -214,12 +214,12 @@ public class KinkiTainCheckerTest : BaseUT
                                                 RealtimeCheckerType.KinkiTain, odrInfoModel, 20230101, ptId, new(new(), new(), new()), new(), new(), true);
 
         var kinkiTainChecker = new KinkiTainChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiTainChecker.HpID = 999;
+        kinkiTainChecker.HpID = hpId;
         kinkiTainChecker.PtID = 1233;
         kinkiTainChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
+        cache.InitCache(hpId, new List<string>() { "6220816T3" }, 20230505, ptId);
         kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
         try

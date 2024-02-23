@@ -605,7 +605,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     List<DayLimitResultModel>? dayLimitErrorInfo = errorInfo.ErrorInfo as List<DayLimitResultModel>;
                     if (dayLimitErrorInfo != null)
                     {
-                        listErrorInfoModel.AddRange(ProcessDataForDayLimit(dayLimitErrorInfo));
+                        listErrorInfoModel.AddRange(ProcessDataForDayLimit(hpId, dayLimitErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Dosage:
@@ -751,7 +751,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         usageDosageList = usageDosageList.Distinct().ToList();
         itemNameByItemCodeList = itemNameByItemCodeList.Distinct().ToList();
 
-        _itemNameDictionary = itemNameList.Any() ? _realtimeOrderErrorFinder.FindItemNameDic(itemNameList, _sinday) : new();
+        _itemNameDictionary = itemNameList.Any() ? _realtimeOrderErrorFinder.FindItemNameDic(hpId, itemNameList, _sinday) : new();
         _componentNameDictionary = componentNameList.Any() ? _realtimeOrderErrorFinder.FindComponentNameDic(hpId, componentNameList) : new();
         _analogueNameDictionary = analogueNameList.Any() ? _realtimeOrderErrorFinder.FindAnalogueNameDic(hpId, analogueNameList) : new();
         _drvalrgyNameDictionary = drvalrgyNameList.Any() ? _realtimeOrderErrorFinder.FindDrvalrgyNameDic(hpId, drvalrgyNameList) : new();
@@ -764,7 +764,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _supplementComponentInfoDictionary = supplementComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetSupplementComponentInfoDic(hpId, supplementComponentInfoList) : new();
         _suppleItemNameDictionary = suppleItemNameList.Any() ? _realtimeOrderErrorFinder.FindSuppleItemNameDic(hpId, suppleItemNameList) : new();
         _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(hpId, usageDosageList) : new();
-        _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(itemNameByItemCodeList, _sinday) : new();
+        _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(hpId,itemNameByItemCodeList, _sinday) : new();
     }
 
     #endregion
@@ -1464,12 +1464,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDayLimit
-    public List<ErrorInfoModel> ProcessDataForDayLimit(List<DayLimitResultModel> dayLimitError)
+    public List<ErrorInfoModel> ProcessDataForDayLimit(int hpId, List<DayLimitResultModel> dayLimitError)
     {
         List<ErrorInfoModel> result = new();
         foreach (DayLimitResultModel dayLimit in dayLimitError)
         {
-            string itemName = _realtimeOrderErrorFinder.FindItemName(dayLimit.YjCd, _sinday);
+            string itemName = _realtimeOrderErrorFinder.FindItemName(hpId, dayLimit.YjCd, _sinday);
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             errorInfoModel.ErrorType = CommonCheckerType.DayLimitChecker;

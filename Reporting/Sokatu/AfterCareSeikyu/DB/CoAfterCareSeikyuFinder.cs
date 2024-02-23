@@ -2,7 +2,6 @@
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using CalculateService.Constants;
 using Reporting.Sokatu.AfterCareSeikyu.Model;
 using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.Common.Models;
@@ -32,10 +31,10 @@ public class CoAfterCareSeikyuFinder : RepositoryBase, ICoAfterCareSeikyuFinder
     {
         CoSeikyuInfModel seikyuInf = new CoSeikyuInfModel();
 
-        var receInfs = NoTrackingDataContext.ReceInfs;
-        var receStatuses = NoTrackingDataContext.ReceStatuses;
+        var receInfs = NoTrackingDataContext.ReceInfs.Where(x => x.HpId == hpId);
+        var receStatuses = NoTrackingDataContext.ReceStatuses.Where(x => x.HpId == hpId); ;
 
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
 
         var receQuerys = (
             from receInf in receInfs
@@ -89,7 +88,7 @@ public class CoAfterCareSeikyuFinder : RepositoryBase, ICoAfterCareSeikyuFinder
         }
 
         //内訳書添付枚数（1日1枚×患者数）
-        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs;
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId);
 
         seikyuInf.MeisaiCount = (
             from r in receQuerys

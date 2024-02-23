@@ -4,7 +4,7 @@
     {
         public int HpId {  get; set; }
         public int UserId {  get; set; }
-        public int PtId { get; set; }
+        public long PtId { get; set; }
         public int SetId { get; set; } = 0;
         public int IraiDate { get; set; } = 0;
         public int StartDate { get; set; } = 0;

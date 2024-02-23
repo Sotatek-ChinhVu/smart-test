@@ -346,9 +346,9 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public void EntryDeleteHenJiyuu(long ptId, int sinYm, int preHokenId, int userId)
+        public void EntryDeleteHenJiyuu(int hpId, long ptId, int sinYm, int preHokenId, int userId)
         {
-            var henJiyuuList = TrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == Session.HospitalID
+            var henJiyuuList = TrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == hpId
                                                                               && item.PtId == ptId
                                                                               && item.SinYm == sinYm
                                                                               && (item.HokenId == preHokenId || preHokenId == 0)
@@ -456,7 +456,7 @@ namespace Infrastructure.Repositories
 
             foreach (var item in data.Where(x => x.SeqNo != 0 && x.OriginSinYm == x.SinYm))
             {
-                var update = TrackingDataContext.ReceSeikyus.FirstOrDefault(x => x.SeqNo == item.SeqNo);
+                var update = TrackingDataContext.ReceSeikyus.FirstOrDefault(x => x.HpId == hpId && x.SeqNo == item.SeqNo);
                 if (update != null)
                 {
                     if (item.IsDeleted == DeleteTypes.Deleted)

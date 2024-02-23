@@ -21,6 +21,7 @@ namespace EmrCalculateApi.Controllers
         {
             _futanCalculate.FutanCalculation
             (
+                calculateRequest.HpId,
                 calculateRequest.PtId,
                 calculateRequest.SinDate,
                 null, null, null, null,

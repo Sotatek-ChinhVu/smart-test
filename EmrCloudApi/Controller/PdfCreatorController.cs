@@ -98,7 +98,7 @@ public class PdfCreatorController : CookieController
         {
             return Content(NotAuhorize, "text/html");
         }
-        var data = _reportService.GetNameLabelReportingData(request.PtId, request.KanjiName, request.SinDate);
+        var data = _reportService.GetNameLabelReportingData(HpId, request.PtId, request.KanjiName, request.SinDate);
         _reportService.ReleaseResource();
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }

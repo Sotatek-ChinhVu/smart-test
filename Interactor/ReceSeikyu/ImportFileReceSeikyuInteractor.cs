@@ -31,7 +31,7 @@ namespace Interactor.ReceSeikyu
             try
             {
                 string content = ReadAsString(inputData.File);
-                List<string> fileContent = content.Split("\r\n").Where(x=> !string.IsNullOrEmpty(x)).ToList();
+                List<string> fileContent = content.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).ToList();
                 string fileName = inputData.File.FileName;
 
                 var result = new List<ReceSeikyuModel>();
@@ -316,7 +316,7 @@ namespace Interactor.ReceSeikyu
 
         private bool CheckIsValidImportData(int hpId, long ptId, int sinYmFromFile, int birdthdayFromFile)
         {
-            bool isPatientAlreadyCalculateInMonth = _patientInforRepository.GetCountRaiinAlreadyPaidOfPatientByDate(sinYmFromFile * 100 + 1,
+            bool isPatientAlreadyCalculateInMonth = _patientInforRepository.GetCountRaiinAlreadyPaidOfPatientByDate(hpId, sinYmFromFile * 100 + 1,
                                                                                                           sinYmFromFile * 100 + 31, ptId,
                                                                                                           RaiinState.Calculate) > 0;
             bool isValidBirthday = _patientInforRepository.GetPtInf(hpId, ptId)?.Birthday == birdthdayFromFile;
@@ -339,16 +339,16 @@ namespace Interactor.ReceSeikyu
             int preHokenId = _receSeikyuRepository.GetReceSeikyuPreHoken(hpId, ptId, sinYm, hokenId);
 
             // 既存のRECE_SEIKYUレコードを削除する
-            _receSeikyuRepository.DeleteReceSeikyu(hpId ,ptId, sinYm, hokenId);
+            _receSeikyuRepository.DeleteReceSeikyu(hpId, ptId, sinYm, hokenId);
 
             // PRE_HOKEN_IDに紐づくレセ電返戻事由を削除する
             if (hokenId != preHokenId)
             {
-                _receSeikyuRepository.DeleteHenJiyuuRireki(hpId ,ptId, sinYm, hokenId);
+                _receSeikyuRepository.DeleteHenJiyuuRireki(hpId, ptId, sinYm, hokenId);
             }
 
             // RECE_SEIKYUにレコードを追加する
-            _receSeikyuRepository.InsertSingleReceSeikyu(hpId ,ptId, sinYm, hokenId, userId);
+            _receSeikyuRepository.InsertSingleReceSeikyu(hpId, ptId, sinYm, hokenId, userId);
             return true;
         }
 

@@ -90,7 +90,7 @@ namespace Infrastructure.Repositories
                         ptByomei.SeqNo,
                         ptByomei.ByomeiCd ?? string.Empty,
                         ptByomei.SortNo,
-                        SyusyokuCdToList(ptByomei),
+                        SyusyokuCdToList(hpId, ptByomei),
                         byomeiName,
                         ptByomei.StartDate,
                         ptByomei.TenkiKbn,
@@ -196,7 +196,7 @@ namespace Infrastructure.Repositories
                         ptByomei.SeqNo,
                         ptByomei.ByomeiCd ?? string.Empty,
                         ptByomei.SortNo,
-                        SyusyokuCdToList(ptByomei),
+                        SyusyokuCdToList(hpId, ptByomei),
                         byomeiName,
                         ptByomei.StartDate,
                         ptByomei.TenkiKbn,
@@ -240,7 +240,7 @@ namespace Infrastructure.Repositories
             userIdList = userIdList.Distinct().ToList();
 
             var byomeiCdList = ptByomeiList.Select(item => item.ByomeiCd).Distinct().ToList();
-            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(item => byomeiCdList.Contains(item.ByomeiCd)).ToList();
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId && byomeiCdList.Contains(item.ByomeiCd)).ToList();
 
             var userMstList = NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId
                                                                            && userIdList.Contains(item.UserId)
@@ -268,7 +268,7 @@ namespace Infrastructure.Repositories
                         ptByomei.SeqNo,
                         ptByomei.ByomeiCd ?? string.Empty,
                         ptByomei.SortNo,
-                        SyusyokuCdToList(ptByomei),
+                        SyusyokuCdToList(hpId, ptByomei),
                         byomeiName,
                         ptByomei.StartDate,
                         ptByomei.TenkiKbn,
@@ -301,7 +301,7 @@ namespace Infrastructure.Repositories
         public List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId, int sinDate)
         {
             var genarationMst = NoTrackingDataContext.ByomeiSetGenerationMsts
-                                         .Where(p => p.IsDeleted == DeleteTypes.None)
+                                         .Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None)
                                          .OrderByDescending(p => p.StartDate)
                                          .FirstOrDefault(q => q.StartDate <= sinDate);
 
@@ -353,7 +353,7 @@ namespace Infrastructure.Repositories
                                                             ).ToList();
 
             inputDatas = inputDatas.OrderBy(item => item.SortNo).ToList();
-            int maxSortNo = NoTrackingDataContext.PtByomeis.OrderBy(item => item.SortNo).LastOrDefault()?.SortNo ?? 0;
+            int maxSortNo = NoTrackingDataContext.PtByomeis.OrderBy(item => item.SortNo).LastOrDefault(i => i.HpId == hpId)?.SortNo ?? 0;
             var byomeis = new List<PtByomei>();
             foreach (var inputData in inputDatas)
             {
@@ -500,7 +500,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private List<PrefixSuffixModel> SyusyokuCdToList(PtByomei ptByomei)
+        private List<PrefixSuffixModel> SyusyokuCdToList(int hpId, PtByomei ptByomei)
         {
             List<string> codeList = new()
             {
@@ -533,7 +533,7 @@ namespace Infrastructure.Repositories
                 return new List<PrefixSuffixModel>();
             }
 
-            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeList.Contains(b.ByomeiCd)).ToList();
 
             List<PrefixSuffixModel> result = new();
             foreach (var code in codeList)
@@ -606,7 +606,7 @@ namespace Infrastructure.Repositories
                         ptByomei.SeqNo,
                         ptByomei.ByomeiCd ?? string.Empty,
                         ptByomei.SortNo,
-                        SyusyokuCdToList(ptByomei),
+                        SyusyokuCdToList(hpId, ptByomei),
                         ptByomei.Byomei ?? string.Empty,
                         ptByomei.StartDate,
                         ptByomei.TenkiKbn,
@@ -776,7 +776,7 @@ namespace Infrastructure.Repositories
                         ptByomei.SeqNo,
                         ptByomei.ByomeiCd ?? string.Empty,
                         ptByomei.SortNo,
-                        SyusyokuCdToList(ptByomei),
+                        SyusyokuCdToList(hpId, ptByomei),
                         byomeiName,
                         ptByomei.StartDate,
                         ptByomei.TenkiKbn,
@@ -860,7 +860,7 @@ namespace Infrastructure.Repositories
                         ptByomei.SeqNo,
                         ptByomei.ByomeiCd ?? string.Empty,
                         ptByomei.SortNo,
-                        SyusyokuCdToList(ptByomei),
+                        SyusyokuCdToList(hpId, ptByomei),
                         byomeiName,
                         ptByomei.StartDate,
                         ptByomei.TenkiKbn,

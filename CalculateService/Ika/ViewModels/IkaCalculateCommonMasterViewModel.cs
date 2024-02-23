@@ -381,11 +381,12 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 点数マスタの内容を元に表示用コメントを取得する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="itemCd">コメントのITEM_CD</param>
         /// <param name="cmtOpt">コメント文</param>
         /// <param name="maskEdit">true: 不足桁をマスク文字で埋める</param>
         /// <returns></returns>
-        public string GetCommentStr(string itemCd, ref string cmtOpt, bool maskEdit = false)
+        public string GetCommentStr(int hpId, string itemCd, ref string cmtOpt, bool maskEdit = false)
         {
             string ret = "";
 
@@ -405,7 +406,7 @@ namespace CalculateService.Ika.ViewModels
                     }
                 }
 
-                return _masterFinder.GetCommentStr(SinDate, tenMst.ItemCd, cmtCol, cmtLen, tenMst.Name, tenMst.Name, ref cmtOpt, maskEdit);
+                return _masterFinder.GetCommentStr(hpId, SinDate, tenMst.ItemCd, cmtCol, cmtLen, tenMst.Name, tenMst.Name, ref cmtOpt, maskEdit);
             }
 
             return ret;
@@ -545,6 +546,35 @@ namespace CalculateService.Ika.ViewModels
             return GetSystemGenerationConfVal(8001, 2);
         }
 
+        /// <summary>
+        /// 小児カウンセリング初回算定チェック
+        /// 0-する、1-しない
+        /// </summary>
+        /// <returns></returns>
+        public int GetSyouniCounseling()
+        {
+            return GetSystemGenerationConfVal(3005, 0);
+        }
+
+        /// <summary>
+        /// 向精神薬多剤投与自動判定
+        /// 0-しない、1-する（既定値）
+        /// </summary>
+        /// <returns></returns>
+        public int GetKouiseiTazaiAuto()
+        {
+            return GetSystemGenerationConfVal(3006, 0, 1);
+        }
+
+        /// <summary>
+        /// 向精神薬多剤投与臨時投薬
+        /// 0-日数判断（抗うつ薬及び、抗精神病薬が臨時処方の場合に種類数に含めない）、1-すべて
+        /// </summary>
+        /// <returns></returns>
+        public int GetKouseiTazaiRinji()
+        {
+            return GetSystemGenerationConfVal(3006, 1, 0);
+        }
         #endregion
 
         #region 電子点数表関連
@@ -960,7 +990,7 @@ namespace CalculateService.Ika.ViewModels
 
             if (RecedenCmtSelects != null && RecedenCmtSelects.Any(p => p.ItemCd == ItemCd && p.CmtSbt == cmtSbt))
             {
-                result = RecedenCmtSelects.Find(p => p.ItemCd == ItemCd && p.CmtSbt == cmtSbt);
+                result = RecedenCmtSelects.FindAll(p => p.ItemCd == ItemCd && p.CmtSbt == cmtSbt).OrderBy(p => p.SortNo).FirstOrDefault();
             }
 
             return result;
@@ -977,6 +1007,19 @@ namespace CalculateService.Ika.ViewModels
 
             return result;
         }
+
+        public RecedenCmtSelectModel FindRecedenCmtSelectsByItemCdCommentCd(string ItemCd, string CommentCd)
+        {
+            RecedenCmtSelectModel result = null;
+
+            if (RecedenCmtSelects != null && RecedenCmtSelects.Any(p => p.ItemCd == ItemCd && p.CommentCd == CommentCd))
+            {
+                result = RecedenCmtSelects.FindAll(p => p.ItemCd == ItemCd && p.CommentCd == CommentCd).FirstOrDefault(); ;
+            }
+
+            return result;
+        }
+
         public bool RecedenCmtSelectExistByItemCd(string ItemCd)
         {
             return (RecedenCmtSelects != null && RecedenCmtSelects.Any(p => p.ItemCd == ItemCd));

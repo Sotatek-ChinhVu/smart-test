@@ -13,7 +13,10 @@ namespace CalculateService.Receipt.DB.Finder
 {
     class KaikeiFinder
     {
-        private int HpId = Hardcode.HospitalID;
+        /// <summary>
+        /// Do not hardcode hpId
+        /// </summary>
+        //private int HpId = Hardcode.HospitalID;
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
@@ -23,10 +26,10 @@ namespace CalculateService.Receipt.DB.Finder
             _systemConfigProvider = systemConfigProvider;
             _emrLogger = emrLogger;
         }
-        public List<Models.KaikeiDetailModel> FindKaikeiDetail(long ptId, int sinYm, int hokenId)
+        public List<Models.KaikeiDetailModel> FindKaikeiDetail(int hpId, long ptId, int sinYm, int hokenId)
         {
             var kaikeiDtl = _tenantDataContext.KaikeiDetails.FindListQueryableNoTrack(p =>
-                p.HpId == HpId &&
+                p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinDate >= sinYm * 100 + 1 &&
                 p.SinDate <= sinYm * 100 + 31 &&

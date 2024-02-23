@@ -4,14 +4,16 @@ namespace UseCase.Online.GetListOnlineConfirmationHistoryModel;
 
 public class GetListOnlineConfirmationHistoryModelInputData : IInputData<GetListOnlineConfirmationHistoryModelOutputData>
 {
-    public GetListOnlineConfirmationHistoryModelInputData(int userId, long ptId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
+    public GetListOnlineConfirmationHistoryModelInputData(int hpId, int userId, long ptId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
     {
+        HpId = hpId;
         UserId = userId;
         PtId = ptId;
         OnlQuaResFileDict = onlQuaResFileDict;
         OnlQuaConfirmationTypeDict = onlQuaConfirmationTypeDict;
     }
 
+    public int HpId { get; private set; }
     public int UserId { get; private set; }
 
     public long PtId { get; private set; }

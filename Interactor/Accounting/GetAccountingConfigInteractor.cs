@@ -34,19 +34,26 @@ namespace Interactor.Accounting
                 _patientInforRepository.ReleaseResource();
             }
         }
+
         private GetAccountingConfigOutputData GetSystemConfigPrints(int hpId, long ptId, List<long> raiinNos, int sumAdjust)
         {
             _accountingRepository.CheckOrdInfInOutDrug(hpId, ptId, raiinNos, out bool isVisiblePrintDrgLabel, out bool isVisiblePrintOutDrg);
 
+            var isRyosyoDetail = _patientInforRepository.GetIsRyosyoDetail(hpId, ptId);
             var isCheckedPrintReceipt = (int)_systemConfRepository.GetSettingValue(93001, 0, hpId) == 1;
-            var isCheckedPrintDetail = (int)_systemConfRepository.GetSettingValue(93002, 0, hpId) == 1;
+            var isCheckedPrintDetail = (int)_systemConfRepository.GetSettingValue(93002, 0, hpId) == 1 || isRyosyoDetail == 1;
             if (sumAdjust == 0)
             {
-                isCheckedPrintReceipt = (int)_systemConfRepository.GetSettingValue(93001, 3, hpId) == 1;
-                isCheckedPrintDetail = (int)_systemConfRepository.GetSettingValue(93002, 3, hpId) == 1;
+                if (isCheckedPrintReceipt)
+                {
+                    isCheckedPrintReceipt = (int)_systemConfRepository.GetSettingValue(93001, 3, hpId) == 1;
+                }
+                if (isCheckedPrintDetail)
+                {
+                    isCheckedPrintDetail = (int)_systemConfRepository.GetSettingValue(93002, 3, hpId) == 1;
+                }
             }
-            var isRyosyoDetail = _patientInforRepository.IsRyosyoFuyou(hpId, ptId);
-            if (isRyosyoDetail)
+            if (isRyosyoDetail == 0)
             {
                 isCheckedPrintDetail = false;
             }
@@ -96,7 +103,7 @@ namespace Interactor.Accounting
                                                             isCheckedPrintDrgInf,
                                                             isVisiblePrintDrgNote,
                                                             isCheckedPrintDrgNote,
-                                                            isRyosyoDetail
+                                                            isRyosyoDetail == 0
                                                             );
 
             return new GetAccountingConfigOutputData(AccountingConfig, GetAccountingConfigStatus.Successed);

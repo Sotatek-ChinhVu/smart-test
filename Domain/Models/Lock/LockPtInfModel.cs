@@ -4,7 +4,7 @@ namespace Domain.Models.Lock
 {
     public class LockPtInfModel
     {
-        public LockPtInfModel(long ptId, string functionName, long ptNum, long sinDate, DateTime lockDate, string machine, string functionCd, long raiinNo, long oyaRaiinNo, int userId)
+        public LockPtInfModel(long ptId, string functionName, long ptNum, int sinDate, DateTime lockDate, string machine, string functionCd, long raiinNo, long oyaRaiinNo, int userId)
         {
             PtId = ptId;
             FunctionName = functionName;
@@ -31,7 +31,7 @@ namespace Domain.Models.Lock
 
         public long PtNum { get; private set; }
 
-        public long SinDate { get; private set; }
+        public int SinDate { get; private set; }
 
         public DateTime LockDate { get; private set; }
 

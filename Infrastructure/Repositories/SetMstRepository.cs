@@ -53,7 +53,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId)
     {
-        var finalKey = key + "_" + generationId;
+        var finalKey = key + "_" + generationId + "_" + hpId;
         var setMstModelList =
                 NoTrackingDataContext.SetMsts
                 .Where(s => s.HpId == hpId
@@ -82,15 +82,14 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMstModelList;
     }
 
-    public void DeleteKey(int generationId)
+    public void DeleteKey(int generationId, int hpId)
     {
-        var finalKey = key + "_" + generationId;
+        var finalKey = key + "_" + generationId + "_" + hpId;
         _cache.KeyDelete(finalKey);
     }
 
-    private IEnumerable<SetMstModel> ReadCache(int generationId)
+    private IEnumerable<SetMstModel> ReadCache(string finalKey)
     {
-        var finalKey = key + "_" + generationId;
         var results = _cache.StringGet(finalKey);
         var json = results.AsString();
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SetMstModel>>(json) : new();
@@ -99,7 +98,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public List<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
     {
-        var finalKey = key + "_" + generationId;
+        var finalKey = key + "_" + generationId + "_" + hpId;
         IEnumerable<SetMstModel> setMstModelList;
         if (!_cache.KeyExists(finalKey))
         {
@@ -107,7 +106,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         else
         {
-            setMstModelList = ReadCache(generationId);
+            setMstModelList = ReadCache(finalKey);
         }
         List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
@@ -326,7 +325,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var setByomeiList = NoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != string.Empty).ToList();
         foreach (var byomei in setByomeiList)
         {
-            var syusyokuCdList = SyusyokuCdToList(byomei);
+            var syusyokuCdList = SyusyokuCdToList(hpId, byomei);
             var prefixList = syusyokuCdList.Where(item => !item.Code.StartsWith("8")).Select(item => item.Name).ToList();
             var suffixList = syusyokuCdList.Where(item => item.Code.StartsWith("8")).Select(item => item.Name).ToList();
             StringBuilder fullByomei = new();
@@ -357,7 +356,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     }
 
     [Obsolete]
-    public List<SetMstModel> SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
+    public List<SetMstModel> SaveSetMstModel(int hpId, int userId, int sinDate, SetMstModel setMstModel)
     {
         SetMst setMst = new();
         try
@@ -369,7 +368,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     using var transaction = TrackingDataContext.Database.BeginTransaction();
                     try
                     {
-                        setMst = SaveSetMstAction(userId, sinDate, setMstModel);
+                        setMst = SaveSetMstAction(hpId, userId, sinDate, setMstModel);
                         TrackingDataContext.SaveChanges();
                         transaction.Commit();
                     }
@@ -383,6 +382,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             List<SetMst> setMstList = new();
             setMstList.AddRange(NoTrackingDataContext.SetMsts
                       .Where(item => item.SetKbn == setMst.SetKbn
+                                     && item.HpId == hpId
                                      && item.SetKbnEdaNo == setMst.SetKbnEdaNo
                                      && item.GenerationId == setMst.GenerationId
                                      && item.Level1 == setMst.Level1
@@ -394,6 +394,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 setMstList.AddRange(NoTrackingDataContext.SetMsts
                           .Where(item => item.SetKbn == setMst.SetKbn
+                                         && item.HpId == hpId
                                          && item.SetKbnEdaNo == setMst.SetKbnEdaNo
                                          && item.GenerationId == setMst.GenerationId
                                          && item.Level1 > setMst.Level1
@@ -471,11 +472,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            ReloadCache(1, setMst.GenerationId);
+            ReloadCache(hpId, setMst.GenerationId);
         }
     }
 
-    private SetMst SaveSetMstAction(int userId, int sinDate, SetMstModel setMstModel)
+    private SetMst SaveSetMstAction(int hpId, int userId, int sinDate, SetMstModel setMstModel)
     {
         SetMst setMst = new();
 
@@ -484,7 +485,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var setKbnEdaNo = (setMstModel.SetKbnEdaNo - 1) > 0 ? setMstModel.SetKbnEdaNo - 1 : 0;
 
         // Create SetMst to save
-        var oldSetMst = TrackingDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd
+        var oldSetMst = TrackingDataContext.SetMsts.FirstOrDefault(item => item.HpId == hpId && item.SetCd == setMstModel.SetCd
                                                                            && item.IsDeleted != 1);
 
         if (oldSetMst == null && !setMstModel.IsAddNew)
@@ -506,12 +507,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             // set status for IsDelete
             setMst.IsDeleted = 0;
-            ChangeRpName(userId, setMst.SetCd, setMst.SetName ?? string.Empty);
+            ChangeRpName(hpId, userId, setMst.SetCd, setMst.SetName ?? string.Empty);
 
             // If SetMst is add new
             if (setMstModel.IsAddNew)
             {
-                var level = GetLevelSetMst(setMst.SetCd, setMst.SetKbn, setMst.SetKbnEdaNo, setMst.GenerationId);
+                var level = GetLevelSetMst(hpId, setMst.SetCd, setMst.SetKbn, setMst.SetKbnEdaNo, setMst.GenerationId);
                 setMst.Level1 = level.level1;
                 setMst.Level2 = level.level2;
                 setMst.Level3 = level.level3;
@@ -539,6 +540,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 listSetMstDelete = TrackingDataContext.SetMsts
                                    .Where(item => item.SetKbn == setMst.SetKbn
+                                                  && item.HpId == hpId
                                                   && item.SetKbnEdaNo == setKbnEdaNo
                                                   && item.GenerationId == setMst.GenerationId
                                                   && item.Level1 == setMst.Level1
@@ -549,6 +551,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 listSetMstDelete = TrackingDataContext.SetMsts
                                    .Where(item => item.SetKbn == setMst.SetKbn
+                                                  && item.HpId == hpId
                                                   && item.SetKbnEdaNo == setKbnEdaNo
                                                   && item.GenerationId == setMst.GenerationId
                                                   && item.Level1 == setMst.Level1
@@ -560,6 +563,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 listSetMstDelete = TrackingDataContext.SetMsts
                                    .Where(item => item.SetKbn == setMst.SetKbn
+                                                  && item.HpId == hpId
                                                   && item.SetKbnEdaNo == setKbnEdaNo
                                                   && item.GenerationId == setMst.GenerationId
                                                   && item.Level1 == setMst.Level1
@@ -584,6 +588,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 listUpdateLevel = TrackingDataContext.SetMsts
                                   .Where(item => item.SetKbn == setMst.SetKbn
+                                                 && item.HpId == hpId
                                                  && item.SetKbnEdaNo == setKbnEdaNo
                                                  && item.GenerationId == setMst.GenerationId
                                                  && item.Level1 > setMst.Level1
@@ -603,6 +608,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 listUpdateLevel = TrackingDataContext.SetMsts
                                   .Where(item => item.SetKbn == setMst.SetKbn
+                                                 && item.HpId == hpId
                                                  && item.SetKbnEdaNo == setKbnEdaNo
                                                  && item.GenerationId == setMst.GenerationId
                                                  && item.Level1 == setMst.Level1
@@ -623,6 +629,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 listUpdateLevel = TrackingDataContext.SetMsts
                                   .Where(item => item.SetKbn == setMst.SetKbn
+                                                 && item.HpId == hpId
                                                  && item.SetKbnEdaNo == setKbnEdaNo
                                                  && item.GenerationId == setMst.GenerationId
                                                  && item.Level1 == setMst.Level1
@@ -750,7 +757,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             generationId = dragItem?.GenerationId ?? 0;
             if (generationId > 0)
             {
-                var setMsts = ReloadCache(1, generationId);
+                var setMsts = ReloadCache(hpId, generationId);
                 setMstModels = GetDataAfterDragDrop(setMsts, dragItem ?? new(), dropItem ?? new(), originDragLevel1 ?? 0, originDropLevel1 ?? 0);
             }
         }
@@ -845,7 +852,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            var setMsts = ReloadCache(1, generationId);
+            var setMsts = ReloadCache(hpId, generationId);
             var rootSet = setMsts.FirstOrDefault(s => s.SetCd == setCd);
             setMstModels = setMsts.Where(s => s.HpId == rootSet?.HpId && s.SetKbn == rootSet.SetKbn && s.SetKbnEdaNo == rootSet.SetKbnEdaNo && s.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && s.Level1 == rootSet.Level1))).ToList();
         }
@@ -853,9 +860,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMstModels;
     }
 
-    public bool CheckExistSetMstBySetCd(int setCd)
+    public bool CheckExistSetMstBySetCd(int hpId, int setCd)
     {
-        return NoTrackingDataContext.SetMsts.Any(item => item.SetCd == setCd);
+        return NoTrackingDataContext.SetMsts.Any(item => item.HpId == hpId && item.SetCd == setCd);
     }
 
     public bool CheckExistSetMstBySetCd(int hpId, List<int> setCdList)
@@ -957,14 +964,14 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 // get index for paste
                 var lastItemLevel2 = listSetMsts.Where(item => item.Level1 == pasteItem.Level1 && item.Level2 > 0 && item.Level3 == 0 && item.SetKbn == pasteItem.SetKbn && item.SetKbnEdaNo == pasteItem.SetKbnEdaNo).OrderByDescending(item => item.Level2).FirstOrDefault();
                 int indexPaste = (lastItemLevel2 != null ? lastItemLevel2.Level2 : 0) + 1;
-                setCd = PasteItemAction(indexPaste, pasteSetKbnEdaNo, pasteSetKbn, userId, copyItem, pasteItem, listSetMsts);
+                setCd = PasteItemAction(hpId, indexPaste, pasteSetKbnEdaNo, pasteSetKbn, userId, copyItem, pasteItem, listSetMsts);
             }
             else if (GetLevelItem(pasteItem) == 2)
             {
                 // get index for paste
                 var lastItemLevel3 = listSetMsts.Where(item => item.Level1 == pasteItem.Level1 && item.Level2 == pasteItem.Level2 && item.Level3 > 0 && item.SetKbn == pasteItem.SetKbn && item.SetKbnEdaNo == pasteItem.SetKbnEdaNo).OrderByDescending(item => item.Level3).FirstOrDefault();
                 int indexPaste = (lastItemLevel3 != null ? lastItemLevel3.Level3 : 0) + 1;
-                setCd = PasteItemAction(indexPaste, pasteSetKbnEdaNo, pasteSetKbn, userId, copyItem, pasteItem, listSetMsts);
+                setCd = PasteItemAction(hpId, indexPaste, pasteSetKbnEdaNo, pasteSetKbn, userId, copyItem, pasteItem, listSetMsts);
             }
         }
         else
@@ -972,7 +979,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             // get index for paste
             var lastItemLevel1 = listSetMsts.Where(item => item.Level2 == 0 && item.Level3 == 0 && item.SetKbn == pasteSetKbn && item.SetKbnEdaNo == pasteSetKbnEdaNo).OrderByDescending(item => item.Level1).FirstOrDefault();
             int indexPaste = (lastItemLevel1 != null ? lastItemLevel1.Level1 : 0) + 1;
-            setCd = PasteItemAction(indexPaste, pasteSetKbnEdaNo, pasteSetKbn, userId, copyItem, null, listSetMsts);
+            setCd = PasteItemAction(hpId, indexPaste, pasteSetKbnEdaNo, pasteSetKbn, userId, copyItem, null, listSetMsts);
         }
 
         return setCd;
@@ -991,11 +998,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var listPasteSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.GenerationId == generationId && mst.SetKbn == pasteSetKbn && mst.SetKbnEdaNo == pasteSetKbnEdaNo && mst.IsDeleted != 1 && mst.HpId == hpId);
         var lastItemLevel1 = listPasteSetMsts.Where(item => item.Level2 == 0 && item.Level3 == 0 && item.SetKbn == pasteSetKbn && item.SetKbnEdaNo == pasteSetKbnEdaNo).OrderByDescending(item => item.Level1).FirstOrDefault();
         int indexPaste = (lastItemLevel1 != null ? lastItemLevel1.Level1 : 0) + 1;
-        return PasteGroupAction(userId, indexPaste, pasteSetKbnEdaNo, pasteSetKbn, listCopySetMsts);
+        return PasteGroupAction(hpId, userId, indexPaste, pasteSetKbnEdaNo, pasteSetKbn, listCopySetMsts);
     }
 
     [Obsolete]
-    private int PasteItemAction(int indexPaste, int pasteSetKbnEdaNo, int pasteSetKbn, int userId, SetMst copyItem, SetMst? pasteItem, List<SetMst> listSetMsts)
+    private int PasteItemAction(int hpId, int indexPaste, int pasteSetKbnEdaNo, int pasteSetKbn, int userId, SetMst copyItem, SetMst? pasteItem, List<SetMst> listSetMsts)
     {
         int setCd = -1;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
@@ -1081,7 +1088,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                 dictionarySetMstMap.Add(rootSetCd, pasteItemToMap);
                             }
                         }
-                        AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
+                        AddNewItemToSave(hpId, userId, listCopySetCds, dictionarySetMstMap);
                         TrackingDataContext.SaveChanges();
                         // Set level for item
                         try
@@ -1154,7 +1161,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setCd;
     }
 
-    private int PasteGroupAction(int userId, int pasteIndex, int pasteSetKbnEdaNo, int pasteSetKbn, List<SetMst> listCopySetMsts)
+    private int PasteGroupAction(int hpId, int userId, int pasteIndex, int pasteSetKbnEdaNo, int pasteSetKbn, List<SetMst> listCopySetMsts)
     {
         int setCd = -1;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
@@ -1205,7 +1212,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         }
 
                         var listCopySetCds = listCopySetMsts.Select(item => item.SetCd).ToList();
-                        AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
+                        AddNewItemToSave(hpId, userId, listCopySetCds, dictionarySetMstMap);
 
                         TrackingDataContext.SaveChanges();
                         transaction.Commit();
@@ -1371,12 +1378,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return count;
     }
 
-    private void AddNewItemToSave(int userId, List<int> listCopySetCds, Dictionary<int, SetMst> dictionarySetMstMap)
+    private void AddNewItemToSave(int hpId, int userId, List<int> listCopySetCds, Dictionary<int, SetMst> dictionarySetMstMap)
     {
         listCopySetCds = listCopySetCds.Distinct().ToList();
 
         // Order inf
-        var listCopySetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
+        var listCopySetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId && listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetOrderInfs = new List<SetOdrInf>();
         foreach (var item in listCopySetOrderInfs)
         {
@@ -1392,7 +1399,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         TrackingDataContext.SetOdrInf.AddRange(listPasteSetOrderInfs);
 
         // Order inf detail
-        var listCopySetOrderInfDetails = NoTrackingDataContext.SetOdrInfDetail.Where(item => listCopySetCds.Contains(item.SetCd)).ToList();
+        var listCopySetOrderInfDetails = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.HpId == hpId && listCopySetCds.Contains(item.SetCd)).ToList();
         var listPasteSetOrderInfDetails = new List<SetOdrInfDetail>();
         foreach (var item in listCopySetOrderInfDetails)
         {
@@ -1403,7 +1410,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         TrackingDataContext.SetOdrInfDetail.AddRange(listPasteSetOrderInfDetails);
 
         // Karte inf
-        var listCopySetKarteInfs = NoTrackingDataContext.SetKarteInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
+        var listCopySetKarteInfs = NoTrackingDataContext.SetKarteInf.Where(item => item.HpId == hpId && listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetKarteInfs = new List<SetKarteInf>();
         foreach (var item in listCopySetKarteInfs)
         {
@@ -1418,7 +1425,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         TrackingDataContext.SetKarteInf.AddRange(listPasteSetKarteInfs);
 
         #region Karte File Inf
-        var listCopySetKarteImageInfs = NoTrackingDataContext.SetKarteImgInf.Where(item => listCopySetCds.Contains(item.SetCd)).ToList();
+        var listCopySetKarteImageInfs = NoTrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && listCopySetCds.Contains(item.SetCd)).ToList();
         List<SetKarteImgInf> listPasteSetKarteImageInfs = new();
         string baseAccessUrl = _options.BaseAccessUrl;
         foreach (var copySetCd in listCopySetCds)
@@ -1479,7 +1486,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         #endregion
 
         // Set byomei
-        var listCopySetByomeies = NoTrackingDataContext.SetByomei.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
+        var listCopySetByomeies = NoTrackingDataContext.SetByomei.Where(item => item.HpId == hpId && listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetByomeies = new List<SetByomei>();
         foreach (var item in listCopySetByomeies)
         {
@@ -2290,7 +2297,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
     }
 
-    private List<PrefixSuffixModel> SyusyokuCdToList(SetByomei ptByomei)
+    private List<PrefixSuffixModel> SyusyokuCdToList(int hpId, SetByomei ptByomei)
     {
         List<string> codeList = new()
             {
@@ -2322,7 +2329,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             return new List<PrefixSuffixModel>();
         }
 
-        var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+        var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeList.Contains(b.ByomeiCd)).ToList();
 
         List<PrefixSuffixModel> result = new();
         foreach (var code in codeList)
@@ -2338,11 +2345,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return result;
     }
 
-    private void ChangeRpName(int userId, int setCd, string setName)
+    private void ChangeRpName(int hpId, int userId, int setCd, string setName)
     {
         if (setCd != 0 && setName != string.Empty)
         {
-            var setOrderInfListBySetCd = TrackingDataContext.SetOdrInf.Where(item => item.SetCd == setCd).ToList();
+            var setOrderInfListBySetCd = TrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId && item.SetCd == setCd).ToList();
             foreach (var item in setOrderInfListBySetCd)
             {
                 item.RpName = setName;
@@ -2417,9 +2424,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
     }
 
-    private (int level1, int level2, int level3) GetLevelSetMst(int setCd, int setKbn, int setKbnEdaNo, int generationId)
+    private (int level1, int level2, int level3) GetLevelSetMst(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId)
     {
         IQueryable<SetMst> setMstQuery = NoTrackingDataContext.SetMsts.Where(item => item.IsDeleted == 0
+                                                                                     && item.HpId == hpId
                                                                                      && item.SetKbn == setKbn
                                                                                      && item.SetKbnEdaNo == setKbnEdaNo
                                                                                      && item.GenerationId == generationId);

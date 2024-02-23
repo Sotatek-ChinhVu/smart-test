@@ -128,7 +128,7 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result);
         }
-        
+
         [HttpPost(ApiPath.SearchOTC)]
         public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
         {
@@ -152,7 +152,7 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<SearchSupplementResponse>>(presenter.Result);
         }
-        
+
         [HttpPost(ApiPath.SearchTenItem)]
         public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
@@ -176,7 +176,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.DiseaseSearch)]
         public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
         {
-            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize, request.IsHasFreeByomei);
+            var input = new DiseaseSearchInputData(HpId, request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize, request.IsHasFreeByomei);
             var output = _bus.Handle(input);
 
             var presenter = new DiseaseSearchPresenter();
@@ -200,7 +200,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetDiseaseList)]
         public ActionResult<Response<DiseaseSearchResponse>> GetDiseaseList([FromBody] GetDiseaseListRequest request)
         {
-            var input = new GetDiseaseListInputData(request.ItemCdList);
+            var input = new GetDiseaseListInputData(HpId, request.ItemCdList);
             var output = _bus.Handle(input);
 
             var presenter = new GetDiseaseListPresenter();
@@ -333,7 +333,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListTenMstOrigin)]
         public ActionResult<Response<GetListTenMstOriginResponse>> GetListTenMstOrigin([FromQuery] GetListTenMstOriginRequest request)
         {
-            var input = new GetListTenMstOriginInputData(request.ItemCd);
+            var input = new GetListTenMstOriginInputData(HpId, request.ItemCd);
             var output = _bus.Handle(input);
             var presenter = new GetListTenMstOriginPresenter();
             presenter.Complete(output);
@@ -1026,7 +1026,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetTenMstByCode)]
         public ActionResult<Response<GetTenMstByCodeResponse>> GetTenMstByCode([FromQuery] GetTenMstByCodeRequest request)
         {
-            var input = new GetTenMstByCodeInputData(request.ItemCd, request.SetKbn, request.SinDate);
+            var input = new GetTenMstByCodeInputData(HpId, request.ItemCd, request.SetKbn, request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new GetTenMstByCodePresenter();
             presenter.Complete(output);
@@ -1036,7 +1036,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetByomeiByCode)]
         public ActionResult<Response<GetByomeiByCodeResponse>> GetByomeiByCode([FromQuery] GetByomeiByCodeRequest request)
         {
-            var input = new GetByomeiByCodeInputData(request.ByomeiCd);
+            var input = new GetByomeiByCodeInputData(HpId, request.ByomeiCd);
             var output = _bus.Handle(input);
             var presenter = new GetByomeiByCodePresenter();
             presenter.Complete(output);
@@ -1084,7 +1084,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.CheckJihiSbtExistsInTenMst)]
         public ActionResult<Response<CheckJihiSbtExistsInTenMstResponse>> CheckJihiSbtExistsInTenMst([FromQuery] int jihiSbt)
         {
-            var input = new CheckJihiSbtExistsInTenMstInputData(jihiSbt);
+            var input = new CheckJihiSbtExistsInTenMstInputData(HpId, jihiSbt);
             var output = _bus.Handle(input);
             var presenter = new CheckJihiSbtExistsInTenMstPresenter();
             presenter.Complete(output);

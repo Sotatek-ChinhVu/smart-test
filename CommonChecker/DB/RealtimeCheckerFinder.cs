@@ -108,7 +108,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .Where
                 (
                     p =>
-                    p.HpId <= hpId &&
+                    p.HpId == hpId &&
                     p.JissiYear <= sinYear &&
                     p.AgeYear <= ageY &&
                     p.AgeMonth <= ageM &&
@@ -158,7 +158,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                 // Get the largest EndDate TenMsts including expired items
                 var listDrugAllergyAsPatientInfo =
-                    (from drugMst in (from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd)
+                    (from drugMst in (from item in NoTrackingDataContext.TenMsts.Where(i =>  i.HpId == hpID && listDrugAllergyAsPatientCode.Contains(i.ItemCd)
                                                                                            && i.StartDate <= sinDate
                                                                                            && i.IsDeleted == DeleteTypes.None).ToList()
                                       group item by item.ItemCd into grp
@@ -237,7 +237,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
 
             var listCheckingDrugInfo =
-                (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
+                (from drugMst in NoTrackingDataContext.TenMsts.Where(i => i.HpId == hpID && listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
                  join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.HpId == hpID && i.ProdrugCheck != null && i.ProdrugCheck == string.Empty && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugPro in NoTrackingDataContext.M56ProdrugCd.Where(item => item.HpId == hpID)
@@ -254,7 +254,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in (from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd)
+                (from drugMst in (from item in NoTrackingDataContext.TenMsts.Where(i => i.HpId == hpID && listDrugAllergyAsPatientCode.Contains(i.ItemCd)
                                                                                            && i.StartDate <= sinDate
                                                                                            && i.IsDeleted == DeleteTypes.None).ToList()
                                   group item by item.ItemCd into grp
@@ -310,7 +310,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             var onlyItemCd = listItemCode.Select(x => x.ItemCd).Distinct().ToList();
             var listCheckingDrugInfo =
-                (from drugMst in NoTrackingDataContext.TenMsts.Where(i => onlyItemCd.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
+                (from drugMst in NoTrackingDataContext.TenMsts.Where(i => i.HpId == hpID && onlyItemCd.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
                  join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.HpId == hpID && i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugAnalogue in NoTrackingDataContext.M56ExAnalogue.Where(item => item.HpId == hpID)
@@ -327,7 +327,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd)
+                (from drugMst in from item in NoTrackingDataContext.TenMsts.Where(i => i.HpId == hpID && listDrugAllergyAsPatientCode.Contains(i.ItemCd)
                                                                                            && i.StartDate <= sinDate
                                                                                            && i.IsDeleted == DeleteTypes.None).ToList()
                                  group item by item.ItemCd into grp
@@ -383,7 +383,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             var itemCdCheckingDrugInfoList = listItemCode.Select(x => x.ItemCd).Distinct().ToList();
             var listCheckingDrugInfo =
-                 (from drugMst in NoTrackingDataContext.TenMsts.Where(i => itemCdCheckingDrugInfoList.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
+                 (from drugMst in NoTrackingDataContext.TenMsts.Where(i => i.HpId == hpID && itemCdCheckingDrugInfoList.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
                   join componentInfo in NoTrackingDataContext.M56AlrgyDerivatives.Where(item => item.HpId == hpID)
                   on drugMst.YjCd equals componentInfo.YjCd
                   join drvalrgyCode in NoTrackingDataContext.M56DrvalrgyCode.Where(item => item.HpId == hpID)
@@ -979,7 +979,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 }
 
                 checkedResult =
-                (from itemInfo in NoTrackingDataContext.TenMsts.Where(i => itemCdList.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate).AsQueryable()
+                (from itemInfo in NoTrackingDataContext.TenMsts.Where(i => i.HpId == hpID && itemCdList.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate).AsQueryable()
                  join ageCheck in NoTrackingDataContext.M14AgeCheck.Where
                  (
                      m =>
@@ -1003,7 +1003,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             else
             {
                 checkedResult =
-                (from itemInfo in NoTrackingDataContext.TenMsts.Where(i => itemCdList.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate).AsQueryable()
+                (from itemInfo in NoTrackingDataContext.TenMsts.Where(i => i.HpId == hpID && itemCdList.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate).AsQueryable()
                  join ageCheck in NoTrackingDataContext.M14AgeCheck.Where
                  (
                      m =>
@@ -1556,20 +1556,6 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     {
                         continue;
                     }
-                    var check1 =
-                        NoTrackingDataContext.M01Kinki
-                        .Where
-                        (
-                            k =>
-                            k.HpId == hpID &&
-                            ((
-                                k.ACd == addedOrderSubYjCode.YjCd7
-                            )
-                            &&
-                            (
-                                k.BCd == currentOrderSubYjCode.YjCd7
-                            ))
-                        ).ToList();
 
                     var checkedResult =
                         NoTrackingDataContext.M01Kinki
@@ -1670,7 +1656,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             }
 
             var listSubOTCCode = NoTrackingDataContext.M38Ingredients
-                .Where(m => listSerialNum.Contains(m.SerialNum))
+                .Where(m => m.HpId == hpID && listSerialNum.Contains(m.SerialNum))
                 .Select(m => new
                 {
                     m.SerialNum,
@@ -2636,7 +2622,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var listAddedOrderCodeItemCd = listAddedOrderCodes.Select(item => item.ItemCd).Distinct().ToList();
             var dayLimitInfoByUser =
                (
-                   from drugMst in NoTrackingDataContext.TenMsts.Where(m => listAddedOrderCodeItemCd.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate).AsQueryable()
+                   from drugMst in NoTrackingDataContext.TenMsts.Where(m => m.HpId == hpID && listAddedOrderCodeItemCd.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate).AsQueryable()
                    join dayLimit in NoTrackingDataContext.DrugDayLimits.Where(d => 0 < d.LimitDay &&
                                                                                    d.LimitDay < 999 &&
                                                                                    d.StartDate <= sinday &&
@@ -2660,7 +2646,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var listRestedItemCd = listRestedItemCode.Select(x => x.ItemCd).Distinct().ToList();
             var dayLimitInfo =
                 (
-                from drugMst in NoTrackingDataContext.TenMsts.Where(m => listRestedItemCd.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate).AsQueryable()
+                from drugMst in NoTrackingDataContext.TenMsts.Where(m => m.HpId == hpID && listRestedItemCd.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate).AsQueryable()
                 join dayLimit in NoTrackingDataContext.M10DayLimit.Where(d => d.HpId == hpID && 0 < d.LimitDay && d.LimitDay < 999)
                 on drugMst.YjCd equals dayLimit.YjCd
                 select new

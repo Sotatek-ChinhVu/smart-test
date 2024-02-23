@@ -55,7 +55,7 @@ public class SaveOdrSetInteractor : ISaveOdrSetInputPort
         setCdList.AddRange(updateSetNameList.Select(item => item.SetCd));
         setCdList = setCdList.Distinct().ToList();
 
-        if (_mstItemRepository.GetCheckItemCds(itemCdList).Count != itemCdList.Count)
+        if (_mstItemRepository.GetCheckItemCds(hpId, itemCdList).Count != itemCdList.Count)
         {
             return SaveOdrSetStatus.InvalidItemCd;
         }

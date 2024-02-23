@@ -5,7 +5,7 @@ namespace UseCase.SwapHoken.Calculation
 {
     public class CalculationSwapHokenInputData : IInputData<CalculationSwapHokenOutputData>
     {
-        public CalculationSwapHokenInputData(int hpId, int userId, List<int> seikyuYms, int ptId, bool isReCalculation, bool isReceCalculation, bool isReceCheckError, IMessenger messenger)
+        public CalculationSwapHokenInputData(int hpId, int userId, List<int> seikyuYms, long ptId, bool isReCalculation, bool isReceCalculation, bool isReceCheckError, IMessenger messenger)
         {
             HpId = hpId;
             UserId = userId;
@@ -23,7 +23,7 @@ namespace UseCase.SwapHoken.Calculation
 
         public List<int> SeikyuYms { get; private set; }
 
-        public int PtId { get; private set; }
+        public long PtId { get; private set; }
 
         public IMessenger Messenger { get; private set; }
 

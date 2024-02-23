@@ -114,11 +114,11 @@ public class CoKarte1Finder : RepositoryBase, ICoKarte1Finder
 
     public CoPtHokenInfModel FindPtHokenInf(int hpId, long ptId, int hokenPid, int sinDate)
     {
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
 
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= sinDate
+            h => h.HpId == hpId && h.StartDate <= sinDate
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(

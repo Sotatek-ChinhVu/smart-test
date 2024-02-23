@@ -19,7 +19,7 @@ public class UpdateRefNoInteractor : IUpdateRefNoInputPort
     {
         try
         {
-            if (!_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
+            if (!_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long> { inputData.PtId }))
             {
                 return new UpdateRefNoOutputData(0, UpdateRefNoStatus.InvalidPtId);
             }
