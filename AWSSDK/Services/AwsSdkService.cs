@@ -82,11 +82,8 @@ namespace AWSSDK.Services
                 string FormartNameZTable(string tableName)
                 {
                     int indexOfZ = tableName.IndexOf('z');
-                    if (indexOfZ != -1 && indexOfZ + 1 < tableName.Length)
-                    {
-                        string modifiedString = tableName.Remove(indexOfZ, 2);
-                    }
-                    return string.Empty;
+                    string modifiedString = tableName.Remove(indexOfZ, 2);
+                    return modifiedString;
                 }
 
                 // Create and open a connection
