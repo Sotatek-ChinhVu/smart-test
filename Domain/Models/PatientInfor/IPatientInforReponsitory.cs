@@ -64,7 +64,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchPatient(int hpId, List<long> ptIdList);
 
-        public bool IsRyosyoFuyou(int hpId, long ptId);
+        int GetIsRyosyoDetail(int hpId, long ptId);
 
         long GetPtIdFromPtNum(int hpId, long ptNum);
 

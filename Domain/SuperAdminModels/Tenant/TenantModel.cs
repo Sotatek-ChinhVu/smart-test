@@ -17,7 +17,7 @@ namespace Domain.SuperAdminModels.Tenant
             PasswordConnect = string.Empty;
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect, bool isRestoreS3)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect, bool isRestoreS3)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -26,6 +26,9 @@ namespace Domain.SuperAdminModels.Tenant
             Password = password;
             SubDomain = subDomain;
             Db = db;
+            Size = size;
+            SizeType = sizeType;
+            Type = type;
             EndPointDb = endPointDb;
             EndSubDomain = endSubDomain;
             Action = action;
@@ -57,6 +60,13 @@ namespace Domain.SuperAdminModels.Tenant
             RdsIdentifier = rdsIdentifier;
             UserConnect = userConnect;
             PasswordConnect = passwordConnect;
+        }
+
+        public TenantModel ChangeStorageFull(double storageFull, double storageUsed)
+        {
+            StorageFull = storageFull;
+            StorageUsed = storageUsed;
+            return this;
         }
 
         public TenantModel ChangeRdsIdentifier(string rdsIdentifier)
@@ -102,6 +112,10 @@ namespace Domain.SuperAdminModels.Tenant
         /// <summary>
         ///  return storage used to FE
         /// </summary>
+        public double StorageUsed { get; private set; }
+
+        public double StorageFull { get; private set; }
+
         public string UserConnect { get; private set; }
 
         public string PasswordConnect { get; private set; }

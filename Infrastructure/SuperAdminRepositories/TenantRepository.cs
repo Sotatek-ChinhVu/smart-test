@@ -2,12 +2,14 @@
 using Entity.SuperAdmin;
 using Helper.Constants;
 using Helper.Enum;
+using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using StackExchange.Redis;
+using System.Text;
 
 namespace Infrastructure.SuperAdminRepositories
 {
@@ -174,7 +176,7 @@ namespace Infrastructure.SuperAdminRepositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status, byte type)
+        public TenantModel UpdateTenant(int tenantId, string subDomain, string hospital, int adminId, string password, string endSubDomain, byte status)
         {
             try
             {
@@ -184,15 +186,10 @@ namespace Infrastructure.SuperAdminRepositories
                     return new();
                 }
 
-                if (status == 1 || status == 9 || status == 14) // Check tenant available, storage-full, stoped
+                if (status == 1 || status == 14) // Check tenant available, storage-full, stoped
                 {
-                    tenant.EndPointDb = endPoint;
-                    tenant.Type = type;
                     tenant.Status = status;
                     tenant.SubDomain = subDomain;
-                    tenant.Size = size;
-                    tenant.SizeType = sizeType;
-                    tenant.RdsIdentifier = dbIdentifier;
                     tenant.AdminId = adminId;
                     tenant.Password = password;
                     tenant.EndSubDomain = endSubDomain;
@@ -342,15 +339,96 @@ namespace Infrastructure.SuperAdminRepositories
                 query = FilterData(query, searchModel);
             }
 
+            // sort data ignore storageFull
+            if (!searchModel.StorageFull.Any() && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
+            {
+                // get totalTenant to FE
+                var querySortList = SortTenantQuery(query, sortDictionary);
+                if (!getDataReport)
+                {
+                    totalTenant = query.Count();
+                    querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
+                }
+                result = querySortList.Select(tenant => new TenantModel(
+                                                            tenant.TenantId,
+                                                            tenant.Hospital,
+                                                            tenant.Status,
+                                                            tenant.AdminId,
+                                                            tenant.Password,
+                                                            tenant.SubDomain,
+                                                            tenant.Db,
+                                                            tenant.Size,
+                                                            tenant.SizeType,
+                                                            tenant.Type,
+                                                            tenant.EndPointDb,
+                                                            tenant.EndSubDomain,
+                                                            tenant.Action,
+                                                            tenant.ScheduleDate,
+                                                            tenant.ScheduleTime,
+                                                            tenant.CreateDate,
+                                                            tenant.RdsIdentifier,
+                                                            tenant.UserConnect,
+                                                            tenant.PasswordConnect,
+                                                            tenant.IsRestoreS3))
+                                      .ToList();
+                result = ChangeStorageFull(result);
+                result = SortTenantList(result, sortDictionary).ToList();
+                return (result, totalTenant);
+            }
+            result = query.Select(tenant => new TenantModel(
+                                            tenant.TenantId,
+                                            tenant.Hospital,
+                                            tenant.Status,
+                                            tenant.AdminId,
+                                            tenant.Password,
+                                            tenant.SubDomain,
+                                            tenant.Db,
+                                            tenant.Size,
+                                            tenant.SizeType,
+                                            tenant.Type,
+                                            tenant.EndPointDb,
+                                            tenant.EndSubDomain,
+                                            tenant.Action,
+                                            tenant.ScheduleDate,
+                                            tenant.ScheduleTime,
+                                            tenant.CreateDate,
+                                            tenant.RdsIdentifier,
+                                            tenant.UserConnect,
+                                            tenant.PasswordConnect,
+                                            tenant.IsRestoreS3))
+                          .ToList();
+            result = ChangeStorageFull(result);
+            if (searchModel.StorageFull.Any())
+            {
+                // filter StorageFull by multiple conditions
+                List<TenantModel> tenantListFilterByStorageFull = new();
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Under70Percent))
+                {
+                    tenantListFilterByStorageFull = result.Where(item => item.StorageFull <= 70).ToList();
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over70Percent))
+                {
+                    tenantListFilterByStorageFull.AddRange(result.Where(item => item.StorageFull >= 70).ToList());
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over80Percent))
+                {
+                    tenantListFilterByStorageFull.AddRange(result.Where(item => item.StorageFull >= 80).ToList());
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over90Percent))
+                {
+                    tenantListFilterByStorageFull.AddRange(result.Where(item => item.StorageFull >= 90).ToList());
+                }
+                result = tenantListFilterByStorageFull.DistinctBy(item => item.TenantId).ToList();
+            }
             // get totalTenant to FE
             if (!getDataReport)
             {
-                totalTenant = query.Count();
-                result = SortTenantQuery(query, sortDictionary).Skip(skip).Take(take).Select(item => ConvertEntityToModel(item)).ToList();
+                totalTenant = result.Count;
+                result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
             }
             else
             {
-                result = SortTenantQuery(query, sortDictionary).Select(item => ConvertEntityToModel(item)).ToList();
+                result = SortTenantList(result, sortDictionary).ToList();
             }
             return (result, totalTenant);
         }
@@ -363,6 +441,8 @@ namespace Infrastructure.SuperAdminRepositories
                 return new();
             }
             var tenantModel = ConvertEntityToModel(tenant);
+            var result = GetStorageFullItem(tenantModel, true);
+            tenantModel.ChangeStorageFull(result.storageFull, result.storageUsed);
             return tenantModel;
         }
 
@@ -405,6 +485,10 @@ namespace Infrastructure.SuperAdminRepositories
             if (searchModel.ToDate != null)
             {
                 query = query.Where(item => item.CreateDate <= searchModel.ToDate);
+            }
+            if (searchModel.Type != -1)
+            {
+                query = query.Where(item => item.Type == searchModel.Type);
             }
             if (searchModel.StatusTenant != 0)
             {
@@ -482,6 +566,22 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenByDescending(item => item.Hospital);
                                 break;
+                            case TenantEnum.Type:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.Type);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.Type);
+                                break;
+                            case TenantEnum.Size:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.Size);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.Size);
+                                break;
                             case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
@@ -536,6 +636,22 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenBy(item => item.Hospital);
                                 break;
+                            case TenantEnum.Type:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.Type);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.Type);
+                                break;
+                            case TenantEnum.Size:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.Size);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.Size);
+                                break;
                             case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
@@ -552,6 +668,263 @@ namespace Infrastructure.SuperAdminRepositories
             return querySortList;
         }
 
+        private IOrderedEnumerable<TenantModel> SortTenantList(List<TenantModel> tenantList, Dictionary<TenantEnum, int> sortDictionary)
+        {
+            bool firstSort = true;
+            IOrderedEnumerable<TenantModel> querySortList = tenantList.OrderByDescending(item => item.TenantId);
+            foreach (var sortItem in sortDictionary)
+            {
+                switch (sortItem.Value)
+                {
+                    // DESC
+                    case 1:
+                        switch (sortItem.Key)
+                        {
+                            case TenantEnum.CreateDate:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.CreateDate);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.CreateDate);
+                                break;
+                            case TenantEnum.TenantId:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.TenantId);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.TenantId);
+                                break;
+                            case TenantEnum.Domain:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.SubDomain);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.SubDomain);
+                                break;
+                            case TenantEnum.AdminId:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.AdminId);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.AdminId);
+                                break;
+                            case TenantEnum.HospitalName:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.Hospital);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.Hospital);
+                                break;
+                            case TenantEnum.Type:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.Type);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.Type);
+                                break;
+                            case TenantEnum.Size:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.Size);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.Size);
+                                break;
+                            case TenantEnum.StatusTenant:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.Status);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.Status);
+                                break;
+                            case TenantEnum.StorageFull:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderByDescending(item => item.StorageFull);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenByDescending(item => item.StorageFull);
+                                break;
+                        }
+                        break;
+                    // ASC
+                    default:
+                        switch (sortItem.Key)
+                        {
+                            case TenantEnum.CreateDate:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.CreateDate);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.CreateDate);
+                                break;
+                            case TenantEnum.TenantId:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.TenantId);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.TenantId);
+                                break;
+                            case TenantEnum.Domain:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.SubDomain);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.SubDomain);
+                                break;
+                            case TenantEnum.AdminId:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.AdminId);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.AdminId);
+                                break;
+                            case TenantEnum.HospitalName:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.Hospital);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.Hospital);
+                                break;
+                            case TenantEnum.Type:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.Type);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.Type);
+                                break;
+                            case TenantEnum.Size:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.Size);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.Size);
+                                break;
+                            case TenantEnum.StatusTenant:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.StatusTenant);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.StatusTenant);
+                                break;
+                            case TenantEnum.StorageFull:
+                                if (firstSort)
+                                {
+                                    querySortList = querySortList.OrderBy(item => item.StorageFull);
+                                    continue;
+                                }
+                                querySortList = querySortList.ThenBy(item => item.StorageFull);
+                                break;
+                        }
+                        break;
+                }
+                firstSort = false;
+            }
+            return querySortList;
+        }
+
+        private List<TenantModel> ChangeStorageFull(List<TenantModel> tenantList)
+        {
+            Parallel.ForEach(tenantList, tenant =>
+            {
+                var result = GetStorageFullItem(tenant, false);
+                tenant.ChangeStorageFull(result.storageFull, result.storageUsed);
+            });
+            return tenantList;
+        }
+
+        private (double storageFull, double storageUsed) GetStorageFullItem(TenantModel tenant, bool isClearCache)
+        {
+            double storageFull = 0;
+            double storageInDB = 0;
+            int port = 5432;
+            StringBuilder connectionStringBuilder = new();
+            connectionStringBuilder.Append("host=");
+            connectionStringBuilder.Append(tenant.EndPointDb);
+            connectionStringBuilder.Append(";port=");
+            connectionStringBuilder.Append(port.ToString());
+            connectionStringBuilder.Append(";database=");
+            connectionStringBuilder.Append(tenant.Db);
+            connectionStringBuilder.Append(";user id=");
+            connectionStringBuilder.Append(tenant.UserConnect);
+            connectionStringBuilder.Append(";password=");
+            connectionStringBuilder.Append(tenant.PasswordConnect);
+            string connectionString = connectionStringBuilder.ToString();
+            string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
+            if (isClearCache)
+            {
+                _cache.KeyDelete(finalKey);
+            }
+            if (_cache.KeyExists(finalKey))
+            {
+                storageFull = _cache.StringGet(finalKey).AsInteger();
+                // return storageUsed in database
+                return (storageFull, Math.Round((tenant.Size * storageFull) / 100));
+            }
+            else
+            {
+                var connStr = new NpgsqlConnectionStringBuilder(connectionString);
+                connStr.TrustServerCertificate = true;
+                try
+                {
+                    using (var conn = new NpgsqlConnection(connStr.ToString()))
+                    {
+                        conn.Open();
+                        string sqlQuery = string.Format("select pg_database_size('{0}')", tenant.Db);
+                        using (var command = new NpgsqlCommand(sqlQuery, conn))
+                        {
+                            NpgsqlDataReader reader = command.ExecuteReader();
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+
+                                // calculate storageInDB
+                                double sizeInDB = reader.GetInt64(0);
+                                /// 1: MB; 2: GB
+                                switch (tenant.SizeType)
+                                {
+                                    case 1:
+                                        storageInDB = Math.Round(sizeInDB / 1024 / 1024, 2);
+                                        break;
+                                    case 2:
+                                        storageInDB = Math.Round(sizeInDB / 1024 / 1024 / 1024, 2);
+                                        break;
+                                }
+                            }
+                            reader.Close();
+                        }
+                    }
+                    storageFull = Math.Round((storageInDB / tenant.Size) * 100);
+                    if (storageFull > 0)
+                    {
+                        _cache.StringSet(finalKey, storageFull.ToString());
+                        _cache.KeyExpire(finalKey, new TimeSpan(1, 0, 0));
+                    }
+                }
+                catch (Exception)
+                {
+                    // do not return anything in this catch
+                }
+            }
+            // return storageUsed in database
+            return (storageFull, storageInDB);
+        }
+
         private static TenantModel ConvertEntityToModel(Tenant tenant)
         {
             return new TenantModel(
@@ -562,6 +935,9 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.Password,
                        tenant.SubDomain,
                        tenant.Db,
+                       tenant.Size,
+                       tenant.SizeType,
+                       tenant.Type,
                        tenant.EndPointDb,
                        tenant.EndSubDomain,
                        tenant.Action,
@@ -582,6 +958,9 @@ namespace Infrastructure.SuperAdminRepositories
             tenant.SubDomain = model.SubDomain;
             tenant.Status = 2; //Status: creating
             tenant.Db = model.Db;
+            tenant.Size = model.Size;
+            tenant.SizeType = model.SizeType;
+            tenant.Type = model.Type;
             tenant.EndPointDb = model.SubDomain;
             tenant.EndSubDomain = model.SubDomain;
             tenant.RdsIdentifier = model.RdsIdentifier;

@@ -46,7 +46,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("UpdateTenant")]
         public ActionResult<Response<UpdateTenantResponse>> UpdateTenant([FromBody] UpdateTenantRequest request)
         {
-            var input = new UpdateTenantInputData(request.TenantId, request.Size, request.SizeType, request.SubDomain, request.Type, request.Hospital, request.AdminId, request.Password, _webSocketService);
+            var input = new UpdateTenantInputData(request.TenantId, request.SubDomain, request.Hospital, request.AdminId, request.Password, _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new UpdateTenantPresenter();
             presenter.Complete(output);
@@ -109,7 +109,9 @@ namespace SuperAdminAPI.Controllers
                        requestItem.KeyWord,
                        requestItem.FromDate,
                        requestItem.ToDate,
-                       requestItem.StatusTenant);
+                       requestItem.Type,
+                       requestItem.StatusTenant,
+                       requestItem.StorageFull);
         }
         #endregion
 
