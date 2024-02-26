@@ -81,37 +81,6 @@ public class ExportCsvTenantListInteractor : IExportCsvTenantListInputPort
                         case TenantEnum.HospitalName:
                             tenantDataString.Append(tenant.Hospital);
                             break;
-                        case TenantEnum.Type:
-                            /// <summary>
-                            /// 0: sharing; 1: dedicate(premium)
-                            /// </summary>
-                            if (tenant.Type == 1)
-                            {
-                                tenantDataString.Append("Dedicated");
-                            }
-                            else
-                            {
-                                tenantDataString.Append("Sharing");
-                            }
-                            break;
-                        case TenantEnum.Size:
-                            tenantDataString.Append(tenant.Size.AsString());
-                            /// <summary>
-                            /// 1: MB; 2: GB
-                            /// </summary>
-                            if (tenant.SizeType == 1)
-                            {
-                                tenantDataString.Append(" MB");
-                            }
-                            else
-                            {
-                                tenantDataString.Append(" GB");
-                            }
-                            break;
-                        case TenantEnum.StorageFull:
-                            tenantDataString.Append(tenant.StorageFull.AsString());
-                            tenantDataString.Append(" %");
-                            break;
                         case TenantEnum.StatusTenant:
                             /// <summary>
                             /// Undefined = 0

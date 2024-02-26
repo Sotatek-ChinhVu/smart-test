@@ -109,9 +109,7 @@ namespace SuperAdminAPI.Controllers
                        requestItem.KeyWord,
                        requestItem.FromDate,
                        requestItem.ToDate,
-                       requestItem.Type,
-                       requestItem.StatusTenant,
-                       requestItem.StorageFull);
+                       requestItem.StatusTenant);
         }
         #endregion
 

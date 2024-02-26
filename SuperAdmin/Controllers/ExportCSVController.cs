@@ -78,9 +78,7 @@ public class ExportCsvController : ControllerBase
                    requestItem.KeyWord,
                    requestItem.FromDate,
                    requestItem.ToDate,
-                   requestItem.Type,
-                   requestItem.StatusTenant,
-                   requestItem.StorageFull);
+                   requestItem.StatusTenant);
     }
 
     private IActionResult RenderCsv(List<string> dataList, string fileName)
