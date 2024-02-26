@@ -375,7 +375,8 @@ namespace Infrastructure.Repositories
             {
                 raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.IsDeleted == DeleteTypes.None
                                                                              && item.SinDate == sinDate
-                                                                             && item.PtId == ptId)
+                                                                             && item.PtId == ptId
+                                                                             && item.HpId == hpId)
                                                               .ToList();
 
                 raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
@@ -386,10 +387,11 @@ namespace Infrastructure.Repositories
             }
 
             // Lock 
-            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => raiinNoList.Contains(item.RaiinNo)
-                                                                           && (item.FunctionCd == FunctionCode.MedicalExaminationCode
-                                                                               || item.FunctionCd == FunctionCode.TeamKarte
-                                                                               || item.FunctionCd == FunctionCode.SwitchOrderCode))
+            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => item.HpId == hpId
+                                                                                    && raiinNoList.Contains(item.RaiinNo)
+                                                                                    && (item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                    || item.FunctionCd == FunctionCode.TeamKarte
+                                                                                    || item.FunctionCd == FunctionCode.SwitchOrderCode))
                                                             .ToList();
             foreach (var raiinItem in raiinInfList)
             {
@@ -440,10 +442,11 @@ namespace Infrastructure.Repositories
             }
 
             // Lock 
-            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => raiinNoList.Contains(item.RaiinNo)
-                                                                           && (item.FunctionCd == FunctionCode.MedicalExaminationCode
-                                                                               || item.FunctionCd == FunctionCode.TeamKarte
-                                                                               || item.FunctionCd == FunctionCode.SwitchOrderCode))
+            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => item.HpId == hpId
+                                                                                    && raiinNoList.Contains(item.RaiinNo)
+                                                                                    && (item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                    || item.FunctionCd == FunctionCode.TeamKarte
+                                                                                    || item.FunctionCd == FunctionCode.SwitchOrderCode))
                                                             .ToList();
             foreach (var raiinItem in raiinInfList)
             {

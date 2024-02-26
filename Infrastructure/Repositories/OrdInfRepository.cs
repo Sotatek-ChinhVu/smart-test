@@ -352,9 +352,9 @@ namespace Infrastructure.Repositories
 
             var tenMstYohos = isHistory ? null : NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.IsNosearch == 0 && t.StartDate <= sinDateMin && t.EndDate >= sinDateMax && (sinKouiKbns != null && sinKouiKbns.Contains(t.SinKouiKbn)) && (itemCdYohos != null && itemCdYohos.Contains(t.ItemCd))).ToList();
 
-            var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+            var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 0);
             var kensaIrai = checkKensaIrai?.Val ?? 0;
-            var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+            var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
             var odrInfs = from odrInf in allOdrInf
@@ -729,17 +729,17 @@ namespace Infrastructure.Repositories
                             r.RaiinNo,
                             r.SeqNo,
                             r.IsDeleted,
-                            GetDisplayApproveInf(r.UpdateId, r.UpdateDate)
+                            GetDisplayApproveInf(hpId, r.UpdateId, r.UpdateDate)
                         )
                 );
         }
 
-        private string GetDisplayApproveInf(int updateId, DateTime? updateDate)
+        private string GetDisplayApproveInf(int hpId, int updateId, DateTime? updateDate)
         {
             string result = string.Empty;
             string info = string.Empty;
 
-            string docName = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
+            string docName = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.HpId == hpId && u.Id == updateId)?.Sname ?? string.Empty;
             if (!string.IsNullOrEmpty(docName))
             {
                 info += docName;

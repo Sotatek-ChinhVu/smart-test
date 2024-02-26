@@ -209,7 +209,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("GetPatientGroupMst")]
         public ActionResult<Response<GetListPatientGroupMstResponse>> GetPatientGroupMst()
         {
-            var input = new GetListPatientGroupMstInputData();
+            var input = new GetListPatientGroupMstInputData(HpId);
             var output = _bus.Handle(input);
 
             var presenter = new GetListPatientGroupMstPresenter();

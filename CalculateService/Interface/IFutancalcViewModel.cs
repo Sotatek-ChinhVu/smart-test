@@ -5,6 +5,7 @@ namespace CalculateService.Interface
     public interface IFutancalcViewModel
     {
         void FutanCalculation(
+            int hpId,
             long ptId,
             int sinDate,
             List<SinKouiCountModel> sinKouiCounts,
@@ -14,6 +15,7 @@ namespace CalculateService.Interface
             int seikyuUp);
 
         List<KaikeiInfModel> TrialFutanCalculation(
+            int hpId,
             long ptId,
             int sinDate,
             long raiinNo,

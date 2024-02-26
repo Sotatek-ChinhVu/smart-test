@@ -66,7 +66,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
-                success = ReceFutanCalculateMain(inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
+                success = ReceFutanCalculateMain(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
 
                 // Check next step
                 while (true)
@@ -152,7 +152,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return true;
     }
 
-    private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
+    private bool ReceFutanCalculateMain(int hpId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
         SendMessager(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, 0, 0, "StartFutanCalculateMain", string.Empty));
         var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
@@ -161,7 +161,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             return false;
         }
-        _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm, uniqueKey), cancellationToken);
+        _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(hpId, ptInfList, seikyuYm, uniqueKey), cancellationToken);
         return true;
     }
 

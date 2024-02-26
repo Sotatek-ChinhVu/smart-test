@@ -85,7 +85,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
                                 inputData.IsGroup ? 1 : 0,
                                 inputData.IsAddNew
                              );
-            var resultData = _setMstRepository.SaveSetMstModel(inputData.UserId, inputData.SinDate, setMstModel);
+            var resultData = _setMstRepository.SaveSetMstModel(inputData.HpId, inputData.UserId, inputData.SinDate, setMstModel);
             AddAuditTrailLog(inputData.HpId, inputData.UserId, setMstModel.GenerationId, setMstModel.SetKbn, setMstModel.SetKbnEdaNo);
             if (resultData != null)
             {

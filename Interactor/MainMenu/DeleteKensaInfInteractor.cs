@@ -39,7 +39,7 @@ public class DeleteKensaInfInteractor : IDeleteKensaInfInputPort
 
     private DeleteKensaInfStatus ValidateData(DeleteKensaInfInputData inputData)
     {
-        if (!_patientInforRepository.CheckExistIdList(inputData.KensaInfList.Select(item => item.PtId).Distinct().ToList()))
+        if (!_patientInforRepository.CheckExistIdList(inputData.HpId, inputData.KensaInfList.Select(item => item.PtId).Distinct().ToList()))
         {
             return DeleteKensaInfStatus.InvalidPtId;
         }

@@ -333,7 +333,7 @@ public class AgeCheckerTest : BaseUT
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //AgeLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 3);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 3);
         var temp = systemConf?.Val ?? 8;
         int settingLevel = 8;
         if (systemConf != null)
@@ -344,7 +344,7 @@ public class AgeCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -356,10 +356,10 @@ public class AgeCheckerTest : BaseUT
             tenantTracking.SystemConfs.Add(systemConf);
         }
 
-        var tenMsts = CommonCheckerData.ReadTenMst("AGE008", "AGE008");
+        var tenMsts = CommonCheckerData.ReadTenMst("AGE008", "AGE008", hpId);
         var m14 = CommonCheckerData.ReadM14AgeCheck();
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS003");
-        var ptByomei = CommonCheckerData.ReadPtByomei();
+        var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M14AgeCheck.AddRange(m14);
         tenantTracking.SaveChanges();
@@ -378,7 +378,7 @@ public class AgeCheckerTest : BaseUT
                                                                 RealtimeCheckerType.Age, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
         var ageChecker = new AgeChecker<OrdInfoModel, OrdInfoDetailModel>();
-        ageChecker.HpID = 1;
+        ageChecker.HpID = hpId;
         ageChecker.PtID = 111;
         ageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();

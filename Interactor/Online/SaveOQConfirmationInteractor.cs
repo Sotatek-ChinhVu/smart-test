@@ -51,7 +51,7 @@ public class SaveOQConfirmationInteractor : ISaveOQConfirmationInputPort
 
     private SaveOQConfirmationStatus ValidateData(SaveOQConfirmationInputData inputData)
     {
-        if (!_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (!_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return SaveOQConfirmationStatus.InvalidPtId;
         }

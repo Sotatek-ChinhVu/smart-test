@@ -26,7 +26,7 @@ namespace CalculateService.Ika.ViewModels
         /// </summary>
         /// <param name="common">共通データ</param>
         public IkaCalculateOdrToWrkSyujyutuViewModel(IkaCalculateCommonDataViewModel common,
-            ISystemConfigProvider systemConfigProvider,IEmrLogger emrLogger)
+            ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             _common = common;
 
@@ -37,29 +37,31 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 計算ロジック
         /// </summary>
-        public void Calculate()
+        /// <param name="hpId">HospitalID</param>
+        public void Calculate(int hpId)
         {
             const string conFncName = nameof(Calculate);
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.SyujyutuMin, OdrKouiKbnConst.SyujyutuMax))
             {
                 // 保険
-                CalculateHoken();
+                CalculateHoken(hpId);
 
                 // 自費
-                CalculateJihi();
+                CalculateJihi(hpId);
             }
 
             _common.Wrk.CommitWrkSinRpInf();
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
         /// 保険分を処理する
         /// </summary>
-        private void CalculateHoken()
+        /// <param name="hpId">HospitalID</param>
+        private void CalculateHoken(int hpId)
         {
             const string conFncName = nameof(CalculateHoken);
 
@@ -112,9 +114,9 @@ namespace CalculateService.Ika.ViewModels
 
                             // 労災四肢加算が手オーダーされているRpかどうかチェック
                             bool existsRosaiSisiKasan =
-                                ( _common.IsRosai && 
-                                  filteredOdrDtl.Any(p => 
-                                    p.ItemCd == ItemCdConst.SyujyutuRosaiSisiKasan || 
+                                (_common.IsRosai &&
+                                  filteredOdrDtl.Any(p =>
+                                    p.ItemCd == ItemCdConst.SyujyutuRosaiSisiKasan ||
                                     p.ItemCd == ItemCdConst.SyujyutuRosaiSisiKasan2)
                                 );
 
@@ -168,24 +170,24 @@ namespace CalculateService.Ika.ViewModels
                                         if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
                                         {
                                             // 算定回数マスタのチェックにより算定不可
-                                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
+                                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
                                         }
                                         else if (_common.CheckAge(odrDtl) == 2)
                                         {
                                             // 年齢チェックにより算定不可
-                                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
+                                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
                                         }
                                         else
                                         {
-                                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                             // 労災加算チェック
                                             if (_common.IsRosai)
                                             {
                                                 if ((filteredOdrDtl.Any(p => p.ItemCd == ItemCdConst.SyujyutuRosaiSisiKasan || p.ItemCd == ItemCdConst.SyujyutuRosaiSisiKasan2) == false) &&
-                                                        (_common.Wrk.wrkSinKouiDetails.Any(p => 
-                                                        p.RaiinNo == _common.Wrk.RaiinNo && 
-                                                        p.HokenKbn == _common.Wrk.HokenKbn && 
+                                                        (_common.Wrk.wrkSinKouiDetails.Any(p =>
+                                                        p.RaiinNo == _common.Wrk.RaiinNo &&
+                                                        p.HokenKbn == _common.Wrk.HokenKbn &&
                                                         p.RpNo == _common.Wrk.RpNo &&
                                                         p.SeqNo == _common.Wrk.SeqNo &&
                                                         (p.ItemCd == ItemCdConst.SyujyutuRosaiSisiKasan || p.ItemCd == ItemCdConst.SyujyutuRosaiSisiKasan2) &&
@@ -239,7 +241,7 @@ namespace CalculateService.Ika.ViewModels
                                             }
 
                                             // コメント自動追加
-                                            _common.Wrk.AppendNewWrkSinKouiDetailComment(odrDtl, filteredOdrDtl);
+                                            _common.Wrk.AppendNewWrkSinKouiDetailComment(hpId, odrDtl, filteredOdrDtl);
 
                                             if (odrDtl.CdKbn != "")
                                             {
@@ -284,7 +286,7 @@ namespace CalculateService.Ika.ViewModels
                                     }
                                     else
                                     {
-                                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                        _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
                                     }
 
                                     if (odrDtl.IsKihonKoumoku && existsRosaiSisiKasan == false)
@@ -334,7 +336,7 @@ namespace CalculateService.Ika.ViewModels
                                 if (odrDtl.IsYItem)
                                 {
                                     // 薬剤・コメント
-                                    _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                    _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                     //commentSkipFlg = false;
                                 }
@@ -360,7 +362,7 @@ namespace CalculateService.Ika.ViewModels
                                 if (odrDtl.IsTItem)
                                 {
                                     // 特材・コメント
-                                    _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                    _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                     if (odrDtl.IsSanso)
                                     {
@@ -395,7 +397,7 @@ namespace CalculateService.Ika.ViewModels
         /// </param>
         private void JikanKasan(int mode)
         {
-            string[] jikangails = 
+            string[] jikangails =
                 new string[] { ItemCdConst.SyujyutuJikangai, ItemCdConst.MasuiJikangai };
             string[] kyujituls =
                 new string[] { ItemCdConst.SyujyutuKyujitu, ItemCdConst.MasuiKyujitu };
@@ -492,11 +494,13 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 自費算定分を処理する
         /// </summary>
-        private void CalculateJihi()
+        /// <param name="hpId">HospitalID</param>
+        private void CalculateJihi(int hpId)
         {
             const string conFncName = nameof(CalculateJihi);
 
             _common.CalculateJihi(
+                hpId,
                 OdrKouiKbnConst.SyujyutuMin,
                 OdrKouiKbnConst.SyujyutuMax,
                 ReceKouiKbn.Syujyutu,

@@ -2,7 +2,6 @@
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1010.Models;
@@ -58,6 +57,7 @@ public class CoSta1010Finder : RepositoryBase, ICoSta1010Finder
         //入金情報
         var syunoNyukins = NoTrackingDataContext.SyunoNyukin
             .Where(n =>
+                n.HpId == hpId &&
                 n.IsDeleted == DeleteStatus.None &&
                 n.NyukinDate <= (printConf.IncludeOutRangeNyukin ? 99999999 : endDate) &&
                     (
@@ -89,7 +89,7 @@ public class CoSta1010Finder : RepositoryBase, ICoSta1010Finder
 
         //患者情報
         var ptInfs = NoTrackingDataContext.PtInfs.Where(
-            p => p.IsDelete == DeleteStatus.None
+            p => p.HpId == hpId && p.IsDelete == DeleteStatus.None
         );
         if (!printConf.IsTester)
         {
@@ -99,7 +99,7 @@ public class CoSta1010Finder : RepositoryBase, ICoSta1010Finder
         ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
 
         //来院情報
-        IQueryable<RaiinInf> raiinInfs = NoTrackingDataContext.RaiinInfs;
+        IQueryable<RaiinInf> raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId);
         if (printConf.KaIds?.Count >= 1)
         {
             //診療科の条件指定
@@ -112,16 +112,16 @@ public class CoSta1010Finder : RepositoryBase, ICoSta1010Finder
         }
 
         //診療科マスタ
-        var kaMsts = NoTrackingDataContext.KaMsts;
+        var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
         //ユーザーマスタ
-        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
+        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteStatus.None);
         //保険パターン
-        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
         //会計情報
-        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs;
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId);
 
         //最終来院日
-        var ptLastVisits = NoTrackingDataContext.PtLastVisitDates;
+        var ptLastVisits = NoTrackingDataContext.PtLastVisitDates.Where(x => x.HpId == hpId);
 
         var joinQuery = (
             from syunoSeikyu in syunoSeikyus
@@ -277,6 +277,7 @@ public class CoSta1010Finder : RepositoryBase, ICoSta1010Finder
 
         //コメント付与
         var nyukinCmts = NoTrackingDataContext.SyunoNyukin.Where(n =>
+            n.HpId == hpId &&
             n.IsDeleted == DeleteStatus.None &&
             n.NyukinDate >= startDate &&
             n.NyukinDate <= endDate &&

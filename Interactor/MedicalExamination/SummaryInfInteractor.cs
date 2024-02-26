@@ -543,7 +543,7 @@ namespace Interactor.MedicalExamination
                     break;
                 case "3":
                     // 病歴
-                    summaryInfItem = GetPathologicalStatus(ptId);
+                    summaryInfItem = GetPathologicalStatus(hpId, ptId);
                     break;
                 case "4":
                     // 相互作用
@@ -720,14 +720,14 @@ namespace Interactor.MedicalExamination
             return summaryInfItem;
         }
 
-        private SummaryInfItem GetPathologicalStatus(long ptId)
+        private SummaryInfItem GetPathologicalStatus(int hpId, long ptId)
         {
             int grpItemCd = 3;
             string headerName = "◆病態";
             StringBuilder headerInfo = new StringBuilder();
 
-            var taskReki = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantNotePathologicalRekiRepository.GetKioRekiList(ptId));
-            var taskInflection = Task<List<PtInfectionModel>>.Factory.StartNew(() => _importantNotePathologicalInfectionRepository.GetInfectionList(ptId));
+            var taskReki = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantNotePathologicalRekiRepository.GetKioRekiList(hpId, ptId));
+            var taskInflection = Task<List<PtInfectionModel>>.Factory.StartNew(() => _importantNotePathologicalInfectionRepository.GetInfectionList(hpId, ptId));
             Task.WaitAll(taskReki, taskInflection);
 
             foreach (var ptKioRekiModel in taskReki.Result)

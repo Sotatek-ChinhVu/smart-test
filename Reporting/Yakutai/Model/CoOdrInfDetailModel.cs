@@ -460,7 +460,7 @@ namespace Reporting.Yakutai.Model
             {
                 bool ret = false;
 
-                if (_systemConfig.YakutaiTaniDsp() == 1 &&
+                if (_systemConfig.YakutaiTaniDsp(HpId) == 1 &&
                     TenMst != null &&
                     TenMst.YohoKbn == 0 &&
                     string.IsNullOrEmpty(TenMst.CnvUnitName) == false &&

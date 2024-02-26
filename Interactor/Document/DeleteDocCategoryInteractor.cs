@@ -77,7 +77,7 @@ public class DeleteDocCategoryInteractor : IDeleteDocCategoryInputPort
         {
             return DeleteDocCategoryStatus.MoveDocCategoryNotFound;
         }
-        else if (inputData.UserId > 0 && !_userRepository.CheckExistedUserId(inputData.UserId))
+        else if (inputData.UserId > 0 && !_userRepository.CheckExistedUserId(inputData.HpId, inputData.UserId))
         {
             return DeleteDocCategoryStatus.InvalidUserId;
         }

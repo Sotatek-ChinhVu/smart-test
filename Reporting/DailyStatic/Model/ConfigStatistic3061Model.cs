@@ -32,16 +32,24 @@ public class ConfigStatistic3061Model : StatisticModelBase
         }
     }
 
-    public ConfigStatistic3061Model(int groupId = 0, int reportId = 0, int sortNo = 0)
+    public ConfigStatistic3061Model(int hpId, int groupId = 0, int reportId = 0, int sortNo = 0)
     {
         StaMenu = new StaMenu();
-        StaMenu.HpId = Session.HospitalID;
+        StaMenu.HpId = hpId;
         StaMenu.GrpId = groupId;
         StaMenu.ReportId = reportId;
         StaMenu.SortNo = sortNo;
 
         ListStaConf = new List<StaConf>();
         ModelStatus = ModelStatus.Added;
+    }
+
+    /// <summary>
+    /// Hospital ID
+    /// </summary>
+    public int HpId
+    {
+        get => StaMenu.HpId;
     }
 
     /// <summary>
@@ -84,7 +92,7 @@ public class ConfigStatistic3061Model : StatisticModelBase
     /// </summary>
     public string MenuName
     {
-        get => StaMenu.MenuName ??string.Empty;
+        get => StaMenu.MenuName ?? string.Empty;
         set
         {
             StaMenu.MenuName = value;
@@ -102,11 +110,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(1);
+            return GetValueConf(HpId, 1);
         }
         set
         {
-            SettingConfig(1, value);
+            SettingConfig(HpId, 1, value);
         }
     }
 
@@ -117,11 +125,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(2);
+            return GetValueConf(HpId, 2);
         }
         set
         {
-            SettingConfig(2, value);
+            SettingConfig(HpId, 2, value);
         }
     }
 
@@ -133,11 +141,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(9).AsInteger();
+            return GetValueConf(HpId, 9).AsInteger();
         }
         set
         {
-            SettingConfig(9, value.AsString());
+            SettingConfig(HpId, 9, value.AsString());
         }
     }
 
@@ -148,11 +156,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(10).AsInteger();
+            return GetValueConf(HpId, 10).AsInteger();
         }
         set
         {
-            SettingConfig(10, value.AsString());
+            SettingConfig(HpId, 10, value.AsString());
         }
     }
 
@@ -163,11 +171,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(11).AsInteger();
+            return GetValueConf(HpId, 11).AsInteger();
         }
         set
         {
-            SettingConfig(11, value.AsString());
+            SettingConfig(HpId, 11, value.AsString());
         }
     }
 
@@ -178,11 +186,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(12).AsInteger();
+            return GetValueConf(HpId, 12).AsInteger();
         }
         set
         {
-            SettingConfig(12, value.AsString());
+            SettingConfig(HpId, 12, value.AsString());
         }
     }
 
@@ -194,11 +202,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(30).AsInteger();
+            return GetValueConf(HpId, 30).AsInteger();
         }
         set
         {
-            SettingConfig(30, value.AsString());
+            SettingConfig(HpId, 30, value.AsString());
         }
     }
 
@@ -210,11 +218,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(31);
+            return GetValueConf(HpId, 31);
         }
         set
         {
-            SettingConfig(31, value);
+            SettingConfig(HpId, 31, value);
         }
     }
 
@@ -243,11 +251,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(32);
+            return GetValueConf(HpId, 32);
         }
         set
         {
-            SettingConfig(32, value);
+            SettingConfig(HpId, 32, value);
         }
     }
 
@@ -275,11 +283,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(33);
+            return GetValueConf(HpId, 33);
         }
         set
         {
-            SettingConfig(33, value);
+            SettingConfig(HpId, 33, value);
         }
     }
 
@@ -308,11 +316,11 @@ public class ConfigStatistic3061Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(34);
+            return GetValueConf(HpId, 34);
         }
         set
         {
-            SettingConfig(34, value);
+            SettingConfig(HpId, 34, value);
         }
     }
 

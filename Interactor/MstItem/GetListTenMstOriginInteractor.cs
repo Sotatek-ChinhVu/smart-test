@@ -19,7 +19,7 @@ namespace Interactor.MstItem
                 if (string.IsNullOrEmpty(inputData.ItemCd))
                     return new GetListTenMstOriginOutputData(new List<TenMstOriginModel>(), GetListTenMstOriginStatus.InvalidItemCd);
 
-                var tenMstModelLists = _mstItemRepository.GetGroupTenMst(inputData.ItemCd);
+                var tenMstModelLists = _mstItemRepository.GetGroupTenMst(inputData.HpId, inputData.ItemCd);
                 if (!tenMstModelLists.Any())
                     return new GetListTenMstOriginOutputData(tenMstModelLists, GetListTenMstOriginStatus.NoData);
                 else

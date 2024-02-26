@@ -37,20 +37,20 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
     }
 
-    private List<SystemConf> ReloadCache(int hpId)
+    private List<SystemConf> ReloadCache(int hpId, string keySystemConfig)
     {
         var result = NoTrackingDataContext.SystemConfs
                                     .Where(item => item.HpId == hpId)
                                     .ToList();
         var json = JsonSerializer.Serialize(result);
-        _cache.StringSet(getListSystemConfigKey, json);
+        _cache.StringSet(keySystemConfig, json);
 
         return result;
     }
 
-    private List<SystemConf> ReadCache()
+    private List<SystemConf> ReadCache(string keySystemConfig)
     {
-        var results = _cache.StringGet(getListSystemConfigKey);
+        var results = _cache.StringGet(keySystemConfig);
         var json = results.AsString();
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SystemConf>>(json) : new();
         return datas ?? new();
@@ -58,14 +58,15 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     private List<SystemConf> GetData(int hpId)
     {
+        var keySystemConfig = getListSystemConfigKey + "_" + hpId;
         List<SystemConf> result;
-        if (!_cache.KeyExists(getListSystemConfigKey))
+        if (!_cache.KeyExists(keySystemConfig))
         {
-            result = ReloadCache(hpId);
+            result = ReloadCache(hpId, keySystemConfig);
         }
         else
         {
-            result = ReadCache();
+            result = ReadCache(keySystemConfig);
         }
 
         return result;
@@ -124,7 +125,8 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var result = TrackingDataContext.SaveChanges();
         if (result > 0)
         {
-            ReloadCache(hpId);
+            var keySystemConfig = getListSystemConfigKey + "_" + hpId;
+            ReloadCache(hpId, keySystemConfig);
         }
 
         return true;
@@ -559,7 +561,8 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var result = TrackingDataContext.SaveChanges() > 0;
         if (result)
         {
-            ReloadCache(hpId);
+            var keySystemConfig = getListSystemConfigKey + "_" + hpId;
+            ReloadCache(hpId, keySystemConfig);
         }
 
         return result;

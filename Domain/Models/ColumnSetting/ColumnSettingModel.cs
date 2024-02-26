@@ -2,9 +2,10 @@
 
 public class ColumnSettingModel
 {
-    public ColumnSettingModel(int userId, string tableName, string columnName,
+    public ColumnSettingModel(int hpId, int userId, string tableName, string columnName,
         int displayOrder, bool isPinned, bool isHidden, int width, string orderBy)
     {
+        HpId = hpId;
         UserId = userId;
         TableName = tableName;
         ColumnName = columnName;
@@ -14,6 +15,8 @@ public class ColumnSettingModel
         Width = width;
         OrderBy = orderBy;
     }
+
+    public int HpId { get; private set; }
 
     public int UserId { get; private set; }
 

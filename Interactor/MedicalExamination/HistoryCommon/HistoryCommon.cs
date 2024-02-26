@@ -41,7 +41,7 @@ public class HistoryCommon : IHistoryCommon
         var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
         var listUserIds = historyList.historyOrderModelList?.Select(d => d.UketukeId).ToList();
-        var listUsers = listUserIds == null ? new List<UserMstModel>() : _userRepository.GetListAnyUser(listUserIds)?.ToList();
+        var listUsers = listUserIds == null ? new List<UserMstModel>() : _userRepository.GetListAnyUser(hpId, listUserIds)?.ToList();
         var insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
         List<string> listFolders = new()
         {

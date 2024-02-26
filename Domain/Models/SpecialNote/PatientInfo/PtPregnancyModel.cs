@@ -81,16 +81,17 @@ namespace Domain.Models.SpecialNote.PatientInfo
         private string GetPeriodWeek(int startDay, int ovulation, int endDay = 0)
         {
             if (startDay == 0) return string.Empty;
-            if (startDay >= SinDate)
-            {
-                return string.Empty;
-            }
             if (endDay != 0 && endDay < startDay)
             {
-                return string.Empty;
+                return "0W0D";
             }
 
             DateTime dtStartDay = CIUtil.IntToDate(startDay);
+            if (CIUtil.DateTimeToInt(dtStartDay.Date.AddDays(-14)) >= SinDate)
+            {
+                return "0W0D";
+            }
+
             dtStartDay = dtStartDay.AddDays(-14 * ovulation);
 
             DateTime dtToDay;

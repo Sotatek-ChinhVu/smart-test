@@ -79,7 +79,7 @@ public class CheckExistFileNameInteractor : ICheckExistFileNameInputPort
         {
             return CheckExistFileNameStatus.InvalidFileName;
         }
-        if (inputData.IsCheckDocInf && !_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
+        if (inputData.IsCheckDocInf && !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long> { inputData.PtId }))
         {
             return CheckExistFileNameStatus.InvalidPtId;
         }
