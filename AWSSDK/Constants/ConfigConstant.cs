@@ -383,6 +383,7 @@ namespace AWSSDK.Constants
             "yoho_set_mst",
             "yousiki1_inf",
             "yousiki1_inf_detail",
+            "pt_jibkar",
             "z_doc_inf",
             "z_filing_inf",
             "z_filing_inf_temp",
@@ -442,7 +443,8 @@ namespace AWSSDK.Constants
             "z_todo_inf",
             "z_uketuke_sbt_day_inf",
             "z_yousiki1_inf",
-            "z_yousiki1_inf_detail"
+            "z_yousiki1_inf_detail",
+            "z_pt_jibkar"
         };
     }
 }
