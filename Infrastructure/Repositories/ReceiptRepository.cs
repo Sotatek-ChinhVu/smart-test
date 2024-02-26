@@ -81,7 +81,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         List<ReceInf> receInfFilters = new();
 
         var listPtIds = receInfs.Select(item => item.PtId).Distinct().ToList();
-        var minSinYM = receInfs.Select(item => item.SinYm).DefaultIfEmpty().Min();
+        var minSinYM = receInfs.Select(item => item.SinYm).DefaultIfEmpty()?.Min() ?? 0;
         var minDay = minSinYM * 100 + 1;
 
         var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId
@@ -547,8 +547,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 if (originItemOrderList != null && originItemOrderList.Any())
                 {
                     #region Count and sum item from order
-                    int maxSinYm = (sinYmGroup.DefaultIfEmpty(0).Max() * 100) + 31;
-                    int minSinYm = (sinYmGroup.DefaultIfEmpty(0).Min() * 100) + 1;
+                    int maxSinYm = (sinYmGroup.DefaultIfEmpty(0)?.Max() * 100) + 31 ?? 0;
+                    int minSinYm = (sinYmGroup.DefaultIfEmpty(0)?.Min() * 100) + 1 ?? 0;
 
                     var hokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
                                                                                             && item.IsDeleted == 0
@@ -638,8 +638,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 if (originItemSanteiList != null && originItemSanteiList.Any())
                 {
                     #region Count and sum item from santei
-                    int maxSinYm = sinYmGroup.DefaultIfEmpty(0).Max();
-                    int minSinYm = sinYmGroup.DefaultIfEmpty(0).Min();
+                    int maxSinYm = sinYmGroup.DefaultIfEmpty(0)?.Max() ?? 0;
+                    int minSinYm = sinYmGroup.DefaultIfEmpty(0)?.Min() ?? 0;
 
                     var sinkouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
                                                                                             && item.IsDeleted == 0
@@ -2789,7 +2789,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         List<HasErrorWithSanteiModel> result = new();
         var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
         var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
-        int minSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0).Min() ?? 0;
+        int minSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0)?.Min() ?? 0;
         var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
                                                                               && ptIdList.Contains(item.PtId)
                                                                               && item.SinYm == seikyuYm
@@ -2830,7 +2830,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         List<HasErrorWithSanteiModel> result = new();
         var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
         var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
-        int maxSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0).Max() ?? 0;
+        int maxSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0)?.Max() ?? 0;
         var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
                                                                               && ptIdList.Contains(item.PtId)
                                                                               && item.SinYm == seikyuYm

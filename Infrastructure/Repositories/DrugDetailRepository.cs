@@ -345,7 +345,7 @@ namespace Infrastructure.Repositories
                                              select piInfDetail.Level;
             var dataJoinInfDetail = joinInfDetailAndProductInf.ToList();
             int maxKikaku = 0;
-            if (dataJoinInfDetail.Count > 0)
+            if (dataJoinInfDetail?.Count > 0)
             {
                 maxKikaku = joinInfDetailAndProductInf.Max();
             }
@@ -367,7 +367,7 @@ namespace Infrastructure.Repositories
                                                  select piInfDetail.Level;
             var dataJoinInfMainCollection = joinMainInfDetailAndProductInf.ToList();
             int maxTenpu = 0;
-            if (dataJoinInfMainCollection.Count > 0)
+            if (dataJoinInfMainCollection?.Count > 0)
             {
                 maxTenpu = joinInfDetailAndProductInf.Max();
             }

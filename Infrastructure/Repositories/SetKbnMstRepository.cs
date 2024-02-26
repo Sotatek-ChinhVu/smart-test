@@ -81,7 +81,7 @@ namespace Infrastructure.Repositories
 
         public bool Upsert(int hpId, int userId, int generationId, List<SetKbnMstModel> setKbnMstModels)
         {
-            int maxSetKbn = NoTrackingDataContext.SetKbnMsts.Where(s => s.GenerationId == generationId && s.HpId == hpId).Select(s => s.SetKbn).ToList().DefaultIfEmpty(0).Max();
+            int maxSetKbn = NoTrackingDataContext.SetKbnMsts.Where(s => s.GenerationId == generationId && s.HpId == hpId).Select(s => s.SetKbn).ToList().DefaultIfEmpty(0)?.Max() ?? 0;
             foreach (var model in setKbnMstModels)
             {
                 maxSetKbn++;

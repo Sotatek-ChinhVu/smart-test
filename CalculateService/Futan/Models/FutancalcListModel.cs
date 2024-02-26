@@ -304,7 +304,7 @@ namespace CalculateService.Futan.Models
                 k.SortKey.CompareTo(_kaikeiDetail.SortKey) == -1
             );
 
-            int result = wrkQuery.Any() ? wrkQuery.Max(k => k.KogakuLimit) : 0;
+            int result = wrkQuery != null && wrkQuery.Any() ? wrkQuery.Max(k => k.KogakuLimit) : 0;
 
             return result;
         }

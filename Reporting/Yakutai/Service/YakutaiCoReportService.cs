@@ -633,11 +633,11 @@ namespace Reporting.Yakutai.Service
                         if (fukuyojis[i] > 0)
                         {
                             // 服用時設定別にOdrInfを生成
-                            long rpEdaNo = odrInfs.Where(p => p.RpNo == odrInf.RpNo).Max(p => p.RpEdaNo);
+                            long rpEdaNo = odrInfs.Where(p => p.RpNo == odrInf.RpNo).DefaultIfEmpty()?.Max(p => p?.RpEdaNo) ?? 0;
 
                             if (appendOdrInfs.Any(p => p.RpNo == odrInf.RpNo))
                             {
-                                long rpEdaNo2 = appendOdrInfs.Where(p => p.RpNo == odrInf.RpNo).Max(p => p.RpEdaNo);
+                                long rpEdaNo2 = appendOdrInfs.Where(p => p.RpNo == odrInf.RpNo).DefaultIfEmpty()?.Max(p => p?.RpEdaNo) ?? 0;
 
                                 if (rpEdaNo2 > rpEdaNo)
                                 {
