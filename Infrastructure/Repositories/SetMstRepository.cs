@@ -1431,7 +1431,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         foreach (var copySetCd in listCopySetCds)
         {
             var seqNoBySetCdList = listCopySetKarteImageInfs.Where(item => item.SetCd == copySetCd).Select(item => item.SeqNo).Distinct().ToList();
-            if (!seqNoBySetCdList.Any())
+            if (seqNoBySetCdList?.Any() == false)
             {
                 continue;
             }

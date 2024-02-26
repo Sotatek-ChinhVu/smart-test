@@ -46,8 +46,8 @@ namespace Infrastructure.Repositories
             }
 
             #region max-id-insurance
-            int maxIdHokenInf = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenId);
-            int maxIdKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenId);
+            int maxIdHokenInf = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId).DefaultIfEmpty()?.Max(p => p == null ? 0 : p.HokenId) ?? 0;
+            int maxIdKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId).DefaultIfEmpty()?.Max(p => p == null ? 0 : p.HokenId) ?? 0;
             int maxPidHokenPattern = NoTrackingDataContext.PtHokenPatterns.Where(x => x.PtId == ptId && x.HpId == hpId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenPid);
             #endregion
 

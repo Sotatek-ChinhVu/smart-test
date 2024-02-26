@@ -709,7 +709,7 @@ namespace CalculateService.Ika.ViewModels
                                p.RpNo == sinRpInf.RpNo &&
                                p.UpdateState != UpdateStateConst.Delete)
                             .Select(p => p.SinDay)
-                            .Min();
+                            .DefaultIfEmpty()?.Min() ?? 0;
                         }
 
                     }
@@ -878,7 +878,7 @@ namespace CalculateService.Ika.ViewModels
                                        p.RpNo == sinRpInf.RpNo &&
                                        p.UpdateState != UpdateStateConst.Delete)
                                     .Select(p => p.SinDay)
-                                    .Min();
+                                    .DefaultIfEmpty()?.Min() ?? 0;
                                 }
 
                                 addData = false;

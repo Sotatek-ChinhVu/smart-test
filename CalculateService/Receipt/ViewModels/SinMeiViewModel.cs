@@ -2621,7 +2621,7 @@ namespace CalculateService.Receipt.ViewModels
                 }
                 if (_firstSinDate == 0)
                 {
-                    _lastSinDate = sinKouiCountModels.Min(p => p.SinDate);
+                    _lastSinDate = sinKouiCountModels.DefaultIfEmpty()?.Min(p => p.SinDate) ?? 0;
                 }
 
                 _lastSinDate = 0;

@@ -1314,7 +1314,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         filteredOdrInfDtls = odrInfDtls.FindAll(p => _isRefillRp(p.RpNo, p.RpEdaNo));
 
                         // 最大分割回数
-                        int bunkatuMax = filteredOdrInfDtls.Max(p => p.BunkatuCount);
+                        int bunkatuMax = filteredOdrInfDtls.DefaultIfEmpty()?.Max(p => p?.BunkatuCount) ?? 0;
                         if (bunkatuMax <= 0) bunkatuMax = 1;
 
                         // PT_HOKEN

@@ -587,7 +587,7 @@ namespace Interactor.MedicalExamination
             int grpItemCd = 1;
             string headerName = "■身体情報";
             List<KensaInfDetailModel> listKensaInfDetailModel = _specialNotePatientInfPhysicalRepository.GetListKensaInfDetailModel(hpId, ptId, sinDate);
-            long maxSortNo = listKensaInfDetailModel.Max(u => u.SortNo);
+            long maxSortNo = listKensaInfDetailModel.DefaultIfEmpty().Max(u => u?.SortNo) ?? 0;
             KensaInfDetailModel heightModel = listKensaInfDetailModel.FirstOrDefault(u => u.KensaItemCd == IraiCodeConstant.HEIGHT_CODE) ?? new();
             KensaInfDetailModel weightModel = listKensaInfDetailModel.FirstOrDefault(u => u.KensaItemCd == IraiCodeConstant.WEIGHT_CODE) ?? new();
             KensaInfDetailModel bmiModel = listKensaInfDetailModel.FirstOrDefault(u => u.KensaItemCd == IraiCodeConstant.BMI_CODE) ?? new();

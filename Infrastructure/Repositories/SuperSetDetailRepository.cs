@@ -59,7 +59,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         List<(int setCd, long seqNo)> lastSeqNos = new();
         foreach (var setCdItem in setCds)
         {
-            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == setCdItem).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
+            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == setCdItem).Select(item => item.SeqNo)?.DefaultIfEmpty(0)?.Max() ?? 0;
             if (lastSeq > 0)
             {
                 lastSeqNos.Add(new(setCdItem, lastSeq));
