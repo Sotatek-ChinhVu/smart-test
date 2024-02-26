@@ -9,6 +9,7 @@ using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Text;
+using System.Text.Json;
 using UseCase.ReceSeikyu.ImportFile;
 
 namespace Interactor.ReceSeikyu
@@ -31,16 +32,28 @@ namespace Interactor.ReceSeikyu
             try
             {
                 string content = ReadAsString(inputData.File);
-                List<string> fileContent = content.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).ToList();
+                Console.WriteLine("Raw data test import:" + content);
+                List<string> fileContent;
+                if (OperatingSystem.IsLinux())
+                {
+                    fileContent = content.Split("\n").Where(x => !string.IsNullOrEmpty(x)).ToList();
+                }
+                else
+                {
+                    fileContent = content.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).ToList();
+                }
                 string fileName = inputData.File.FileName;
 
-                var result = new List<ReceSeikyuModel>();
                 if (inputData.HpId <= 0)
+                {
                     return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.InvalidHpId, string.Empty);
-
-                if (fileContent == null || fileContent.Count() == 0)
+                }
+                if (fileContent == null || fileContent.Count == 0)
+                {
                     return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.InvalidContentFile, string.Empty);
+                }
 
+                Console.WriteLine("Data test import: " + JsonSerializer.Serialize(fileContent));
                 return HandlerImportFileRece(fileName, fileContent, inputData.HpId, inputData.UserId, inputData.File.OpenReadStream());
             }
             finally
@@ -69,7 +82,7 @@ namespace Interactor.ReceSeikyu
             bool IsReInvalid = false;
             if (fileName.ToUpper().Equals("RRECEC.HEN"))
             {
-                for (int iRow = 0; iRow < fileContent.Count(); iRow++)
+                for (int iRow = 0; iRow < fileContent.Count; iRow++)
                 {
                     if (string.IsNullOrEmpty(fileContent[iRow])) continue;
                     List<string> slCol = fileContent[iRow].Split(new[] { "," }, StringSplitOptions.None).ToList();
@@ -126,8 +139,9 @@ namespace Interactor.ReceSeikyu
             }
             else
             {
-                for (int iRow = 0; iRow < fileContent.Count(); iRow++)
+                for (int iRow = 0; iRow < fileContent.Count; iRow++)
                 {
+                    var dataTest = fileContent[iRow];
                     if (string.IsNullOrEmpty(fileContent[iRow])) continue;
                     List<string> slCol = fileContent[iRow].Split(new[] { "," }, StringSplitOptions.None).ToList();
                     if (IsReInvalid && slCol[0] != "RE") continue;
@@ -223,7 +237,7 @@ namespace Interactor.ReceSeikyu
 
                         // Save reki
                         rekiList.Add(fileContent[iRow]);
-                        if (iRow + 1 < fileContent.Count())
+                        if (iRow + 1 < fileContent.Count)
                         {
                             var slColNext = fileContent[iRow + 1].Split(new[] { "," }, StringSplitOptions.None).ToList();
                             if (CIUtil.StrToIntDef(slColNext[0], 0) < 1)
@@ -259,6 +273,7 @@ namespace Interactor.ReceSeikyu
                     }
                 }
             }
+            Console.WriteLine("areCnt: " + areCnt);
 
             string path = $"{CommonConstants.Tempotary}/{CommonConstants.ReceiptcHen}/{aSeikyuYm}/";
             string fileNameUpload = $"{CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd_HHmmss_")}{fileName}";
