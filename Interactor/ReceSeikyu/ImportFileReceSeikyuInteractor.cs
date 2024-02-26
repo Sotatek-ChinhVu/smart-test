@@ -32,8 +32,9 @@ namespace Interactor.ReceSeikyu
             try
             {
                 string content = ReadAsString(inputData.File);
-                Console.WriteLine("Raw data test import:" + content);
                 List<string> fileContent;
+
+                // if the Operating System is linux, the file content has a "\n" character as a line break
                 if (OperatingSystem.IsLinux())
                 {
                     fileContent = content.Split("\n").Where(x => !string.IsNullOrEmpty(x)).ToList();
@@ -53,7 +54,6 @@ namespace Interactor.ReceSeikyu
                     return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.InvalidContentFile, string.Empty);
                 }
 
-                Console.WriteLine("Data test import: " + JsonSerializer.Serialize(fileContent));
                 return HandlerImportFileRece(fileName, fileContent, inputData.HpId, inputData.UserId, inputData.File.OpenReadStream());
             }
             finally
@@ -141,7 +141,6 @@ namespace Interactor.ReceSeikyu
             {
                 for (int iRow = 0; iRow < fileContent.Count; iRow++)
                 {
-                    var dataTest = fileContent[iRow];
                     if (string.IsNullOrEmpty(fileContent[iRow])) continue;
                     List<string> slCol = fileContent[iRow].Split(new[] { "," }, StringSplitOptions.None).ToList();
                     if (IsReInvalid && slCol[0] != "RE") continue;
@@ -206,7 +205,6 @@ namespace Interactor.ReceSeikyu
                             hokenId = CIUtil.StrToIntDef(CIUtil.Copy(slCol[20], 17, 5), 0); // 17~21桁目
                         }
 
-                        rireki = fileContent[iRow];
                         searchNo = slCol[18];
                         sRecKind = slCol[0];
                     }
@@ -273,7 +271,6 @@ namespace Interactor.ReceSeikyu
                     }
                 }
             }
-            Console.WriteLine("areCnt: " + areCnt);
 
             string path = $"{CommonConstants.Tempotary}/{CommonConstants.ReceiptcHen}/{aSeikyuYm}/";
             string fileNameUpload = $"{CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd_HHmmss_")}{fileName}";
