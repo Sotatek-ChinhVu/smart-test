@@ -44,6 +44,14 @@ public class ConfigStatistic2021Model : StatisticModelBase
     }
 
     /// <summary>
+    /// Hospital ID
+    /// </summary>
+    public int HpId
+    {
+        get => StaMenu.HpId;
+    }
+
+    /// <summary>
     /// メニューID
     /// </summary>
     public int MenuId
@@ -101,11 +109,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(1);
+            return GetValueConf(HpId, 1);
         }
         set
         {
-            SettingConfig(1, value);
+            SettingConfig(HpId, 1, value);
         }
     }
 
@@ -116,11 +124,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(2);
+            return GetValueConf(HpId, 2);
         }
         set
         {
-            SettingConfig(2, value);
+            SettingConfig(HpId, 2, value);
         }
     }
 
@@ -131,11 +139,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(9).AsInteger();
+            return GetValueConf(HpId, 9).AsInteger();
         }
         set
         {
-            SettingConfig(9, value.AsString());
+            SettingConfig(HpId, 9, value.AsString());
         }
     }
 
@@ -146,11 +154,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(10).AsInteger();
+            return GetValueConf(HpId, 10).AsInteger();
         }
         set
         {
-            SettingConfig(10, value.AsString());
+            SettingConfig(HpId, 10, value.AsString());
         }
     }
 
@@ -161,11 +169,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(11).AsInteger();
+            return GetValueConf(HpId, 11).AsInteger();
         }
         set
         {
-            SettingConfig(11, value.AsString());
+            SettingConfig(HpId, 11, value.AsString());
         }
     }
 
@@ -176,11 +184,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(20).AsInteger();
+            return GetValueConf(HpId, 20).AsInteger();
         }
         set
         {
-            SettingConfig(20, value.AsString());
+            SettingConfig(HpId, 20, value.AsString());
         }
     }
 
@@ -192,11 +200,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(21).AsInteger();
+            return GetValueConf(HpId, 21).AsInteger();
         }
         set
         {
-            SettingConfig(21, value.AsString());
+            SettingConfig(HpId, 21, value.AsString());
         }
     }
 
@@ -207,11 +215,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(22).AsInteger();
+            return GetValueConf(HpId, 22).AsInteger();
         }
         set
         {
-            SettingConfig(22, value.AsString());
+            SettingConfig(HpId, 22, value.AsString());
         }
     }
 
@@ -223,11 +231,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(23).AsInteger();
+            return GetValueConf(HpId, 23).AsInteger();
         }
         set
         {
-            SettingConfig(23, value.AsString());
+            SettingConfig(HpId, 23, value.AsString());
         }
     }
 
@@ -238,11 +246,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(24).AsInteger();
+            return GetValueConf(HpId, 24).AsInteger();
         }
         set
         {
-            SettingConfig(24, value.AsString());
+            SettingConfig(HpId, 24, value.AsString());
         }
     }
 
@@ -254,11 +262,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(25).AsInteger();
+            return GetValueConf(HpId, 25).AsInteger();
         }
         set
         {
-            SettingConfig(25, value.AsString());
+            SettingConfig(HpId, 25, value.AsString());
         }
     }
 
@@ -270,11 +278,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(30).AsInteger();
+            return GetValueConf(HpId, 30).AsInteger();
         }
         set
         {
-            SettingConfig(30, value.AsString());
+            SettingConfig(HpId, 30, value.AsString());
         }
     }
 
@@ -286,11 +294,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(31);
+            return GetValueConf(HpId, 31);
         }
         set
         {
-            SettingConfig(31, value);
+            SettingConfig(HpId, 31, value);
         }
     }
 
@@ -319,11 +327,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(32);
+            return GetValueConf(HpId, 32);
         }
         set
         {
-            SettingConfig(32, value);
+            SettingConfig(HpId, 32, value);
         }
     }
 
@@ -351,11 +359,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(33);
+            return GetValueConf(HpId, 33);
         }
         set
         {
-            SettingConfig(33, value);
+            SettingConfig(HpId, 33, value);
         }
     }
 
@@ -383,11 +391,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(34);
+            return GetValueConf(HpId, 34);
         }
         set
         {
-            SettingConfig(34, value);
+            SettingConfig(HpId, 34, value);
         }
     }
 
@@ -415,11 +423,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(35);
+            return GetValueConf(HpId, 35);
         }
         set
         {
-            SettingConfig(35, value);
+            SettingConfig(HpId, 35, value);
         }
     }
 
@@ -447,11 +455,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(36);
+            return GetValueConf(HpId, 36);
         }
         set
         {
-            SettingConfig(36, value);
+            SettingConfig(HpId, 36, value);
         }
     }
 
@@ -479,11 +487,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(37);
+            return GetValueConf(HpId, 37);
         }
         set
         {
-            SettingConfig(37, value);
+            SettingConfig(HpId, 37, value);
         }
     }
 
@@ -511,11 +519,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(50);
+            return GetValueConf(HpId, 50);
         }
         set
         {
-            SettingConfig(50, value);
+            SettingConfig(HpId, 50, value);
         }
     }
 
@@ -528,11 +536,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(51).AsInteger();
+            return GetValueConf(HpId, 51).AsInteger();
         }
         set
         {
-            SettingConfig(51, value.AsString());
+            SettingConfig(HpId, 51, value.AsString());
         }
     }
 
@@ -543,11 +551,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(52);
+            return GetValueConf(HpId, 52);
         }
         set
         {
-            SettingConfig(52, value);
+            SettingConfig(HpId, 52, value);
         }
     }
 
@@ -558,11 +566,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(53).AsInteger();
+            return GetValueConf(HpId, 53).AsInteger();
         }
         set
         {
-            SettingConfig(53, value.AsString());
+            SettingConfig(HpId, 53, value.AsString());
         }
     }
 
@@ -590,11 +598,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(54);
+            return GetValueConf(HpId, 54);
         }
         set
         {
-            SettingConfig(54, value);
+            SettingConfig(HpId, 54, value);
         }
     }
 
@@ -622,11 +630,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(55);
+            return GetValueConf(HpId, 55);
         }
         set
         {
-            SettingConfig(55, value);
+            SettingConfig(HpId, 55, value);
         }
     }
 
@@ -654,11 +662,11 @@ public class ConfigStatistic2021Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(56);
+            return GetValueConf(HpId, 56);
         }
         set
         {
-            SettingConfig(56, value);
+            SettingConfig(HpId, 56, value);
         }
     }
 

@@ -26,7 +26,7 @@ public class ColumnSettingController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetColumnSettingListResponse>> GetList([FromQuery] GetColumnSettingListRequest req)
     {
-        var input = new GetColumnSettingListInputData(UserId, req.TableName);
+        var input = new GetColumnSettingListInputData(HpId, UserId, req.TableName);
         var output = _bus.Handle(input);
         var presenter = new GetColumnSettingListPresenter();
         presenter.Complete(output);
@@ -36,7 +36,7 @@ public class ColumnSettingController : AuthorizeControllerBase
     [HttpPost(ApiPath.GetColumnSettingByTableNameList)]
     public ActionResult<Response<GetColumnSettingByTableNameListResponse>> GetColumnSettingByTableNameList([FromBody] GetColumnSettingByTableNameListRequest request)
     {
-        var input = new GetColumnSettingByTableNameListInputData(UserId, request.TableNameList);
+        var input = new GetColumnSettingByTableNameListInputData(HpId, UserId, request.TableNameList);
         var output = _bus.Handle(input);
         var presenter = new GetColumnSettingByTableNameListPresenter();
         presenter.Complete(output);
@@ -46,16 +46,17 @@ public class ColumnSettingController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveList)]
     public ActionResult<Response<SaveColumnSettingListResponse>> SaveList([FromBody] SaveColumnSettingListRequest req)
     {
-        var input = new SaveColumnSettingListInputData(ConvertToColumnSettingModel(UserId, req));
+        var input = new SaveColumnSettingListInputData(ConvertToColumnSettingModel(HpId, UserId, req));
         var output = _bus.Handle(input);
         var presenter = new SaveColumnSettingListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
-    private List<ColumnSettingModel> ConvertToColumnSettingModel(int userId, SaveColumnSettingListRequest request)
+    private List<ColumnSettingModel> ConvertToColumnSettingModel(int hpId, int userId, SaveColumnSettingListRequest request)
     {
         return request.Settings.Select(item => new ColumnSettingModel(
+                                                   hpId,
                                                    userId,
                                                    item.TableName,
                                                    item.ColumnName,

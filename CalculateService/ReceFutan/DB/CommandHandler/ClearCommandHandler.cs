@@ -15,7 +15,7 @@ namespace CalculateService.ReceFutan.DB.CommandHandler
             _emrLogger = emrLogger;
         }
 
-        public void ClearCalculate(long hpId, List<long> ptIds, int seikyuYm)
+        public void ClearCalculate(int hpId, List<long> ptIds, int seikyuYm)
         {
             const string conFncName = nameof(ClearCalculate);
             try

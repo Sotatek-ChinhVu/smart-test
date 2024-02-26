@@ -31,10 +31,10 @@ public class CoSyahoFinder : RepositoryBase, ICoSyahoFinder
 
     public List<CoReceInfModel> GetReceInf(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        var receInfs = NoTrackingDataContext.ReceInfs;
-        var receStatuses = NoTrackingDataContext.ReceStatuses;
+        var receInfs = NoTrackingDataContext.ReceInfs.Where(x => x.HpId == hpId);
+        var receStatuses = NoTrackingDataContext.ReceStatuses.Where(x => x.HpId == hpId);
         var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(
-            p => p.IsDeleted == DeleteStatus.None
+            p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None
         );
 
         var joinQuery = (

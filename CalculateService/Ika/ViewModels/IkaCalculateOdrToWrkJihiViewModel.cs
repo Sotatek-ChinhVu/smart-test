@@ -36,26 +36,28 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 計算ロジック
         /// </summary>
-        public void Calculate()
+        /// <param name="hpId">HospitalID</param>
+        public void Calculate(int hpId)
         {
             const string conFncName = nameof(Calculate);
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.Jihi, OdrKouiKbnConst.Jihi))
             {
                 // 保険
-                CalculateHoken();
+                CalculateHoken(hpId);
             }
 
             _common.Wrk.CommitWrkSinRpInf();
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
         /// 保険分を処理する
         /// </summary>
-        private void CalculateHoken()
+        /// <param name="hpId">HospitalID</param>
+        private void CalculateHoken(int hpId)
         {
             const string conFncName = nameof(CalculateHoken);
 
@@ -67,7 +69,7 @@ namespace CalculateService.Ika.ViewModels
             filteredOdrInf = _common.Odr.FilterOdrInfByKouiKbnRange(OdrKouiKbnConst.Jihi, OdrKouiKbnConst.Jihi);
 
             if (filteredOdrInf.Any())
-            {                
+            {
                 foreach (OdrInfModel odrInf in filteredOdrInf)
                 {
                     // 行為に紐づく詳細を取得
@@ -97,7 +99,7 @@ namespace CalculateService.Ika.ViewModels
                                     _common.Wrk.AppendNewWrkSinKoui(odrInf.HokenPid, odrInf.HokenId, ReceSyukeisaki.Jihi, isNodspRece: 1, cdKbn: "JS");
                                 }
                             }
-                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                             if (odrDtl.JihiSbt > 0 && _common.Wrk.wrkSinKouis.Last().JihiSbt <= 0)
                             {

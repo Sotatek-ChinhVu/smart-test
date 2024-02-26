@@ -4,7 +4,7 @@ namespace UseCase.Document.CheckExistFileName;
 
 public class CheckExistFileNameInputData : IInputData<CheckExistFileNameOutputData>
 {
-    public CheckExistFileNameInputData(int hpId, string fileName, int categoryCd, int ptId, bool isCheckDocInf)
+    public CheckExistFileNameInputData(int hpId, string fileName, int categoryCd, long ptId, bool isCheckDocInf)
     {
         HpId = hpId;
         FileName = fileName;
@@ -19,7 +19,7 @@ public class CheckExistFileNameInputData : IInputData<CheckExistFileNameOutputDa
 
     public int CategoryCd { get; private set; }
 
-    public int PtId { get; private set; }
+    public long PtId { get; private set; }
 
     public bool IsCheckDocInf { get; private set; }
 }

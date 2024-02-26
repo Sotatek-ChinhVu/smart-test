@@ -1026,7 +1026,7 @@ namespace CalculateService.Receipt.ViewModels
 
             // 会計情報取得
             List<(int sinDate, List<long> raiinNos, int SyokeiGaku_I, int SyokeiGaku_RO, int Syokei)> kaikeiDayInfs =
-                GetKaikeiDayInfs(ptId, sinYm, receInf);
+                GetKaikeiDayInfs(hpId, ptId, sinYm, receInf);
 
             // 会計日ごとに診療明細情報を取得する
             foreach ((int sinDate, List<long> raiinNos, int SyokeiGaku_I, int SyokeiGaku_RO, int Syokei) kaikeiDayInf in kaikeiDayInfs)
@@ -1103,14 +1103,15 @@ namespace CalculateService.Receipt.ViewModels
         /// <summary>
         /// 会計日のリストを取得する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="ptId"></param>
         /// <param name="sinYm"></param>
         /// <param name="receInf"></param>
         /// <returns></returns>
         private List<(int sinDate, List<long> raiinNos, int SyokeiGaku_I, int SyokeiGaku_RO, int Syokei)>
-            GetKaikeiDayInfs(long ptId, int sinYm, ReceInfModel receInf)
+            GetKaikeiDayInfs(int hpId, long ptId, int sinYm, ReceInfModel receInf)
         {
-            List<KaikeiDetailModel> kaikeiDtls = _kaikeiFinder.FindKaikeiDetail(ptId, sinYm, receInf.HokenId);
+            List<KaikeiDetailModel> kaikeiDtls = _kaikeiFinder.FindKaikeiDetail(hpId, ptId, sinYm, receInf.HokenId);
 
             List<(int sinDate, List<long> raiinNos, int SyokeiGaku_I, int SyokeiGaku_RO, int Syokei)> kaikeiDayInfs =
                 new List<(int sinDate, List<long> raiinNos, int TotalI, int TotalRo, int Syokei)>();

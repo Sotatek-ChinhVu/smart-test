@@ -8,19 +8,20 @@ namespace CommonCheckers
     {
         private List<SystemConf> _systemConfigs = new();
         private static readonly object _threadsafelock = new object();
-        private const int HpId = 1;
+        private int HpId = 1;
 
 
         public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
-        public SystemConfig(TenantNoTrackingDataContext noTrackingDataContext)
+        public SystemConfig(int hpId, TenantNoTrackingDataContext noTrackingDataContext)
         {
+            HpId = hpId;
             NoTrackingDataContext = noTrackingDataContext;
-            RefreshData();
+            RefreshData(hpId);
         }
 
-        public void RefreshData()
+        public void RefreshData(int hpId)
         {
-            _systemConfigs = NoTrackingDataContext.SystemConfs.Where(p => p.HpId == 1).ToList();
+            _systemConfigs = NoTrackingDataContext.SystemConfs.Where(p => p.HpId == hpId).ToList();
         }
 
         public double GetSettingValue(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
@@ -30,7 +31,7 @@ namespace CommonCheckers
                 SystemConf? systemConf;
                 if (!fromLastestDb)
                 {
-                    systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+                    systemConf = _systemConfigs.FirstOrDefault(p => p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
                 }
                 else
                 {
@@ -48,7 +49,7 @@ namespace CommonCheckers
                 SystemConf? systemConf;
                 if (!fromLastestDb)
                 {
-                    systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+                    systemConf = _systemConfigs.FirstOrDefault(p => p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
                 }
                 else
                 {

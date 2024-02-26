@@ -9,11 +9,13 @@ namespace UseCase.Reception.Get
 {
     public class GetReceptionInputData : IInputData<GetReceptionOutputData>
     {
+        public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
         public bool Flag { get; private set; }
 
-        public GetReceptionInputData(long raiinNo, bool flag)
+        public GetReceptionInputData(int hpId, long raiinNo, bool flag)
         {
+            HpId = hpId;
             RaiinNo = raiinNo;
             Flag = flag;
         }

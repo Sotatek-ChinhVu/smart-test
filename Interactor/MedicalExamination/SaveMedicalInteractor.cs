@@ -258,7 +258,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                      i.HokenPid,
                      i.HosokuCmt
                  )).ToList();
-            var validateDisease = ValidateDiseaseList(ptDiseaseModels);
+            var validateDisease = ValidateDiseaseList(hpId, ptDiseaseModels);
 
             if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any() || validateFamilyList != ValidateFamilyListStatus.ValidateSuccess || validateFlowsheet != UpsertFlowSheetStatus.Valid && validateDisease != UpsertPtDiseaseListStatus.Valid)
             {
@@ -417,7 +417,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     UpdateOdrKarteEvent(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
                     _auditLogRepository.ReleaseResource();
                 });
-                
+
                 return new SaveMedicalOutputData(
                          SaveMedicalStatus.Successed,
                          RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
@@ -702,8 +702,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         else
         {
             var checkHpId = _hpInfRepository.CheckHpId(hpId);
-            var checkPtId = _patientInforRepository.CheckExistIdList(new List<long> { ptId });
-            var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
+            var checkPtId = _patientInforRepository.CheckExistIdList(hpId, new List<long> { ptId });
+            var checkRaiinNo = _receptionRepository.CheckListNo(hpId, new List<long> { raiinNo });
 
             if (!checkHpId)
             {
@@ -767,7 +767,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
         if (inputDatas.HokenPid > 0)
         {
-            var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HokenPid);
+            var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HpId, inputDatas.HokenPid);
             if (!checkHokenId)
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;
@@ -776,7 +776,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
         if (inputDatas.TantoId > 0)
         {
-            var checkHokenId = _userRepository.CheckExistedUserId(inputDatas.TantoId);
+            var checkHokenId = _userRepository.CheckExistedUserId(inputDatas.HpId, inputDatas.TantoId);
             if (!checkHokenId)
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist;
@@ -785,7 +785,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
         if (inputDatas.KaId > 0)
         {
-            var checkHokenId = _kaRepository.CheckKaId(inputDatas.KaId);
+            var checkHokenId = _kaRepository.CheckKaId(inputDatas.HpId, inputDatas.KaId);
             if (!checkHokenId)
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist;
@@ -920,7 +920,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return UpsertFlowSheetStatus.Valid;
     }
 
-    private UpsertPtDiseaseListStatus ValidateDiseaseList(List<PtDiseaseModel> ptDiseases)
+    private UpsertPtDiseaseListStatus ValidateDiseaseList(int hpId, List<PtDiseaseModel> ptDiseases)
     {
         foreach (var data in ptDiseases)
         {
@@ -931,7 +931,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             }
         }
 
-        if (!_patientInforRepository.CheckExistIdList(ptDiseases.Select(i => i.PtId).Distinct().ToList()))
+        if (!_patientInforRepository.CheckExistIdList(hpId, ptDiseases.Select(i => i.PtId).Distinct().ToList()))
         {
             return UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist;
         }

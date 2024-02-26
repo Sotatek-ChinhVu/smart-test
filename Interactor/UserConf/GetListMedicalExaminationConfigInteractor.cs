@@ -402,7 +402,7 @@ public class GetListMedicalExaminationConfigInteractor : IGetListMedicalExaminat
         int setEditButtonComboboxValue = GetConfigModel(listUserConfig, 906);
         int summaryEditLockComboboxValue = GetConfigModel(listUserConfig, 907);
         int actionWhenClosingSchemaValue = GetConfigModel(listUserConfig, 14);
-        int rightClickComboboxValue = int.Parse(_jsonSettingRepository.Get(userId, _mouseRightClickKey)?.Value ?? "0");
+        int rightClickComboboxValue = int.Parse(_jsonSettingRepository.Get(hpId, userId, _mouseRightClickKey)?.Value ?? "0");
         int pendingMedicalRecordsComboboxValue = GetConfigModel(listUserConfig, 903);
         int startKarteViewerValue = GetConfigModel(listUserConfig, 9);
         int isShowDrugUsageHistoryValue = GetConfigModel(listUserConfig, 19);

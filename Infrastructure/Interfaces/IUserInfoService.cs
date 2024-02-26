@@ -12,5 +12,5 @@ public interface IUserInfoService
 
     void DisposeSource();
 
-    List<UserMst> AllUserMstList();
+    List<UserMst> AllUserMstList(int hpId);
 }

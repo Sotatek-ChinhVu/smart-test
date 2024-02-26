@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
@@ -69,7 +70,7 @@ namespace Domain.Models.InsuranceInfor
             SinDate = sinDate;
         }
 
-        public InsuranceModel(int hpId, long ptId, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int hokenId, int startDate, int endDate, int sinDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4)
+        public InsuranceModel(int hpId, long ptId, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int hokenId, int startDate, int endDate, int sinDate, HokenMstModel hokenMst, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4)
         {
             HpId = hpId;
             PtId = ptId;
@@ -80,7 +81,7 @@ namespace Domain.Models.InsuranceInfor
             HokenKbn = hokenKbn;
             SinDate = 0;
             HokenMemo = string.Empty;
-            HokenInf = new HokenInfModel(hokenId, startDate, endDate);
+            HokenInf = new HokenInfModel(hokenId, ptId, sinDate, startDate, endDate, hokenMst);
             StartDate = startDate;
             EndDate = endDate;
             SinDate = sinDate;

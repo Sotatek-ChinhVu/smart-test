@@ -15,7 +15,7 @@ namespace Domain.Models.PatientInfor
 
         (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId, int sinDate);
 
-        List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
+        List<PatientInforModel> SearchContainPtNum(long ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
         List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
@@ -33,7 +33,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting);
 
-        bool CheckExistIdList(List<long> ptIds);
+        bool CheckExistIdList(int hpId, List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int sinDate);
 
@@ -64,13 +64,13 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchPatient(int hpId, List<long> ptIdList);
 
-        public bool IsRyosyoFuyou(int hpId, long ptId);
+        int GetIsRyosyoDetail(int hpId, long ptId);
 
         long GetPtIdFromPtNum(int hpId, long ptNum);
 
         long IsPatientExist(int hpId, long ptNum);
 
-        int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
+        int GetCountRaiinAlreadyPaidOfPatientByDate(int hpId, int fromDate, int toDate, long ptId, int raiintStatus);
 
         List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex, int birthDay);
 

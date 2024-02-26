@@ -5,6 +5,6 @@ namespace Reporting.NameLabel.DB
 {
     public interface ICoNameLabelFinder : IRepositoryBase
     {
-        CoPtInfModel FindPtInf(long ptId);
+        CoPtInfModel FindPtInf(int hpId, long ptId);
     }
 }

@@ -27,7 +27,7 @@ public class DiseaseSearchInteractor : IDiseaseSearchInputPort
                 return new DiseaseSearchOutputData(DiseaseSearchStatus.InvalidPageIndex);
             }
 
-            var listData = _inputItemRepository.DiseaseSearch(inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, inputData.IsMisaiyou, inputData.Keyword, inputData.Sindate, inputData.PageIndex, inputData.PageSize, inputData.IsHasFreeByomei);
+            var listData = _inputItemRepository.DiseaseSearch(inputData.HpId, inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, inputData.IsMisaiyou, inputData.Keyword, inputData.Sindate, inputData.PageIndex, inputData.PageSize, inputData.IsHasFreeByomei);
             return new DiseaseSearchOutputData(listData, DiseaseSearchStatus.Successed);
         }
         catch (Exception)

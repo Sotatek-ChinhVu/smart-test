@@ -38,13 +38,13 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
     public List<CoSyunoInfModel> GetSyunoInfs(int hpId, CoSta1001PrintConf printConf, int staMonthType)
     {
         //入金情報
-        var syunoNyukins = NoTrackingDataContext.SyunoNyukin.Where(s => s.IsDeleted == DeleteStatus.None);
+        var syunoNyukins = NoTrackingDataContext.SyunoNyukin.Where(s => s.HpId == hpId && s.IsDeleted == DeleteStatus.None);
 
         //支払方法
-        var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.IsDeleted == DeleteStatus.None);
+        var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
         //請求情報
-        var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.NyukinKbn != 0);  //0:未精算を除く
-        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs
+        var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.HpId == hpId && s.NyukinKbn != 0);  //0:未精算を除く
+        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId)
             .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
             .Select(k =>
                 new
@@ -99,18 +99,18 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
 
         //患者情報
         var ptInfs = NoTrackingDataContext.PtInfs.Where(
-            p => p.IsDelete == DeleteStatus.None
+            p => p.HpId == hpId && p.IsDelete == DeleteStatus.None
         );
         if (!printConf.IsTester)
         {
             ptInfs = ptInfs.Where(p => p.IsTester == 0);
         }
         //受付種別マスタ
-        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts;
+        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.HpId == hpId);
         //診療科マスタ
-        var kaMsts = NoTrackingDataContext.KaMsts.Where(k => k.IsDeleted == DeleteStatus.None);
+        var kaMsts = NoTrackingDataContext.KaMsts.Where(k => k.HpId == hpId && k.IsDeleted == DeleteStatus.None);
         //ユーザーマスタ
-        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
+        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteStatus.None);
 
         var preNyukins = (
             from n in syunoNyukins
@@ -181,16 +181,16 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 new { raiinInf.HpId, raiinInf.UketukeId } equals
                 new { userMst.HpId, UketukeId = userMst.UserId } into uketukeUserMstJoin
             from uketukeUserMst in uketukeUserMstJoin.DefaultIfEmpty()
-        where
-                syunoNyukin.HpId == hpId &&
-                (
-                    printConf.StartNyukinDate == printConf.EndNyukinDate ?
-                        (syunoNyukin.NyukinDate == printConf.StartNyukinDate) :
-                        (syunoNyukin.NyukinDate >= printConf.StartNyukinDate && syunoNyukin.NyukinDate <= printConf.EndNyukinDate)
-                ) &&
-                //syunoNyukin.NyukinDate >= printConf.StartNyukinDate &&   開始日と終了日が同じ場合に著しく遅くなる環境があるため
-                //syunoNyukin.NyukinDate <= printConf.EndNyukinDate &&
-                syunoNyukin.IsDeleted == DeleteStatus.None
+            where
+                    syunoNyukin.HpId == hpId &&
+                    (
+                        printConf.StartNyukinDate == printConf.EndNyukinDate ?
+                            (syunoNyukin.NyukinDate == printConf.StartNyukinDate) :
+                            (syunoNyukin.NyukinDate >= printConf.StartNyukinDate && syunoNyukin.NyukinDate <= printConf.EndNyukinDate)
+                    ) &&
+                    //syunoNyukin.NyukinDate >= printConf.StartNyukinDate &&   開始日と終了日が同じ場合に著しく遅くなる環境があるため
+                    //syunoNyukin.NyukinDate <= printConf.EndNyukinDate &&
+                    syunoNyukin.IsDeleted == DeleteStatus.None
             select new
             {
                 syunoNyukin.RaiinNo,
@@ -375,7 +375,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
 
             var joinSeikyu = (
                 from unSeikyu in unSeikyus
-      
+
                 join raiinInf in raiinInfs on
                     new { unSeikyu.HpId, unSeikyu.RaiinNo } equals
                     new { raiinInf.HpId, raiinInf.RaiinNo }
@@ -542,7 +542,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                            .ToList();
         var kaikeiFutanList = kaikeiFutans.Where(item => item.HpId == hpId && raiinNoList.Contains(item.RaiinNo)).ToList();
 
-       foreach(var syunoInf in  result)
+        foreach (var syunoInf in result)
         {
             var kaikeiHokenj = kaikeiHokens.FirstOrDefault(item => item.RaiinNo == syunoInf.RaiinNo);
             var kaikeiFutanj = kaikeiFutanList.FirstOrDefault(item => item.RaiinNo == syunoInf.RaiinNo);
@@ -602,9 +602,9 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
 
         var syunoJoins = syunoNyukins.Union(syunoSeikyus);
 
-        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
-        var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.IsDeleted == DeleteStatus.None);
-        var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(x => x.HpId == hpId);
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         var jihiQuery = (
             from syunoNyukin in syunoJoins

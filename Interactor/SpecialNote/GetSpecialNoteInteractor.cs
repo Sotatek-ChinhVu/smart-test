@@ -88,16 +88,16 @@ namespace Interactor.SpecialNote
 
         private ImportantNoteModel GetImportantNoteTab(int hpId, long ptId)
         {
-            var taskAlrgyElseList = Task<List<PtAlrgyElseModel>>.Factory.StartNew(() => _importantNoteAlrgyElseRepository.GetAlrgyElseList(ptId));
+            var taskAlrgyElseList = Task<List<PtAlrgyElseModel>>.Factory.StartNew(() => _importantNoteAlrgyElseRepository.GetAlrgyElseList(hpId, ptId));
             var taskAlrgyFoodList = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantAlrgyFoodRepository.GetAlrgyFoodList(hpId, ptId));
-            var taskAlrgyDrugList = Task<List<PtAlrgyDrugModel>>.Factory.StartNew(() => _importantAlrgyDrugRepository.GetAlrgyDrugList(ptId));
+            var taskAlrgyDrugList = Task<List<PtAlrgyDrugModel>>.Factory.StartNew(() => _importantAlrgyDrugRepository.GetAlrgyDrugList(hpId, ptId));
 
-            var taskOtherDrugList = Task<List<PtOtherDrugModel>>.Factory.StartNew(() => _importantOtherDrugRepository.GetOtherDrugList(ptId));
-            var taskOctDrugList = Task<List<PtOtcDrugModel>>.Factory.StartNew(() => _importantOtcDrugRepository.GetOtcDrugList(ptId));
-            var taskSuppleList = Task<List<PtSuppleModel>>.Factory.StartNew(() => _importantSuppleRepository.GetSuppleList(ptId));
+            var taskOtherDrugList = Task<List<PtOtherDrugModel>>.Factory.StartNew(() => _importantOtherDrugRepository.GetOtherDrugList(hpId, ptId));
+            var taskOctDrugList = Task<List<PtOtcDrugModel>>.Factory.StartNew(() => _importantOtcDrugRepository.GetOtcDrugList(hpId, ptId));
+            var taskSuppleList = Task<List<PtSuppleModel>>.Factory.StartNew(() => _importantSuppleRepository.GetSuppleList(hpId, ptId));
 
-            var taskKioRekiList = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantKioRekiRepository.GetKioRekiList(ptId));
-            var taskInfectionList = Task<List<PtInfectionModel>>.Factory.StartNew(() => _importantInfectionRepository.GetInfectionList(ptId));
+            var taskKioRekiList = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantKioRekiRepository.GetKioRekiList(hpId, ptId));
+            var taskInfectionList = Task<List<PtInfectionModel>>.Factory.StartNew(() => _importantInfectionRepository.GetInfectionList(hpId, ptId));
             Task.WaitAll(taskAlrgyElseList, taskAlrgyFoodList, taskAlrgyDrugList, taskOtherDrugList, taskOctDrugList, taskSuppleList, taskKioRekiList, taskInfectionList);
 
             return new ImportantNoteModel(taskAlrgyFoodList.Result, taskAlrgyElseList.Result, taskAlrgyDrugList.Result, taskKioRekiList.Result, taskInfectionList.Result, taskOtherDrugList.Result, taskOctDrugList.Result, taskSuppleList.Result);

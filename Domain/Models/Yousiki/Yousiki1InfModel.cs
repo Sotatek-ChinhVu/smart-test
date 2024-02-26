@@ -35,7 +35,10 @@ public class Yousiki1InfModel
         Name = string.Empty;
         StatusDic = new();
         Yousiki1InfDetailList = new();
+        DataTypeSeqNoDic = new();
+        FilterYousiki1InfDetailList = new(); 
         FilterYousiki1InfDetailList = new();
+
     }
 
     public Yousiki1InfModel(int hpId, long ptId, int sinYm, int dataType, int seqNo, int isDeleted, int status, long ptNum, string name)
@@ -52,18 +55,23 @@ public class Yousiki1InfModel
         StatusDic = new();
         Yousiki1InfDetailList = new();
         FilterYousiki1InfDetailList = new();
+        DataTypeSeqNoDic = new();
+        FilterYousiki1InfDetailList = new();
     }
 
     public Yousiki1InfModel()
     {
         Name = string.Empty;
         StatusDic = new();
+        DataTypeSeqNoDic = new();
+        FilterYousiki1InfDetailList = new();
         Yousiki1InfDetailList = new();
     }
 
-    public Yousiki1InfModel ChangeStatusDic(Dictionary<int, int> statusDic)
+    public Yousiki1InfModel ChangeStatusDic(Dictionary<int, int> statusDic, Dictionary<int, int> dataTypeSeqNoDic)
     {
         StatusDic = statusDic;
+        DataTypeSeqNoDic = dataTypeSeqNoDic;
         return this;
     }
 
@@ -96,6 +104,8 @@ public class Yousiki1InfModel
     public List<Yousiki1InfDetailModel> Yousiki1InfDetailList { get; private set; }
 
     public List<Yousiki1InfDetailModel> FilterYousiki1InfDetailList { get; private set; }
+
+    public Dictionary<int, int> DataTypeSeqNoDic { get; private set; }
 
     public int IsDeleted { get; private set; }
 

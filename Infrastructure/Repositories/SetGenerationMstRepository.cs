@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
-            keySetKbn = tenantProvider.GetDomainName() + "-" + nameof(SetKbnMstRepository) + "SetKbn";
+            keySetKbn = GetCacheKey() + "SetKbn";
         }
 
         public void GetRedis()
@@ -39,6 +39,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false)
         {
+            var keysetGenerationMst = key + "-" + hpId;
             var setGenerationMstList = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).Select(s =>
                     new SetGenerationMstModel(
                         s.HpId,
@@ -49,24 +50,25 @@ namespace Infrastructure.Repositories
                   ).ToList();
 
             var json = JsonSerializer.Serialize(setGenerationMstList);
-            _cache.StringSet(key, json);
+            _cache.StringSet(keysetGenerationMst, json);
             if (flag)
             {
-                _cache.KeyDelete(keySetKbn);
+                _cache.KeyDelete(keySetKbn + "_" + hpId);
             }
             return setGenerationMstList;
         }
 
         public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
         {
+            var keysetGenerationMst = key + "-" + hpId;
             IEnumerable<SetGenerationMstModel> setGenerationMstList;
-            if (!_cache.KeyExists(key))
+            if (!_cache.KeyExists(keysetGenerationMst))
             {
                 setGenerationMstList = ReloadCache(hpId);
             }
             else
             {
-                setGenerationMstList = ReadCache();
+                setGenerationMstList = ReadCache(keysetGenerationMst);
             }
 
             return setGenerationMstList!.Where(s => s.StartDate <= sinDate).OrderByDescending(x => x.StartDate).ToList();
@@ -78,9 +80,9 @@ namespace Infrastructure.Repositories
             return setGenerationMstList;
         }
 
-        private List<SetGenerationMstModel> ReadCache()
+        private List<SetGenerationMstModel> ReadCache(string keysetGenerationMst)
         {
-            var results = _cache.StringGet(key);
+            var results = _cache.StringGet(keysetGenerationMst);
             var json = results.AsString();
             var datas = JsonSerializer.Deserialize<List<SetGenerationMstModel>>(json);
             return datas ?? new();
@@ -160,7 +162,7 @@ namespace Infrastructure.Repositories
             if (saveChanges)
             {
                 ReloadCache(hpId);
-                _cache.KeyDelete(keySetKbn);
+                _cache.KeyDelete(keySetKbn + "_" + hpId);
             }
 
             return saveChanges;

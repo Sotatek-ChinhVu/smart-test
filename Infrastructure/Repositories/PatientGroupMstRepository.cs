@@ -12,10 +12,10 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<PatientGroupMstModel> GetAll()
+        public List<PatientGroupMstModel> GetAll(int hpId)
         {
-            var groupMstList = NoTrackingDataContext.PtGrpNameMsts.Where(p => p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
-            var groupDetailList = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
+            var groupMstList = NoTrackingDataContext.PtGrpNameMsts.Where(p => p.HpId == hpId && p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
+            var groupDetailList = NoTrackingDataContext.PtGrpItems.Where(p => p.HpId == hpId && p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
 
             List<PatientGroupMstModel> result = new List<PatientGroupMstModel>();
             foreach (var groupMst in groupMstList)

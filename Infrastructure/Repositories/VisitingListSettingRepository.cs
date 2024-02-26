@@ -42,11 +42,11 @@ public class VisitingListSettingRepository : RepositoryBase, IVisitingListSettin
     {
         ModifySystemConfs(systemConfModels, hpId, userId);
         TrackingDataContext.SaveChanges();
-
+        var keySystemConfig = getListSystemConfigKey + "_" + hpId;
         // Remove cache when save system setting
-        if (_cache.KeyExists(getListSystemConfigKey))
+        if (_cache.KeyExists(keySystemConfig))
         {
-            _cache.KeyDelete(getListSystemConfigKey);
+            _cache.KeyDelete(keySystemConfig);
         }
     }
 

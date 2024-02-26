@@ -165,16 +165,16 @@ namespace CommonChecker.DB
             return ippanInfo == null ? string.Empty : ippanInfo.IpnName ?? string.Empty;
         }
 
-        public string FindItemName(string yjCd, int sinday)
+        public string FindItemName(int hpId , string yjCd, int sinday)
         {
-            var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(d => d.StartDate <= sinday && sinday <= d.EndDate && d.YjCd == yjCd);
+            var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(d => d.HpId == hpId && d.StartDate <= sinday && sinday <= d.EndDate && d.YjCd == yjCd);
             return itemInfo != null ? itemInfo.Name ?? string.Empty : string.Empty;
         }
 
-        public Dictionary<string, string> FindItemNameDic(List<string> yjCdList, int sinday)
+        public Dictionary<string, string> FindItemNameDic(int hpId, List<string> yjCdList, int sinday)
         {
             yjCdList = yjCdList.Distinct().ToList();
-            var itemInfoList = NoTrackingDataContext.TenMsts.Where(item => item.StartDate <= sinday && sinday <= item.EndDate && item.YjCd != null && yjCdList.Contains(item.YjCd)).ToList();
+            var itemInfoList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.StartDate <= sinday && sinday <= item.EndDate && item.YjCd != null && yjCdList.Contains(item.YjCd)).ToList();
             Dictionary<string, string> result = new();
             foreach (var yjcd in yjCdList)
             {
@@ -183,17 +183,17 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindItemNameByItemCode(string itemCd, int sinday)
+        public string FindItemNameByItemCode(int hpId, string itemCd, int sinday)
         {
-            var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinday && sinday <= t.EndDate);
+            var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCd && t.StartDate <= sinday && sinday <= t.EndDate);
             return itemInfo != null ? itemInfo.Name ?? string.Empty : string.Empty;
         }
 
-        public Dictionary<string, string> FindItemNameByItemCodeDic(List<string> itemCdList, int sinday)
+        public Dictionary<string, string> FindItemNameByItemCodeDic(int hpId, List<string> itemCdList, int sinday)
         {
             itemCdList = itemCdList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var itemInfoList = NoTrackingDataContext.TenMsts.Where(item => itemCdList.Contains(item.ItemCd) && item.StartDate <= sinday && sinday <= item.EndDate).ToList();
+            var itemInfoList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd) && item.StartDate <= sinday && sinday <= item.EndDate).ToList();
             foreach (var itemCd in itemCdList)
             {
                 result.Add(itemCd, itemInfoList.FirstOrDefault(item => item.ItemCd == itemCd)?.Name ?? string.Empty);
