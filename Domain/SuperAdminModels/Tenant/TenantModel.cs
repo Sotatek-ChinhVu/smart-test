@@ -39,7 +39,7 @@ namespace Domain.SuperAdminModels.Tenant
 
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -48,9 +48,6 @@ namespace Domain.SuperAdminModels.Tenant
             Password = password;
             SubDomain = subDomain;
             Db = db;
-            Size = size;
-            SizeType = sizeType;
-            Type = type;
             EndPointDb = endPointDb;
             EndSubDomain = endSubDomain;
             Action = action;
@@ -78,12 +75,6 @@ namespace Domain.SuperAdminModels.Tenant
         public string SubDomain { get; private set; }
 
         public string Db { get; private set; }
-
-        public int Size { get; private set; }
-
-        public int SizeType { get; private set; }
-
-        public byte Type { get; private set; }
 
         public string EndPointDb { get; private set; }
 

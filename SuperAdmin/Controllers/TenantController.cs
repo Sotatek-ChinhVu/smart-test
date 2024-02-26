@@ -82,9 +82,6 @@ namespace SuperAdminAPI.Controllers
                 request.AdminId,
                 request.Password,
                 request.SubDomain,
-                request.Size,
-                request.SizeType,
-                request.ClusterMode,
                 _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new TenantOnboardPresenter();

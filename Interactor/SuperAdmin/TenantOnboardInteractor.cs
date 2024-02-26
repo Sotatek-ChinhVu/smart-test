@@ -53,7 +53,7 @@ namespace Interactor.SuperAdmin
             {
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
 
-                if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.SubDomain) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0 || inputData.Size <= 0 || inputData.TenantId < 0)
+                if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.SubDomain) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0 || inputData.TenantId < 0)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidRequest);
                 }
@@ -89,27 +89,10 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                else if (inputData.SizeType != ConfigConstant.SizeTypeGB)
-                {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSizeType);
-                }
-                else if (inputData.ClusterMode != ConfigConstant.TypeSharing && inputData.ClusterMode != ConfigConstant.TypeDedicate)
-                {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
-                }
-                if (inputData.ClusterMode == ConfigConstant.TypeSharing)
-                {
-                    if (inputData.Size < 15 || inputData.Size > 250)
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                }
-                else
-                {
-                    if (inputData.Size < 15 || inputData.Size > 1024)
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                }
                 var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
                 var tenantUrl = $"{inputData.SubDomain}.{ConfigConstant.Domain}";
-                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, tenantUrl, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
+                var rdsIdentifier = "develop-smartkarte-postgres";
+                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, string.Empty, tenantUrl, 0, rdsIdentifier, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -135,7 +118,7 @@ namespace Interactor.SuperAdmin
 
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
-            string rString = CommonConstants.GenerateRandomString(6);
+            //string rString = CommonConstants.GenerateRandomString(6);
             var cancellationTokenSource = new CancellationTokenSource();
             CancellationToken ct = cancellationTokenSource.Token;
 
@@ -152,96 +135,15 @@ namespace Interactor.SuperAdmin
                     await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain);
                     await Route53Action.CreateTenantDomain(model.SubDomain);
                 }
-                // Checking Available RDS Cluster
                 if (model.SubDomain.Length > 0 && !ct.IsCancellationRequested)
                 {
-                    // Checking tenant tier, if dedicated, provision new RDS instance
-                    if (model.Type == ConfigConstant.TypeDedicate)
+                    id = _tenantRepository.CreateTenant(model);
+                    if (!ct.IsCancellationRequested)
                     {
-                        string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                        var rdsInfo = await RDSAction.GetRDSInformation();
-                        if (rdsInfo.ContainsKey(dbIdentifier))
+                        _ = Task.Run(() =>
                         {
-                            id = _tenantRepository.CreateTenant(model);
-                            if (!ct.IsCancellationRequested)
-                            {
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(() =>
-                                {
-                                    AddData(id, tenantUrl, model, ct);
-                                });
-                            }
-                        }
-                        else
-                        {
-                            id = _tenantRepository.CreateTenant(model);
-                            if (!ct.IsCancellationRequested)
-                            {
-                                await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(() =>
-                                {
-                                    AddData(id, tenantUrl, model, ct);
-                                });
-                            }
-                        }
-                    }
-                    else // In the rest cases, checking available RDS for new Tenant
-                    {
-                        var card = await CloudWatchAction.GetSummaryCardAsync();
-                        List<string> availableIdentifier = card.Keys.Where(ids => card[ids]["available"] == "yes").ToList();
-
-                        // If there's not any available RDS Cluster, provision new RDS cluster
-                        if (availableIdentifier.Count == 0)
-                        {
-                            string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                            id = _tenantRepository.CreateTenant(model);
-                            if (!ct.IsCancellationRequested)
-                            {
-                                await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(() =>
-                                {
-                                    AddData(id, tenantUrl, model, ct);
-                                });
-                            }
-                        }
-                        else // Else, returning the first available RDS Cluster in the list
-                        {
-                            bool checkAvailableIdentifier = false;
-                            foreach (var dbIdentifier in availableIdentifier)
-                            {
-                                var sumSubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(dbIdentifier);
-                                if (sumSubDomainToDbIdentifier <= 3)
-                                {
-                                    checkAvailableIdentifier = true;
-                                    if (!ct.IsCancellationRequested)
-                                    {
-                                        model.ChangeRdsIdentifier(dbIdentifier);
-                                        id = _tenantRepository.CreateTenant(model);
-                                        _ = Task.Run(() =>
-                                        {
-                                            AddData(id, tenantUrl, model, ct);
-                                        });
-                                    }
-                                    break;
-                                }
-                            }
-                            if (!checkAvailableIdentifier)
-                            {
-                                string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
-                                id = _tenantRepository.CreateTenant(model);
-                                if (!ct.IsCancellationRequested)
-                                {
-                                    await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.ChangeRdsIdentifier(dbIdentifierNew);
-                                    _ = Task.Run(() =>
-                                    {
-                                        AddData(id, tenantUrl, model, ct);
-                                    });
-                                }
-                            }
-                        }
+                            AddData(id, tenantUrl, model, ct);
+                        });
                     }
                 }
 
@@ -356,7 +258,7 @@ namespace Interactor.SuperAdmin
                 if (!string.IsNullOrEmpty(host))
                 {
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
-                    RDSAction.CreateDatabase(host, model.Db, model.PasswordConnect);
+                    //RDSAction.CreateDatabase(host, model.Db, model.PasswordConnect);
                     CreateDatas(host, model.Db, dataMigration, tenantId, model);
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
@@ -414,7 +316,7 @@ namespace Interactor.SuperAdmin
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        _CreateTable(command, listMigration, tenantId);
+                        //_CreateTable(command, listMigration, tenantId);
                         var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
                         command.CommandText = sqlGrant;
                         command.ExecuteNonQuery();
@@ -428,9 +330,10 @@ namespace Interactor.SuperAdmin
                         command.CommandText = sqlGrant + sqlRenameTableName + sqlRenameFieldName + sqlInsertUser + sqlInsertUserPermission;
                         command.Parameters.AddWithValue("hashPassword", hashPassword);
                         command.Parameters.AddWithValue("salt", salt);
+                        command.Parameters.AddWithValue("hpId", tenantId);
                         command.ExecuteNonQuery();
-                        _CreateFunction(command, listMigration, tenantId);
-                        _CreateTrigger(command, listMigration, tenantId);
+                        //_CreateFunction(command, listMigration, tenantId);
+                        //_CreateTrigger(command, listMigration, tenantId);
                         _CreateAuditLog(tenantId);
                     }
                 }
