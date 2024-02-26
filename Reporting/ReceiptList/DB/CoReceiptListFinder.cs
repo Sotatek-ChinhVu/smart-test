@@ -266,7 +266,7 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                                                                     && sinYmList.Contains(item.SinYm)
                                                                     && hokenIdList.Contains(item.HokenId));
 
-        var minSinYM = receInfs.Select(item => item.SinYm).DefaultIfEmpty().Min();
+        var minSinYM = receInfs.Select(item => item.SinYm).DefaultIfEmpty()?.Min() ?? 0;
         var minDay = minSinYM * 100 + 1;
 
         var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId

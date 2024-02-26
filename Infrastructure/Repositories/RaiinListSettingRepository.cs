@@ -34,8 +34,8 @@ namespace Infrastructure.Repositories
         {
             var list = NoTrackingDataContext.RaiinListMsts.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None).ToList();
             var listRaiinMstAll = NoTrackingDataContext.RaiinListMsts.Where(x => x.HpId == hpId).ToList();
-            var grpIdMstMax = listRaiinMstAll.Select(x => x.GrpId).Max();
-            var sortNoMstMax = list.Select(x => x.SortNo).Max();
+            var grpIdMstMax = listRaiinMstAll.Any() ? listRaiinMstAll.Select(x => x.GrpId).Max() : 0;
+            var sortNoMstMax = list.Any() ? list.Select(x => x.SortNo).Max() : 0;
 
             var listDetail = GetActionGroupValueCollection(hpId);
 

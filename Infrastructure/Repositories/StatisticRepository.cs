@@ -130,7 +130,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             {
                 foreach (var raiinKbn in _raiinKbnMsts)
                 {
-                    staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
+                    staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, i, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
                 }
             }
 
@@ -144,8 +144,8 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
 
             foreach (var ptGrpName in _ptGrpNameMsts)
             {
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, i, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, i, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
             }
 
             result.Add(new StaCsvMstModel(
@@ -172,22 +172,22 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             {
                 foreach (var raiinKbn in _raiinKbnMsts)
                 {
-                    staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
+                    staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, group.Key.DataSbt, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
                 }
             }
 
             if (group.Key.DataSbt != 1)
             {
                 List<StaCsvModel> staCsvSubTemplateModels = StaCsvConfigTemplate.PtInfSubConfig.Select(
-                    (x, idx) => new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(u => u.SortKbn) + 1, 9000, group.Key.DataSbt, x.SaveName, x.IsSelected, x.OutputColumnName)
+                    (x, idx) => new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, (staCsvTemplateModels.DefaultIfEmpty()?.Max(u => u?.SortKbn) ?? 0) + 1, 9000, group.Key.DataSbt, x.SaveName, x.IsSelected, x.OutputColumnName)
                 ).ToList();
                 staCsvTemplateModels.AddRange(staCsvSubTemplateModels);
             }
 
             foreach (var ptGrpName in _ptGrpNameMsts)
             {
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false,
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false,
                  string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
             }
 

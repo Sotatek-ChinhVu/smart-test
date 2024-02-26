@@ -445,7 +445,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         }
         else
         {
-            int minConfirmationType = confirmedRaiininfs.Min(x => x.ConfirmationType);
+            int minConfirmationType = confirmedRaiininfs.DefaultIfEmpty()?.Min(x => x?.ConfirmationType) ?? 0;
             int newConfirmationType = minConfirmationType > confirmationType ? confirmationType : minConfirmationType;
             foreach (var raiinInf in confirmedRaiininfs)
             {
@@ -962,7 +962,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 }
                 else
                 {
-                    int minFlg = confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
+                    int minFlg = confirmedFlgRaiinInfs.DefaultIfEmpty()?.Min(x => x?.InfoConsFlg![flgIdx].AsInteger() ?? 0) ?? 0;
                     int respondedFlg = infConsFlg[flgIdx] == ' ' ? 0 : infConsFlg![flgIdx].AsInteger();
                     int compareFlg = minFlg > respondedFlg ? respondedFlg : minFlg;
                     int newFlg = respondedFlg == 0 ? minFlg : compareFlg;

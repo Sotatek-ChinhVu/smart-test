@@ -123,14 +123,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.Where(m => m.HpId == hpId).AsQueryable();
         var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.Where(u => u.HpId == hpId && string.IsNullOrEmpty(searchValue.Trim()) || (u.IndexWord ?? string.Empty).Contains(searchValue.Trim())).OrderBy(u => u.SeibunCd).ThenBy(u => u.IndexWord).ThenBy(u => u.TokuhoFlg);
         var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.Where(m => m.HpId == hpId).AsQueryable();
-        var indexDefJoinIngreQueryList = from indexCode in listSuppleIndexCode
-                                         join ingre in listSuppleIngre on indexCode.SeibunCd equals ingre.SeibunCd into suppleIngreList
-                                         from ingreItem in suppleIngreList.DefaultIfEmpty()
-                                         select new
-                                         {
-                                             IndexCode = indexCode,
-                                             Ingre = ingreItem,
-                                         };
+        var indexDefJoinIngreQueryList = (from indexCode in listSuppleIndexCode
+                                          join ingre in listSuppleIngre on indexCode.SeibunCd equals ingre.SeibunCd into suppleIngreList
+                                          from ingreItem in suppleIngreList.DefaultIfEmpty()
+                                          select new
+                                          {
+                                              IndexCode = indexCode,
+                                              Ingre = ingreItem,
+                                          });
 
         var query = from indexDef in listSuppleIndexDef
                     join indexDefJoinIngreQuery in indexDefJoinIngreQueryList on indexDef.SeibunCd equals indexDefJoinIngreQuery.IndexCode.IndexCd into supplementList
@@ -144,7 +144,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var result = query
               .AsEnumerable()
-              .Select(data => new SearchSupplementModel(data.Ingre.SeibunCd, data.Ingre.Seibun ?? string.Empty, data.IndexDef.IndexWord ?? string.Empty, data.IndexDef.TokuhoFlg ?? string.Empty, data.IndexCode.IndexCd, string.Empty))
+              .Select(data => new SearchSupplementModel(data.Ingre?.SeibunCd ?? string.Empty, data.Ingre?.Seibun ?? string.Empty, data.IndexDef?.IndexWord ?? string.Empty, data.IndexDef?.TokuhoFlg ?? string.Empty, data.IndexCode?.IndexCd ?? string.Empty, string.Empty))
               .OrderBy(data => data.IndexWord)
               .ThenBy(data => data.SeibunCd)
               .ToList();
@@ -2417,7 +2417,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         foreach (var value in values)
         {
-            var maxSortNo = NoTrackingDataContext.ConversionItemInfs.Where(c => c.HpId == hpId && c.SourceItemCd == value.Key).AsEnumerable().Select(c => c.SortNo).DefaultIfEmpty(0).Max();
+            var maxSortNo = NoTrackingDataContext.ConversionItemInfs.Where(c => c.HpId == hpId && c.SourceItemCd == value.Key).AsEnumerable().Select(c => c.SortNo).DefaultIfEmpty(0)?.Max() ?? 0;
             foreach (var tenItem in value.Value)
             {
                 if (tenItem.ModeStatus == -1)
@@ -7998,7 +7998,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
 
         // Fillter remove duplicate item
-        allkensaKensaMst = allkensaKensaMst.Where(x => x.KensaItemSeqNo == allkensaKensaMst.Where(m => m.KensaItemCd == x.KensaItemCd).Min(m => m.KensaItemSeqNo)).ToList();
+        allkensaKensaMst = allkensaKensaMst.Where(x => x.KensaItemSeqNo == allkensaKensaMst.Where(m => m.KensaItemCd == x.KensaItemCd).DefaultIfEmpty().Min(m => m.KensaItemSeqNo)).ToList();
 
         var centerNameDictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
         var centerItemCd1Dictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);
@@ -8073,7 +8073,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             );
 
         // Fillter remove duplicate item
-        listChilsMatchKeyword = listChilsMatchKeyword.Where(x => x.KensaItemSeqNo == listChilsMatchKeyword.Where(m => m.KensaItemCd == x.KensaItemCd).Min(m => m.KensaItemSeqNo)).ToList();
+        listChilsMatchKeyword = listChilsMatchKeyword.Where(x => x.KensaItemSeqNo == listChilsMatchKeyword.Where(m => m.KensaItemCd == x.KensaItemCd).DefaultIfEmpty().Min(m => m.KensaItemSeqNo)).ToList();
 
         var listChildCenterNameDictionary = listChilsMatchKeywordDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
         var listChildCenterItemCd1Dictionary = listChilsMatchKeywordDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);
