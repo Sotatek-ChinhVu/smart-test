@@ -31,7 +31,6 @@ namespace SuperAdminAPI.Presenters.Tenant
             TerminateTenantStatus.TenantDoesNotExist => ResponseMessage.TenantDoesNotExist,
             TerminateTenantStatus.TenantDbDoesNotExistInRDS => ResponseMessage.TenantDbDoesNotExistInRDS,
             TerminateTenantStatus.TenantIsTerminating => ResponseMessage.TenantIsTerminating,
-            TerminateTenantStatus.TenantIsNotAvailableToSortTerminate => ResponseMessage.TenantIsNotAvailableToSortTerminate,
             _ => string.Empty
         };
     }
