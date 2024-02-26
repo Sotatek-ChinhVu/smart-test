@@ -1207,7 +1207,7 @@ namespace Infrastructure.Repositories
 
             if (!calcStatuses.Any()) return CIUtil.Successed;
 
-            DateTime maxTime = calcStatuses.Select(c => c.CreateDate).DefaultIfEmpty(DateTime.MinValue).Max();
+            DateTime maxTime = calcStatuses.Any() ? calcStatuses.Select(c => c.CreateDate).DefaultIfEmpty(DateTime.MinValue).Max() : DateTime.MinValue;
 
             if (maxTime == DateTime.MinValue)
                 return CIUtil.TryAgainLater;

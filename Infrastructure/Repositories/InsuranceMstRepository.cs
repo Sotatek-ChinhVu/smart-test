@@ -997,16 +997,14 @@ namespace Infrastructure.Repositories
         /// <returns></returns>
         public (int sortNo, int hokenEdaNo) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate)
         {
-            int sortNo = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
+            var hokenMsts = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
                                                                u.HokenNo == hokenNo &&
                                                                u.PrefNo == prefNo &&
-                                                               u.StartDate == startDate).Max(u => u.SortNo) + 1;
+                                                               u.StartDate == startDate).ToList();
 
+            int sortNo = hokenMsts.Any() ? hokenMsts.Max(u => u.SortNo) + 1 : 0;
 
-            int hokenEdaNo = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
-                                                                   u.HokenNo == hokenNo &&
-                                                                   u.PrefNo == prefNo &&
-                                                                   u.StartDate == startDate).Max(u => u.HokenEdaNo) + 1;
+            int hokenEdaNo = hokenMsts.Any() ? hokenMsts.Max(u => u.HokenEdaNo) + 1 : 0;
 
             return (sortNo, hokenEdaNo);
         }

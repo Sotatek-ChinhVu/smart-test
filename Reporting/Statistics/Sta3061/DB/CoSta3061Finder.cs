@@ -1277,7 +1277,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
             new JihiSbtMst()
             {
                 JihiSbt = 0,
-                SortNo = jihiSbtMsts.Max(j => j.SortNo) + 1
+                SortNo = (jihiSbtMsts.Any() ? jihiSbtMsts.Max(j => j.SortNo) : 0) + 1
             }
         );
 
