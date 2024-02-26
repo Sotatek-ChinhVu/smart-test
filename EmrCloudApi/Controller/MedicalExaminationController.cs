@@ -8,7 +8,6 @@ using EmrCloudApi.Requests.Family;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MedicalExamination;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CommonChecker;
 using UseCase.Core.Sync;
@@ -41,12 +40,12 @@ namespace EmrCloudApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MedicalExaminationController : AuthorizeControllerBase
+    public class MedicalExaminationController : BaseParamControllerBase
     {
         private readonly IWebSocketService _webSocketService;
         private readonly UseCaseBus _bus;
 
-        public MedicalExaminationController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
+        public MedicalExaminationController(UseCaseBus bus, IWebSocketService webSocketService, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
             _webSocketService = webSocketService;

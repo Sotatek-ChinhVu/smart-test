@@ -4,8 +4,6 @@ using EmrCloudApi.Presenters.User;
 using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.User;
-using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
@@ -24,11 +22,11 @@ using UseCase.User.UserInfo;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class UserController : AuthorizeControllerBase
+public class UserController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public UserController(UseCaseBus bus, IUserService userService) : base(userService)
+    public UserController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }
@@ -69,16 +67,16 @@ public class UserController : AuthorizeControllerBase
         return new ActionResult<Response<UpsertUserResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.CheckLockMedicalExamination)]
-    public ActionResult<Response<CheckedLockMedicalExaminationResponse>> CheckLockMedicalExamination([FromQuery] CheckedLockMedicalExaminationRequest request)
-    {
-        var input = new CheckedLockMedicalExaminationInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, Token, UserId);
-        var output = _bus.Handle(input);
-        var presenter = new CheckedLockMedicalExaminationPresenter();
-        presenter.Complete(output);
+    //[HttpGet(ApiPath.CheckLockMedicalExamination)]
+    //public ActionResult<Response<CheckedLockMedicalExaminationResponse>> CheckLockMedicalExamination([FromQuery] CheckedLockMedicalExaminationRequest request)
+    //{
+    //    var input = new CheckedLockMedicalExaminationInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, Token, UserId);
+    //    var output = _bus.Handle(input);
+    //    var presenter = new CheckedLockMedicalExaminationPresenter();
+    //    presenter.Complete(output);
 
-        return new ActionResult<Response<CheckedLockMedicalExaminationResponse>>(presenter.Result);
-    }
+    //    return new ActionResult<Response<CheckedLockMedicalExaminationResponse>>(presenter.Result);
+    //}
 
 
     [HttpGet(ApiPath.GetPermissionByScreen)]

@@ -18,11 +18,11 @@ using UseCase.SaveAuditLog;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class AuditLogController : AuthorizeControllerBase
+public class AuditLogController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public AuditLogController(UseCaseBus bus, IUserService userService) : base(userService)
+    public AuditLogController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

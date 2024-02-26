@@ -18,11 +18,11 @@ using UseCase.PatientManagement.SearchPtInfs;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class PatientManagementController : AuthorizeControllerBase
+    public class PatientManagementController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
 
-        public PatientManagementController(UseCaseBus bus, IUserService userService) : base(userService)
+        public PatientManagementController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

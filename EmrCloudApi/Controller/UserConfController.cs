@@ -4,7 +4,6 @@ using EmrCloudApi.Presenters.UserConf;
 using EmrCloudApi.Requests.UserConf;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.UserConf;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
@@ -19,11 +18,11 @@ using UseCase.UserConf.UserSettingParam;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class UserConfController : AuthorizeControllerBase
+public class UserConfController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public UserConfController(UseCaseBus bus, IUserService userService) : base(userService)
+    public UserConfController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

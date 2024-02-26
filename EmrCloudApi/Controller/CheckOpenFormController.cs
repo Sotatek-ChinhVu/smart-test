@@ -10,11 +10,11 @@ namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CheckOpenFormController : AuthorizeControllerBase
+public class CheckOpenFormController : BaseParamControllerBase
 {
     private readonly ICheckOpenReportingService _checkOpenReportingService;
 
-    public CheckOpenFormController(ICheckOpenReportingService checkOpenReportingService, IUserService userService) : base(userService)
+    public CheckOpenFormController(ICheckOpenReportingService checkOpenReportingService, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _checkOpenReportingService = checkOpenReportingService;
     }

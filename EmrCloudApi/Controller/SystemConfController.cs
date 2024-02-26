@@ -23,10 +23,10 @@ using UseCase.SystemConf.SystemSetting;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class SystemConfController : AuthorizeControllerBase
+    public class SystemConfController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SystemConfController(UseCaseBus bus, IUserService userService) : base(userService)
+        public SystemConfController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

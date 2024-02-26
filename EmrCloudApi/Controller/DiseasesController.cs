@@ -22,10 +22,10 @@ using UseCase.Yousiki.GetByomeisInMonth;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class DiseasesController : AuthorizeControllerBase
+    public class DiseasesController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public DiseasesController(UseCaseBus bus, IUserService userService) : base(userService)
+        public DiseasesController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

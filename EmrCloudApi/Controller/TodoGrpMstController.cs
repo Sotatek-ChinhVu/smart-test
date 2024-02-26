@@ -14,11 +14,11 @@ using UseCase.Todo.UpsertTodoGrpMst;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class TodoGrpMstController : AuthorizeControllerBase
+public class TodoGrpMstController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public TodoGrpMstController(UseCaseBus bus, IUserService userService) : base(userService)
+    public TodoGrpMstController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

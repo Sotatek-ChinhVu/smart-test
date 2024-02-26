@@ -15,10 +15,10 @@ using UseCase.Core.Sync;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    public class ChartApprovalController : AuthorizeControllerBase
+    public class ChartApprovalController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public ChartApprovalController(UseCaseBus bus, IUserService userService) : base(userService)
+        public ChartApprovalController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

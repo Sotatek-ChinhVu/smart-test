@@ -41,11 +41,11 @@ using UseCase.OrdInfs.ValidationTodayOrd;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class TodayOrdController : AuthorizeControllerBase
+    public class TodayOrdController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
-        public TodayOrdController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
+        public TodayOrdController(UseCaseBus bus, IWebSocketService webSocketService, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
             _webSocketService = webSocketService;
