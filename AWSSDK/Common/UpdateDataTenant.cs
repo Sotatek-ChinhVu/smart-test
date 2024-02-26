@@ -5,7 +5,6 @@ using Helper.Common;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Npgsql;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 
@@ -35,7 +34,7 @@ namespace AWSSDK.Common
         /// <param name="subFoldersMasters"></param>
         /// <returns></returns>
         public static bool ExcuteUpdateDataTenant(string[] filePaths, string[] subFoldersMasters, string host, int port, string database,
-           string user, string password, CancellationToken cancellationToken, IMessenger? messenger, int totalFileExcute, string pathFile7z, string pathFolderUpdateDataTenant, int hpId)
+           string user, string password, CancellationToken cancellationToken, IMessenger? messenger, int totalFileExcute, string pathFile7z, string pathFolderUpdateDataTenant)
         {
             //PostgresSqlAction.PostgreSqlExcuteScript("", host, port, database, user, password, pathFolderUpdateDataTenant).Wait();
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
@@ -160,7 +159,7 @@ namespace AWSSDK.Common
                                                     _columnHeaders = records.ToList().Select(x => x.Value.ToString()).ToList();
                                                 }
                                             }
-                                            
+
                                             string[] tempBase = texts[0].Split(new[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
                                             if (tempBase.Length == 2)
                                             {
@@ -191,7 +190,7 @@ namespace AWSSDK.Common
                                                     //create temp table
                                                     try
                                                     {
-                                                        CreateTempTable(connectionString, hpId);
+                                                        CreateTempTable(connectionString);
                                                     }
                                                     catch (Exception e)
                                                     {
@@ -230,12 +229,6 @@ namespace AWSSDK.Common
                                                         }
                                                     }
                                                     script += $" from '{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, csvFile)}' CSV HEADER encoding 'UTF8' null 'null_string';";
-
-                                                    // Add column hp_id to header
-                                                    if (ConfigConstant.listTableMaster.Contains(_baseTable) && !_columnHeaders.Contains("hp_id"))
-                                                    {
-                                                        _columnHeaders.Add("hp_id");
-                                                    }
 
                                                     try
                                                     {
@@ -462,7 +455,7 @@ namespace AWSSDK.Common
             }
         }
 
-        private static void CreateTempTable(string connectionString, int hpId)
+        private static void CreateTempTable(string connectionString)
         {
             if (string.IsNullOrEmpty(_tempTable))
             {
@@ -482,17 +475,6 @@ namespace AWSSDK.Common
                     {
                         command.CommandType = CommandType.Text;
                         command.ExecuteNonQuery();
-                    }
-                    
-                    // Set vaule hp_id 
-                    if (ConfigConstant.listTableMaster.Contains(_baseTable))
-                    {
-                        var scriptSetHpId = $"ALTER TABLE public.{_tempTable} ALTER COLUMN hp_id SET DEFAULT {hpId};";
-                        using (NpgsqlCommand command = new NpgsqlCommand(scriptSetHpId, connection2))
-                        {
-                            command.CommandType = CommandType.Text;
-                            command.ExecuteNonQuery();
-                        }
                     }
                 }
             }
@@ -638,34 +620,34 @@ namespace AWSSDK.Common
                 {
                     switch (_baseTable)
                     {
-                        case "ten_mst":
+                        case "TEN_MST":
                             EffectRecord.ChangeTenMstGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_haihan_custom":
+                        case "DENSI_HAIHAN_CUSTOM":
                             EffectRecord.ChangeDensiHaiHanCustomGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_haihan_day":
+                        case "DENSI_HAIHAN_DAY":
                             EffectRecord.ChangeDensiHaiHanDayGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_haihan_karte":
+                        case "DENSI_HAIHAN_KARTE":
                             EffectRecord.ChangeDensiHaihanKarteGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_haihan_month":
+                        case "DENSI_HAIHAN_MONTH":
                             EffectRecord.ChangeDensiHaihanMonthGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_haihan_week":
+                        case "DENSI_HAIHAN_WEEK":
                             EffectRecord.ChangeDensiHaihanWeekGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_hojyo":
+                        case "DENSI_HOJYO":
                             EffectRecord.ChangeDensiHojyoGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_houkatu":
+                        case "DENSI_HOUKATU":
                             EffectRecord.ChangeDensiHoukatuGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_houkatu_grp":
+                        case "DENSI_HOUKATU_GRP":
                             EffectRecord.ChangeDensiHoukatuGrpGeneration(connection, transaction, _tempTable);
                             break;
-                        case "densi_santei_kaisu":
+                        case "DENSI_SANTEI_KAISU":
                             EffectRecord.ChangeDensiSanteiKaisuGeneration(connection, transaction, _tempTable);
                             break;
                     }
@@ -726,23 +708,23 @@ namespace AWSSDK.Common
 
         public class TempGenerationMst
         {
-            public int hp_id { get; set; }
+            public int Hp_Id { get; set; }
 
-            public string houkatu_grp_no { get; set; }
+            public string Houkatu_Grp_No { get; set; }
 
-            public string item_cd { get; set; }
+            public string Item_Cd { get; set; }
 
-            public string item_cd1 { get; set; }
+            public string Item_Cd1 { get; set; }
 
-            public string item_cd2 { get; set; }
+            public string Item_Cd2 { get; set; }
 
-            public int unit_cd { get; set; }
+            public int Unit_Cd { get; set; }
 
-            public int user_setting { get; set; }
+            public int User_Setting { get; set; }
 
-            public int start_date { get; set; }
+            public int Start_Date { get; set; }
 
-            public int end_date { get; set; }
+            public int End_Date { get; set; }
         }
     }
 }
