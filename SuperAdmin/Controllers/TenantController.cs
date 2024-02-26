@@ -95,7 +95,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("TerminateTenant")]
         public ActionResult<Response<TerminateTenantResponse>> TerminateTenant([FromBody] TerminateTenantRequest request)
         {
-            var input = new TerminateTenantInputData(request.TenantId, _webSocketService, request.Type);
+            var input = new TerminateTenantInputData(request.TenantId, _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new TerminateTenantPresenter();
             presenter.Complete(output);
