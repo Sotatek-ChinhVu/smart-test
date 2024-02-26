@@ -32,17 +32,28 @@ namespace Interactor.ReceSeikyu
             try
             {
                 string content = ReadAsString(inputData.File);
-                List<string> fileContent = content.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).ToList();
+                Console.WriteLine("Raw data test import:" + content);
+                List<string> fileContent;
+                if (OperatingSystem.IsLinux())
+                {
+                    fileContent = content.Split("\n").Where(x => !string.IsNullOrEmpty(x)).ToList();
+                }
+                else
+                {
+                    fileContent = content.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).ToList();
+                }
                 string fileName = inputData.File.FileName;
 
-                var result = new List<ReceSeikyuModel>();
                 if (inputData.HpId <= 0)
+                {
                     return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.InvalidHpId, string.Empty);
-
+                }
                 if (fileContent == null || fileContent.Count == 0)
+                {
                     return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.InvalidContentFile, string.Empty);
+                }
 
-                Console.Write("Data test import: " + JsonSerializer.Serialize(fileContent));
+                Console.WriteLine("Data test import: " + JsonSerializer.Serialize(fileContent));
                 return HandlerImportFileRece(fileName, fileContent, inputData.HpId, inputData.UserId, inputData.File.OpenReadStream());
             }
             finally
