@@ -26,7 +26,7 @@ namespace Interactor.User
                     return new CreateUserOutputData(0, CreateUserStatus.InvalidName);
                 }
 
-                int userId = _userRepository.MaxUserId();
+                int userId = _userRepository.MaxUserId(inputData.HpId);
                 var user = inputData.GenerateUserModel(userId);
 
                 _userRepository.Create(user);

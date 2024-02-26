@@ -37,7 +37,7 @@ namespace Interactor.Insurance
                     return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHistoryPid);
                 }
 
-                if (!_insuranceResponsitory.CheckExistHokenPids(inputData.HistoryPids))
+                if (!_insuranceResponsitory.CheckExistHokenPids(inputData.HpId, inputData.HistoryPids))
                 {
                     return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.HokenPidInvalidNoExisted);
                 }

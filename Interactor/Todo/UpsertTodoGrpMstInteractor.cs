@@ -34,7 +34,7 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
                 return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.InputNoData);
             }
 
-            if (_todoGrpMstRepository.CheckExistedTodoGrpNo(input.TodoGrpMsts.Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo).ToList()))
+            if (_todoGrpMstRepository.CheckExistedTodoGrpNo(input.HpId, input.TodoGrpMsts.Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo).ToList()))
             {
                 return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.InvalidExistedTodoGrpNoIsDeleted);
             }

@@ -16,7 +16,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                bool isExitst = _mstItemRepository.CheckJihiSbtExistsInTenMst(inputData.JihiSbt);
+                bool isExitst = _mstItemRepository.CheckJihiSbtExistsInTenMst(inputData.HpId, inputData.JihiSbt);
 
                 if (isExitst)
                     return new CheckJihiSbtExistsInTenMstOutputData(true);

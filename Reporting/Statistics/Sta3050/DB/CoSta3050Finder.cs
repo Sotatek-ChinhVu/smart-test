@@ -58,14 +58,14 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             sinKouiCounts.Where(s => s.SinYm >= printConf.StartSinYm && s.SinYm <= printConf.EndSinYm) :
             sinKouiCounts.Where(s => s.SinDate >= printConf.StartSinDate && s.SinDate <= printConf.EndSinDate);
 
-        var sinKouis = NoTrackingDataContext.SinKouis.Where(s => s.IsDeleted == DeleteStatus.None);
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(s => s.HpId == hpId && s.IsDeleted == DeleteStatus.None);
         #region 条件指定（院内院外区分）
         if (printConf.InoutKbns?.Count >= 1)
         {
             sinKouis = sinKouis.Where(s => printConf.InoutKbns.Contains(s.InoutKbn));
         }
         #endregion
-        var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(s => s.IsDeleted == DeleteStatus.None);
+        var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(s => s.HpId == hpId && s.IsDeleted == DeleteStatus.None);
         #region 条件指定（診療識別）
         if (printConf.SinIds?.Count >= 1)
         {
@@ -89,7 +89,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        IQueryable<TenMst> tenMsts = NoTrackingDataContext.TenMsts;
+        IQueryable<TenMst> tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
 
         #region 項目コード変換
         if (printConf.ItemCds?.Count >= 1)
@@ -140,7 +140,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         printConf.ItemCds.RemoveAll(i => i.StartsWith("CO"));
         #endregion
 
-        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.IsDeleted == DeleteStatus.None && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId && s.IsDeleted == DeleteStatus.None && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
         #region 速度向上のため sinKouiDetails を先に絞り込む
         if (printConf.ItemCds?.Count >= 1 && printConf.ItemSearchOpt == 0)
         {
@@ -208,11 +208,11 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
         ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
         ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= printConf.StartPtNum) : ptInfs;
         ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
-        IQueryable<RaiinInf> raiinInfs = NoTrackingDataContext.RaiinInfs;
+        IQueryable<RaiinInf> raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId);
         #region 条件指定
         //診療科
         if (printConf.KaIds?.Count >= 1)
@@ -226,8 +226,8 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns;
-        IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs;
+        IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
+        IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId);
         #region 条件指定(保険種別)
         if (printConf.HokenSbts?.Count >= 1)
         {
@@ -265,8 +265,8 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        var kaMsts = NoTrackingDataContext.KaMsts;
-        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
+        var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
+        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteStatus.None);
 
         var joinQuery = (
             from sinCount in sinKouiCounts
@@ -554,7 +554,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         .ToList();
 
         #region 公費法別
-        var ptKohis = NoTrackingDataContext.PtKohis;
+        var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId);
 
         int startYm = printConf.StartSinYm >= 0 ? printConf.StartSinYm : printConf.StartSinDate / 100;
         int endYm = printConf.StartSinYm >= 0 ? printConf.EndSinYm : printConf.EndSinDate / 100;
@@ -630,7 +630,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
 
     private List<CoSinKouiModel> GetOdrInfs(int hpId, CoSta3050PrintConf printConf)
     {
-        IQueryable<PtInf> ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+        IQueryable<PtInf> ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
         ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
         ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= printConf.StartPtNum) : ptInfs;
         ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
@@ -638,7 +638,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         var ptInfList = ptInfs.ToList();
         var ptIdInfList = ptInfList.Select(item => item.PtId).Distinct().ToList();
 
-        IQueryable<OdrInf> odrInfs = NoTrackingDataContext.OdrInfs.Where(item => ptIdInfList.Contains(item.PtId) && item.IsDeleted == DeleteStatus.None);
+        IQueryable<OdrInf> odrInfs = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId && ptIdInfList.Contains(item.PtId) && item.IsDeleted == DeleteStatus.None);
         odrInfs = printConf.StartSinYm >= 0 ?
         odrInfs.Where(s => s.SinDate >= printConf.StartSinYm * 100 + 1 && s.SinDate <= printConf.EndSinYm * 100 + 31) :
         odrInfs.Where(s => s.SinDate >= printConf.StartSinDate && s.SinDate <= printConf.EndSinDate);
@@ -648,14 +648,15 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         var rpNoList = odrInfList.Select(item => item.RpNo).Distinct().ToList();
         var rpEdaNoList = odrInfList.Select(item => item.RpEdaNo).Distinct().ToList();
 
-        var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(item => raiinNoList.Contains(item.RaiinNo)
+        var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                                                                           && raiinNoList.Contains(item.RaiinNo)
                                                                            && rpNoList.Contains(item.RpNo)
                                                                            && rpEdaNoList.Contains(item.RpEdaNo))
                                                             .ToList();
         var itemCdList = odrDetails.Select(item => item.ItemCd).Distinct().ToList();
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(item => itemCdList.Contains(item.ItemCd)).ToList();
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd)).ToList();
 
-        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(item => item.Status > 3 && raiinNoList.Contains(item.RaiinNo));
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId && item.Status > 3 && raiinNoList.Contains(item.RaiinNo));
         #region 条件指定
         //診療科
         if (printConf.KaIds?.Count >= 1)
@@ -669,8 +670,8 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns;
-        IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs;
+        IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
+        IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId);
         #region 条件指定(保険種別)
         if (printConf.HokenSbts?.Count >= 1)
         {
@@ -708,8 +709,8 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        IQueryable<KaMst> kaMsts = NoTrackingDataContext.KaMsts;
-        IQueryable<UserMst> userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
+        IQueryable<KaMst> kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
+        IQueryable<UserMst> userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteStatus.None);
 
         var joinOdrs = (
             from odrInf in odrInfList
@@ -1073,7 +1074,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         .ToList();
 
         #region 公費法別
-        var ptKohis = NoTrackingDataContext.PtKohis;
+        var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId);
 
         int startYmd = printConf.StartSinYm >= 0 ? printConf.StartSinYm * 100 + 1 : printConf.StartSinDate;
         int endYmd = printConf.StartSinYm >= 0 ? printConf.EndSinYm * 100 + 99 : printConf.EndSinDate;

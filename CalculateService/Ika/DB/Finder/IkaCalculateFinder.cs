@@ -11,7 +11,10 @@ namespace CalculateService.Ika.DB.Finder
 {
     public class IkaCalculateFinder
     {
-        private int hospitalId = Hardcode.HospitalID;
+        /// <summary>
+        /// Do not hardcode hpId
+        /// </summary>
+        //private int hospitalId = Hardcode.HospitalID;
         private readonly TenantDataContext _tenantDataContext;
 
         public IkaCalculateFinder(TenantDataContext tenantDataContext)
@@ -309,7 +312,7 @@ namespace CalculateService.Ika.DB.Finder
                 //.OrderBy(p => p.CalcId)
                 //.ToList();
                 var entity3 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
-                p.HpId == hospitalId &&
+                p.HpId == hpId &&
                 p.CreateMachine == computerName &&
                 //p.SeikyuUp == 1 &&
                 p.Status == 0)

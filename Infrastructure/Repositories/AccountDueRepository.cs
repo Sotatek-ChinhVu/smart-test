@@ -305,9 +305,9 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         return null;
     }
 
-    public List<SyunoSeikyuModel> GetListSyunoSeikyuModel(List<long> listRaiinNo)
+    public List<SyunoSeikyuModel> GetListSyunoSeikyuModel(int hpId, List<long> listRaiinNo)
     {
-        var result = TrackingDataContext.SyunoSeikyus.Where(item => listRaiinNo.Contains(item.RaiinNo))
+        var result = TrackingDataContext.SyunoSeikyus.Where(item => item.HpId == hpId && listRaiinNo.Contains(item.RaiinNo))
                                                              .Select(item => new SyunoSeikyuModel(
                                                                     item.HpId,
                                                                     item.PtId,
@@ -326,9 +326,9 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         return result;
     }
 
-    public List<SyunoNyukinModel> GetListSyunoNyukinModel(List<long> listRaiinNo)
+    public List<SyunoNyukinModel> GetListSyunoNyukinModel(int hpId, List<long> listRaiinNo)
     {
-        var result = TrackingDataContext.SyunoNyukin.Where(item => listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
+        var result = TrackingDataContext.SyunoNyukin.Where(item => item.HpId == hpId && listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
                                                              .Select(item => new SyunoNyukinModel(
                                                                     item.HpId,
                                                                     item.PtId,

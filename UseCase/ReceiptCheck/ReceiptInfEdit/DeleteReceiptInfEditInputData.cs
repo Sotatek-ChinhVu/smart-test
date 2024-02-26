@@ -4,7 +4,7 @@ namespace UseCase.ReceiptCheck.ReceiptInfEdit
 {
     public class DeleteReceiptInfEditInputData : IInputData<DeleteReceiptInfEditOutputData>
     {
-        public DeleteReceiptInfEditInputData(int hpId, int userId, int ptId, int seikyuYm, int sinYm, int hokenId)
+        public DeleteReceiptInfEditInputData(int hpId, int userId, long ptId, int seikyuYm, int sinYm, int hokenId)
         {
             HpId = hpId;
             UserId = userId;
@@ -18,7 +18,7 @@ namespace UseCase.ReceiptCheck.ReceiptInfEdit
 
         public int UserId { get; private set; }
 
-        public int PtId { get; private set; }
+        public long PtId { get; private set; }
 
         public int SeikyuYm { get; private set; }
 

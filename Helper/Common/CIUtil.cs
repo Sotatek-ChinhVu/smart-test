@@ -1813,7 +1813,7 @@ namespace Helper.Common
             return hokenNumber == PtIDChkDgtMakeM10W21(WHokenNumber);
         }
 
-        public static int PtIDChkDgtMakeM10W21(int PtID)
+        public static long PtIDChkDgtMakeM10W21(long PtID)
         {
             int digit = 0;
             string ptStr = PtID.ToString("D7");

@@ -9,16 +9,17 @@ public class StatisticModelBase
 
     public List<StaConf> ListStaConf { get; set; }
 
-    protected void SettingConfig(int configId, string value)
+    protected void SettingConfig(int hpId, int configId, string value)
     {
-        var conf = ListStaConf.Find(x => x.ConfId == configId);
+        var conf = ListStaConf.Find(x => x.HpId == hpId && x.ConfId == configId);
 
         if (conf == null)
         {
             conf = new StaConf();
+            conf.HpId = hpId;
             conf.MenuId = StaMenu.MenuId;
             conf.ConfId = configId;
-
+            
             ListStaConf.Add(conf);
             if (ModelStatus == ModelStatus.None)
             {
@@ -37,9 +38,9 @@ public class StatisticModelBase
         conf.Val = value;
     }
 
-    protected string GetValueConf(int config)
+    protected string GetValueConf(int hpId, int config)
     {
-        var conf = ListStaConf.Find(x => x.ConfId == config);
+        var conf = ListStaConf.Find(x => x.HpId == hpId && x.ConfId == config);
 
         if (conf == null)
         {

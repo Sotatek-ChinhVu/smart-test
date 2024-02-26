@@ -61,7 +61,7 @@ namespace Interactor.User
         {
             var listKaId = _userRepository.ListDepartmentValid(hpId);
             var listJobValid = _userRepository.ListJobCdValid(hpId);
-            var currentInfo = _userRepository.GetByUserId(currentUser);
+            var currentInfo = _userRepository.GetByUserId(hpId, currentUser);
             string msg = string.Empty;
             string msgResult = string.Empty;
             foreach (var user in users)
@@ -81,7 +81,7 @@ namespace Interactor.User
                     msg = "ユーザーID,'1' ";
                     break;
                 }
-                else if ((user.Id == 0 && _userRepository.UserIdIsExistInDb(user.UserId))
+                else if ((user.Id == 0 && _userRepository.UserIdIsExistInDb(user.HpId, user.UserId))
                             || users.Count(x => x.UserId == user.UserId) > 1)
                 {
                     msg = "ログインID'" + user.LoginId + "' +" + "・ ログインIDを変更してください。";

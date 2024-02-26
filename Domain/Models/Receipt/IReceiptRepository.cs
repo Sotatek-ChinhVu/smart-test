@@ -127,7 +127,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceInfForCheckErrSwapHokenModel> GetReceInforCheckErrForCalculateSwapHoken(int hpId, List<long> ptIds, int sinYM);
 
-    bool HasErrorCheck(int sinYm, long ptId, int hokenId);
+    bool HasErrorCheck(int hpId, int sinYm, long ptId, int hokenId);
 
     bool SaveReceStatusCalc(List<ReceStatusModel> newReceStatus, List<ReceStatusModel> updateList, int userId, int hpId);
 

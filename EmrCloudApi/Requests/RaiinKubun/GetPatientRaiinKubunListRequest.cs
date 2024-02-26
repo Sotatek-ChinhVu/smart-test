@@ -4,7 +4,7 @@
     {
         public long PtId { get; set; }
 
-        public int RaiinNo { get; set; }
+        public long RaiinNo { get; set; }
 
         public int SinDate { get; set; }
     }

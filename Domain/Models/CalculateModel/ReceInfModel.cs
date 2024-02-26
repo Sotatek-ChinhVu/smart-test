@@ -12,7 +12,7 @@ namespace Domain.Models.CalculateModel
     {
         public int HpId { get; set; }
         public int SeikyuYm { get; set; }
-        public int PtId { get; set; }
+        public long PtId { get; set; }
         public int SinYm { get; set; }
         public int HokenId { get; set; }
         public int HokenId2 { get; set; }
@@ -160,7 +160,7 @@ namespace Domain.Models.CalculateModel
         public ReceInf ReceInf { get; set; } = new();
         public int HpId { get; set; }
         public int SeikyuYm { get; set; }
-        public int PtId { get; set; }
+        public long PtId { get; set; }
         public int SinYm { get; set; }
         public int HokenId { get; set; }
         public int HokenId2 { get; set; }

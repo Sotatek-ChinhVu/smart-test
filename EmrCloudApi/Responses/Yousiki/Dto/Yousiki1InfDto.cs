@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Yousiki;
 using Domain.Models.Yousiki.CommonModel;
+using Newtonsoft.Json;
 
 namespace EmrCloudApi.Responses.Yousiki.Dto;
 
@@ -18,6 +19,7 @@ public class Yousiki1InfDto
         TabYousiki = tabYousiki;
     }
 
+    [JsonConstructor]
     public Yousiki1InfDto(Yousiki1InfModel model)
     {
         PtNum = model.PtNum;

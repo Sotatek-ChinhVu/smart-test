@@ -340,7 +340,7 @@ namespace Infrastructure.Repositories
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string tantoFullName = _userInfoService.GetFullNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
-                var approveInf = approveInfs?.Count() > 0 ? approveInfs.FirstOrDefault(a => a.RaiinNo == raiinNo) : new();
+                var approveInf = approveInfs.Any() ? approveInfs.FirstOrDefault(a => a.RaiinNo == raiinNo) : new();
 
                 historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tantoFullName, tagModel.TagNo, approveInf?.DisplayApprovalInfo ?? string.Empty, listKarteFileModel));
             }
@@ -702,9 +702,9 @@ namespace Infrastructure.Repositories
             && itemCds.Contains(t.ItemCd)).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
-            var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+            var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId ==hpId && p.GrpCd == 2019 && p.GrpEdaNo == 0);
             var kensaIrai = checkKensaIrai?.Val ?? 0;
-            var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+            var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
             var ipnMinYakkaMstQuery = NoTrackingDataContext.IpnMinYakkaMsts.Where(u => u.IsDeleted == DeleteTypes.None && (u.StartDate <= maxSinDate || u.EndDate >= maxSinDate));
@@ -786,9 +786,9 @@ namespace Infrastructure.Repositories
 
         private List<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)
         {
-            var result = NoTrackingDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo)).ToList();
+            var result = NoTrackingDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo)).OrderByDescending(item => item.UpdateDate).ToList();
             var userIds = result.Select(r => r.UpdateId).Distinct().ToList();
-            var userMsts = NoTrackingDataContext.UserMsts.Where(u => userIds.Contains(u.UserId)).ToList();
+            var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId ==hpId && userIds.Contains(u.UserId)).ToList();
             return result.AsEnumerable().Select(
                     r => new ApproveInfModel(
                             r.Id,

@@ -42,7 +42,7 @@ public class UpdateOnlineConsentsInteractor : IUpdateOnlineConsentsInputPort
 
     private (UpdateOnlineConsentsStatus status, List<QCXmlMsgResponse> responseList) ValidateData(UpdateOnlineConsentsInputData inputData)
     {
-        if (!_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (!_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return (UpdateOnlineConsentsStatus.InvalidPtId, new());
         }

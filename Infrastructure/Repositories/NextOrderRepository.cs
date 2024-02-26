@@ -61,10 +61,10 @@ namespace Infrastructure.Repositories
             List<PrefixSuffixModel> prefixSuffixModels = new();
             foreach (var item in byomeis)
             {
-                prefixSuffixModels.AddRange(SyusyokuCdToList(item));
+                prefixSuffixModels.AddRange(SyusyokuCdToList(hpId, item));
             }
 
-            var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(b)).ToList();
+            var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(hpId, b)).ToList();
 
             return byomeiModels;
         }
@@ -98,9 +98,9 @@ namespace Infrastructure.Repositories
 
             var tenMstYohos = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.IsNosearch == 0 && t.StartDate <= sinDate && t.EndDate >= sinDate && (sinKouiKbns != null && sinKouiKbns.Contains(t.SinKouiKbn)) && (itemCdYohos != null && itemCdYohos.Contains(t.ItemCd))).ToList();
 
-            var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+            var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 0);
             var kensaIrai = checkKensaIrai?.Val ?? 0;
-            var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+            var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
             var oderInfModels = orderInfs.Select(o => ConvertOrderInfToModel(o, orderInfDetails, tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, ipnKansanMsts, listYohoSets ?? new(), tenMstYohos, kensaIrai, kensaIraiCondition)).ToList();
@@ -127,9 +127,9 @@ namespace Infrastructure.Repositories
             var kouiKbnMstList = NoTrackingDataContext.KouiKbnMsts.ToList();
 
             // Get Raiin List Koui
-            var raiinListMstQuery = NoTrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0);
-            var raiinListDetailQuery = NoTrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0);
-            var raiinListKouiQuery = NoTrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0);
+            var raiinListMstQuery = NoTrackingDataContext.RaiinListMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0);
+            var raiinListDetailQuery = NoTrackingDataContext.RaiinListDetails.Where(item => item.HpId == hpId && item.IsDeleted == 0);
+            var raiinListKouiQuery = NoTrackingDataContext.RaiinListKouis.Where(item => item.HpId == hpId && item.IsDeleted == 0);
             var raiinListKouiList = from raiinListKoui in raiinListKouiQuery
                                     join raiinListDetail in raiinListDetailQuery on new { raiinListKoui.GrpId, raiinListKoui.KbnCd }
                                                                                  equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
@@ -140,7 +140,7 @@ namespace Infrastructure.Repositories
             List<RaiinListKoui> raiinListKouis = raiinListKouiList.Select(item => item.raiinListKoui).ToList();
 
             // Get Raiin List Item
-            var raiinListItemQuery = NoTrackingDataContext.RaiinListItems.Where(item => item.IsExclude == 0
+            var raiinListItemQuery = NoTrackingDataContext.RaiinListItems.Where(item => item.HpId == hpId && item.IsExclude == 0
                                                                                         && item.IsDeleted == 0);
             var raiinListItemList = from raiinListItem in raiinListItemQuery
                                     join raiinListDetail in raiinListDetailQuery on new { raiinListItem.GrpId, raiinListItem.KbnCd }
@@ -226,7 +226,7 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
 
             // delete cache key
-            string finalKey = key + ptId;
+            string finalKey = key + ptId + "-" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 _cache.KeyDelete(finalKey);
@@ -577,10 +577,10 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei)
+        private RsvkrtByomeiModel ConvertByomeiToModel(int hpId, RsvkrtByomei byomei)
         {
             //prefix and suffix
-            var byomeiMstMain = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(item => byomei.ByomeiCd == item.ByomeiCd) ?? new ByomeiMst();
+            var byomeiMstMain = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(item => item.HpId == hpId && byomei.ByomeiCd == item.ByomeiCd) ?? new ByomeiMst();
 
             return new RsvkrtByomeiModel(
                     byomei.Id,
@@ -597,7 +597,7 @@ namespace Infrastructure.Repositories
                     byomei.IsNodspRece,
                     byomei.IsNodspKarte,
                     byomei.IsDeleted,
-                    SyusyokuCdToList(byomei),
+                    SyusyokuCdToList(hpId, byomei),
                     byomeiMstMain?.Icd101 ?? string.Empty,
                     byomeiMstMain?.Icd1012013 ?? string.Empty,
                     byomeiMstMain?.Icd1012013 ?? string.Empty,
@@ -846,7 +846,7 @@ namespace Infrastructure.Repositories
             return KensaGaichuTextConst.NONE;
         }
 
-        private List<PrefixSuffixModel> SyusyokuCdToList(RsvkrtByomei mst)
+        private List<PrefixSuffixModel> SyusyokuCdToList(int hpId, RsvkrtByomei mst)
         {
             List<string> codeList = new()
             {
@@ -878,7 +878,7 @@ namespace Infrastructure.Repositories
                 return new List<PrefixSuffixModel>();
             }
 
-            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeList.Contains(b.ByomeiCd)).ToList();
 
             List<PrefixSuffixModel> result = new();
             foreach (var code in codeList)
@@ -899,7 +899,7 @@ namespace Infrastructure.Repositories
             List<NextOrderModel> result;
 
             // check if exit cache, get data from cache
-            string finalKey = key + ptId;
+            string finalKey = key + ptId + "-" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).ToString();
@@ -908,7 +908,7 @@ namespace Infrastructure.Repositories
             }
 
             // if not exist cache, get data from database
-            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
+            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.PtId == ptId && rsv.HpId == hpId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
             result = allRsvkrtMst?.Select(rsv => ConvertToModel(rsv)).ToList() ?? new();
 
             // set cache data

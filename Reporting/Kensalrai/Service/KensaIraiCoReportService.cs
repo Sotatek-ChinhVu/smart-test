@@ -273,7 +273,7 @@ namespace Reporting.Kensalrai.Service
                     o1 += adjStr(kensaIrai.IraiCd.ToString(), 20);
                 }
                 // 科コード     15桁
-                if (_systemConfig.OdrKensaIraiKaCode() == 1)
+                if (_systemConfig.OdrKensaIraiKaCode(HpId) == 1)
                 {
                     string kacdname = kensaIrai.KaCodeName;
 
@@ -281,7 +281,7 @@ namespace Reporting.Kensalrai.Service
                     o1 += kacdname;
 
                 }
-                else if (_systemConfig.OdrKensaIraiKaCode() == 2)
+                else if (_systemConfig.OdrKensaIraiKaCode(HpId) == 2)
                 {
                     string kacdname = "";
 

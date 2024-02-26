@@ -337,7 +337,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         ListTextModelResult = new();
         SystemConfigList = new();
         JavaOutputData = new();
-        SystemConfigList.Add("accountingUseBackwardFields", _systemConfig.AccountingUseBackwardFields().ToString());
+        SystemConfigList.Add("accountingUseBackwardFields", _systemConfig.AccountingUseBackwardFields(hpId).ToString());
         coModel = new();
         coModelList = new();
         jihiSbtMstModels = new();
@@ -391,8 +391,8 @@ public class AccountingCoReportService : IAccountingCoReportService
     {
         List<CoAccountingParamModel> result = new();
         List<long> oyaRaiinList;
-        if (isCalculateProcess && ((printTypeInput == 0 && _systemConfig.PrintReceiptPay0Yen() == 0)
-                               || (printTypeInput == 1 && _systemConfig.PrintDetailPay0Yen() == 0)))
+        if (isCalculateProcess && ((printTypeInput == 0 && _systemConfig.PrintReceiptPay0Yen(hpId) == 0)
+                               || (printTypeInput == 1 && _systemConfig.PrintDetailPay0Yen(hpId) == 0)))
         {
             oyaRaiinList = raiinInfModelPayList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
         }
@@ -721,25 +721,25 @@ public class AccountingCoReportService : IAccountingCoReportService
             if (printType == 0)
             {
                 // 領収証
-                formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingFormType());
+                formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingFormType(hpId));
                 jobName = !string.IsNullOrEmpty(jobName) ? jobName : "領収証";
             }
             else if (printType == 1)
             {
                 // 明細
-                formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingDetailFormType());
+                formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingDetailFormType(hpId));
                 jobName = !string.IsNullOrEmpty(jobName) ? jobName : "明細書";
             }
             if (printType == 2)
             {
                 // 月間領収証
-                formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingMonthFormType());
+                formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingMonthFormType(hpId));
                 jobName = !string.IsNullOrEmpty(jobName) ? jobName : "月間領収証";
             }
             else if (printType == 3)
             {
                 // 月間明細
-                formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingDetailMonthFormType());
+                formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingDetailMonthFormType(hpId));
                 jobName = !string.IsNullOrEmpty(jobName) ? jobName : "月間明細書";
             }
         }
@@ -1487,7 +1487,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             }
 
             // 院外処方
-            if (_systemConfig.AccountingDetailIncludeOutDrug() == 1 && coModel.OdrInfModels.Any())
+            if (_systemConfig.AccountingDetailIncludeOutDrug(hpId) == 1 && coModel.OdrInfModels.Any())
             {
                 sinmeiPrintDataModels.Add(new CoSinmeiPrintDataModel());
                 sinmeiPrintDataModels.Add(new CoSinmeiPrintDataModel());
@@ -1507,7 +1507,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                     foreach (CoOdrInfDetailModel odrDtl in coModel.OdrInfDetailModels.FindAll(p => p.RaiinNo == odrInf.RaiinNo && p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo))
                     {
-                        if (_systemConfig.AccountingDetailIncludeComment() == 0 && odrDtl.IsComment)
+                        if (_systemConfig.AccountingDetailIncludeComment(hpId) == 0 && odrDtl.IsComment)
                         {
                             // コメントを出さない
                             continue;
@@ -1540,7 +1540,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     private void UpdateDrawFormSingle()
     {
         // 下位互換
-        bool backword = _systemConfig.AccountingUseBackwardFields() == 1;
+        bool backword = _systemConfig.AccountingUseBackwardFields(hpId) == 1;
 
         UpdateFormHeader();
         UpdateFormBody();
@@ -2979,17 +2979,17 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 領収証定型文
             void _printTeikeibun()
             {
-                if (_systemConfig.AccountingTeikeibunPrint() == 1)
+                if (_systemConfig.AccountingTeikeibunPrint(hpId) == 1)
                 {
-                    SetFieldDataRep("dfTeikeibun1_", 1, 2, _systemConfig.AccountingTeikeibun1());
-                    SetFieldDataRep("dfTeikeibun2_", 1, 2, _systemConfig.AccountingTeikeibun2());
-                    SetFieldDataRep("dfTeikeibun3_", 1, 2, _systemConfig.AccountingTeikeibun3());
+                    SetFieldDataRep("dfTeikeibun1_", 1, 2, _systemConfig.AccountingTeikeibun1(hpId));
+                    SetFieldDataRep("dfTeikeibun2_", 1, 2, _systemConfig.AccountingTeikeibun2(hpId));
+                    SetFieldDataRep("dfTeikeibun3_", 1, 2, _systemConfig.AccountingTeikeibun3(hpId));
                     // 下位互換
                     if (backword)
                     {
-                        SetFieldDataRep("Teikeibun1_", 1, 2, _systemConfig.AccountingTeikeibun1());
-                        SetFieldDataRep("Teikeibun2_", 1, 2, _systemConfig.AccountingTeikeibun2());
-                        SetFieldDataRep("Teikeibun3_", 1, 2, _systemConfig.AccountingTeikeibun3());
+                        SetFieldDataRep("Teikeibun1_", 1, 2, _systemConfig.AccountingTeikeibun1(hpId));
+                        SetFieldDataRep("Teikeibun2_", 1, 2, _systemConfig.AccountingTeikeibun2(hpId));
+                        SetFieldDataRep("Teikeibun3_", 1, 2, _systemConfig.AccountingTeikeibun3(hpId));
                     }
                 }
             }
@@ -4227,7 +4227,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                                      _tenantProvider,
                                      _systemConfigProvider,
                                      _emrLogger,
-                                     _systemConfig.AccountingDetailIncludeComment() == 0
+                                     _systemConfig.AccountingDetailIncludeComment(hpId) == 0
                                      ));
         }
 

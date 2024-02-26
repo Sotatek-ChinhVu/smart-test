@@ -34,23 +34,23 @@ public class JsonSettingRepository : RepositoryBase, IJsonSettingRepository
         }
     }
 
-    public JsonSettingModel? Get(int userId, string key)
+    public JsonSettingModel? Get(int hpId, int userId, string key)
     {
-        var entity = NoTrackingDataContext.JsonSettings.FirstOrDefault(e => e.UserId == userId && e.Key == key);
+        var entity = NoTrackingDataContext.JsonSettings.FirstOrDefault(e => e.HpId == hpId && e.UserId == userId && e.Key == key);
         return entity is null ? null : ToModel(entity);
     }
 
-    public List<JsonSettingModel> GetListFollowUserId(int userId)
+    public List<JsonSettingModel> GetListFollowUserId(int hpId, int userId)
     {
-        var finalKey = key + "_" + userId;
+        var finalKey = key + "_" + hpId + "_" + userId;
         IEnumerable<JsonSetting> entities;
         if (!_cache.KeyExists(finalKey))
         {
-            entities = ReloadCache(userId);
+            entities = ReloadCache(hpId, userId);
         }
         else
         {
-            entities = ReadCache(userId);
+            entities = ReadCache(hpId, userId);
         }
         return entities?.Select(e => ToModel(e)).ToList() ?? new();
     }
@@ -63,11 +63,12 @@ public class JsonSettingRepository : RepositoryBase, IJsonSettingRepository
     public void Upsert(JsonSettingModel model)
     {
         var existingEntity = TrackingDataContext.JsonSettings.AsTracking()
-            .FirstOrDefault(e => e.UserId == model.UserId && e.Key == model.Key);
+            .FirstOrDefault(e => e.HpId == model.HpId && e.UserId == model.UserId && e.Key == model.Key);
         if (existingEntity is null)
         {
             TrackingDataContext.JsonSettings.Add(new JsonSetting
             {
+                HpId = model.HpId,
                 UserId = model.UserId,
                 Key = model.Key,
                 Value = model.Value
@@ -79,27 +80,27 @@ public class JsonSettingRepository : RepositoryBase, IJsonSettingRepository
         }
 
         TrackingDataContext.SaveChanges();
-        ReloadCache(model.UserId);
+        ReloadCache(model.HpId, model.UserId);
     }
 
     private JsonSettingModel ToModel(JsonSetting entity)
     {
-        return new JsonSettingModel(entity.UserId, entity.Key, entity.Value);
+        return new JsonSettingModel(entity.HpId, entity.UserId, entity.Key, entity.Value);
     }
 
-    private IEnumerable<JsonSetting> ReloadCache(int userId)
+    private IEnumerable<JsonSetting> ReloadCache(int hpId, int userId)
     {
-        var finalKey = key + "_" + userId;
-        var entities = NoTrackingDataContext.JsonSettings.Where(e => e.UserId == userId).ToList();
+        var finalKey = key + "_" + hpId + "_" + userId;
+        var entities = NoTrackingDataContext.JsonSettings.Where(e => e.HpId == hpId && e.UserId == userId).ToList();
         var json = JsonSerializer.Serialize(entities);
         _cache.StringSet(finalKey, json);
 
         return entities;
     }
 
-    private IEnumerable<JsonSetting> ReadCache(int userId)
+    private IEnumerable<JsonSetting> ReadCache(int hpId, int userId)
     {
-        var finalKey = key + "_" + userId;
+        var finalKey = key + "_" + hpId + "_" + userId;
         var results = _cache.StringGet(finalKey);
         var json = results.AsString();
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<JsonSetting>>(json) : new();

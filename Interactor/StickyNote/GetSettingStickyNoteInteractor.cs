@@ -20,7 +20,7 @@ namespace Interactor.StickyNote
             {
                 if (inputData.UserId < 0) return new GetSettingStickyNoteOutputData(UpdateStickyNoteStatus.InvalidValue);
 
-                var listUserConf = _userConfRepository.GetList(inputData.UserId, 925, 925);
+                var listUserConf = _userConfRepository.GetList(inputData.HpId, inputData.UserId, 925, 925);
                 int fontSize = 14;
                 int opacity = 200;
                 int width = 570;

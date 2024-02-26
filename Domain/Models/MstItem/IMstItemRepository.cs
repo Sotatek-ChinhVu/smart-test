@@ -65,15 +65,15 @@ namespace Domain.Models.MstItem
 
         bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId);
 
-        List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize, bool isHasFreeByomei = true);
+        List<ByomeiMstModel> DiseaseSearch(int hpId, bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize, bool isHasFreeByomei = true);
 
-        List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes);
+        List<ByomeiMstModel> DiseaseSearch(int hpId, List<string> keyCodes);
 
         bool UpdateAdoptedByomei(int hpId, string byomeiCd, int userId);
 
         List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds);
 
-        bool CheckItemCd(string itemCd);
+        bool CheckItemCd(int hpId, string itemCd);
 
         TenItemModel FindTenMst(int hpId, string itemCd, int sinDate);
 
@@ -94,7 +94,7 @@ namespace Domain.Models.MstItem
 
         List<ItemCommentSuggestionModel> GetSelectiveComment(int hpId, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false);
 
-        List<string> GetCheckItemCds(List<string> itemCds);
+        List<string> GetCheckItemCds(int hpId, List<string> itemCds);
 
         List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds);
 
@@ -109,9 +109,9 @@ namespace Domain.Models.MstItem
 
         List<KensaCenterMstModel> GetListKensaCenterMst(int hpId);
 
-        List<TenMstOriginModel> GetGroupTenMst(string itemCd);
+        List<TenMstOriginModel> GetGroupTenMst(int hpId, string itemCd);
 
-        string GetMaxItemCdByTypeForAdd(string startWithstr);
+        string GetMaxItemCdByTypeForAdd(int hpId, string startWithstr);
 
         int GetMinJihiSbtMst(int hpId);
 
@@ -119,7 +119,7 @@ namespace Domain.Models.MstItem
 
         bool IsTenMstItemCdUsed(int hpId, string itemCd);
 
-        bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds);
+        bool SaveDeleteOrRecoverTenMstOrigin(int hpId, DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds);
 
         List<CmtKbnMstModel> GetListCmtKbnMstModelByItemCd(int hpId, string itemCd);
 
@@ -137,7 +137,7 @@ namespace Domain.Models.MstItem
 
         IpnNameMstModel GetIpnNameMstModel(int hpId, string ipnNameCd, int sinDate);
 
-        string GetYohoInfMstPrefixByItemCd(string itemCd);
+        string GetYohoInfMstPrefixByItemCd(int hpId, string itemCd);
 
         List<DrugInfModel> GetDrugInfByItemCd(int hpId, string itemCd);
 
@@ -157,7 +157,7 @@ namespace Domain.Models.MstItem
 
         List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId, List<string> listGrpNo);
 
-        List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd);
+        List<CombinedContraindicationModel> GetContraindicationModelList(int hpId, int sinDate, string itemCd);
 
         bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId);
 
@@ -229,14 +229,14 @@ namespace Domain.Models.MstItem
 
         bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels);
 
-        TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate);
+        TenItemModel GetTenMstByCode(int hpId, string itemCd, int setKbn, int sinDate);
 
-        ByomeiMstModel GetByomeiByCode(string byomeiCd);
+        ByomeiMstModel GetByomeiByCode(int hpId, string byomeiCd);
 
         bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate);
 
         List<RenkeiTimingModel> GetRenkeiTimingModel(int hpId, int renkeiId);
-        bool CheckJihiSbtExistsInTenMst(int jihiSbt);
+        bool CheckJihiSbtExistsInTenMst(int hpId, int jihiSbt);
 
         bool ExistedTenMstItem(int hpId, string itemCd, int sinDate);
 

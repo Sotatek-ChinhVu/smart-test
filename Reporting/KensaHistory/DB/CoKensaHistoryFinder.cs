@@ -111,13 +111,13 @@ namespace Reporting.KensaHistory.DB
                                                               on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
                                                              join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
                                                              join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
-                                                             join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
+                                                             join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None)
                                                                   on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
                                                              from t5 in leftJoinT5.DefaultIfEmpty()
-                                                             join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
+                                                             join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None)
                                                                   on t1.CmtCd2 equals t6.CmtCd into leftJoinT6
                                                              from t6 in leftJoinT6.DefaultIfEmpty()
-                                                             join t7 in NoTrackingDataContext.KensaStdMsts
+                                                             join t7 in NoTrackingDataContext.KensaStdMsts.Where(x => x.HpId == hpId)
                                                                  on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                                                              from t7 in leftJoinT7.DefaultIfEmpty()
                                                              where t2.IsDelete == DeleteTypes.None && t3.IsDeleted == DeleteTypes.None && t4.IsDelete == DeleteTypes.None
@@ -336,7 +336,7 @@ namespace Reporting.KensaHistory.DB
             }
             else
             {
-                var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).ToList();
+                var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.HpId == hpId && x.SetId == setId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).ToList();
                 foreach (var cunrentItemSet in kensasetDetail)
                 {
                     var lastItemSet = kensasetDetail.LastOrDefault(x => x.KensaItemCd == cunrentItemSet.KensaItemCd);
@@ -485,13 +485,13 @@ namespace Reporting.KensaHistory.DB
                                                               on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
                                                              join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
                                                              join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
-                                                             join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
+                                                             join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None)
                                                                   on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
                                                              from t5 in leftJoinT5.DefaultIfEmpty()
-                                                             join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
+                                                             join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None)
                                                                   on t1.CmtCd2 equals t6.CmtCd into leftJoinT6
                                                              from t6 in leftJoinT6.DefaultIfEmpty()
-                                                             join t7 in NoTrackingDataContext.KensaStdMsts
+                                                             join t7 in NoTrackingDataContext.KensaStdMsts.Where(x => x.HpId == hpId)
                                                                  on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                                                              from t7 in leftJoinT7.DefaultIfEmpty()
                                                              where t2.IsDelete == DeleteTypes.None && t3.IsDeleted == DeleteTypes.None && t4.IsDelete == DeleteTypes.None
@@ -667,7 +667,7 @@ namespace Reporting.KensaHistory.DB
             // Filter row by KensaSet
             else
             {
-                var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).ToList();
+                var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.HpId == hpId && x.SetId == setId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).ToList();
 
                 foreach (var cunrentItemSet in kensasetDetail)
                 {

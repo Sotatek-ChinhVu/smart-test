@@ -16,7 +16,7 @@ public class GetRaiinFilterMstListInteractor : IGetRaiinFilterMstListInputPort
     {
         try
         {
-            var filterMsts = _raiinFilterMstRepository.GetList();
+            var filterMsts = _raiinFilterMstRepository.GetList(inputData.HpId);
             var status = filterMsts.Any() ? GetRaiinFilterMstListStatus.Success : GetRaiinFilterMstListStatus.NoData;
             return new GetRaiinFilterMstListOutputData(status, filterMsts);
         }
