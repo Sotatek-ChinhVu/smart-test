@@ -67,16 +67,16 @@ public class UserController : BaseParamControllerBase
         return new ActionResult<Response<UpsertUserResponse>>(presenter.Result);
     }
 
-    //[HttpGet(ApiPath.CheckLockMedicalExamination)]
-    //public ActionResult<Response<CheckedLockMedicalExaminationResponse>> CheckLockMedicalExamination([FromQuery] CheckedLockMedicalExaminationRequest request)
-    //{
-    //    var input = new CheckedLockMedicalExaminationInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, Token, UserId);
-    //    var output = _bus.Handle(input);
-    //    var presenter = new CheckedLockMedicalExaminationPresenter();
-    //    presenter.Complete(output);
+    [HttpGet(ApiPath.CheckLockMedicalExamination)]
+    public ActionResult<Response<CheckedLockMedicalExaminationResponse>> CheckLockMedicalExamination([FromQuery] CheckedLockMedicalExaminationRequest request)
+    {
+        var input = new CheckedLockMedicalExaminationInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, UserId);
+        var output = _bus.Handle(input);
+        var presenter = new CheckedLockMedicalExaminationPresenter();
+        presenter.Complete(output);
 
-    //    return new ActionResult<Response<CheckedLockMedicalExaminationResponse>>(presenter.Result);
-    //}
+        return new ActionResult<Response<CheckedLockMedicalExaminationResponse>>(presenter.Result);
+    }
 
 
     [HttpGet(ApiPath.GetPermissionByScreen)]

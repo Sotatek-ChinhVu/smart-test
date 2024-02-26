@@ -4,13 +4,12 @@ namespace UseCase.User.CheckedLockMedicalExamination;
 
 public class CheckedLockMedicalExaminationInputData : IInputData<CheckedLockMedicalExaminationOutputData>
 {
-    public CheckedLockMedicalExaminationInputData(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId)
+    public CheckedLockMedicalExaminationInputData(int hpId, long ptId, long raiinNo, int sinDate, int userId)
     {
         HpId = hpId;
         PtId = ptId;
         RaiinNo = raiinNo;
         SinDate = sinDate;
-        Token = token;
         UserId = userId;
     }
 
@@ -21,8 +20,6 @@ public class CheckedLockMedicalExaminationInputData : IInputData<CheckedLockMedi
     public long RaiinNo { get; private set; }
 
     public int SinDate { get; private set; }
-
-    public string Token { get; private set; }
 
     public int UserId { get; private set; }
 }
