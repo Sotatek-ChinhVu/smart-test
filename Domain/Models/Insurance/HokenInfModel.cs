@@ -400,6 +400,11 @@ namespace Domain.Models.Insurance
 
         public bool IsHoken => IsShaho || IsKokuho;
 
+        public bool IsJibaiOrRosai
+        {
+            get { return HokenKbn >= 11 && HokenKbn <= 14; }
+        }
+
         public bool HasDateConfirmed
         {
             get
