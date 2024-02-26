@@ -110,12 +110,6 @@ namespace Interactor.SuperAdmin
                         return new UpdateTenantOutputData(false, UpdateTenantStatus.TenantNotReadyToUpdate);
                     }
 
-
-                    if (!_awsSdkService.CheckExitRDS(oldTenant.RdsIdentifier).Result)
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.RdsDoesNotExist);
-                    }
-
                     if (oldTenant.SubDomain != inputData.SubDomain)
                     {
                         if (Route53Action.CheckSubdomainExistence(inputData.SubDomain).Result)
