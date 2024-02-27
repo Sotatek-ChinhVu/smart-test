@@ -72,12 +72,12 @@ namespace AWSSDK.Services
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public bool DeleteDataMasterTenant(string serverEndpoint, string tennantDB, string username, string password, int hpId)
+        public bool DeleteDataMasterTenant(string serverEndpoint, string tennantDB, string username, string password, int hpId, string db)
         {
             try
             {
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint}; Database ={db}; Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
 
                 string FormartNameZTable(string tableName)
                 {
