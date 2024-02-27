@@ -10,8 +10,12 @@ using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
+using Konscious.Security.Cryptography;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
+using System.Data.Common;
+using System.Security.Cryptography;
 using System.Text;
 using UseCase.SuperAdmin.TenantOnboard;
 
@@ -26,7 +30,7 @@ namespace Interactor.SuperAdmin
         private readonly INotificationRepository _notificationRepository;
         private IWebSocketService _webSocketService;
         private readonly IMemoryCache _memoryCache;
-        private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _configuration;
         public TenantOnboardInteractor(
             IAwsSdkService awsSdkService,
             ITenantRepository tenantRepository,
@@ -35,7 +39,7 @@ namespace Interactor.SuperAdmin
             INotificationRepository notificationRepository,
             IWebSocketService webSocketService,
             IMemoryCache memoryCache,
-            IUserRepository userRepository
+            IConfiguration configuration
             )
         {
             _awsSdkService = awsSdkService;
@@ -45,7 +49,7 @@ namespace Interactor.SuperAdmin
             _tenant2Repository = tenant2Repository;
             _webSocketService = webSocketService;
             _memoryCache = memoryCache;
-            _userRepository = userRepository;
+            _configuration = configuration;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
@@ -89,7 +93,11 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
+#if DEBUG
+                var dbName = "smart_karte_new";
+#else
+var dbName = "smartkarte_new";
+#endif
                 var tenantUrl = $"{inputData.SubDomain}.{ConfigConstant.Domain}";
                 var rdsIdentifier = "develop-smartkarte-postgres";
                 var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, string.Empty, tenantUrl, 0, rdsIdentifier, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
@@ -227,7 +235,7 @@ namespace Interactor.SuperAdmin
                         {
                             host = dbInstance.Endpoint.Address;
                         }
-                        // update status available: 1
+                        // update status creating: 2
                         var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, dbIdentifier);
                         running = false;
                         return host;
@@ -255,11 +263,10 @@ namespace Interactor.SuperAdmin
             try
             {
                 string host = CheckingRDSStatusAsync(model.RdsIdentifier, tenantId, tenantUrl);
+
                 if (!string.IsNullOrEmpty(host))
                 {
-                    var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
-                    //RDSAction.CreateDatabase(host, model.Db, model.PasswordConnect);
-                    CreateDatas(host, model.Db, dataMigration, tenantId, model);
+                    CreateDatas(host, model.Db, tenantId, model);
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
 
@@ -304,11 +311,18 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void CreateDatas(string host, string dbName, List<string> listMigration, int tenantId, TenantModel model)
+        private void CreateDatas(string host, string dbName, int tenantId, TenantModel model)
         {
             try
             {
-                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
+                string userName = ConfigConstant.PgUserDefault;
+                string password = ConfigConstant.PgPasswordDefault;
+                int port = ConfigConstant.PgPostDefault;
+#if DEBUG
+                host = "10.2.15.78";
+                password = "Emr!23";
+#endif
+                var connectionString = $"Host={host};Database={dbName};Username={userName};Password={password};Port={port}";
 
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
@@ -316,25 +330,18 @@ namespace Interactor.SuperAdmin
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        //_CreateTable(command, listMigration, tenantId);
-                        var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
-                        command.CommandText = sqlGrant;
-                        command.ExecuteNonQuery();
-                        _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
-                        var sqlRenameTableName = QueryConstant.RenameTableNames;
-                        var sqlRenameFieldName = QueryConstant.RenameFieldNames;
-                        byte[] salt = _userRepository.GenerateSalt();
-                        byte[] hashPassword = _userRepository.CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
-                        var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId);
+                        byte[] salt = GenerateSalt();
+                        byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
+                        var sqlInsertUser = QueryConstant.SqlUser;
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
-                        command.CommandText = sqlGrant + sqlRenameTableName + sqlRenameFieldName + sqlInsertUser + sqlInsertUserPermission;
+                        command.CommandText = sqlInsertUser + sqlInsertUserPermission;
                         command.Parameters.AddWithValue("hashPassword", hashPassword);
                         command.Parameters.AddWithValue("salt", salt);
                         command.Parameters.AddWithValue("hpId", tenantId);
+                        command.Parameters.AddWithValue("adminId", model.AdminId);
                         command.ExecuteNonQuery();
-                        //_CreateFunction(command, listMigration, tenantId);
-                        //_CreateTrigger(command, listMigration, tenantId);
-                        _CreateAuditLog(tenantId);
+                        AddPartitions(model.RdsIdentifier, model.Db, userName, password, model.TenantId);
+                        //_CreateAuditLog(tenantId);
                     }
                 }
             }
@@ -344,53 +351,54 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void _CreateTable(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        private void AddPartitions(string host, string tennantDB, string username, string password, int hpId)
         {
             try
             {
-                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
-                string folderPath = Path.Combine(templatePath, "Table");
-                if (Directory.Exists(folderPath))
+#if DEBUG
+                host = "10.2.15.78";
+#endif
+                // Connection string format for SQL Server
+                string connectionString = $"Host={host}; Database ={tennantDB}; Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+
+                string FormartNameZTable(string tableName)
                 {
-                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-
-                    if (sqlFiles.Length > 0)
-                    {
-                        // Get list file name in order ASC
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).OrderBy(x => x).ToList();
-                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
-
-                        // insert table
-                        if (uniqueFileNames.Any())
-                        {
-                            foreach (var fileName in uniqueFileNames)
-                            {
-                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                if (File.Exists(filePath))
-                                {
-                                    var sqlScript = File.ReadAllText(filePath);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
-                                    }
-                                }
-                            }
-                            Console.WriteLine("SQL scripts table executed successfully.");
-                        }
-                    }
+                    int indexOfZ = tableName.IndexOf('z');
+                    string modifiedString = tableName.Remove(indexOfZ, 2);
+                    return modifiedString;
                 }
-                else
+
+                // Create and open a connection
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
-                    Console.WriteLine($"Error create table: no files found");
-                    throw new Exception($"Error create table. No files found");
+                    connection.Open();
+                    // Delete database
+                    using (DbCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "BEGIN;\n";
+                        foreach (string table in ConfigConstant.listTableMaster)
+                        {
+                            // Add partition
+                            if (table.StartsWith("z")) // Add partition with z_table
+                            {
+                                command.CommandText += $"CREATE TABLE  z_p_{FormartNameZTable(table)}_{hpId} PARTITION OF public.{table} FOR VALUES IN ({hpId});\n";
+                            }
+                            else
+                            {
+                                command.CommandText += $"CREATE TABLE p_{table}_{hpId} PARTITION OF public.{table} FOR VALUES IN ({hpId});\n";
+                            }
+                        }
+                        command.CommandText += "COMMIT;";
+                        command.ExecuteNonQuery();
+                    }
+
+                    Console.WriteLine($"Add partitions successfully.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error create table: {ex.Message}");
-                throw new Exception($"Error create table.  {ex.Message}");
+                Console.WriteLine($"Error: add partitions. {ex.Message}");
+                throw new Exception($"Error: add partitions. {ex.Message}");
             }
         }
 
@@ -426,129 +434,23 @@ namespace Interactor.SuperAdmin
                             createTableCommand.Connection = connection;
                             createTableCommand.CommandText = createCommandText;
                             createTableCommand.ExecuteNonQuery();
-                            Console.WriteLine("SQL scripts AuditLog, Parttion executed successfully.");
+                            Console.WriteLine("SQL scripts partition AuditLog executed successfully.");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error insert AuditLog/ Parttion: {ex.Message}");
-                throw new Exception($"Error insert AuditLog/ Parttion: {ex.Message}");
+                Console.WriteLine($"Error insert partition AuditLog: {ex.Message}");
+                throw new Exception($"Error insert partition AuditLog: {ex.Message}");
             }
         }
 
-        private void _CreateDataMaster(string host, string database, string user, string password)
-        {
-            try
-            {
-                string pathFile = "/app/data-master.sql";
-                PostgresSqlAction.PostgreSqlExcuteFileSQLDataMaster(pathFile, host, 5432, database, user, password).Wait();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error insert data master: {ex.Message}");
-                throw new Exception($"Error insert data master: {ex.Message}");
-            }
-        }
-
-        private void _CreateFunction(NpgsqlCommand command, List<string> listMigration, int tenantId)
-        {
-            try
-            {
-                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
-                string folderPath = Path.Combine(templatePath, "Function");
-                if (Directory.Exists(folderPath))
-                {
-                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-                    if (sqlFiles.Length > 0)
-                    {
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
-                        // insert function
-                        if (uniqueFileNames.Any())
-                        {
-                            foreach (var fileName in uniqueFileNames)
-                            {
-                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                if (File.Exists(filePath))
-                                {
-                                    var sqlScript = File.ReadAllText(filePath);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
-                                    }
-                                }
-                            }
-                            Console.WriteLine("SQL scripts function executed successfully.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Create function: no files found");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error create function: {ex.Message}");
-                throw new Exception($"Error create function.  {ex.Message}");
-            }
-        }
-
-        private void _CreateTrigger(NpgsqlCommand command, List<string> listMigration, int tenantId)
-        {
-            try
-            {
-                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
-                string folderPath = Path.Combine(templatePath, "Trigger");
-                if (Directory.Exists(folderPath))
-                {
-                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-                    if (sqlFiles.Length > 0)
-                    {
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
-                        // insert trigger
-                        if (uniqueFileNames.Any())
-                        {
-                            foreach (var fileName in uniqueFileNames)
-                            {
-                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                if (File.Exists(filePath))
-                                {
-                                    var sqlScript = File.ReadAllText(filePath);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
-                                    }
-                                }
-                            }
-                            Console.WriteLine("SQL scripts trigger executed successfully.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Create trigger: no files found");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error create trigger: {ex.Message}");
-                throw new Exception($"Error create trigger.  {ex.Message}");
-            }
-        }
 
         private bool TeminatedTenant(int tenantId)
         {
             try
             {
-                bool skipFinalSnapshot = false;
                 var statusTenant = ConfigConstant.StatusTenantDictionary()["terminating"];
                 var updateStatus = _tenantRepository.UpdateInfTenantStatus(tenantId, statusTenant);
 
@@ -557,34 +459,10 @@ namespace Interactor.SuperAdmin
                 bool deleteRDSAction = false;
                 bool deleteDNSAction = false;
                 bool deleteItemCnameAction = false;
-                var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb, tenant.UserConnect, tenant.PasswordConnect).Result;
-                // Connect RDS delete TenantDb
-                if (listTenantDb.Count > 1)
-                {
-                    if (listTenantDb.Contains(tenant.Db))
-                    {
-                        deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect, tenant.TenantId);
-                    }
-                    else
-                    {
-                        deleteRDSAction = true;
-                    }
-                }
-                // Deleted RDS
-                else
-                {
-                    if (RDSAction.CheckRDSInstanceExists(tenant.RdsIdentifier).Result)
-                    {
-                        if (!string.IsNullOrEmpty(tenant.RdsIdentifier))
-                        {
-                            deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, skipFinalSnapshot).Result;
-                        }
-                    }
-                    else
-                    {
-                        deleteRDSAction = true;
-                    }
-                }
+
+                string userName = ConfigConstant.PgUserDefault;
+                string password = ConfigConstant.PgPasswordDefault;
+                deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, userName, password, tenant.TenantId);
 
                 // Delete DNS
                 var checkExistsSubDomain = Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result;
@@ -603,7 +481,7 @@ namespace Interactor.SuperAdmin
                 if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)
                 {
                     // Check finshed terminate
-                    if (RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result)
+                    if (!Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result)
                     {
                         return true;
                     }
@@ -619,6 +497,25 @@ namespace Interactor.SuperAdmin
                 Console.WriteLine(ex.ToString());
                 return false;
             }
+        }
+
+        private byte[] GenerateSalt()
+        {
+            var buffer = new byte[32];
+            using var rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(buffer);
+            return buffer;
+        }
+        public byte[] CreateHash(byte[] password, byte[] salt)
+        {
+            using var argon2 = new Argon2id(password);
+            var preper = _configuration["Pepper"] ?? string.Empty;
+            salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
+            argon2.Salt = salt;
+            argon2.DegreeOfParallelism = 8;
+            argon2.Iterations = 4;
+            argon2.MemorySize = 1024 * 128;
+            return argon2.GetBytes(32);
         }
 
         #endregion
