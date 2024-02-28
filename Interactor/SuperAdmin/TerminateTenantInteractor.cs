@@ -82,7 +82,7 @@ namespace Interactor.SuperAdmin
                         // Delete data master tenant
                         string userName = ConfigConstant.PgUserDefault;
                         string password = ConfigConstant.PgPasswordDefault;
-                        var deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, userName, password, tenant.TenantId);
+                        var deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, userName, password, tenant.TenantId, tenant.Db);
                         // Delete DNS
                         bool deleteDNSAction = false;
                         if (Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result) // Check exist DNS
