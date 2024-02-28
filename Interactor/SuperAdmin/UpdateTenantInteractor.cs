@@ -157,7 +157,7 @@ namespace Interactor.SuperAdmin
                                     var actionDeleteDomain = Route53Action.DeleteTenantDomain(oldTenant.SubDomain).Result;
 
                                     // Update end subdomain
-                                    endSubDomain = inputData.SubDomain + ConfigConstant.Domain;
+                                    endSubDomain = inputData.SubDomain + "." + ConfigConstant.Domain;
                                 }
                                 else
                                 {
@@ -168,7 +168,12 @@ namespace Interactor.SuperAdmin
                             // Update adminId, password
                             if (oldTenant.AdminId != inputData.AdminId || oldTenant.Password != oldTenant.Password)
                             {
-                                UpdateLoginIdLoginPass(endPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect, oldTenant.AdminId, inputData.TenantId, inputData.AdminId, inputData.Password);
+                                bool changeAdminId = false;
+                                if (oldTenant.AdminId != inputData.AdminId)
+                                {
+                                    changeAdminId = true;
+                                }
+                                UpdateLoginIdLoginPass(changeAdminId, endPointDb, oldTenant.Db, ConfigConstant.PgUserDefault, ConfigConstant.PgPasswordDefault, oldTenant.AdminId, inputData.TenantId, inputData.AdminId, inputData.Password);
                             }
                         }
 
@@ -327,12 +332,12 @@ namespace Interactor.SuperAdmin
         /// <param name="password"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool UpdateLoginIdLoginPass(string serverEndpoint, string tennantDB, string username, string password, int loginId,int hpId, int newLoginId, string newLoginPass)
+        public bool UpdateLoginIdLoginPass(bool changeAdminId, string serverEndpoint, string tennantDB, string username, string password, int loginId, int hpId, int newLoginId, string newLoginPass)
         {
             try
             {
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint}; Database={tennantDB}; Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
 
 
                 // Create and open a connection
@@ -340,6 +345,10 @@ namespace Interactor.SuperAdmin
                 {
                     try
                     {
+                        string updateUserMst = $"UPDATE {tennantDB}.public.user_mst SET login_id = '{newLoginId}', user_id = '{newLoginId}', hash_password = @hashPassword, salt = @salt" +
+                                $" WHERE login_id ='{loginId}' and hp_id = {hpId};";
+                        string updateUserPermission = $"UPDATE {tennantDB}.public.user_permission SET user_id = '{newLoginId}'" +
+                                $" WHERE hp_id = {hpId};";
                         byte[] salt = _userRepositoryRunTask.GenerateSalt();
                         byte[] hashPassword = _userRepositoryRunTask.CreateHash(Encoding.UTF8.GetBytes(newLoginPass ?? string.Empty), salt);
                         connection.Open();
@@ -348,10 +357,14 @@ namespace Interactor.SuperAdmin
                         using (NpgsqlCommand command = new NpgsqlCommand())
                         {
                             command.Connection = connection;
-                            command.CommandText += $"UPDATE \"{tennantDB}\".public.user_mst SET  login_id  = '{newLoginId}', hash_password  = @hashPassword, salt = @salt" +
-                                $"WHERE \"login_id\"  ='{loginId}' and hp_id = {hpId}";
+                            command.CommandText += updateUserMst;
+                            if (changeAdminId)
+                            {
+                                command.CommandText += updateUserPermission;
+                            }
                             command.Parameters.AddWithValue("hashPassword", hashPassword);
                             command.Parameters.AddWithValue("salt", salt);
+                            command.Parameters.AddWithValue("userId", loginId);
                             command.ExecuteNonQuery();
                         }
 

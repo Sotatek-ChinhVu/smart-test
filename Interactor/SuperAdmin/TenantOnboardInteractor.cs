@@ -192,42 +192,20 @@ namespace Interactor.SuperAdmin
                 bool running = true;
                 string status = string.Empty;
                 DateTime startTime = DateTime.Now;
-
+                var rdsClient = new AmazonRDSClient();
                 while (running)
                 {
-                    var rdsClient = new AmazonRDSClient();
-
                     var response = rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
                     {
                         DBInstanceIdentifier = dbIdentifier
                     }).Result;
-
                     var dbInstances = response.DBInstances;
-
                     if (dbInstances.Count != 1)
                     {
                         throw new Exception("More than one Database Instance returned; this should never happen");
                     }
-
                     var dbInstance = dbInstances[0];
                     var checkStatus = dbInstance.DBInstanceStatus;
-                    if (status != checkStatus)
-                    {
-                        Console.WriteLine($"Last Database Shard status: {checkStatus}");
-                        status = checkStatus;
-                        var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
-                        if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
-                        {
-                            if (dbInstance.Endpoint != null && dbInstance.Endpoint.Address != null)
-                            {
-                                host = dbInstance.Endpoint.Address;
-                            }
-                            var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, statusTenant, tenantUrl, host, dbIdentifier);
-                        }
-                    }
-
-                    Thread.Sleep(5000);
-
                     if (checkStatus == "available")
                     {
                         if (dbInstance.Endpoint != null && dbInstance.Endpoint.Address != null)
@@ -246,6 +224,7 @@ namespace Interactor.SuperAdmin
                         running = false;
                         throw new Exception($"CheckingRDSStatus. Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
                     }
+                    Thread.Sleep(5000);
                 }
 
                 return host;
