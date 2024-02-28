@@ -22,7 +22,7 @@ namespace AWSSDK.Constants
         public static string RdsSnapshotUpdate = "Update";
         public static string RdsSnapshotBackupRestore = "Bak-Restore";
         public static string ManagedCachingOptimized = "658327ea-f89d-4fab-a63d-7e88639e58f6";
-        public static int PgPostDefault = 5432;
+        public static int PgPortDefault = 5432;
         public static string PgUserDefault = "postgres";
         public static string PgPasswordDefault = "Emr!23456789";
 
@@ -264,7 +264,7 @@ namespace AWSSDK.Constants
             "raiin_list_detail",
             "raiin_list_doc",
             "raiin_list_file",
-            "raiin_list_inf",
+            //"raiin_list_inf",
             "raiin_list_item",
             "raiin_list_koui",
             "raiin_list_mst",

@@ -23,7 +23,7 @@ namespace Interactor.SuperAdmin
     {
         private readonly string _userNameDefault = ConfigConstant.PgUserDefault;
         private readonly string _passwordDefault = ConfigConstant.PgPasswordDefault;
-        private readonly int _portDefault = ConfigConstant.PgPostDefault;
+        private readonly int _portDefault = ConfigConstant.PgPortDefault;
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantRepository _tenant2Repository;
@@ -353,7 +353,7 @@ namespace Interactor.SuperAdmin
             try
             {
                 // Connection string format for SQL Server
-                string connectionString = $"Host={host}; Database ={tennantDB}; Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+                string connectionString = $"Host={host}; Database ={tennantDB}; Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
 
                 string FormartNameZTable(string tableName)
                 {
@@ -383,7 +383,7 @@ namespace Interactor.SuperAdmin
                             }
                         }
                         command.CommandText += "COMMIT;";
-                        //command.ExecuteNonQuery();
+                        command.ExecuteNonQuery();
                     }
 
                     Console.WriteLine($"Add partitions successfully.");
@@ -419,20 +419,16 @@ var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws
                         command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
                         var tableExists = command.ExecuteScalar();
                         string createCommandText = string.Empty;
-                        if (tableExists != null && !(bool)tableExists)
+                        if (tableExists != null && (bool)tableExists)
                         {
                             createCommandText = addParttion;
-                        }
-                        else
-                        {
-                            createCommandText = addParttion;
-                        }
-                        using (var createTableCommand = new NpgsqlCommand())
-                        {
-                            createTableCommand.Connection = connection;
-                            createTableCommand.CommandText = createCommandText;
-                            createTableCommand.ExecuteNonQuery();
-                            Console.WriteLine("SQL scripts partition AuditLog executed successfully.");
+                            using (var createTableCommand = new NpgsqlCommand())
+                            {
+                                createTableCommand.Connection = connection;
+                                createTableCommand.CommandText = createCommandText;
+                                createTableCommand.ExecuteNonQuery();
+                                Console.WriteLine("SQL scripts partition AuditLog executed successfully.");
+                            }
                         }
                     }
                 }
@@ -444,6 +440,48 @@ var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws
             }
         }
 
+        private void _DeletePartitionsAuditLog(int tenantId, string userName, string password, int port)
+        {
+            try
+            {
+#if DEBUG
+                var host = "10.2.15.78";
+                var dbName = "smartkartelogging_stagging";
+                password = "Emr!23";
+#else
+var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
+                var dbName = "smartkartelogging";
+#endif
+                var connectionString = $"Host={host};Database={dbName};Username={userName};Password={password};Port={port}";
+                string deletePartitionsAuditLog = $"DROP TABLE IF EXISTS public.partition_{tenantId};";
+
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
+                        var tableExists = command.ExecuteScalar();
+                        if (tableExists != null && (bool)tableExists)
+                        {
+                            using (var createTableCommand = new NpgsqlCommand())
+                            {
+                                createTableCommand.Connection = connection;
+                                createTableCommand.CommandText = deletePartitionsAuditLog;
+                                createTableCommand.ExecuteNonQuery();
+                                Console.WriteLine("SQL scripts delete partition AuditLog executed successfully.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error delete partition AuditLog: {ex.Message}");
+                throw new Exception($"Error delete partition AuditLog: {ex.Message}");
+            }
+        }
 
         private bool TeminatedTenant(int tenantId)
         {
@@ -460,6 +498,9 @@ var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws
 
                 // datete data
                 deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, _userNameDefault, _passwordDefault, tenant.TenantId, tenant.Db);
+
+                // delete partition AuditLogs
+                _DeletePartitionsAuditLog(tenantId, _userNameDefault, _passwordDefault, _portDefault);
 
                 // Delete DNS
                 var checkExistsSubDomain = Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result;

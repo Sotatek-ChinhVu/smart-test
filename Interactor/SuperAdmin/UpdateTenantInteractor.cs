@@ -266,7 +266,7 @@ namespace Interactor.SuperAdmin
             try
             {
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
                 var listTenantDb = RDSAction.GetListDatabase(serverEndpoint, username, password).Result;
                 if (listTenantDb.Contains(tennantDB))
                 {
@@ -332,7 +332,7 @@ namespace Interactor.SuperAdmin
             try
             {
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
 
 
                 // Create and open a connection

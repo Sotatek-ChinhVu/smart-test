@@ -81,7 +81,7 @@ namespace AWSSDK.Services
                 password = "Emr!23";
 #endif
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint}; Database ={db}; Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint}; Database ={db}; Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
 
                 string FormartNameZTable(string tableName)
                 {
