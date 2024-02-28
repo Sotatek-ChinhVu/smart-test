@@ -4,8 +4,6 @@ using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using AWSSDK.Interfaces;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Domain.Models.User;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
@@ -23,6 +21,9 @@ namespace Interactor.SuperAdmin
 {
     public class TenantOnboardInteractor : ITenantOnboardInputPort
     {
+        private readonly string _userNameDefault = ConfigConstant.PgUserDefault;
+        private readonly string _passwordDefault = ConfigConstant.PgPasswordDefault;
+        private readonly int _portDefault = ConfigConstant.PgPostDefault;
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantRepository _tenant2Repository;
@@ -96,11 +97,11 @@ namespace Interactor.SuperAdmin
 #if DEBUG
                 var dbName = "smart_karte_new";
 #else
-var dbName = "smartkarte_new";
+                var dbName = "smartkarte_new";
 #endif
                 var tenantUrl = $"{inputData.SubDomain}.{ConfigConstant.Domain}";
                 var rdsIdentifier = "develop-smartkarte-postgres";
-                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, string.Empty, tenantUrl, 0, rdsIdentifier, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
+                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, string.Empty, tenantUrl, 0, rdsIdentifier, string.Empty, string.Empty);
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -126,10 +127,8 @@ var dbName = "smartkarte_new";
 
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
-            //string rString = CommonConstants.GenerateRandomString(6);
             var cancellationTokenSource = new CancellationTokenSource();
             CancellationToken ct = cancellationTokenSource.Token;
-
             // Set tenant info to cache memory
             _memoryCache.Set(model.SubDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
 
@@ -167,7 +166,7 @@ var dbName = "smartkarte_new";
             {
                 if (!ct.IsCancellationRequested) // Check task run is not canceled
                 {
-                    var message = $"{model.SubDomain} is created failed. Error: {ex.Message}";
+                    var message = $"新しい医療機関 {model.SubDomain} の作成に失敗しました: {ex.Message}。";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                     var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
                     var updateStatus = _tenantRepository.UpdateInfTenantStatus(id, statusTenantFaild);
@@ -315,15 +314,15 @@ var dbName = "smartkarte_new";
         {
             try
             {
-                string userName = ConfigConstant.PgUserDefault;
-                string password = ConfigConstant.PgPasswordDefault;
-                int port = ConfigConstant.PgPostDefault;
+                string password = _passwordDefault;
 #if DEBUG
                 host = "10.2.15.78";
                 password = "Emr!23";
 #endif
-                var connectionString = $"Host={host};Database={dbName};Username={userName};Password={password};Port={port}";
 
+                AddPartitions(host, dbName, _userNameDefault, password, tenantId);
+                _CreatePartitionsAuditLog(tenantId, _userNameDefault, password, _portDefault);
+                var connectionString = $"Host={host};Database={dbName};Username={_userNameDefault};Password={password};Port={_portDefault}";
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
@@ -340,8 +339,6 @@ var dbName = "smartkarte_new";
                         command.Parameters.AddWithValue("hpId", tenantId);
                         command.Parameters.AddWithValue("adminId", model.AdminId);
                         command.ExecuteNonQuery();
-                        AddPartitions(model.RdsIdentifier, model.Db, userName, password, model.TenantId);
-                        //_CreateAuditLog(tenantId);
                     }
                 }
             }
@@ -355,9 +352,6 @@ var dbName = "smartkarte_new";
         {
             try
             {
-#if DEBUG
-                host = "10.2.15.78";
-#endif
                 // Connection string format for SQL Server
                 string connectionString = $"Host={host}; Database ={tennantDB}; Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
 
@@ -389,7 +383,7 @@ var dbName = "smartkarte_new";
                             }
                         }
                         command.CommandText += "COMMIT;";
-                        command.ExecuteNonQuery();
+                        //command.ExecuteNonQuery();
                     }
 
                     Console.WriteLine($"Add partitions successfully.");
@@ -402,14 +396,18 @@ var dbName = "smartkarte_new";
             }
         }
 
-        private void _CreateAuditLog(int tenantId)
+        private void _CreatePartitionsAuditLog(int tenantId, string userName, string password, int port)
         {
             try
             {
-                var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
+#if DEBUG
+                var host = "10.2.15.78";
+                var dbName = "smartkartelogging_stagging";
+#else
+var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
                 var dbName = "smartkartelogging";
-                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
-                string sqlCreateAuditLog = QueryConstant.CreateAuditLog;
+#endif
+                var connectionString = $"Host={host};Database={dbName};Username={userName};Password={password};Port={port}";
                 var addParttion = $"CREATE TABLE IF NOT EXISTS PARTITION_{tenantId} PARTITION OF public.\"AuditLogs\" FOR VALUES IN ({tenantId});";
 
                 using (var connection = new NpgsqlConnection(connectionString))
@@ -423,7 +421,7 @@ var dbName = "smartkarte_new";
                         string createCommandText = string.Empty;
                         if (tableExists != null && !(bool)tableExists)
                         {
-                            createCommandText = sqlCreateAuditLog + addParttion;
+                            createCommandText = addParttion;
                         }
                         else
                         {
@@ -460,9 +458,8 @@ var dbName = "smartkarte_new";
                 bool deleteDNSAction = false;
                 bool deleteItemCnameAction = false;
 
-                string userName = ConfigConstant.PgUserDefault;
-                string password = ConfigConstant.PgPasswordDefault;
-                deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, userName, password, tenant.TenantId);
+                // datete data
+                deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, _userNameDefault, _passwordDefault, tenant.TenantId);
 
                 // Delete DNS
                 var checkExistsSubDomain = Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result;

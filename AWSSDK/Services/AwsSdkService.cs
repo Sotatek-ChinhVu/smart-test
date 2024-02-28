@@ -76,6 +76,10 @@ namespace AWSSDK.Services
         {
             try
             {
+#if DEBUG
+                serverEndpoint = "10.2.15.78";
+                password = "Emr!23";
+#endif
                 // Connection string format for SQL Server
                 string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
 
@@ -123,7 +127,6 @@ namespace AWSSDK.Services
                         throw new Exception($"Error: Delete  data master {ex.Message}");
                     }
                 }
-                return true;
             }
             catch (Exception ex)
             {
