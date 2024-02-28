@@ -773,7 +773,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var queryResult = NoTrackingDataContext.TenMsts
                 .Where(t => t.HpId == hpId &&
-                    t.ItemCd.StartsWith(keyword)
+                    (t.ItemCd.StartsWith(keyword)
                     || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
                     || !string.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
                       .Replace("ｧ", "ｱ")
@@ -845,7 +845,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       .Replace("ｭ", "ﾕ")
                       .Replace("ｮ", "ﾖ")
                       .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
-                    || !string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword));
+                    || !string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
 
         if (isAllowSearchDeletedItem)
         {

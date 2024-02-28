@@ -459,7 +459,7 @@ var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws
                 bool deleteItemCnameAction = false;
 
                 // datete data
-                deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, _userNameDefault, _passwordDefault, tenant.TenantId);
+                deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, _userNameDefault, _passwordDefault, tenant.TenantId, tenant.Db);
 
                 // Delete DNS
                 var checkExistsSubDomain = Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result;
