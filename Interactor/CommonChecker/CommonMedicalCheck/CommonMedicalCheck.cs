@@ -627,7 +627,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
         SetBodyInfo(hpId, ptId, sinday, specialNoteItem);
 
-        return (listErrorInfoModel, _weightInfo, _weightDateInfo, _heightDateInfo, _heightDateInfo);
+        return (listErrorInfoModel, _weightInfo, _weightDateInfo, _heightInfo, _heightDateInfo);
     }
 
     public void GetItemCdError(int hpId, List<UnitCheckInfoModel> listErrorInfo)
