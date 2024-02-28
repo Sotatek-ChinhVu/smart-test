@@ -101,7 +101,7 @@ namespace SuperAdmin.Configs.Dependency
 
             //services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
             services.AddSingleton<IHostedService, TaskScheduleDeleteJunkFileS3>();
-            services.AddSingleton<IHostedService, UpdateScriptSchemaProcessor>();
+            //services.AddSingleton<IHostedService, UpdateScriptSchemaProcessor>();
 
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<INotificationRepository, NotificationRepository>();
