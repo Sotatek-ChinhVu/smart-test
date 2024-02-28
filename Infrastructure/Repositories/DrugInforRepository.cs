@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             // piczai pichou
             string pathServerDefault = _configuration["PathImageDrugFolder"] ?? string.Empty;
 
-            var pathConfDb = NoTrackingDataContext.PathConfs.Where(p => p.HpId == hpId && p.GrpCd == PicImageConstant.GrpCodeDefault || p.GrpCd == PicImageConstant.GrpCodeCustomDefault).ToList();
+            var pathConfDb = NoTrackingDataContext.PathConfs.Where(p => p.HpId == hpId && (p.GrpCd == PicImageConstant.GrpCodeDefault || p.GrpCd == PicImageConstant.GrpCodeCustomDefault)).ToList();
 
             var pathConfDf = pathConfDb.FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
 

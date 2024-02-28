@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
         public List<RaiinKubunMstModel> GetList(int hpId, bool isDeleted)
         {
             List<RaiinKbnMst> raiinKubunMstList = NoTrackingDataContext.RaiinKbnMsts
-                .Where(r => r.HpId == hpId && isDeleted || r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && (isDeleted || r.IsDeleted == 0))
                 .OrderBy(r => r.SortNo)
                 .ToList();
 
