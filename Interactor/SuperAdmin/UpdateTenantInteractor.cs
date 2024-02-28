@@ -364,7 +364,6 @@ namespace Interactor.SuperAdmin
                             }
                             command.Parameters.AddWithValue("hashPassword", hashPassword);
                             command.Parameters.AddWithValue("salt", salt);
-                            command.Parameters.AddWithValue("userId", loginId);
                             command.ExecuteNonQuery();
                         }
 

@@ -69,7 +69,7 @@ namespace SuperAdminAPI.BackgroundService
                                     try
                                     {
                                         var pathFile = Directory.GetFiles(folderPath, $"{migrationId}.sql").FirstOrDefault();
-                                        PostgresSqlAction.PostgreSqlExcuteFileScript(pathFile, tenant.EndPointDb, ConfigConstant.PgPortDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
+                                        PostgresSqlAction.PostgreSqlExcuteFileScript(pathFile, tenant.EndPointDb, ConfigConstant.PgPortDefault, tenant.Db, ConfigConstant.PgUserDefault, ConfigConstant.PgPasswordDefault).Wait();
                                         _migrationTenantHistoryRepository.AddMigrationHistory(tenant.TenantId, migrationId);
                                     }
                                     catch (Exception ex)

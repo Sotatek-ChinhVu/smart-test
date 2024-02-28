@@ -13,11 +13,9 @@ namespace Domain.SuperAdminModels.Tenant
             EndPointDb = string.Empty;
             EndSubDomain = string.Empty;
             RdsIdentifier = string.Empty;
-            UserConnect = string.Empty;
-            PasswordConnect = string.Empty;
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect, bool isRestoreS3)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, bool isRestoreS3)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -33,13 +31,11 @@ namespace Domain.SuperAdminModels.Tenant
             ScheduleTime = scheduleTime;
             CreateDate = createDate;
             RdsIdentifier = rdsIdentifier;
-            UserConnect = userConnect;
-            PasswordConnect = passwordConnect;
             IsRestoreS3 = isRestoreS3;
 
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -52,8 +48,6 @@ namespace Domain.SuperAdminModels.Tenant
             EndSubDomain = endSubDomain;
             Action = action;
             RdsIdentifier = rdsIdentifier;
-            UserConnect = userConnect;
-            PasswordConnect = passwordConnect;
         }
 
         public TenantModel ChangeRdsIdentifier(string rdsIdentifier)
@@ -89,13 +83,6 @@ namespace Domain.SuperAdminModels.Tenant
         public DateTime CreateDate { get; private set; }
 
         public string RdsIdentifier { get; private set; }
-
-        /// <summary>
-        ///  return storage used to FE
-        /// </summary>
-        public string UserConnect { get; private set; }
-
-        public string PasswordConnect { get; private set; }
 
         public bool IsRestoreS3 { get; private set; }
 

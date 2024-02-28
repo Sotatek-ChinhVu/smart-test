@@ -101,7 +101,7 @@ namespace Interactor.SuperAdmin
 #endif
                 var tenantUrl = $"{inputData.SubDomain}.{ConfigConstant.Domain}";
                 var rdsIdentifier = "develop-smartkarte-postgres";
-                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, string.Empty, tenantUrl, 0, rdsIdentifier, string.Empty, string.Empty);
+                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, string.Empty, tenantUrl, 0, rdsIdentifier);
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
