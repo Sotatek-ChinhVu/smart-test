@@ -44,9 +44,9 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.CheckSaveLogOutChartApporval)]
-        public ActionResult<Response<CheckSaveLogOutResponse>> CheckSaveLogOut()
+        public ActionResult<Response<CheckSaveLogOutResponse>> CheckSaveLogOut([FromBody] CheckSaveLogOutRequest request)
         {
-            var input = new CheckSaveLogOutInputData(HpId, UserId, DepartmentId);
+            var input = new CheckSaveLogOutInputData(HpId, UserId, request.DepartmentId);
             var output = _bus.Handle(input);
             var presenter = new CheckSaveLogOutPresenter();
             presenter.Complete(output);
