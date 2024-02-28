@@ -38,7 +38,7 @@ namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PdfCreatorController : BaseParamControllerBase
+public class PdfCreatorController : CookieController
 {
     private static HttpClient _httpClient = new HttpClient();
     private readonly IReportService _reportService;
@@ -56,7 +56,7 @@ public class PdfCreatorController : BaseParamControllerBase
                                                                                                              SmartKarteにログインしてから、再度読み込みしてください。</p>
                                               ";
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor, IUserTokenRepository userTokenRepository) : base(httpContextAccessor)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor, IUserTokenRepository userTokenRepository) : base(httpContextAccessor, userTokenRepository)
     {
         _reportService = reportService;
         _configuration = configuration;
