@@ -18,8 +18,11 @@ using Helper.Constants;
 using Helper.Extension;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using System.Text;
+using UseCase.MedicalExamination.Calculate;
+using UseCase.Receipt.Recalculation;
 
 namespace Interactor.Receipt;
 
@@ -36,6 +39,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private readonly IReceSeikyuRepository _receSeikyuRepository;
     private readonly IDrugDetailRepository _drugDetailRepository;
     private readonly ICalculationInfRepository _calculationInfRepository;
+    private readonly ICalcultateCustomerService _calcultateCustomerService;
     private IMessenger? _messenger;
 
     public CommonReceRecalculation(
@@ -49,7 +53,8 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         ITodayOdrRepository todayOdrRepository,
         IReceSeikyuRepository receSeikyuRepository,
         IDrugDetailRepository drugDetailRepository,
-        ICalculationInfRepository calculationInfRepository)
+        ICalculationInfRepository calculationInfRepository,
+        ICalcultateCustomerService calcultateCustomerService)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
@@ -62,6 +67,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         _receSeikyuRepository = receSeikyuRepository;
         _drugDetailRepository = drugDetailRepository;
         _calculationInfRepository = calculationInfRepository;
+        _calcultateCustomerService = calcultateCustomerService;
     }
 
     bool isStopCalc = false;
@@ -77,7 +83,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, IMessenger messenger, bool receCheckCalculate = false, bool isReceiptAggregationCheckBox = true, bool isCheckErrorCheckBox = true)
+    public (bool Success, StringBuilder ErrorText) CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, IMessenger messenger, int recalculationStatus = 1, bool isReceiptAggregationCheckBox = true, bool isCheckErrorCheckBox = true)
     {
         _messenger = messenger;
         List<ReceCheckErrModel> newReceCheckErrList = new();
@@ -97,7 +103,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
 
         if (isCheckErrorCheckBox)
         {
-            if (!receCheckCalculate)
+            if (recalculationStatus == RunRecalculationStatus.RunCalculationInMonth)
             {
                 SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, 0, string.Empty, string.Empty));
             }
@@ -149,7 +155,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 break;
             }
 
-            if (!receCheckCalculate && isCheckErrorCheckBox)
+            if (recalculationStatus == RunRecalculationStatus.RunCalculationInMonth && isCheckErrorCheckBox)
             {
                 SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, string.Empty, string.Empty));
             }
@@ -169,11 +175,11 @@ public class CommonReceRecalculation : ICommonReceRecalculation
 
         if (isCheckErrorCheckBox && (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(hpId, userId, newReceCheckErrList)))
         {
-            if (!receCheckCalculate)
+            if (recalculationStatus == RunRecalculationStatus.RunCalculationInMonth)
             {
                 SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, string.Empty, string.Empty));
             }
-            return false;
+            return (false, errorText);
         }
 
         string resultError = string.Empty;
@@ -182,22 +188,99 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
         }
 
-        if (!receCheckCalculate)
+        switch (recalculationStatus)
         {
-            if (isCheckErrorCheckBox)
-            {
-                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, resultError, string.Empty));
-            }
-            else
-            {
-                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ErrorAfterCheck, allCheckCount, successCount, resultError, string.Empty));
-            }
+            case RunRecalculationStatus.RunCalculationInMonth:
+                if (isCheckErrorCheckBox)
+                {
+                    SendMessager(new RecalculationStatus(true, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, resultError, string.Empty));
+                }
+                else
+                {
+                    SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ErrorAfterCheck, allCheckCount, successCount, resultError, string.Empty));
+                }
+                break;
+            case RunRecalculationStatus.RunReceCheck:
+                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ReceCheckCalculate, allCheckCount, successCount, resultError, string.Empty));
+                break;
         }
-        else
+        return (true, errorText);
+    }
+
+    public string RecalculateInSeikyuPending(IMessenger messenger, int hpId, int userId, List<ReceInfo> receInfos)
+    {
+        _messenger = messenger;
+        StringBuilder errorTextStringBuilder = new();
+
+        if (receInfos.Any())
         {
-            SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ReceCheckCalculate, allCheckCount, successCount, resultError, string.Empty));
+            //Rece Calculation
+            int totalRecord = receInfos.Count;
+            for (int i = 0; i < receInfos.Count; i++)
+            {
+                // Check is stop progerss
+                var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+                isStopCalc = statusCallBack.Result.Result;
+                if (isStopCalc)
+                {
+                    break;
+                }
+
+                // run Recalculation
+                _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.RunCalculateMonth, new CalculateMonthRequest()
+                {
+                    HpId = hpId,
+                    PtIds = new List<long> { receInfos[i].PtId },
+                    SeikyuYm = receInfos[i].SeikyuYm,
+                    PreFix = userId.ToString()
+                }).Wait();
+                _messenger.Send(new RecalculateInSeikyuPendingStatus($"計算処理中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
+            }
+
+            //ReceFutan
+            for (int i = 0; i < receInfos.Count; i++)
+            {
+                // Check is stop progerss
+                var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+                isStopCalc = statusCallBack.Result.Result;
+                if (isStopCalc)
+                {
+                    break;
+                }
+
+                // run ReceFutan
+                _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.ReceFutanCalculateMain, new ReceCalculateRequest(hpId, new List<long> { receInfos[i].PtId }, receInfos[i].SeikyuYm, string.Empty)).Wait();
+                _messenger.Send(new RecalculateInSeikyuPendingStatus($"レセ集計中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
+            }
+
+            //Rece CheckError
+            for (int i = 0; i < receInfos.Count; i++)
+            {
+                // Check is stop progerss
+                var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+                isStopCalc = statusCallBack.Result.Result;
+                if (isStopCalc)
+                {
+                    break;
+                }
+
+                // CheckErrorInMonth
+                var receRecalculationList = _receiptRepository.GetReceRecalculationList(hpId, receInfos[i].SeikyuYm, new List<long> { receInfos[i].PtId });
+                int allCheckCount = _receiptRepository.GetCountReceInfs(hpId, new List<long> { receInfos[i].PtId }, receInfos[i].SeikyuYm);
+
+                var resultCheckError = CheckErrorInMonth(hpId, new List<long> { receInfos[i].PtId }, receInfos[i].SeikyuYm, userId, receRecalculationList, allCheckCount, _messenger, RunRecalculationStatus.RunRecalculateInSeikyuPending, true, true);
+                if (!string.IsNullOrEmpty(errorTextStringBuilder.ToString()))
+                {
+                    errorTextStringBuilder.Append(Environment.NewLine);
+                }
+                errorTextStringBuilder.Append(resultCheckError.ErrorText);
+                _messenger.Send(new RecalculateInSeikyuPendingStatus($"レセチェック処理中..残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
+            }
+
+            _receiptRepository.ResetStatusAfterPendingShukei(hpId, userId, receInfos);
         }
-        return true;
+        string errorText = errorTextStringBuilder.ToString().Replace(Environment.NewLine, "\\r\\n");
+        return errorText;
     }
 
     #region Private funciton
@@ -2048,12 +2131,10 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             var zaiganIsoItems = _drugDetailRepository.GetZaiganIsoItems(hpId, seikyuYm);
             if (zaiganIsoItems.Any())
             {
-                var santeiStartDateList = _receiptRepository.GetSanteiStartDateList(hpId, ptIdList, seikyuYm);
-                var santeiEndDateList = _receiptRepository.GetSanteiEndDateList(hpId, ptIdList, seikyuYm);
-
                 //check part of next month
                 if (lastDateOfMonth.DayOfWeek < DayOfWeek.Wednesday)
                 {
+                    var santeiStartDateList = _receiptRepository.GetSanteiStartDateList(hpId, ptIdList, seikyuYm);
                     var kouiDetails = _receiptRepository.GetKouiDetailToCheckSantei(hpId, ptIdList, seikyuYm, zaiganIsoItems.Select(p => p.ItemCd).ToList(), true);
                     var keysGroupBy = kouiDetails.GroupBy(p => new { p.PtId, p.SinYm, p.ItemCd }).Select(p => p.FirstOrDefault());
                     if (keysGroupBy != null)
@@ -2061,7 +2142,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                         var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                          item?.PtId ?? 0,
                                                                                          item?.ItemCd ?? string.Empty,
-                                                                                         santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
+                                                                                         santeiStartDateList.ContainsKey(item?.PtId ?? 0) ? santeiStartDateList[item?.PtId ?? 0] : 0))
                                                                      .ToList();
 
                         var allHasErrorWithSanteiByStartDateList = _receiptRepository.GetHasErrorWithSanteiByStartDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
@@ -2085,6 +2166,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 //check part of last month
                 if (firstDateOfMonth.DayOfWeek > DayOfWeek.Wednesday)
                 {
+                    var santeiEndDateList = _receiptRepository.GetSanteiEndDateList(hpId, ptIdList, seikyuYm);
                     var kouiDetails = _receiptRepository.GetKouiDetailToCheckSantei(hpId, ptIdList, seikyuYm, zaiganIsoItems.Select(p => p.ItemCd).ToList(), false);
                     var keysGroupBy = kouiDetails.GroupBy(p => new { p.PtId, p.SinYm, p.ItemCd }).Select(p => p.FirstOrDefault());
                     if (keysGroupBy != null)

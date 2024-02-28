@@ -516,22 +516,22 @@ namespace Infrastructure.Repositories
 
         public bool IsReceSeikyuExisted(int hpId, long ptId, int sinYm, int hokenId)
         {
-            return NoTrackingDataContext.ReceSeikyus.FirstOrDefault(item => item.HpId == hpId
-                                                                                            && item.PtId == ptId
-                                                                                            && item.HokenId != hokenId
-                                                                                            && item.PreHokenId == hokenId
-                                                                                            && item.SinYm == sinYm
-                                                                                            && item.IsDeleted == 0) != null;
+            return NoTrackingDataContext.ReceSeikyus.Any(item => item.HpId == hpId
+                                                                 && item.PtId == ptId
+                                                                 && item.HokenId != hokenId
+                                                                 && item.PreHokenId == hokenId
+                                                                 && item.SinYm == sinYm
+                                                                 && item.IsDeleted == 0);
         }
 
         public int GetReceSeikyuPreHoken(int hpId, long ptId, int sinYm, int hokenId)
         {
             var receSeikyu = NoTrackingDataContext.ReceSeikyus.FirstOrDefault(item => item.HpId == hpId
-                                                                                            && item.PtId == ptId
-                                                                                            && item.HokenId == hokenId
-                                                                                            && item.SinYm == sinYm
-                                                                                            && item.SeikyuKbn == 3
-                                                                                            && item.IsDeleted == 0);
+                                                                                      && item.PtId == ptId
+                                                                                      && item.HokenId == hokenId
+                                                                                      && item.SinYm == sinYm
+                                                                                      && item.SeikyuKbn == 3
+                                                                                      && item.IsDeleted == 0);
             if (receSeikyu != null)
             {
                 return receSeikyu.PreHokenId;
@@ -539,57 +539,65 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
-        public void DeleteReceSeikyu(int hpId, long ptId, int sinYm, int hokenId)
+        public void DeleteReceSeikyu(int hpId, int userId, long ptId, int sinYm, int hokenId)
         {
             var receSeikyuList = TrackingDataContext.ReceSeikyus.Where(item => item.HpId == hpId
-                                                                                    && item.PtId == ptId
-                                                                                    && item.SinYm == sinYm
-                                                                                    && item.HokenId == hokenId
-                                                                                    && item.IsDeleted == 0);
+                                                                               && item.PtId == ptId
+                                                                               && item.SinYm == sinYm
+                                                                               && item.HokenId == hokenId
+                                                                               && item.IsDeleted == 0);
             foreach (var receSeikyu in receSeikyuList)
             {
                 receSeikyu.IsDeleted = 1;
+                receSeikyu.UpdateId = userId;
+                receSeikyu.UpdateDate = CIUtil.GetJapanDateTimeNow();
             }
         }
 
-        public void DeleteHenJiyuuRireki(int hpId, long ptId, int sinYm, int preHokenId)
+        public void DeleteHenJiyuuRireki(int hpId, int userId, long ptId, int sinYm, int preHokenId)
         {
             // RECEDEN_HEN_JIYUU
             var henJiyuuList = TrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == hpId
-                                                                              && item.PtId == ptId
-                                                                              && item.SinYm == sinYm
-                                                                              && item.HokenId == preHokenId
-                                                                              && item.IsDeleted == 0);
+                                                                                  && item.PtId == ptId
+                                                                                  && item.SinYm == sinYm
+                                                                                  && item.HokenId == preHokenId
+                                                                                  && item.IsDeleted == 0)
+                                                                   .ToList();
             foreach (var henJiyuu in henJiyuuList)
             {
                 henJiyuu.IsDeleted = 1;
+                henJiyuu.UpdateId = userId;
+                henJiyuu.UpdateDate = CIUtil.GetJapanDateTimeNow();
             }
 
             // RECEDEN_RIREKI_INF
             var rirekiInfList = TrackingDataContext.RecedenRirekiInfs.Where(item => item.HpId == hpId
-                                                                              && item.PtId == ptId
-                                                                              && item.SinYm == sinYm
-                                                                              && item.HokenId == preHokenId
-                                                                              && item.IsDeleted == 0);
+                                                                                    && item.PtId == ptId
+                                                                                    && item.SinYm == sinYm
+                                                                                    && item.HokenId == preHokenId
+                                                                                    && item.IsDeleted == 0)
+                                                                     .ToList();
             foreach (var rirekiInf in rirekiInfList)
             {
                 rirekiInf.IsDeleted = 1;
+                rirekiInf.UpdateId = userId;
+                rirekiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
             }
         }
 
-        public void InsertSingleReceSeikyu(int hpId, long ptId, int sinYm, int hokenId, int userId)
+        public void InsertSingleReceSeikyu(int hpId, int userId, ReceSeikyuModel receSeikyuModel)
         {
             ReceSeikyu receSeikyu = new ReceSeikyu()
             {
                 HpId = hpId,
-                PtId = ptId,
-                SinYm = sinYm,
-                HokenId = hokenId,
-                SeikyuYm = 999999,
+                PtId = receSeikyuModel.PtId,
+                SinYm = receSeikyuModel.SinYm,
+                HokenId = receSeikyuModel.HokenId,
+                SeikyuYm = receSeikyuModel.SeikyuYm,
                 SeikyuKbn = 3,
-                PreHokenId = hokenId,
+                PreHokenId = receSeikyuModel.HokenId,
                 Cmt = "返戻ファイルより登録",
-                IsDeleted = 0,
+                IsDeleted = receSeikyuModel.IsDeleted,
                 CreateId = userId,
                 CreateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId,
