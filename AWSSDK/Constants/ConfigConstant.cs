@@ -264,7 +264,7 @@ namespace AWSSDK.Constants
             "raiin_list_detail",
             "raiin_list_doc",
             "raiin_list_file",
-            //"raiin_list_inf",
+            "raiin_list_inf",
             "raiin_list_item",
             "raiin_list_koui",
             "raiin_list_mst",
