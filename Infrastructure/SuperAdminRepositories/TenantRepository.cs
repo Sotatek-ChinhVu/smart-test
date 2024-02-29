@@ -212,7 +212,7 @@ namespace Infrastructure.SuperAdminRepositories
         {
             try
             {
-                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && (x.IsDeleted == 0 || x.IsDeleted == 1 && x.Status == 12));
                 if (tenant == null)
                 {
                     throw new Exception("Tenant does not exist");
@@ -258,8 +258,8 @@ namespace Infrastructure.SuperAdminRepositories
 
         public void RevokeInsertPermission()
         {
-            
-        }       
+
+        }
 
         public void ReleaseResource()
         {
