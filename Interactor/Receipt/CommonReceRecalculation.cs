@@ -1364,6 +1364,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             foreach (var sinKouiCount in sinKouiCountList)
             {
                 int sinDate = sinKouiCount.SinDate;
+                var hokenInf = sinKouiCount.PtHokenPatterns.FirstOrDefault(p => p.HokenId == recalculationModel.HokenId);
                 foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
                 {
                     string itemCd = sinKouiDetailModel.ItemCd;
@@ -1473,6 +1474,17 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                                                                                                                      && item.StartDate <= sinDate
                                                                                                                      && item.EndDate >= sinDate)
                                                                                                           .ToList() ?? new();
+
+                        if (hokenInf != null && (hokenInf.HokenKbn == 11 || hokenInf.HokenKbn == 12 || hokenInf.HokenKbn == 13
+                                    || (hokenInf.HokenKbn == 14 && GetSettingValue(systemConfList, 3001) == 1)))
+                        {
+                            densiSanteiKaisuModels = densiSanteiKaisuModels.FindAll(p => p.TargetKbn == 2 || p.TargetKbn == 0);
+                        }
+                        else
+                        {
+                            densiSanteiKaisuModels = densiSanteiKaisuModels.FindAll(p => p.TargetKbn == 1 || p.TargetKbn == 0);
+                        }
+
                         foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
                         {
                             string sTerm = string.Empty;
