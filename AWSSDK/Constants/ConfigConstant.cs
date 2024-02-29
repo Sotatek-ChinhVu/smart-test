@@ -22,7 +22,7 @@ namespace AWSSDK.Constants
         public static string RdsSnapshotUpdate = "Update";
         public static string RdsSnapshotBackupRestore = "Bak-Restore";
         public static string ManagedCachingOptimized = "658327ea-f89d-4fab-a63d-7e88639e58f6";
-        public static int PgPostDefault = 5432;
+        public static int PgPortDefault = 5432;
         public static string PgUserDefault = "postgres";
         public static string PgPasswordDefault = "Emr!23456789";
 
@@ -361,7 +361,6 @@ namespace AWSSDK.Constants
             "template_mst",
             "ten_mst",
             "ten_mst_mother",
-            "ten_mst_temp",
             "time_zone_conf",
             "time_zone_day_inf",
             "todo_grp_mst",
@@ -386,15 +385,11 @@ namespace AWSSDK.Constants
             "pt_jibkar",
             "z_doc_inf",
             "z_filing_inf",
-            "z_filing_inf_temp",
             "z_kensa_inf",
             "z_kensa_inf_detail",
-            "z_kensa_inf_detail_temp",
-            "z_kensa_inf_temp",
             "z_limit_cnt_list_inf",
             "z_limit_list_inf",
             "z_monshin_inf",
-            "z_monshin_inf_temp",
             "z_pt_alrgy_drug",
             "z_pt_alrgy_else",
             "z_pt_alrgy_food",
@@ -420,11 +415,9 @@ namespace AWSSDK.Constants
             "z_pt_supple",
             "z_pt_tag",
             "z_raiin_cmt_inf",
-            "z_raiin_cmt_inf_temp",
             "z_raiin_inf",
             "z_raiin_kbn_inf",
             "z_raiin_list_cmt",
-            "z_raiin_list_cmt_temp",
             "z_raiin_list_tag",
             "z_rece_check_cmt",
             "z_rece_cmt",
@@ -439,7 +432,6 @@ namespace AWSSDK.Constants
             "z_syobyo_keika",
             "z_syouki_inf",
             "z_syuno_nyukin",
-            "z_syuno_nyukin_temp",
             "z_todo_inf",
             "z_uketuke_sbt_day_inf",
             "z_yousiki1_inf",

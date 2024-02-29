@@ -258,68 +258,8 @@ namespace Infrastructure.SuperAdminRepositories
 
         public void RevokeInsertPermission()
         {
-            //check status tenant = available
-            var listTenant = NoTrackingDataContext.Tenants.Where(i => i.Status == 1 && i.IsDeleted == 0).ToList();
-            foreach (var tenant in listTenant)
-            {
-                var connectionString = $"Host={tenant.EndPointDb};Username=postgres;Password=Emr!23456789;Port=5432";
-                try
-                {
-                    using (var connection = new NpgsqlConnection(connectionString))
-                    {
-                        connection.Open();
-                        using (var sizeCheckCommand = new NpgsqlCommand())
-                        {
-                            sizeCheckCommand.Connection = connection;
-                            sizeCheckCommand.CommandText = $"SELECT pg_database_size('{tenant.Db}')";
-
-                            var databaseSize = sizeCheckCommand.ExecuteScalar();
-                            if (databaseSize == null) continue;
-                            if (tenant.SizeType == 1) //MB
-                            {
-                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect, tenant.Db);
-                            }
-                            else if (tenant.SizeType == 2) //GB
-                            {
-                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect, tenant.Db);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Exception Schedule Task Insert Permission: {ex.Message}");
-                }
-            }
-        }
-        private void GrantOrRevokeExecute(int size, int sizeType, NpgsqlConnection connection, object? databaseSize, string role, string dbName)
-        {
-            var sizeDatabase = Convert.ToInt64(databaseSize) / (1024 * 1024); //MB
-            if (sizeType == 2)
-            {
-                sizeDatabase = Convert.ToInt64(databaseSize) / 1024; //GB
-            }
-            if (sizeDatabase < size)
-            {
-                using (var grantCommand = new NpgsqlCommand())
-                {
-                    grantCommand.Connection = connection;
-                    grantCommand.CommandText = $"GRANT INSERT ON ALL TABLES IN SCHEMA public TO \"{role}\";";
-                    grantCommand.ExecuteNonQuery();
-                    Console.WriteLine($"Schedule Task Insert Permission: GRANT INSERT DATABASE {dbName} SUCCESS");
-                }
-            }
-            else
-            {
-                using (var revokeCommand = new NpgsqlCommand())
-                {
-                    revokeCommand.Connection = connection;
-                    revokeCommand.CommandText = $"REVOKE INSERT ON ALL TABLES IN SCHEMA public FROM \"{role}\";";
-                    revokeCommand.ExecuteNonQuery();
-                    Console.WriteLine($"Schedule Task Insert Permission: REVOKE INSERT DATABASE {dbName} SUCCESS");
-                }
-            }
-        }
+            
+        }       
 
         public void ReleaseResource()
         {
@@ -564,8 +504,6 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.ScheduleTime,
                        tenant.CreateDate,
                        tenant.RdsIdentifier,
-                       tenant.UserConnect,
-                       tenant.PasswordConnect,
                        tenant.IsRestoreS3);
         }
 
@@ -580,8 +518,6 @@ namespace Infrastructure.SuperAdminRepositories
             tenant.EndPointDb = model.SubDomain;
             tenant.EndSubDomain = model.SubDomain;
             tenant.RdsIdentifier = model.RdsIdentifier;
-            tenant.UserConnect = model.UserConnect;
-            tenant.PasswordConnect = model.PasswordConnect;
             tenant.IsDeleted = 0;
             // created date and updated date uses utc time
             tenant.CreateDate = DateTime.UtcNow;
