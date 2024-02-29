@@ -1,5 +1,4 @@
-﻿using Domain.Core;
-using Domain.Models.User;
+﻿using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constant;
@@ -7,14 +6,12 @@ using Helper.Constants;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Konscious.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Security.Cryptography;
 using System.Text;
-using static Amazon.S3.Util.S3EventNotification;
 using static Helper.Constants.UserConst;
 
 namespace Infrastructure.Repositories
@@ -23,11 +20,13 @@ namespace Infrastructure.Repositories
     {
         private readonly string key;
         private readonly IDatabase _cache;
+        private readonly ITenantProvider _tenantProvider;
         private readonly IConfiguration _configuration;
         private readonly IUserInfoService _userInfoService;
 
         public UserRepository(ITenantProvider tenantProvider, IConfiguration configuration, IUserInfoService userInfoService) : base(tenantProvider)
         {
+            _tenantProvider = tenantProvider;
             key = GetDomainKey();
             _configuration = configuration;
             GetRedis();
@@ -164,9 +163,22 @@ namespace Infrastructure.Repositories
 
         public UserMstModel? GetByLoginId(string loginId, string password)
         {
+
+            string clientDomain = _tenantProvider.GetDomainFromHeader();
+            clientDomain = string.IsNullOrEmpty(clientDomain) ? _tenantProvider.GetDomainFromQueryString() : clientDomain;
+            var key = "connect_db_" + clientDomain.ToLower();
+            int hpId = 0;
+            if (_cache.KeyExists(key))
+            {
+                hpId = int.Parse(_cache.StringGet(key).ToString());
+            }
+            //if (hpId == 0)
+            //{
+            //    return null;
+            //}
             var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
             var entity = NoTrackingDataContext.UserMsts
-                .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
+                .Where(u => /*u.HpId == hpId &&*/ u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
             if (entity is null)
             {
                 return null;

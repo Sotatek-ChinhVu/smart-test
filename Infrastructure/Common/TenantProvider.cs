@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using PostgreDataContext;
 using StackExchange.Redis;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -29,6 +28,7 @@ namespace Infrastructure.CommonDB
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
+            GetConnectionString();
         }
 
         private void GetRedis()
@@ -98,7 +98,7 @@ namespace Infrastructure.CommonDB
             var key = "connect_db_" + clientDomain.ToLower();
             if (_cache.KeyExists(key))
             {
-                return _cache.StringGet(key).ToString();
+                return _configuration["TenantDb"] ?? string.Empty;
             }
             string tenantDb = "host={0};port=5432;database={1};user id={2};password={3}";
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
@@ -109,12 +109,13 @@ namespace Infrastructure.CommonDB
             }
             else
             {
-                tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, tenant.UserConnect.ToLower(), tenant.PasswordConnect);
+                string userDefault = "postgres";
+                string passwordDefault = "Emr!23456789";
+                tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, userDefault, passwordDefault);
+                _cache.StringSet(key, tenant?.TenantId);
                 Console.WriteLine("Connect:" + tenantDb);
             }
-            _cache.StringSet(key, tenantDb);
             superAdminNoTrackingDataContext.Dispose();
-
             return tenantDb;
 #endif
         }
