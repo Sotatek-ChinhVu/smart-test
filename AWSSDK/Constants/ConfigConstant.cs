@@ -31,6 +31,7 @@ namespace AWSSDK.Constants
         public static string SourceBucketName = "phuc-test-s3-replication";
         public static RegionEndpoint RegionDestination = RegionEndpoint.GetBySystemName("ap-northeast-1");
         public static RegionEndpoint RegionSource = RegionEndpoint.GetBySystemName("ap-southeast-1");
+        public static string EndPointSmartKarte = "develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
 
         public static byte StatusTenantPending = 1;
         public static byte StatusTenantStopping = 4;

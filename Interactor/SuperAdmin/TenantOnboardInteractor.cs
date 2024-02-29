@@ -182,66 +182,14 @@ namespace Interactor.SuperAdmin
 
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
-        }
-
-        private string CheckingRDSStatusAsync(string dbIdentifier, int tenantId, string tenantUrl)
-        {
-            try
-            {
-                string host = string.Empty;
-                bool running = true;
-                string status = string.Empty;
-                DateTime startTime = DateTime.Now;
-                var rdsClient = new AmazonRDSClient();
-                while (running)
-                {
-                    var response = rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
-                    {
-                        DBInstanceIdentifier = dbIdentifier
-                    }).Result;
-                    var dbInstances = response.DBInstances;
-                    if (dbInstances.Count != 1)
-                    {
-                        throw new Exception("More than one Database Instance returned; this should never happen");
-                    }
-                    var dbInstance = dbInstances[0];
-                    var checkStatus = dbInstance.DBInstanceStatus;
-                    if (checkStatus == "available")
-                    {
-                        if (dbInstance.Endpoint != null && dbInstance.Endpoint.Address != null)
-                        {
-                            host = dbInstance.Endpoint.Address;
-                        }
-                        // update status creating: 2
-                        var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, dbIdentifier);
-                        running = false;
-                        return host;
-                    }
-                    // Check if more than timeout
-                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
-                    {
-                        Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
-                        running = false;
-                        throw new Exception($"CheckingRDSStatus. Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
-                    }
-                    Thread.Sleep(5000);
-                }
-
-                return host;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw new Exception($"CheckingRDSStatus. {ex.Message}");
-            }
-        }
+        }       
 
         private void AddData(int tenantId, string tenantUrl, TenantModel model, CancellationToken ct)
         {
             try
             {
-                string host = CheckingRDSStatusAsync(model.RdsIdentifier, tenantId, tenantUrl);
-
+                string host = ConfigConstant.EndPointSmartKarte;
+                var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, model.RdsIdentifier);
                 if (!string.IsNullOrEmpty(host))
                 {
                     CreateDatas(host, model.Db, tenantId, model);
