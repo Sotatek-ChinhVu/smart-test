@@ -955,7 +955,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         Output = receStatus != null ? receStatus.Output : 0,
                         FusenKbn = receStatus != null ? receStatus.FusenKbn : 0,
                         StatusKbn = receStatus != null ? receStatus.StatusKbn : 0,
-                        ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? receCheckErr?.Message1 ?? string.Empty + receCheckErr?.Message2 ?? string.Empty : string.Empty),
+                        ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? (receCheckErr?.Message1 ?? string.Empty) + (receCheckErr?.Message2 ?? string.Empty) : string.Empty),
                         IsPending = receCheckCmt != null ? receCheckCmt.IsPending : -1,
                         PtNum = ptInf != null ? ptInf.PtNum : 0,
                         Name = ptKyusei != null ? ptKyusei.Name : ptInf.Name,
