@@ -771,6 +771,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 if (kensaInfDetail != null)
                 {
                     TrackingDataContext.KensaInfDetails.Remove(kensaInfDetail);
+                    TrackingDataContext.SaveChanges();
                 }
             }
 
