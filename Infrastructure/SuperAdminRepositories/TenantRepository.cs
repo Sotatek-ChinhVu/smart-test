@@ -183,7 +183,7 @@ namespace Infrastructure.SuperAdminRepositories
                 {
                     return new();
                 }
-
+ 
                 if (status == 1 || status == 14) // Check tenant available, storage-full, stoped
                 {
                     tenant.Status = status;
@@ -212,7 +212,7 @@ namespace Infrastructure.SuperAdminRepositories
         {
             try
             {
-                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && (x.IsDeleted == 0 || x.IsDeleted == 1 && x.Status == 12));
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
                 if (tenant == null)
                 {
                     throw new Exception("Tenant does not exist");

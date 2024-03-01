@@ -117,6 +117,12 @@ namespace Interactor.SuperAdmin
                             return new UpdateTenantOutputData(false, UpdateTenantStatus.NewDomainAleadyExist);
                         }
                     }
+                    _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
+                    var messenge = $"{oldTenant.EndSubDomain} の更新が進行中です。";
+                    var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiInfo, messenge);
+                    notification.SetTenantId(oldTenant.TenantId);
+                    notification.SetStatusTenant(ConfigConstant.StatusTenantStopping);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                 }
                 else if (oldTenant.Status == ConfigConstant.StatusTenantDictionary()["terminated"])
                 {
@@ -129,9 +135,6 @@ namespace Interactor.SuperAdmin
                 {
                     return new UpdateTenantOutputData(false, UpdateTenantStatus.TenantNotReadyToUpdate);
                 }
-
-
-                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
                 var cts = new CancellationTokenSource();
                 CancellationToken ct = cts.Token;
                 _ = Task.Run(() =>
@@ -197,14 +200,17 @@ namespace Interactor.SuperAdmin
 
                             if (!ct.IsCancellationRequested) // Check task run is not canceled
                             {
-                                var messenge = $"{oldTenant.EndSubDomain} の情報更がが完了しました。";
-                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-
+                                var statusAvailable = ConfigConstant.StatusTenantDictionary()["available"];
+                                var statusStoped = ConfigConstant.StatusTenantDictionary()["stoped"];
                                 // Add info tenant for notification
-                                notification.SetTenantId(oldTenant.TenantId);
-                                notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
-                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-
+                                if (oldTenant.Status == statusAvailable || oldTenant.Status == statusStoped)
+                                {
+                                    var messenge = $"{oldTenant.EndSubDomain} の情報更がが完了しました。";
+                                    var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                                    notification.SetTenantId(oldTenant.TenantId);
+                                    notification.SetStatusTenant(oldTenant.Status == statusAvailable ? ConfigConstant.StatusTenantRunning : oldTenant.Status == statusStoped ? ConfigConstant.StatusTenantStopped : default);
+                                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                                }
                             }
 
                             // Delete cache memory
