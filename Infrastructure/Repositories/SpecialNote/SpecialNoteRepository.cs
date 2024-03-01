@@ -9,7 +9,6 @@ using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Text;
@@ -771,7 +770,6 @@ namespace Infrastructure.Repositories.SpecialNote
                 if (kensaInfDetail != null)
                 {
                     TrackingDataContext.KensaInfDetails.Remove(kensaInfDetail);
-                    TrackingDataContext.SaveChanges();
                 }
             }
 
@@ -816,7 +814,7 @@ namespace Infrastructure.Repositories.SpecialNote
             var updateKensaInfDetailList = new List<KensaInfDetail>();
             foreach (var item in kensaInfDetailListInputs)
             {
-                var updateSupple = kensaInfDetailUpdates.FirstOrDefault(a => a.HpId == item.HpId && a.PtId == item.PtId && a.SeqNo == item.SeqNo && item.IraiCd == a.IraiCd);
+                var updateSupple = kensaInfDetailUpdates.FirstOrDefault(a => a.HpId == item.HpId && a.PtId == item.PtId && a.SeqNo == item.SeqNo && item.IraiCd == a.IraiCd && item.IsDeleted == 0);
                 if (updateSupple != null)
                 {
                     item.CreateId = updateSupple.CreateId;
