@@ -97,10 +97,15 @@ public class OnlineController : BaseParamControllerBase
     }
 
     [HttpPost(ApiPath.SaveOQConfirmation)]
-    public ActionResult<Response<SaveOQConfirmationResponse>> SaveOQConfirmation([FromBody] SaveOQConfirmationRequest request)
+    public async Task<ActionResult<Response<SaveOQConfirmationResponse>>> SaveOQConfirmation([FromBody] SaveOQConfirmationRequest request)
     {
         var input = new SaveOQConfirmationInputData(HpId, UserId, request.OnlineHistoryId, request.PtId, request.ConfirmationResult, request.OnlineConfirmationDate, request.ConfirmationType, request.InfConsFlg, request.UketukeStatus, request.IsUpdateRaiinInf);
         var output = _bus.Handle(input);
+
+        if (output.Status == SaveOQConfirmationStatus.Successed)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, new()));
+        }
 
         var presenter = new SaveOQConfirmationPresenter();
         presenter.Complete(output);

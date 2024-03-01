@@ -2303,14 +2303,10 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool IsRyosyoFuyou(int hpId, long ptId)
+        public int GetIsRyosyoDetail(int hpId, long ptId)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId);
-            if (ptInf != null && ptInf.IsRyosyoDetail == 0)
-            {
-                return true;
-            }
-            return false;
+            return ptInf?.IsRyosyoDetail ?? 0;
         }
 
         private class PatientInfQueryModel

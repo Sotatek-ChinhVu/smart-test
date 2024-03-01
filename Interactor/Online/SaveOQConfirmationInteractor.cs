@@ -1,5 +1,7 @@
 ﻿using Domain.Models.Online;
 using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using System.Xml;
@@ -12,14 +14,14 @@ public class SaveOQConfirmationInteractor : ISaveOQConfirmationInputPort
     private readonly IOnlineRepository _onlineRepository;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
+    private readonly IReceptionRepository _receptionRepository;
 
-    public SaveOQConfirmationInteractor(ITenantProvider tenantProvider, IOnlineRepository onlineRepository, IPatientInforRepository patientInforRepository)
+    public SaveOQConfirmationInteractor(ITenantProvider tenantProvider, IOnlineRepository onlineRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository)
     {
         _onlineRepository = onlineRepository;
         _patientInforRepository = patientInforRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _receptionRepository = receptionRepository;
+        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveOQConfirmationOutputData Handle(SaveOQConfirmationInputData inputData)
@@ -33,7 +35,14 @@ public class SaveOQConfirmationInteractor : ISaveOQConfirmationInputPort
             }
             if (_onlineRepository.SaveOQConfirmation(inputData.HpId, inputData.UserId, inputData.OnlineHistoryId, inputData.PtId, inputData.ConfirmationResult, inputData.OnlineConfirmationDateString, inputData.ConfirmationType, inputData.InfConsFlg, inputData.UketukeStatus, inputData.IsUpdateRaiinInf))
             {
-                return new SaveOQConfirmationOutputData(SaveOQConfirmationStatus.Successed);
+                List<ReceptionRowModel> receptionInfos = new();
+                if (inputData.OnlineConfirmationDateString.Length > 8)
+                {
+                    int sindate = 0;
+                    int.TryParse(inputData.OnlineConfirmationDateString.Substring(0, 8), out sindate);
+                    receptionInfos = _receptionRepository.GetList(inputData.HpId, sindate, CommonConstants.InvalidId, inputData.PtId, isDeleted: 0);
+                }
+                return new SaveOQConfirmationOutputData(SaveOQConfirmationStatus.Successed, receptionInfos);
             }
             return new SaveOQConfirmationOutputData(SaveOQConfirmationStatus.Failed);
         }

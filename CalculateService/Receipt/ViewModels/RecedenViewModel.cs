@@ -401,7 +401,7 @@ namespace CalculateService.Receipt.ViewModels
                                     {
                                         if (_recedenViewModels.Any(p => p.RoudouCd == receData.RoudouCd))
                                         {
-                                            maxSinYm = _recedenViewModels.Where(p => p.RoudouCd == receData.RoudouCd && p.KantokuCd == receData.KantokuCd).Max(p => p.SinYm);
+                                            maxSinYm = _recedenViewModels.Where(p => p.RoudouCd == receData.RoudouCd && p.KantokuCd == receData.KantokuCd)?.Max(p => p.SinYm) ?? 0;
                                         }
                                     }
                                     else

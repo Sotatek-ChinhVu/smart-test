@@ -46,7 +46,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("UpdateTenant")]
         public ActionResult<Response<UpdateTenantResponse>> UpdateTenant([FromBody] UpdateTenantRequest request)
         {
-            var input = new UpdateTenantInputData(request.TenantId, request.Size, request.SizeType, request.SubDomain, request.Type, request.Hospital, request.AdminId, request.Password, _webSocketService);
+            var input = new UpdateTenantInputData(request.TenantId, request.SubDomain, request.Hospital, request.AdminId, request.Password, _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new UpdateTenantPresenter();
             presenter.Complete(output);
@@ -82,9 +82,6 @@ namespace SuperAdminAPI.Controllers
                 request.AdminId,
                 request.Password,
                 request.SubDomain,
-                request.Size,
-                request.SizeType,
-                request.ClusterMode,
                 _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new TenantOnboardPresenter();
@@ -95,7 +92,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("TerminateTenant")]
         public ActionResult<Response<TerminateTenantResponse>> TerminateTenant([FromBody] TerminateTenantRequest request)
         {
-            var input = new TerminateTenantInputData(request.TenantId, _webSocketService, request.Type);
+            var input = new TerminateTenantInputData(request.TenantId, _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new TerminateTenantPresenter();
             presenter.Complete(output);
@@ -123,15 +120,15 @@ namespace SuperAdminAPI.Controllers
             return new ActionResult<Response<ToggleTenantResponse>>(presenter.Result);
         }
 
-        [HttpPost("RestoreTenant")]
-        public ActionResult<Response<RestoreTenantResponse>> RestoreTenant([FromBody] RestoreTenantRequest request)
-        {
-            var input = new RestoreTenantInputData(request.TenantId, _webSocketService);
-            var output = _bus.Handle(input);
-            var presenter = new RestoreTenantPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<RestoreTenantResponse>>(presenter.Result);
-        }
+        //[HttpPost("RestoreTenant")]
+        //public ActionResult<Response<RestoreTenantResponse>> RestoreTenant([FromBody] RestoreTenantRequest request)
+        //{
+        //    var input = new RestoreTenantInputData(request.TenantId, _webSocketService);
+        //    var output = _bus.Handle(input);
+        //    var presenter = new RestoreTenantPresenter();
+        //    presenter.Complete(output);
+        //    return new ActionResult<Response<RestoreTenantResponse>>(presenter.Result);
+        //}
 
         [HttpPost("RestoreObjectS3Tenant")]
         public ActionResult<Response<RestoreObjectS3TenantResponse>> RestoreObjectS3Tenant([FromBody] RestoreObjectS3TenantRequest request)
