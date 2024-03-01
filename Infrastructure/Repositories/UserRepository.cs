@@ -170,7 +170,11 @@ namespace Infrastructure.Repositories
             int hpId = 0;
             if (_cache.KeyExists(key))
             {
-                hpId = int.Parse(_cache.StringGet(key).ToString());
+                string value = _cache.StringGet(key).ToString();
+                if (int.TryParse(value, out int parsedValue))
+                {
+                    hpId = parsedValue;
+                }
             }
 
 #if DEBUG          

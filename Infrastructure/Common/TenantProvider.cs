@@ -89,34 +89,26 @@ namespace Infrastructure.CommonDB
 
             return clientDomainInConfig;
 #else
+            string connectionString = _configuration["TenantDb"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
             {
-                return _configuration["TenantDb"] ?? string.Empty;
+                return connectionString;
             }
             var key = "connect_db_" + clientDomain.ToLower();
             if (_cache.KeyExists(key))
             {
-                return _configuration["TenantDb"] ?? string.Empty;
+                return connectionString;
             }
-            string tenantDb = "host={0};port=5432;database={1};user id={2};password={3}";
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
             var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain.ToLower() == clientDomain.ToLower() && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
-            if (tenant == null)
+            if (tenant != null)
             {
-                tenantDb = _configuration["TenantDb"] ?? string.Empty;
-            }
-            else
-            {
-                string userDefault = "postgres";
-                string passwordDefault = "Emr!23456789";
-                tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, userDefault, passwordDefault);
-                _cache.StringSet(key, tenant?.TenantId);
-                Console.WriteLine("Connect:" + tenantDb);
+                _cache.StringSet(key, tenant.TenantId);
             }
             superAdminNoTrackingDataContext.Dispose();
-            return tenantDb;
+            return connectionString;
 #endif
         }
 
