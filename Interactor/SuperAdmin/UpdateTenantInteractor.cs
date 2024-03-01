@@ -118,7 +118,7 @@ namespace Interactor.SuperAdmin
                         }
                     }
                     _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
-                    var messenge = $"{oldTenant.EndSubDomain} の情報更がが完了しました。";
+                    var messenge = $"{oldTenant.EndSubDomain} の更新が進行中です。";
                     var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiInfo, messenge);
                     notification.SetTenantId(oldTenant.TenantId);
                     notification.SetStatusTenant(ConfigConstant.StatusTenantStopping);
