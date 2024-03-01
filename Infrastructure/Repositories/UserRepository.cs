@@ -163,7 +163,7 @@ namespace Infrastructure.Repositories
 
         public UserMstModel? GetByLoginId(string loginId, string password)
         {
-
+            var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
             string clientDomain = _tenantProvider.GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? _tenantProvider.GetDomainFromQueryString() : clientDomain;
             var key = "connect_db_" + clientDomain.ToLower();
@@ -172,13 +172,19 @@ namespace Infrastructure.Repositories
             {
                 hpId = int.Parse(_cache.StringGet(key).ToString());
             }
-            //if (hpId == 0)
-            //{
-            //    return null;
-            //}
-            var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+
+#if DEBUG          
             var entity = NoTrackingDataContext.UserMsts
-                .Where(u => /*u.HpId == hpId &&*/ u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
+                .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
+#else
+            if (hpId == 0)
+            {
+                return null;
+            }
+            var entity = NoTrackingDataContext.UserMsts
+                .Where(u => u.HpId == hpId && u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
+#endif
+
             if (entity is null)
             {
                 return null;
