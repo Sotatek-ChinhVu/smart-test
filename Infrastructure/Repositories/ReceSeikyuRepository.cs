@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using System;
+using System.Linq.Dynamic.Core.Tokenizer;
 
 namespace Infrastructure.Repositories
 {
@@ -661,6 +662,40 @@ namespace Infrastructure.Repositories
                 return new ReceSeikyuModel(0, result.HpId, result.PtId, string.Empty, result.SinYm, 0, result.HokenId, string.Empty, result.SeqNo, result.SeikyuYm, result.SeikyuKbn, result.PreHokenId, result.Cmt ?? string.Empty, 0, 0, string.Empty, 0, 0, false, 0, 0, false, 0, false, new());
             }
             return new();
+        }
+
+        public List<RecedenHenJiyuuModel> GetRecedenHenJiyuuModels(int hpId, long ptId, int sinYm)
+        {
+            var recedenHenjiyuus = NoTrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == hpId
+                                                                                        && item.PtId == ptId
+                                                                                        && item.IsDeleted == 0
+                                                                                        && item.SinYm == sinYm);
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId
+                                                                              && item.PtId == ptId
+                                                                              && item.IsDeleted == 0);
+
+            var result = (from recedenHenjiyuu in recedenHenjiyuus
+                          join ptHokenInf in ptHokenInfs on
+                          new { recedenHenjiyuu.HpId, recedenHenjiyuu.PtId, recedenHenjiyuu.HokenId } equals
+                          new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
+                          select new RecedenHenJiyuuModel(
+                                     hpId,
+                                     recedenHenjiyuu.PtId,
+                                     recedenHenjiyuu.HokenId,
+                                     recedenHenjiyuu.SinYm,
+                                     recedenHenjiyuu.SeqNo,
+                                     recedenHenjiyuu.HenreiJiyuuCd ?? string.Empty,
+                                     recedenHenjiyuu.HenreiJiyuu ?? string.Empty,
+                                     recedenHenjiyuu.Hosoku ?? string.Empty,
+                                     recedenHenjiyuu.IsDeleted,
+                                     ptHokenInf.HokenKbn,
+                                     ptHokenInf.Houbetu ?? string.Empty,
+                                     ptHokenInf.StartDate,
+                                     ptHokenInf.EndDate,
+                                     ptHokenInf.HokensyaNo ?? string.Empty
+                          )).ToList();
+
+            return result;
         }
     }
 }
