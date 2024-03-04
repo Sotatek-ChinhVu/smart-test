@@ -413,6 +413,7 @@
         public const string SaveReceSeikyu = "SaveReceSeikyu";
         public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
+        public const string RecalculateInSeikyuPending = "RecalculateInSeikyuPending";
         public const string GetReceSeikyModelByPtNum = "GetReceSeikyModelByPtNum";
 
         //WeightedSetConfirmation

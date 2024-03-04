@@ -28,11 +28,11 @@ namespace Domain.Models.ReceSeikyu
 
         int GetReceSeikyuPreHoken(int hpId, long ptId, int sinYm, int hokenId);
 
-        void DeleteReceSeikyu(int hpId, long ptId, int sinYm, int hokenId);
+        void DeleteReceSeikyu(int hpId, int userId, long ptId, int sinYm, int hokenId);
 
-        void DeleteHenJiyuuRireki(int hpId, long ptId, int sinYm, int preHokenId);
+        void DeleteHenJiyuuRireki(int hpId, int userId, long ptId, int sinYm, int preHokenId);
 
-        void InsertSingleReceSeikyu(int hpId, long ptId, int sinYm, int hokenId, int userId);
+        void InsertSingleReceSeikyu(int hpId, int userId, ReceSeikyuModel receSeikyuModel);
 
         void InsertSingleRerikiInf(int hpId, long ptId, int sinYm, int hokenId, string searchNo, string rireki, int userId);
 
