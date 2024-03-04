@@ -818,6 +818,7 @@ using UseCase.Yousiki.GetByomeisInMonth;
 using UseCase.Yousiki.CreateYuIchiFile;
 using UseCase.Yousiki.UpdateYosiki;
 using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
+using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
 using UseCase.ReceSeikyu.RecalculateInSeikyuPending;
 using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
 
