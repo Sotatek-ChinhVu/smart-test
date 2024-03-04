@@ -739,20 +739,20 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         usageDosageList = usageDosageList.Distinct().ToList();
         itemNameByItemCodeList = itemNameByItemCodeList.Distinct().ToList();
 
-        _itemNameDictionary = itemNameList.Any() ? _realtimeOrderErrorFinder.FindItemNameDic(hpId, itemNameList, _sinday) : new();
+        _itemNameDictionary = itemNameList.Any() ? _realtimeOrderErrorFinder.FindLastItemNameByYjCdDic(hpId, itemNameList, _sinday, false) : new();
         _componentNameDictionary = componentNameList.Any() ? _realtimeOrderErrorFinder.FindComponentNameDic(hpId, componentNameList) : new();
         _analogueNameDictionary = analogueNameList.Any() ? _realtimeOrderErrorFinder.FindAnalogueNameDic(hpId, analogueNameList) : new();
         _drvalrgyNameDictionary = drvalrgyNameList.Any() ? _realtimeOrderErrorFinder.FindDrvalrgyNameDic(hpId, drvalrgyNameList) : new();
         _foodNameDictionary = foodNameList.Any() ? _realtimeOrderErrorFinder.FindFoodNameDic(hpId, foodNameList) : new();
         _diseaseNameDictionary = diseaseNameList.Any() ? _realtimeOrderErrorFinder.FindDiseaseNameDic(hpId, diseaseNameList) : new();
-        _kinkiCommentDictionary = kinkiCommentList.Any() ? _realtimeOrderErrorFinder.FindKinkiCommentDic(hpId,kinkiCommentList) : new();
+        _kinkiCommentDictionary = kinkiCommentList.Any() ? _realtimeOrderErrorFinder.FindKinkiCommentDic(hpId, kinkiCommentList) : new();
         _kijyoCommentDictionary = kijyoCommentList.Any() ? _realtimeOrderErrorFinder.FindKijyoCommentDic(hpId, kijyoCommentList) : new();
-        _oTCItemNameDictionary = oTCItemNameList.Any() ? _realtimeOrderErrorFinder.FindOTCItemNameDic(hpId, oTCItemNameList) : new(); 
+        _oTCItemNameDictionary = oTCItemNameList.Any() ? _realtimeOrderErrorFinder.FindOTCItemNameDic(hpId, oTCItemNameList) : new();
         _oTCComponentInfoDictionary = oTCComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetOTCComponentInfoDic(hpId, oTCComponentInfoList) : new();
         _supplementComponentInfoDictionary = supplementComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetSupplementComponentInfoDic(hpId, supplementComponentInfoList) : new();
         _suppleItemNameDictionary = suppleItemNameList.Any() ? _realtimeOrderErrorFinder.FindSuppleItemNameDic(hpId, suppleItemNameList) : new();
         _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(hpId, usageDosageList) : new();
-        _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(hpId,itemNameByItemCodeList, _sinday) : new();
+        _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(hpId, itemNameByItemCodeList, _sinday) : new();
     }
 
     #endregion

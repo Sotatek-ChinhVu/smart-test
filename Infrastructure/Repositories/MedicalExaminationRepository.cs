@@ -143,7 +143,7 @@ namespace Infrastructure.Repositories
                 {
                     var tenMstModel = FindTenMst(hpId, detail.ItemCd, sinDate);
                     if (tenMstModel == null) continue;
-                    if ((tenMstModel.CdKbn == "C" && tenMstModel.CdKbnno == 1 && tenMstModel.Kokuji2 == "1") || tenMstModel.ItemCd.Contains("@Z"))
+                    if ((tenMstModel.CdKbn == "C" && tenMstModel.CdKbnno == 1 && tenMstModel.Kokuji2 == "1") || tenMstModel.ItemCd == "@Z")
                     {
                         var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 0)?.Val ?? 0;
                         if (santeiKanren == 0)
