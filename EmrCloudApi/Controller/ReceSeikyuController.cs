@@ -15,9 +15,9 @@ using Helper.Messaging;
 using Domain.Models.ReceSeikyu;
 using UseCase.ReceSeikyu.ImportFile;
 using UseCase.ReceSeikyu.CancelSeikyu;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System.Linq.Dynamic.Core.Tokenizer;
 using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
+using UseCase.ReceSeikyu.RecalculateInSeikyuPending;
+using System.Threading;
 
 namespace EmrCloudApi.Controller
 {
@@ -86,51 +86,69 @@ namespace EmrCloudApi.Controller
             try
             {
                 _messenger.Register<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
-                _messenger.Register<RecalculateInSeikyuPendingStop>(this, StopCalculation);
+                _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
                 HttpContext.Response.ContentType = "application/json";
 
                 var input = new SaveReceSeiKyuInputData(request.Data.Select(x => new ReceSeikyuModel(0,
-                                                                                                HpId,
-                                                                                                x.PtId,
-                                                                                                string.Empty,
-                                                                                                x.SinYm,
-                                                                                                0,
-                                                                                                x.HokenId,
-                                                                                                string.Empty,
-                                                                                                x.SeqNo,
-                                                                                                x.SeikyuYm,
-                                                                                                x.SeikyuKbn,
-                                                                                                x.PreHokenId,
-                                                                                                x.Cmt ?? string.Empty,
-                                                                                                0,
-                                                                                                0,
-                                                                                                string.Empty,
-                                                                                                0,
-                                                                                                0,
-                                                                                                x.IsModified,
-                                                                                                x.OriginSeikyuYm,
-                                                                                                x.OriginSinYm,
-                                                                                                x.IsAddNew,
-                                                                                                x.IsDeleted,
-                                                                                                x.IsChecked,
-                                                                                                new())).ToList(), request.SinYm, HpId, UserId, _messenger);
+                                                                                                     HpId,
+                                                                                                     x.PtId,
+                                                                                                     string.Empty,
+                                                                                                     x.SinYm,
+                                                                                                     0,
+                                                                                                     x.HokenId,
+                                                                                                     string.Empty,
+                                                                                                     x.SeqNo,
+                                                                                                     x.SeikyuYm,
+                                                                                                     x.SeikyuKbn,
+                                                                                                     x.PreHokenId,
+                                                                                                     x.Cmt ?? string.Empty,
+                                                                                                     0,
+                                                                                                     0,
+                                                                                                     string.Empty,
+                                                                                                     0,
+                                                                                                     0,
+                                                                                                     x.IsModified,
+                                                                                                     x.OriginSeikyuYm,
+                                                                                                     x.OriginSinYm,
+                                                                                                     x.IsAddNew,
+                                                                                                     x.IsDeleted,
+                                                                                                     x.IsChecked,
+                                                                                                     new())).ToList(), request.SinYm, HpId, UserId, _messenger);
 
-                var output = _bus.Handle(input);
-                if (output.Status == SaveReceSeiKyuStatus.Successful)
-                    UpdateRecalculationSaveReceSeikyu(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, true));
-                else
-                    UpdateRecalculationSaveReceSeikyu(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, false));
+                _bus.Handle(input);
             }
             finally
             {
                 _messenger.Deregister<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
-                _messenger.Deregister<RecalculateInSeikyuPendingStop>(this, StopCalculation);
+                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
+            }
+        }
+
+        [HttpPost(ApiPath.RecalculateInSeikyuPending)]
+        public void RecalculateInSeikyuPending([FromBody] RecalculateInSeikyuPendingRequest request, CancellationToken cancellationToken)
+        {
+            _cancellationToken = cancellationToken;
+            try
+            {
+                _messenger.Register<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
+                _messenger.Register<StopCalcStatus>(this, StopCalculation);
+
+                HttpContext.Response.ContentType = "application/json";
+
+                var input = new RecalculateInSeikyuPendingInputData(HpId, UserId, request.ReceInfoList.Select(item => new ReceInfo(item.PtId, item.HokenId, item.SinYm, item.SeikyuYm)).ToList(), _messenger);
+
+                _bus.Handle(input);
+            }
+            finally
+            {
+                _messenger.Deregister<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
+                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
             }
         }
 
         [HttpPost(ApiPath.ImportFileReceSeikyu)]
-        public ActionResult<Response<ImportFileReceSeikyuResponse>> ImportFileReceSeikyu(IFormFile fileImport)
+        public ActionResult<Response<ImportFileReceSeikyuResponse>> ImportFileReceSeikyu([FromForm] IFormFile fileImport)
         {
             var input = new ImportFileReceSeikyuInputData(HpId, UserId, fileImport);
             var output = _bus.Handle(input);
@@ -153,7 +171,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetReceSeikyModelByPtNumResponse>>(presenter.Result);
         }
 
-        private void StopCalculation(RecalculateInSeikyuPendingStop stopCalcStatus)
+        private void StopCalculation(StopCalcStatus stopCalcStatus)
         {
             if (!_cancellationToken.HasValue)
             {

@@ -1,6 +1,4 @@
-﻿
-using DocumentFormat.OpenXml.Math;
-using Domain.Constant;
+﻿using Domain.Constant;
 using Domain.Models.PatientInfor;
 using Domain.Models.ReceSeikyu;
 using Helper.Common;
@@ -9,7 +7,6 @@ using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Text;
-using System.Text.Json;
 using UseCase.ReceSeikyu.ImportFile;
 
 namespace Interactor.ReceSeikyu
@@ -19,12 +16,14 @@ namespace Interactor.ReceSeikyu
         private readonly IReceSeikyuRepository _receSeikyuRepository;
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IAmazonS3Service _amazonS3Service;
+        private readonly List<ReceSeikyuModel> receSeikyuImportList;
 
         public ImportFileReceSeikyuInteractor(IReceSeikyuRepository receptionRepository, IPatientInforRepository patientInforRepository, IAmazonS3Service amazonS3Service)
         {
             _receSeikyuRepository = receptionRepository;
             _patientInforRepository = patientInforRepository;
             _amazonS3Service = amazonS3Service;
+            receSeikyuImportList = new();
         }
 
         public ImportFileReceSeikyuOutputData Handle(ImportFileReceSeikyuInputData inputData)
@@ -59,6 +58,7 @@ namespace Interactor.ReceSeikyu
             finally
             {
                 _receSeikyuRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
             }
         }
 
@@ -71,9 +71,9 @@ namespace Interactor.ReceSeikyu
             int birthday = 0;
             long ptId = 0;
             int hokenId = 0;
+            int seikyuYm = 0;
             string searchNo = string.Empty;
             string hosoku = string.Empty;
-            string rireki = string.Empty;
             string henreiJiyuu = string.Empty;
             string henreiJiyuuCd = string.Empty;
             List<string> rekiList = new List<string>();
@@ -167,7 +167,7 @@ namespace Interactor.ReceSeikyu
 
                         if (sRecKind == "REKI")
                         {
-                            if (InsertReceSeikyuProcess(hpId, ptId, sinYm, birthday, hokenId, userId))
+                            if (InsertReceSeikyuProcess(hpId, ptId, sinYm, birthday, hokenId, userId, seikyuYm))
                             {
                                 areCnt++;
                             }
@@ -203,6 +203,16 @@ namespace Interactor.ReceSeikyu
                                 continue;
                             }
                             hokenId = CIUtil.StrToIntDef(CIUtil.Copy(slCol[20], 17, 5), 0); // 17~21桁目
+                            for (int row = iRow + 1; row < fileContent.Count; row++)
+                            {
+                                if (string.IsNullOrEmpty(fileContent[row])) continue;
+                                List<string> col = fileContent[row].Split(new[] { "," }, StringSplitOptions.None).ToList();
+                                if (col.Count >= 4 && col[3] == "IR")
+                                {
+                                    seikyuYm = CIUtil.StrToIntDef(col[10], 0);
+                                    break;
+                                }
+                            }
                         }
 
                         searchNo = slCol[18];
@@ -277,10 +287,17 @@ namespace Interactor.ReceSeikyu
 
             string idCloud = _amazonS3Service.UploadObjectAsync(path, fileNameUpload, file, true).Result;
 
+            foreach (var receSeikyu in receSeikyuImportList)
+            {
+                receSeikyu.SetSeikyuYm(999999);
+                _receSeikyuRepository.InsertSingleReceSeikyu(hpId, userId, receSeikyu);
+            }
+
             if (_receSeikyuRepository.SaveChangeImportFileRececeikyus())
             {
+                List<ReceInfo> receInfList = receSeikyuImportList.Select(item => new ReceInfo(item.PtId, item.HokenId, item.SinYm, item.SinYm)).Distinct().ToList();
                 string message = string.Format(ErrorMessage.MessageType_mEnt02020, CIUtil.SMonthToShowSMonth(aSeikyuYm) + "請求分(" + areCnt + "件) の返戻レセプト");
-                return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.Successful, message);
+                return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.Successful, receInfList, message);
             }
             else
             {
@@ -337,7 +354,7 @@ namespace Interactor.ReceSeikyu
         }
 
 
-        private bool InsertReceSeikyuProcess(int hpId, long ptId, int sinYm, int birthDay, int hokenId, int userId)
+        private bool InsertReceSeikyuProcess(int hpId, long ptId, int sinYm, int birthDay, int hokenId, int userId, int seiKyuYm = 0)
         {
             if (!CheckIsValidImportData(hpId, ptId, sinYm, birthDay))
             {
@@ -345,22 +362,45 @@ namespace Interactor.ReceSeikyu
             }
 
             // RECE_SEIKYU 保存チェック
-            if (_receSeikyuRepository.IsReceSeikyuExisted(hpId, ptId, sinYm, hokenId)) return false;
+            if (_receSeikyuRepository.IsReceSeikyuExisted(hpId, ptId, sinYm, hokenId))
+            {
+                return false;
+            }
 
             // PRE_HOKEN_IDを取得する
             int preHokenId = _receSeikyuRepository.GetReceSeikyuPreHoken(hpId, ptId, sinYm, hokenId);
 
             // 既存のRECE_SEIKYUレコードを削除する
-            _receSeikyuRepository.DeleteReceSeikyu(hpId, ptId, sinYm, hokenId);
+            _receSeikyuRepository.DeleteReceSeikyu(hpId, userId, ptId, sinYm, hokenId);
 
             // PRE_HOKEN_IDに紐づくレセ電返戻事由を削除する
             if (hokenId != preHokenId)
             {
-                _receSeikyuRepository.DeleteHenJiyuuRireki(hpId, ptId, sinYm, hokenId);
+                _receSeikyuRepository.DeleteHenJiyuuRireki(hpId, userId, ptId, sinYm, hokenId);
             }
 
             // RECE_SEIKYUにレコードを追加する
-            _receSeikyuRepository.InsertSingleReceSeikyu(hpId, ptId, sinYm, hokenId, userId);
+            var insertAfterReceSeikuu = new ReceSeikyuModel(hpId, ptId, 3, seiKyuYm, sinYm, hokenId);
+            var insertBeforeReceSeikyu = receSeikyuImportList.FirstOrDefault(p => p.PtId == ptId && p.SinYm == sinYm && p.HokenId == hokenId && p.IsDeleted == 0);
+            if (insertBeforeReceSeikyu != null)
+            {
+                if (insertAfterReceSeikuu.SeikyuYm > 0 && insertBeforeReceSeikyu.SeikyuYm > 0)
+                {
+                    if (insertAfterReceSeikuu.SeikyuYm >= insertBeforeReceSeikyu.SeikyuYm)
+                    {
+                        insertBeforeReceSeikyu.SetIsDeleted(1);
+                    }
+                    else
+                    {
+                        insertAfterReceSeikuu.SetIsDeleted(1);
+                    }
+                }
+                else
+                {
+                    insertBeforeReceSeikyu.SetIsDeleted(1);
+                }
+            }
+            receSeikyuImportList.Add(insertAfterReceSeikuu);
             return true;
         }
 
