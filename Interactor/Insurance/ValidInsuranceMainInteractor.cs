@@ -270,10 +270,16 @@ namespace Interactor.Insurance
             }
 
             // 記号
-            if (hokenSyaNo.Length == 8 && hokenSyaNo.Trim().StartsWith("39"))
+            if (hokenSyaNo.Length == 8 && hokenSyaNo.AsString().Trim().StartsWith("39"))
             {
+                if (!string.IsNullOrEmpty(kigo) &&
+                    string.IsNullOrEmpty(kigo.Replace(" ", "").Replace("　", "")))
+                {
+                    kigo = string.Empty;
+                }
+
                 if (!string.IsNullOrEmpty(kigo)
-                    && !string.IsNullOrEmpty(kigo.Trim(' '))) //Trim only half-size space
+                    && !string.IsNullOrEmpty(kigo.Replace(" ", "").Replace("　", ""))) //Replace half/full-size space
                 {
                     var paramsMessage = new string[] { "後期高齢者の", "被保険者証記号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00150, paramsMessage);

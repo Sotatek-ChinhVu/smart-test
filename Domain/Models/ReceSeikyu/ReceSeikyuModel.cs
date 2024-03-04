@@ -63,6 +63,21 @@ namespace Domain.Models.ReceSeikyu
             ListRecedenHenJiyuuModel = new();
         }
 
+        public ReceSeikyuModel(int hpId, long ptId, int seikyuKbn, int seikyuYm, int sinYm, int hokenId)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            SinYm = sinYm;
+            HokenId = hokenId;
+            SeikyuKbn = seikyuKbn;
+            SeikyuYm = seikyuYm;
+            HokensyaNo = string.Empty;
+            Cmt = string.Empty;
+            Houbetu = string.Empty;
+            PtName = string.Empty;
+            ListRecedenHenJiyuuModel = new();
+        }
+
         public ReceSeikyuModel()
         {
             PtName = string.Empty;
@@ -78,6 +93,18 @@ namespace Domain.Models.ReceSeikyu
             IsDeleted = isDeleted;
             PreHokenId = preHokenId;
             Cmt = cmt;
+            return this;
+        }
+
+        public ReceSeikyuModel SetIsDeleted(int isDeleted)
+        {
+            IsDeleted = isDeleted;
+            return this;
+        }
+
+        public ReceSeikyuModel SetSeikyuYm(int seikyuYm)
+        {
+            SeikyuYm = seikyuYm;
             return this;
         }
 
@@ -376,10 +403,5 @@ namespace Domain.Models.ReceSeikyu
             { 2,"返戻" },
             { 3,"オンライン返戻" } //電算返戻
         };
-
-        public void SetSeikyuYm(int value)
-        {
-            this.SeikyuYm = value;
-        }
     }
 }
