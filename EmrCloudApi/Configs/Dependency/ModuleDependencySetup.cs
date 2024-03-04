@@ -820,7 +820,6 @@ using UseCase.Yousiki.UpdateYosiki;
 using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
 using UseCase.ReceSeikyu.RecalculateInSeikyuPending;
-using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
