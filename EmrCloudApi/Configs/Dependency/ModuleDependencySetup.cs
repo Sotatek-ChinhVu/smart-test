@@ -819,6 +819,7 @@ using UseCase.Yousiki.CreateYuIchiFile;
 using UseCase.Yousiki.UpdateYosiki;
 using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using UseCase.ReceSeikyu.RecalculateInSeikyuPending;
+using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1767,6 +1768,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CancelSeikyuInputData, CancelSeikyuInteractor>();
             busBuilder.RegisterUseCase<RecalculateInSeikyuPendingInputData, RecalculateInSeikyuPendingInteractor>();
             busBuilder.RegisterUseCase<GetReceSeikyModelByPtNumInputData, GetReceSeikyModelByPtNumInteractor>();
+            busBuilder.RegisterUseCase<GetRecedenHenJiyuuListInputData, GetRecedenHenJiyuuListInteractor>();
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
