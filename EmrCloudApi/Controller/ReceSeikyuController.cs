@@ -16,8 +16,8 @@ using Domain.Models.ReceSeikyu;
 using UseCase.ReceSeikyu.ImportFile;
 using UseCase.ReceSeikyu.CancelSeikyu;
 using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
+using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
 using UseCase.ReceSeikyu.RecalculateInSeikyuPending;
-using System.Threading;
 
 namespace EmrCloudApi.Controller
 {
@@ -72,6 +72,16 @@ namespace EmrCloudApi.Controller
             var presenter = new CancelSeikyuPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CancelSeikyuResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetRecedenHenJiyuuList)]
+        public ActionResult<Response<GetRecedenHenJiyuuListResponse>> GetRecedenHenJiyuuList([FromQuery] GetRecedenHenJiyuuListRequest request)
+        {
+            var input = new GetRecedenHenJiyuuListInputData(HpId, request.PtId, request.SinYm);
+            var output = _bus.Handle(input);
+            var presenter = new GetRecedenHenJiyuuListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetRecedenHenJiyuuListResponse>>(presenter.Result);
         }
 
         /// <summary>
