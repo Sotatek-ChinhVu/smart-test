@@ -121,9 +121,9 @@ namespace Reporting.KensaHistory.DB
                                                                  on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                                                              from t7 in leftJoinT7.DefaultIfEmpty()
                                                              where t2.IsDelete == DeleteTypes.None && t3.IsDeleted == DeleteTypes.None && t4.IsDelete == DeleteTypes.None
-                                                             where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).DefaultIfEmpty().Min(m => m.KensaItemSeqNo)
-                                                             where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd && m.IsDeleted == DeleteTypes.None).DefaultIfEmpty().Min(m => m.CmtSeqNo)
-                                                             where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd && m.IsDeleted == DeleteTypes.None).DefaultIfEmpty().Min(m => m.CmtSeqNo)
+                                                             where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).Select(m => m.KensaItemSeqNo).DefaultIfEmpty().Min()
+                                                             where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd && m.IsDeleted == DeleteTypes.None).Select(m => m.CmtSeqNo).DefaultIfEmpty().Min()
+                                                             where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd && m.IsDeleted == DeleteTypes.None).Select(m => m.CmtSeqNo).DefaultIfEmpty().Min()
                                                              select new ListKensaInfDetailItemModel
                                                              (
                                                                  t1.PtId,
@@ -495,9 +495,9 @@ namespace Reporting.KensaHistory.DB
                                                                  on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                                                              from t7 in leftJoinT7.DefaultIfEmpty()
                                                              where t2.IsDelete == DeleteTypes.None && t3.IsDeleted == DeleteTypes.None && t4.IsDelete == DeleteTypes.None
-                                                             where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).DefaultIfEmpty().Min(m => m.KensaItemSeqNo)
-                                                             where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd && m.IsDeleted == DeleteTypes.None).DefaultIfEmpty().Min(m => m.CmtSeqNo)
-                                                             where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd && m.IsDeleted == DeleteTypes.None).DefaultIfEmpty().Min(m => m.CmtSeqNo)
+                                                             where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).Select(m => m.KensaItemSeqNo).DefaultIfEmpty().Min()
+                                                             where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd && m.IsDeleted == DeleteTypes.None).Select(m => m.CmtSeqNo).DefaultIfEmpty().Min()
+                                                             where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd && m.IsDeleted == DeleteTypes.None).Select(m => m.CmtSeqNo).DefaultIfEmpty().Min()
                                                              select new ListKensaInfDetailItemModel
                                                              (
                                                                  t1.PtId,

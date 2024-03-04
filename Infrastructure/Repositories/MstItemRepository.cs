@@ -7998,7 +7998,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
 
         // Fillter remove duplicate item
-        allkensaKensaMst = allkensaKensaMst.Where(x => x.KensaItemSeqNo == allkensaKensaMst.Where(m => m.KensaItemCd == x.KensaItemCd).DefaultIfEmpty().Min(m => m.KensaItemSeqNo)).ToList();
+        allkensaKensaMst = allkensaKensaMst.Where(x => x.KensaItemSeqNo == allkensaKensaMst.Where(m => m.KensaItemCd == x.KensaItemCd).Select(m => m.KensaItemSeqNo).DefaultIfEmpty().Min()).ToList();
 
         var centerNameDictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
         var centerItemCd1Dictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);
@@ -8073,7 +8073,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             );
 
         // Fillter remove duplicate item
-        listChilsMatchKeyword = listChilsMatchKeyword.Where(x => x.KensaItemSeqNo == listChilsMatchKeyword.Where(m => m.KensaItemCd == x.KensaItemCd).DefaultIfEmpty().Min(m => m.KensaItemSeqNo)).ToList();
+        listChilsMatchKeyword = listChilsMatchKeyword.Where(x => x.KensaItemSeqNo == listChilsMatchKeyword.Where(m => m.KensaItemCd == x.KensaItemCd).Select(m => m.KensaItemSeqNo).DefaultIfEmpty().Min()).ToList();
 
         var listChildCenterNameDictionary = listChilsMatchKeywordDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
         var listChildCenterItemCd1Dictionary = listChilsMatchKeywordDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);

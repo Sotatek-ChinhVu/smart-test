@@ -143,8 +143,8 @@ namespace Reporting.Statistics.Sta2021.Service
 
                 #region 診療年月のリストを作成
                 //var sinYms = sinKouis.GroupBy(s => s.SinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
-                int startYm = _printConf.StartSinYm <= 0 ? (sinKouis.DefaultIfEmpty()?.Min(s => s.SinYm) ?? 0) : _printConf.StartSinYm;
-                int endYm = _printConf.EndSinYm <= 0 ? sinKouis.DefaultIfEmpty()?.Max(s => s.SinYm) ?? 0 : _printConf.EndSinYm;
+                int startYm = _printConf.StartSinYm <= 0 ? (sinKouis.Select(s => s.SinYm).DefaultIfEmpty()?.Min() ?? 0) : _printConf.StartSinYm;
+                int endYm = _printConf.EndSinYm <= 0 ? (sinKouis.Select(s => s.SinYm).DefaultIfEmpty()?.Max() ?? 0) : _printConf.EndSinYm;
 
                 List<int> sinYms = new List<int>();
                 while (startYm <= endYm)
