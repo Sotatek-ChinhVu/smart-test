@@ -85,7 +85,7 @@ namespace Interactor.ReceSeikyu
                     }
                     else if (modifiedReceSeikyu.IsDeleted == DeleteTypes.Deleted)
                     {
-                        _receSeikyuRepository.EntryDeleteHenJiyuu(inputData.HpId, modifiedReceSeikyu.PtId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.HokenId, inputData.UserId);
+                        //_receSeikyuRepository.EntryDeleteHenJiyuu(inputData.HpId, modifiedReceSeikyu.PtId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.HokenId, inputData.UserId);
 
                         receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SinYm));
 
