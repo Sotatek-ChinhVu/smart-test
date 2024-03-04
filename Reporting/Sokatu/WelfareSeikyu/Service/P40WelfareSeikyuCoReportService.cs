@@ -175,7 +175,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
                         fieldDataPerPage.Add(
                             string.Format("rate{0}", kohiHoubetus[rowNo / 3]),
-                            wrkReces.DefaultIfEmpty()?.Max(r => r?.HokenRate).ToString() ?? string.Empty
+                            wrkReces.Select(r => r.HokenRate).DefaultIfEmpty()?.Max().ToString() ?? string.Empty
                         );
 
                         if (!_setFieldData.ContainsKey(pageIndex))

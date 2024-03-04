@@ -794,7 +794,7 @@ namespace Infrastructure.Repositories
 
         public int GetMaxGrpId(int hpId)
         {
-            return NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId).DefaultIfEmpty()?.Max(item => item.GrpCd) ?? 0;
+            return NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId).Select(item => item.GrpCd).DefaultIfEmpty()?.Max() ?? 0;
         }
 
         private int GetMaxKbnCd(int hpId, int grpId)

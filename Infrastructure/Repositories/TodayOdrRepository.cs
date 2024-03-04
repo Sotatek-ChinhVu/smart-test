@@ -3521,7 +3521,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         if (OdrDateInfList.Count != 0)
         {
-            grpIdMax = (NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).DefaultIfEmpty()?.Max(x => x.GrpId) ?? 0) + 1;
+            grpIdMax = (NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).Select(x => x.GrpId).DefaultIfEmpty()?.Max() ?? 0) + 1;
         }
         else
         {
@@ -3530,7 +3530,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         if (OdrDateDetailList.Count != 0)
         {
-            seqNoMax = (NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).DefaultIfEmpty()?.Max(x => x.SeqNo) ?? 0) + 1;
+            seqNoMax = (NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0) + 1;
         }
         else
         {
