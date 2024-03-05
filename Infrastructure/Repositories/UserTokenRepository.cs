@@ -23,7 +23,8 @@ namespace Infrastructure.Repositories
                 return info;
             else
             {
-                ///instance.RefreshTokenIsUsed = true;
+                // RefreshToken can only be used once at a time
+                instance.RefreshTokenIsUsed = true;
                 TrackingDataContext.UserTokens.Add(new UserToken()
                 {
                     RefreshToken = refreshTokenNew,
@@ -42,6 +43,19 @@ namespace Infrastructure.Repositories
                 else
                     return new UserTokenModel();
             }
+        }
+
+        /// <summary>
+        /// Check RefreshToken is valid for report
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        public bool RefreshTokenIsValid(int userId, string refreshToken)
+        {
+            var instance = TrackingDataContext.UserTokens.FirstOrDefault(x => x.UserId == userId && x.RefreshToken.Equals(refreshToken));
+            bool refreshTokenIsValid = instance != null && !string.IsNullOrEmpty(refreshToken) && DateTime.UtcNow <= instance.RefreshTokenExpiryTime;
+            return refreshTokenIsValid;
         }
 
         public bool SignInRefreshToken(int userId, string refreshToken, DateTime expirateToken)

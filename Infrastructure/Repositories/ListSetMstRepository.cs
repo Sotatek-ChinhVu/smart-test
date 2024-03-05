@@ -11,10 +11,10 @@ namespace Infrastructure.Repositories
         public ListSetMstRepository(ITenantProvider _tenantProvider) : base(_tenantProvider)
         {
         }
-        public int GetGenerationId(int sinDate)
+        public int GetGenerationId(int hpId, int sinDate)
         {
             ListSetGenerationMst? generation = NoTrackingDataContext.ListSetGenerationMsts.Where
-                            (item => item.StartDate <= sinDate)
+                            (item => item.StartDate <= sinDate && item.HpId == hpId)
                             .OrderByDescending(item => item.StartDate)
                             .FirstOrDefault();
 
@@ -54,9 +54,9 @@ namespace Infrastructure.Repositories
                 if (item.SetId == 0)
                 {
                     var listSetMst = TrackingDataContext.ListSetMsts.FirstOrDefault(x => x.HpId == item.HpId && x.GenerationId == item.GenerationId
-                    && x.SetId == item.SetId && x.SetKbn == item.SetKbn && x.Level1 == item.Level1 && x.Level2 == item.Level2 && x.Level3 == item.Level3 
+                    && x.SetId == item.SetId && x.SetKbn == item.SetKbn && x.Level1 == item.Level1 && x.Level2 == item.Level2 && x.Level3 == item.Level3
                     && x.Level4 == item.Level4 && x.Level5 == item.Level5);
-                    if(listSetMst != null)
+                    if (listSetMst != null)
                     {
                         return false;
                     }
@@ -88,10 +88,10 @@ namespace Infrastructure.Repositories
                 {
                     var listSetMst = TrackingDataContext.ListSetMsts.FirstOrDefault(x => x.HpId == item.HpId && x.GenerationId == item.GenerationId
                     && x.SetId == item.SetId && x.SetKbn == item.SetKbn);
-                    if(listSetMst == null)
+                    if (listSetMst == null)
                     {
                         return false;
-                    }    
+                    }
                     listSetMst.UpdateId = userId;
                     listSetMst.SetName = item.SetName;
                     listSetMst.ItemCd = item.ItemCd;

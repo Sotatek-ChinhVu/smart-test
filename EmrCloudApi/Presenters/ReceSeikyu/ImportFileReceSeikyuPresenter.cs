@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.ReceSeikyu
 
         public void Complete(ImportFileReceSeikyuOutputData output)
         {
-            Result.Data = new ImportFileReceSeikyuResponse(output.Status);
+            Result.Data = new ImportFileReceSeikyuResponse(output.ReceInfList.Select(item => new ReceInfoDto(item)).ToList());
             Result.Status = (int)output.Status;
             Result.Message = string.IsNullOrEmpty(output.Message) ? GetMessage(output.Status) : output.Message;
         }
@@ -19,7 +19,6 @@ namespace EmrCloudApi.Presenters.ReceSeikyu
         private string GetMessage(ImportFileReceSeikyuStatus status) => status switch
         {
             ImportFileReceSeikyuStatus.Successful => ResponseMessage.Success,
-            ImportFileReceSeikyuStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             ImportFileReceSeikyuStatus.Failed => ResponseMessage.Failed,
             ImportFileReceSeikyuStatus.InvalidContentFile => ResponseMessage.InvalidContentFile,
             _ => string.Empty

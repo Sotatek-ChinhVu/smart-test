@@ -177,21 +177,25 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         var hokenPIdList = raiinInfList.Select(item => item.HokenPid).ToList();
 
         var doctorList = NoTrackingDataContext.UserMsts.Where(item => item.IsDeleted != 1
+                                                                    && item.HpId == hpId
                                                                     && item.JobCd == JobCdConstant.Doctor
                                                                     && tantoIdList.Contains(item.UserId))
                                                       .ToList();
 
         var kaMstList = NoTrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1
-                                                                   && kaIdList.Contains(item.KaId))
+                                                                    && item.HpId == hpId
+                                                                    && kaIdList.Contains(item.KaId))
                                                     .ToList();
 
         var hokenPatternList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.IsDeleted != 1
-                                                                                   && hokenPIdList.Contains(item.HokenPid))
+                                                                                    && item.HpId == hpId
+                                                                                    && hokenPIdList.Contains(item.HokenPid))
                                                                     .ToList();
 
         var hokenIdList = hokenPatternList.Select(item => item.HokenId).Distinct().ToList();
         var hokenInfList = NoTrackingDataContext.PtHokenInfs.Where(item => item.IsDeleted != 1
-                                                                           && hokenIdList.Contains(item.HokenId))
+                                                                            && item.HpId == hpId
+                                                                            && hokenIdList.Contains(item.HokenId))
                                                             .ToList();
 
         return raiinInfList.Select(item => ConvertToRaiinInfModel(item, doctorList, kaMstList, hokenPatternList, hokenInfList))
@@ -363,9 +367,9 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
     {
         var listFamilyPtId = listFamily.Where(item => item.FamilyPtId > 0 && !item.IsDeleted).Select(item => item.FamilyPtId).ToList();
         var listFamilyId = listFamily.Select(item => item.FamilyId).ToList();
-        var listFamilyDB = TrackingDataContext.PtFamilys.Where(item => listFamilyId.Contains(item.FamilyId) && item.IsDeleted != 1);
-        var listFamilyRekiDB = TrackingDataContext.PtFamilyRekis.Where(item => listFamilyId.Contains(item.FamilyId) && item.IsDeleted != 1).ToList();
-        var listPtInf = TrackingDataContext.PtInfs.Where(item => item.IsDelete != 1 && listFamilyPtId.Contains(item.PtId)).ToList();
+        var listFamilyDB = TrackingDataContext.PtFamilys.Where(item => item.HpId == hpId && listFamilyId.Contains(item.FamilyId) && item.IsDeleted != 1);
+        var listFamilyRekiDB = TrackingDataContext.PtFamilyRekis.Where(item => item.HpId == hpId && listFamilyId.Contains(item.FamilyId) && item.IsDeleted != 1).ToList();
+        var listPtInf = TrackingDataContext.PtInfs.Where(item => item.HpId == hpId && item.IsDelete != 1 && listFamilyPtId.Contains(item.PtId)).ToList();
 
         foreach (var familyModel in listFamily)
         {
@@ -376,7 +380,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 TrackingDataContext.SaveChanges();
                 UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
                 SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis);
-                            }
+            }
             else
             {
                 var ptFamilyEntity = listFamilyDB.FirstOrDefault(item => item.FamilyId == familyModel.FamilyId);
@@ -500,7 +504,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         string fullSizeHomeAddress = string.Empty;
         string halfSizeHomeAddress = string.Empty;
 
-        var systemConfig = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 1002 && item.GrpEdaNo == 0)?.Val ?? 0;
+        var systemConfig = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 1002 && item.GrpEdaNo == 0)?.Val ?? 0;
         if (systemConfig == 0)
         {
             return new();
@@ -637,7 +641,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 
         var ptInfCollection =
             NoTrackingDataContext.PtInfs.Where(item =>
-                item.HpId == Session.HospitalID && item.PtId != ptId && item.IsDelete == 0);
+                item.HpId == hpId && item.PtId != ptId && item.IsDelete == 0);
 
         ptInfCollection = ptInfCollection.Where(ptIdExpression);
 

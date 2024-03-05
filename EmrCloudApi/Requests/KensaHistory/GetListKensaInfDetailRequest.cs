@@ -2,7 +2,7 @@
 
 public class GetListKensaInfDetailRequest
 {
-    public int PtId { get; set; }
+    public long PtId { get; set; }
 
     public int SetId { get; set; }
 

@@ -8,7 +8,10 @@ using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Entity.Tenant;
+using Helper.Common;
 using Moq;
+using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
+using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
@@ -45,7 +48,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -98,7 +101,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -148,7 +151,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -196,7 +199,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -224,13 +227,18 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_005_CheckProDrug()
         {
+            //Setup Param
+            int hpId = 1;
+            long ptId = 111;
+            int sinDay = 20230101;
+
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
             var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
-            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
-            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD();
+            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
+            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
             tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
             tenantTracking.M12FoodAlrgy.AddRange(m12);
@@ -239,12 +247,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.SaveChanges();
 
-            //Setup Param
-            int hpId = 1;
-            long ptId = 111;
-            int sinDay = 20230101;
-            int level = 4;
-            bool isDataOfDb = true;
 
             var itemCodeModelList = new List<ItemCodeModel>()
                 {
@@ -255,7 +257,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var listCompare = new List<string>() { "UT2701" };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -283,15 +285,20 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_006_CheckProDrugForDuplication_Test_Equal_YohoCd()
         {
+            //Setup Param
+            int hpId = 1;
+            long ptId = 111;
+            int sinDay = 20230101;
+            int setting = 0;
 
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
             var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
-            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
-            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD();
-            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN();
+            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
+            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD(hpId);
+            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
             tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
             tenantTracking.M12FoodAlrgy.AddRange(m12);
@@ -300,12 +307,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56ExIngrdtMain.AddRange(m56ExIngrdtMains);
             tenantTracking.SaveChanges();
-
-            //Setup Param
-            int hpId = 1;
-            long ptId = 111;
-            int sinDay = 20230101;
-            int setting = 0;
 
             var itemCodeModelList = new List<ItemCodeModel>()
                 {
@@ -317,7 +318,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -347,15 +348,20 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_007_CheckProDrugForDuplication_Test_ZensinsayoFlg_Is_1()
         {
+            //Setup Param
+            int hpId = 1;
+            long ptId = 111;
+            int sinDay = 20230101;
+            int setting = 0;
 
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
             var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
-            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
-            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD();
-            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN();
+            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
+            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD(hpId);
+            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
             tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
             tenantTracking.M12FoodAlrgy.AddRange(m12);
@@ -364,12 +370,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56ExIngrdtMain.AddRange(m56ExIngrdtMains);
             tenantTracking.SaveChanges();
-
-            //Setup Param
-            int hpId = 1;
-            long ptId = 111;
-            int sinDay = 20230101;
-            int setting = 0;
 
             var itemCodeModelList = new List<ItemCodeModel>()
                 {
@@ -381,7 +381,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -408,19 +408,18 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_008_CheckSameComponent()
         {
-
-            //Setup Data Test
-            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var ptInfs = CommonCheckerData.ReadPtInf();
-            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
-            tenantTracking.PtInfs.AddRange(ptInfs);
-            tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
-            tenantTracking.SaveChanges();
-
             //Setup Param
             int hpId = 1;
             long ptId = 1231;
             int sinDay = 20230101;
+
+            //Setup Data Test
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug(hpId);
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
+            tenantTracking.SaveChanges();
 
             var itemCodeModelList = new List<ItemCodeModel>()
                 {
@@ -429,7 +428,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var listCompare = new List<string>() { "620675301" };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -455,21 +454,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("TC009", "TC009");
-            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("TC009");
-            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("TC009");
-            var ptByomei = CommonCheckerData.ReadPtByomei();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
-            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
-            tenantTracking.PtByomeis.AddRange(ptByomei);
-            tenantTracking.SaveChanges();
-
             int hpId = 999;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 5;
             bool dataDb = true;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("TC009", "TC009");
+            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "TC009");
+            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "TC009");
+            var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
+            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
+            tenantTracking.PtByomeis.AddRange(ptByomei);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("936TC009", "id1"),
@@ -481,7 +480,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -508,21 +507,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("TC010", "TC010");
-            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("TC010");
-            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("TC010");
-            var ptByomei = CommonCheckerData.ReadPtByomei();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
-            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
-            tenantTracking.PtByomeis.AddRange(ptByomei);
-            tenantTracking.SaveChanges();
-
             int hpId = 999;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 5;
             bool dataDb = false;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("TC010", "TC010");
+            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "TC010");
+            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "TC010");
+            var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
+            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
+            tenantTracking.PtByomeis.AddRange(ptByomei);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("936TC010", "id1"),
@@ -552,7 +551,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -579,20 +578,20 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int settingLevel = 0;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN();
-            var m56YjDrugs = CommonCheckerData.READ_M56_YJ_DRUG_CLASS();
-            var m56DrugClasses = CommonCheckerData.READ_M56_DRUG_CLASS();
+            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN(hpId);
+            var m56YjDrugs = CommonCheckerData.READ_M56_YJ_DRUG_CLASS(hpId);
+            var m56DrugClasses = CommonCheckerData.READ_M56_DRUG_CLASS(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56YjDrugClass.AddRange(m56YjDrugs);
             tenantTracking.M56DrugClass.AddRange(m56DrugClasses);
             tenantTracking.M56ExIngrdtMain.AddRange(m56ExIngrdtMains);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
-            int settingLevel = 0;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2704", "id1"),
@@ -604,7 +603,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2704", "UT2705" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2704", "UT2705" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -631,20 +630,20 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int settingLevel = 0;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN();
-            var m56YjDrugs = CommonCheckerData.READ_M56_YJ_DRUG_CLASS();
-            var m56DrugClasses = CommonCheckerData.READ_M56_DRUG_CLASS();
+            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN(hpId);
+            var m56YjDrugs = CommonCheckerData.READ_M56_YJ_DRUG_CLASS(hpId);
+            var m56DrugClasses = CommonCheckerData.READ_M56_DRUG_CLASS(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56YjDrugClass.AddRange(m56YjDrugs);
             tenantTracking.M56DrugClass.AddRange(m56DrugClasses);
             tenantTracking.M56ExIngrdtMain.AddRange(m56ExIngrdtMains);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
-            int settingLevel = 0;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2704", "id1"),
@@ -656,7 +655,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2704", "UT2704" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2704", "UT2704" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -683,20 +682,20 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int settingLevel = 0;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
-            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN();
-            var m56ExAnalogues = CommonCheckerData.READ_M56_EX_ANALOGUE();
+            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
+            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN(hpId);
+            var m56ExAnalogues = CommonCheckerData.READ_M56_EX_ANALOGUE(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56ExIngrdtMain.AddRange(m56ExIngrdtMains);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.M56ExAnalogue.AddRange(m56ExAnalogues);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
-            int settingLevel = 0;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2704", "id1"),
@@ -708,7 +707,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2704", "UT2705" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2704", "UT2705" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -736,20 +735,20 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int settingLevel = 0;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
-            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN();
-            var m56ExAnalogues = CommonCheckerData.READ_M56_EX_ANALOGUE();
+            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
+            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN(hpId);
+            var m56ExAnalogues = CommonCheckerData.READ_M56_EX_ANALOGUE(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56ExIngrdtMain.AddRange(m56ExIngrdtMains);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.M56ExAnalogue.AddRange(m56ExAnalogues);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
-            int settingLevel = 0;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2706", "id1"),
@@ -761,7 +760,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2706", "UT2707" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2706", "UT2707" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -789,17 +788,17 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56AlrgyDerivatives = CommonCheckerData.READ_M56_ALRGY_DERIVATIVES();
-            var m56DrvalrgyCodes = CommonCheckerData.READ_M56_DRVALRGY_CODE();
+            var m56AlrgyDerivatives = CommonCheckerData.READ_M56_ALRGY_DERIVATIVES(hpId);
+            var m56DrvalrgyCodes = CommonCheckerData.READ_M56_DRVALRGY_CODE(hpId);
             tenantTracking.M56AlrgyDerivatives.AddRange(m56AlrgyDerivatives);
             tenantTracking.M56DrvalrgyCode.AddRange(m56DrvalrgyCodes);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2706", "id1"),
@@ -811,7 +810,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2706", "UT2707" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2706", "UT2707" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -838,16 +837,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
+            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2709", "id1"),
@@ -859,7 +858,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2709", "UT2710" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2709", "UT2710" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -885,16 +884,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
+            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2711", "id1"),
@@ -906,7 +905,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2711", "UT2712" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2711", "UT2712" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -932,16 +931,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
+            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2711", "id1"),
@@ -953,7 +952,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2711", "UT2713" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2711", "UT2713" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -979,16 +978,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
+            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230101;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1000,7 +999,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2711", "UT2714" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2711", "UT2714" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1023,36 +1022,38 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_020_CheckContraindicationForHistoryDisease_Test_DataDb_True()
         {
-            //Setup
-            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-
-            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
-            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
-            tenantTracking.PtKioRekis.AddRange(ptKioRekis);
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
-            tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230101;
             int level = 5;
             bool isDataDb = true;
-            var listItemCode = new List<ItemCodeModel>()
-        {
-            new ItemCodeModel("937", "id1"),
-        };
 
-            // Arrange
-            var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "937" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            //Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var ptKioRekis = CommonCheckerData.ReadPtKioReki(hpId);
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
 
             try
             {
+                tenantTracking.PtKioRekis.AddRange(ptKioRekis);
+                tenantTracking.TenMsts.AddRange(tenMsts);
+                tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
+                tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
+                tenantTracking.SaveChanges();
+                var listItemCode = new List<ItemCodeModel>()
+                {
+                    new ItemCodeModel("937", "id1"),
+                };
+
+                // Arrange
+                var cache = new MasterDataCacheService(TenantProvider);
+                cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
+                var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
                 //Act
                 var result = realTimeCheckerFinder.CheckContraindicationForHistoryDisease(hpId, ptId, level, sinDate, listItemCode, new(), isDataDb);
 
@@ -1076,21 +1077,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
-            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
-            tenantTracking.PtKioRekis.AddRange(ptKioRekis);
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
-            tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230101;
             int level = 5;
             bool isDataDb = false;
+
+            var ptKioRekis = CommonCheckerData.ReadPtKioReki(hpId);
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
+            tenantTracking.PtKioRekis.AddRange(ptKioRekis);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
+            tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("937", "id1"),
@@ -1103,7 +1104,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "937" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1131,12 +1132,18 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
+            int hpId = 1;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int level = 5;
+            bool isDataDb = true;
+
+            var ptKioRekis = CommonCheckerData.ReadPtKioReki(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
-            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
-            var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki();
-            var ptFamilies = CommonCheckerData.ReadPtFamily();
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
+            var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki(hpId);
+            var ptFamilies = CommonCheckerData.ReadPtFamily(hpId);
             tenantTracking.PtKioRekis.AddRange(ptKioRekis);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
@@ -1144,12 +1151,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.PtFamilys.AddRange(ptFamilies);
             tenantTracking.PtFamilyRekis.AddRange(ptFamilyRekis);
             tenantTracking.SaveChanges();
-
-            int hpId = 1;
-            long ptId = 1231;
-            int sinDate = 20230101;
-            int level = 5;
-            bool isDataDb = true;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("937", "id1"),
@@ -1158,7 +1159,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "937" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1188,12 +1189,18 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
-            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
-            var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki();
-            var ptFamilies = CommonCheckerData.ReadPtFamily();
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int level = 5;
+            bool isDataDb = false;
+            var ptKioRekis = CommonCheckerData.ReadPtKioReki(hpId);
+            var tenMsts = CommonCheckerData.ReadTenMst("", "", hpId);
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
+            var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki(hpId);
+            var ptFamilies = CommonCheckerData.ReadPtFamily(hpId);
+      
             tenantTracking.PtKioRekis.AddRange(ptKioRekis);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
@@ -1201,12 +1208,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.PtFamilys.AddRange(ptFamilies);
             tenantTracking.PtFamilyRekis.AddRange(ptFamilyRekis);
             tenantTracking.SaveChanges();
-
-            int hpId = 1;
-            long ptId = 1231;
-            int sinDate = 20230101;
-            int level = 5;
-            bool isDataDb = false;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("937", "id1"),
@@ -1225,7 +1226,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "937" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1255,16 +1256,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 2;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1278,7 +1279,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             ///Act
@@ -1304,16 +1305,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 3;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1327,7 +1328,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             ///Act
@@ -1353,16 +1354,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1376,7 +1377,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             ///Act
@@ -1402,16 +1403,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT777777", "id1"),
@@ -1424,7 +1425,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             ///Act
@@ -1450,16 +1451,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1472,7 +1473,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             ///Act
@@ -1495,15 +1496,16 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_029_CheckKinkiUser_Test_KINKI_MST()
         {
+            var hpId = 999;
+
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("029", "029");
-            var kinkiMsts = CommonCheckerData.ReadKinkiMst("029");
+            var tenMsts = CommonCheckerData.ReadTenMst("029", "029", hpId);
+            var kinkiMsts = CommonCheckerData.ReadKinkiMst("029", hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.KinkiMsts.AddRange(kinkiMsts);
             tenantTracking.SaveChanges();
 
-            var hpId = 999;
             var ptId = 1231;
             var settingLevel = 4;
             var sinDay = 20230101;
@@ -1518,7 +1520,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "6111029", "6404029" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "6111029", "6404029" }, sinDay, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
             try
             {
@@ -1562,7 +1564,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "6111029", "6404029" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "6111029", "6404029" }, sinDay, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
             try
             {
@@ -1585,25 +1587,26 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var ptId = 1231;
-            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
 
             var hpId = 1;
             var settingLevel = 4;
             var sinDay = 20230101;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var ptId = 1231;
+            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var addedItemCodes = new List<ItemCodeModel>()
         {
             new("UT2714", "id1")
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2714" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2714" }, sinDay, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1628,25 +1631,26 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var ptId = 1231;
-            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
 
             var hpId = 1;
             var settingLevel = 0;
             var sinDay = 20230101;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var ptId = 1231;
+            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var addedItemCodes = new List<ItemCodeModel>()
         {
             new("UT2714", "id1")
         };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2714" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2714" }, sinDay, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1671,19 +1675,20 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var ptId = 1231;
-            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
 
             var hpId = 1;
             var settingLevel = 4;
             var sinDay = 20230101;
             var isDataDb = false;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var ptId = 1231;
+            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var addedItemCodes = new List<ItemCodeModel>()
             {
             new("UT2714", "id1")
@@ -1694,7 +1699,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new PtOtherDrugModelStandard(hpId, ptId, 0 , 0, "UT2714", "DRUG NAME UT", 0, 99999999, "COMMENT UT", 0),
             };
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2714" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2714" }, sinDay, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1719,19 +1724,20 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var ptId = 1231;
-            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
 
             var hpId = 1;
             var settingLevel = 4;
             var sinDay = 20230101;
             var isDataDb = false;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var ptId = 1231;
+            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var addedItemCodes = new List<ItemCodeModel>()
             {
             new("UT777777", "id1")
@@ -1742,7 +1748,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new PtOtherDrugModelStandard(hpId, ptId, 0 , 0, "UT777777", "DRUG NAME UT", 0, 99999999, "COMMENT UT", 0),
             };
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT777777" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT777777" }, sinDay, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1791,7 +1797,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = false;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             // Act
@@ -1830,7 +1836,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = false;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             // Act
@@ -1861,11 +1867,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2713", "Id2"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -1878,7 +1884,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = true;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1887,7 +1893,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
 
                 // Assert
-                Assert.True(result.Count == 2 && result.First().ItemCd == "UT2714" && result.Last().ItemCd == "UT2713");
+                Assert.True(result.Count == 4);
             }
             finally
             {
@@ -1920,11 +1926,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2713", "Id2"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -1937,7 +1943,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = true;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -1979,11 +1985,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2713", "Id2"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -1996,7 +2002,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = true;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2005,7 +2011,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
 
                 // Assert
-                Assert.True(result.Count == 2 && result.First().ItemCd == "UT2714" && result.Last().ItemCd == "UT2713");
+                Assert.True(result.Count == 4);
             }
             finally
             {
@@ -2039,11 +2045,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT777777", "id1"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -2056,7 +2062,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = true;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2096,11 +2102,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2714", "Id1"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -2116,7 +2122,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = false;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2156,11 +2162,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -2176,7 +2182,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = false;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2218,11 +2224,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2235,7 +2241,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = true;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2277,11 +2283,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2294,7 +2300,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = true;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2337,11 +2343,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2354,7 +2360,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = true;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2398,11 +2404,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT777777", "id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2415,7 +2421,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = true;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2458,11 +2464,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2478,7 +2484,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = false;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2521,11 +2527,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2541,7 +2547,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             bool isDataOfDb = false;
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2570,7 +2576,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var mockTenMstCacheService = new Mock<IMasterDataCacheService>();
             var cache = new MasterDataCacheService(TenantProvider);
-            // cache.InitCache(new List<string>() { }, sinDay, ptId);
+            // cache.InitCache(hpId,new List<string>() { }, sinDay, ptId);
             var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             mockTenMstCacheService.Setup(x => x.GetPtInf()).Returns((PtInf?)null);
@@ -2591,7 +2597,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.SaveChanges();
 
-            var hpId = 999;
+            var hpId = 1;
             long ptId = 1231;
             var sinday = 20230101;
             var minCheck = false;
@@ -2613,7 +2619,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 }
             };
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2640,17 +2646,6 @@ namespace CloudUnitTest.CommonChecker.Finder
         public void TC_049_CheckDosage_TEST_UnitName_Equal_YAKKAUNIT()
         {
             //setup
-            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var ptInfs = CommonCheckerData.ReadPtInf();
-            var dosageMsts = CommonCheckerData.READ_DOSAGE_MST();
-            var dosageDrugs = CommonCheckerData.READ_M46_DOSAGE_DRUG();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            tenantTracking.PtInfs.AddRange(ptInfs);
-            tenantTracking.DosageMsts.AddRange(dosageMsts);
-            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.SaveChanges();
-
             var hpId = 999;
             long ptId = 1231;
             var sinday = 20230101;
@@ -2658,6 +2653,17 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ratioSetting = 9.9;
             var currentHeight = 0;
             var currenWeight = -1;
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var dosageMsts = CommonCheckerData.READ_DOSAGE_MST(hpId);
+            var dosageDrugs = CommonCheckerData.READ_M46_DOSAGE_DRUG(hpId);
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
             var listItem = new List<DrugInfo>()
             {
                 new DrugInfo()
@@ -2673,7 +2679,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 }
             };
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2707,11 +2713,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 1,
@@ -2733,6 +2747,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -2764,16 +2779,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = false;
-            var ratioSetting = 9.9;
-            var currentHeight = 0;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2807,11 +2814,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 1,
@@ -2833,6 +2848,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -2864,16 +2880,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = false;
-            var ratioSetting = 9.9;
-            var currentHeight = 0;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -2908,11 +2916,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 1,
@@ -2934,6 +2950,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -2965,16 +2982,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = false;
-            var ratioSetting = 9.9;
-            var currentHeight = 0;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3012,11 +3021,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 1,
@@ -3038,6 +3055,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3069,16 +3087,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = false;
-            var ratioSetting = 9.9;
-            var currentHeight = 0;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3125,11 +3135,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = 2;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 1,
@@ -3151,6 +3169,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3182,16 +3201,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 0;
-            var currenWeight = 2;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3238,11 +3249,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = 2;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 1,
@@ -3264,6 +3283,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3295,16 +3315,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = false;
-            var ratioSetting = 9.9;
-            var currentHeight = 0;
-            var currenWeight = 2;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3351,11 +3363,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = 2;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 1,
@@ -3377,6 +3397,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3408,16 +3429,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 0;
-            var currenWeight = 2;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3466,11 +3479,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 2;
+            var currenWeight = 2;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 10000,
@@ -3492,6 +3513,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3523,16 +3545,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 2;
-            var currenWeight = 2;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3583,11 +3597,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 2;
+            var currenWeight = 2;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 2,
@@ -3609,6 +3631,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3640,16 +3663,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 2;
-            var currenWeight = 2;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3700,11 +3715,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 0;
+            var currentHeight = 0;
+            var currenWeight = 2;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -3726,6 +3749,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3757,16 +3781,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = false;
-            var ratioSetting = 0;
-            var currentHeight = 0;
-            var currenWeight = 2;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3816,11 +3832,18 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -3842,6 +3865,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3873,16 +3897,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 180;
-            var currenWeight = 80;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -3932,11 +3948,18 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -3958,6 +3981,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -3989,16 +4013,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 180;
-            var currenWeight = 80;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4048,11 +4064,18 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4074,6 +4097,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -4105,16 +4129,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 180;
-            var currenWeight = 80;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4165,11 +4181,18 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 80;
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4191,6 +4214,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -4222,16 +4246,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 80;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4282,11 +4298,18 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4308,6 +4331,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -4339,16 +4363,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 180;
-            var currenWeight = 80;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4399,11 +4415,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4425,6 +4449,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -4456,16 +4481,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 180;
-            var currenWeight = 80;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4513,11 +4530,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 80;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4539,6 +4564,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -4570,16 +4596,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 80;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4630,11 +4648,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4656,6 +4682,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -4687,16 +4714,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = 180;
-            var currenWeight = 80;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4744,11 +4763,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4770,6 +4797,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -4801,16 +4829,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4857,11 +4877,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4883,6 +4911,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -4914,16 +4943,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -4970,11 +4991,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -4996,6 +5025,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5027,16 +5057,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5083,11 +5105,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -5109,6 +5139,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5140,16 +5171,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5196,11 +5219,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -5222,6 +5253,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5253,16 +5285,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5309,11 +5333,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -5335,6 +5367,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5366,16 +5399,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5423,11 +5448,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -5449,6 +5482,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5480,16 +5514,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5537,11 +5563,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -5563,6 +5597,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5594,16 +5629,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5651,11 +5678,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -5677,6 +5712,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5708,16 +5744,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5765,11 +5793,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -5791,6 +5827,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5822,16 +5859,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5880,11 +5909,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -5906,6 +5943,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -5937,16 +5975,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -5995,11 +6025,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -6021,6 +6059,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -6052,16 +6091,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6110,11 +6141,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 3,
@@ -6136,6 +6175,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -6167,16 +6207,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6225,11 +6257,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -6251,6 +6291,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -6282,16 +6323,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = false;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6340,11 +6373,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 3,
@@ -6366,6 +6407,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -6397,16 +6439,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6455,11 +6489,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -6481,6 +6523,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -6512,16 +6555,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = false;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6570,11 +6605,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -6596,6 +6639,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -6627,16 +6671,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6685,11 +6721,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+
             var dosageMsts = new List<DosageMst>()
             {
                 new DosageMst()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     SeqNo = 999999,
                     OnceMin = 0,
@@ -6711,6 +6755,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "",
                     DgurKbn = "",
@@ -6742,16 +6787,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = -1;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6798,10 +6835,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -6826,6 +6872,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -6857,16 +6904,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6896,11 +6935,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 1.0;
+
             var drugDayLimit = new List<DrugDayLimit>()
             {
                 new DrugDayLimit()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     StartDate = 20230101,
                     EndDate = 20231212,
@@ -6921,13 +6965,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new ItemCodeModel("UT2719" , "id1"),
                 new ItemCodeModel("UT2720" , "id2"),
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var usingDay = 1.0;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -6956,11 +6995,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 9.0;
+
             var drugDayLimit = new List<DrugDayLimit>()
             {
                 new DrugDayLimit()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     StartDate = 20230101,
                     EndDate = 20231212,
@@ -6981,13 +7025,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new ItemCodeModel("UT2719" , "id1"),
                 new ItemCodeModel("UT2720" , "id2"),
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7016,11 +7055,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 10.0;
+
             var drugDayLimit = new List<DrugDayLimit>()
             {
                 new DrugDayLimit()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     ItemCd = "UT2720",
                     StartDate = 20230101,
                     EndDate = 20231212,
@@ -7041,13 +7085,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new ItemCodeModel("UT2719" , "id1"),
                 new ItemCodeModel("UT2720" , "id2"),
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var usingDay = 10.0;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7077,10 +7116,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 1.0;
+
             var m10DayLimits = new List<M10DayLimit>()
             {
                 new M10DayLimit()
                 {
+                    HpId = 1,
                     YjCd = "UT271026",
                     SeqNo = 1,
                     LimitDay = 2,
@@ -7098,13 +7143,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new ItemCodeModel("UT2719" , "id1"),
                 new ItemCodeModel("UT2720" , "id2"),
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var usingDay = 1.0;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7137,6 +7177,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M10DayLimit()
                 {
+                    HpId = 1,
                     YjCd = "UT271026",
                     SeqNo = 1,
                     LimitDay = 2,
@@ -7160,7 +7201,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var sinday = 20231231;
             var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7193,6 +7234,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M10DayLimit()
                 {
+                    HpId = 1,
                     YjCd = "UT271026",
                     SeqNo = 1,
                     LimitDay = 2,
@@ -7216,7 +7258,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var sinday = 20260101;
             var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7245,10 +7287,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20260101;
+            var usingDay = 9.0;
+
             var m10DayLimits = new List<M10DayLimit>()
             {
                 new M10DayLimit()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     SeqNo = 1,
                     LimitDay = 2,
@@ -7266,13 +7314,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new ItemCodeModel("UT2719" , "id1"),
                 new ItemCodeModel("UT2720" , "id2"),
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20260101;
-            var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7307,10 +7350,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230102;
+            var usingDay = 9.0;
+
             var m10DayLimits = new List<M10DayLimit>()
             {
                 new M10DayLimit()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     SeqNo = 1,
                     LimitDay = 2,
@@ -7328,13 +7377,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new ItemCodeModel("UT2719" , "id1"),
                 new ItemCodeModel("UT2720" , "id2"),
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230102;
-            var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7355,6 +7399,1414 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.TenMsts.RemoveRange(tenMsts);
                 tenantTracking.SaveChanges();
             }
+        }
+
+        [Test]
+        public void TC_096_TEST_GetYjCdListByItemCdList()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var hpId = 1;
+            var sinday = 20231212;
+            var ptId = 1231;
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2720", "id1"),
+                new ItemCodeModel("UT2719", "id2"),
+                new ItemCodeModel("UT2718", "id3"),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetYjCdListByItemCdList(hpId, listItem, sinday);
+
+                // Assert
+                Assert.AreEqual(3, result.Count);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_097_TEST_GetFoodAllergyByPtId_Test_IsDataOfDb_True()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230101;
+            var ptId = 1231;
+            var isDataOfDb = true;
+
+            var ptAlrgyFoods = new List<PtAlrgyFood>()
+            {
+                new PtAlrgyFood()
+                {
+                    HpId = 99999,
+                    PtId = 1231,
+                    SortNo = 1,
+                    IsDeleted = 0,
+                    StartDate = 20230101,
+                    EndDate = 20230101
+                },
+                new PtAlrgyFood()
+                {
+                    HpId = 99999,
+                    PtId = 1231,
+                    SortNo = 2,
+                    IsDeleted = 0,
+                    AlrgyKbn = "1",
+                    Cmt = "CMT TEST",
+                    StartDate = 20221231,
+                    EndDate = 20230102
+                }
+            };
+
+            tenantTracking.PtAlrgyFoods.AddRange(ptAlrgyFoods);
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetFoodAllergyByPtId(hpId, ptId, sinday, new(), isDataOfDb);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.PtAlrgyFoods.RemoveRange(ptAlrgyFoods);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_098_TEST_GetFoodAllergyByPtId_Test_IsDataOfDb_False()
+        {
+            //setup
+            var hpId = 99999;
+            var sinday = 20230101;
+            var ptId = 1231;
+            var isDataOfDb = false;
+
+            var ptAlrgyFoodModels = new List<PtAlrgyFoodModelStandard>()
+            {
+              new PtAlrgyFoodModelStandard(hpId, ptId, 111 , 0, "", 20230101, 20230101, "", 0, string.Empty),
+              new PtAlrgyFoodModelStandard(hpId, ptId, 111 , 0, "", 20221231, 20230102, "", 0, string.Empty),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            var result = realtimeCheckerFinder.GetFoodAllergyByPtId(hpId, ptId, sinday, ptAlrgyFoodModels, isDataOfDb);
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+
+        }
+
+        [Test]
+        public void TC_099_TEST_GetDrugAllergyByPtId_Test_IsDataOfDb_True()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230102;
+            var ptId = 1231;
+            var isDataOfDb = true;
+
+            var ptAlgryDrugs = new List<PtAlrgyDrug>()
+            {
+                new PtAlrgyDrug()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    SortNo = 1,
+                    ItemCd = "UNIT-TEST",
+                    DrugName = "DrugName Test",
+                    StartDate = 20230101,
+                    EndDate = 20230103,
+                    Cmt = "",
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow ,
+                    CreateId = 2,
+                    UpdateId = 2
+                },
+
+                new PtAlrgyDrug()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    SortNo = 2,
+                    ItemCd = "UNIT-TEST2",
+                    DrugName = "DrugName Test",
+                    StartDate = 20230102,
+                    EndDate = 20230102,
+                    Cmt = "",
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow ,
+                    CreateId = 2,
+                    UpdateId = 2
+                },
+            };
+
+            tenantTracking.PtAlrgyDrugs.AddRange(ptAlgryDrugs);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, new(), isDataOfDb);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlgryDrugs);
+                tenantTracking.SaveChanges();
+            }
+
+        }
+
+        [Test]
+        public void TC_100_TEST_GetDrugAllergyByPtId_Test_IsDataOfDb_False()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230102;
+            var ptId = 1231;
+            var isDataOfDb = false;
+
+            var ptAlrgyDrugModels = new List<PtAlrgyDrugModelStandard>()
+            {
+                new PtAlrgyDrugModelStandard (hpId, ptId, 111, 1, "11001100", "drug name", 20230101, 20230103, "", 0),
+                new PtAlrgyDrugModelStandard (hpId, ptId, 112, 2, "11001101", "drug name", 20230102, 20230102, "", 0),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, ptAlrgyDrugModels, isDataOfDb);
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+        }
+
+        [Test]
+        public void TC_101_TEST_GetBodyInfo()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230105;
+            var ptId = 1231;
+            var kensaItemCd = "ItemCd9999";
+
+            var kensaInfs = new List<KensaInfDetail>()
+            {
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230101,
+                    RaiinNo = 99999999,
+                    IraiCd = 01234,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2,
+                    ResultVal = "9"
+                },
+
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230202,
+                    RaiinNo = 99999998,
+                    IraiCd = 01233,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2,
+                    ResultVal = "9"
+                },
+            };
+
+            tenantTracking.KensaInfDetails.AddRange(kensaInfs);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetBodyInfo(hpId, ptId, sinday, kensaItemCd);
+
+                // Assert
+                Assert.True(result.IraiCd == 01234);
+            }
+            finally
+            {
+                tenantTracking.KensaInfDetails.RemoveRange(kensaInfs);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_102_TEST_GetCommonBodyInfo()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 60,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 60,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetCommonBodyInfo(1, birthDay, sinday);
+
+                // Assert
+                Assert.True(result.JissiYear == 2199 && result.AgeYear == 200);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+                tenantTracking.SaveChanges(true);
+            }
+        }
+
+        [Test]
+        public void TC_103_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_0()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271023",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271024",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271025",
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 0;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(3, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_104_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_1_And_HaigouFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271023",
+                     HaigouFlg = "",
+                     YuekiFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271024",
+                     HaigouFlg = "1",
+                     YuekiFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271025",
+                     YuekiFlg = "1"
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 1;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_105_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_1_And_YuekiFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271023",
+                     YuekiFlg = "1",
+                     HaigouFlg = "1",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271024",
+                     YuekiFlg = "",
+                     HaigouFlg = "1",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271025",
+                     HaigouFlg = "1",
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 1;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_106_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_2_And_HaigouFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271023",
+                     HaigouFlg = "1",
+                     KanpoFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271024",
+                     HaigouFlg = "",
+                     KanpoFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271025",
+                     HaigouFlg = "2",
+                     KanpoFlg = "1"
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 2;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_107_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_2_And_KanpoFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271023",
+                     KanpoFlg = "1",
+                     HaigouFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271024",
+                     KanpoFlg = "",
+                     HaigouFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     KanpoFlg = "3",
+                     YjCd = "UT271025",
+                     HaigouFlg = "1"
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 2;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_108_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_3_And_HaigouFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271023",
+                     HaigouFlg = "1",
+                     YuekiFlg = "1",
+                     KanpoFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271024",
+                     HaigouFlg = "",
+                     YuekiFlg = "1",
+                     KanpoFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     HaigouFlg = "3",
+                     YjCd = "UT271025",
+                     YuekiFlg = "1",
+                     KanpoFlg = "1"
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 3;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_109_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_3_And_YuekiFlg_And_KanpoFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271023",
+                     KanpoFlg = "1",
+                     YuekiFlg = "2",
+                     HaigouFlg = "1",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271024",
+                     HaigouFlg = "1",
+                     YuekiFlg = "2",
+                     KanpoFlg = "3"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HpId = hpId,
+                     YjCd = "UT271025",
+                     KanpoFlg = "2",
+                     YuekiFlg = "1",
+                     HaigouFlg = "1",
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 3;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_110_TEST_GetRatio_Test_YYYY_Is_0_MM_Is_0()
+        {
+            int hpId = 1;
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
+            var today = CIUtil.DateTimeToInt(DateTime.Now);
+            // YYYY = 0 , MM = 0
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1.0 / 8, result);
+        }
+
+        [Test]
+        public void TC_111_TEST_GetRatio_Test_YYYY_Is_0_MM_LessThan_4()
+        {
+            int hpId = 1;
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(3));
+            // YYYY = 0 , MM = 3
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1.0 / 6, result);
+        }
+
+        [Test]
+        public void TC_112_TEST_GetRatio_Test_YYYY_Is_0_MM_LessThan_4()
+        {
+            int hpId = 1;
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(3));
+            // YYYY = 0 , MM = 3
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1.0 / 6, result);
+        }
+
+        [Test]
+        public void TC_113_TEST_GetRatio_Test_YYYY_Is_0_MM_Is_4()
+        {
+            int hpId = 1;
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
+            // YYYY = 0 , MM = 4
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1.0 / 5, result);
+        }
+
+        [Test]
+        public void TC_114_TEST_GetRatio_Test_YYYY_GreaterThan0_And_LessThan_15_MM_Is_4()
+        {
+            int hpId = 1;
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now.AddYears(-14));
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
+            // YYYY = 14 , MM = 4
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(((double)(14 * 4 + 20)) / 100, result);
+        }
+
+        [Test]
+        public void TC_115_TEST_GetRatio_Test_YYYY_Is_15_MM_Is_4()
+        {
+            int hpId = 1;
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now.AddYears(-15));
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
+            // YYYY = 14 , MM = 4
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1, result);
+        }
+
+        [Test]
+        public void TC_116_TEST_GetCommonWeight_Test_Sex_Is_Male()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+            var sex = 1;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 60,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetCommonWeight(1, birthDay, sinday, sex);
+
+                // Assert
+                Assert.AreEqual(60, result);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_117_TEST_GetCommonWeight_Test_Sex_Is_Female()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var sex = 2;
+                var result1 = realtimeCheckerFinder.GetCommonWeight(1, birthDay, sinday, sex);
+                sex = 0;
+                var result2 = realtimeCheckerFinder.GetCommonWeight(1, birthDay, sinday, sex);
+
+                // Assert
+                Assert.AreEqual(99, result1);
+                Assert.AreEqual(99, result2);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_118_TEST_GetCommonHeight_Test_Sex_Is_Female()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 140,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 140,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var sex = 2;
+                var result1 = realtimeCheckerFinder.GetCommonHeight(1, birthDay, sinday, sex);
+                sex = 0;
+                var result2 = realtimeCheckerFinder.GetCommonHeight(1, birthDay, sinday, sex);
+
+                // Assert
+                Assert.AreEqual(140, result1);
+                Assert.AreEqual(140, result2);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_119_TEST_GetCommonHeight_Test_Sex_Is_Male()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 140,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    HpId = 1,
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 140,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            try
+            {
+
+                var cache = new MasterDataCacheService(TenantProvider);
+                var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+                // Act
+                var sex = 1;
+                var result = realtimeCheckerFinder.GetCommonHeight(1, birthDay, sinday, sex);
+
+                // Assert
+                Assert.AreEqual(180, result);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+
+                tenantTracking.SaveChanges();
+            }
+
+        }
+
+        [Test]
+        public void TC_120_TEST_GetPatientWeight_IsDataDb_True()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230105;
+            long ptId = 1231;
+            var kensaItemCd = "V0002";
+
+            var kensaInfs = new List<KensaInfDetail>()
+            {
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230101,
+                    RaiinNo = 99999999,
+                    IraiCd = 01234,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2,
+                    ResultVal = "9"
+                },
+
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230202,
+                    RaiinNo = 99999998,
+                    IraiCd = 01233,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2,
+                    ResultVal = "9"
+                },
+            };
+
+            tenantTracking.KensaInfDetails.AddRange(kensaInfs);
+
+            tenantTracking.SaveChanges();
+
+            var isDataDb = true;
+            var sex = 1;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetPatientWeight(hpId, ptId, 20000101, sinday, sex, new(), isDataDb);
+
+                // Assert
+                Assert.AreEqual(9, result);
+            }
+            finally
+            {
+                tenantTracking.KensaInfDetails.RemoveRange(kensaInfs);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_121_TEST_GetPatientWeight_IsDataDb_False()
+        {
+            //setup
+            var hpId = 99999;
+            var sinday = 20230105;
+            long ptId = 1231;
+            var kensaItemCd = "V0002";
+
+            var kensaInfDetailModels = new List<KensaInfDetailModel>()
+            {
+                new KensaInfDetailModel(hpId, ptId, 1234, 0, 20230101, 99999, kensaItemCd, "4", "","", 0 , "","", DateTime.UtcNow, "","",1),
+            };
+
+            var isDataDb = false;
+            var sex = 1;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetPatientWeight(hpId, ptId, 20000101, sinday, sex, kensaInfDetailModels, isDataDb);
+
+                // Assert
+                Assert.AreEqual(4, result);
+            }
+            finally
+            {
+            }
+        }
+
+        [Test]
+        public void TC_122_TEST_GetBodySize_Test_Age_GreaterThan_5()
+        {
+            //setup
+
+            double weight = 69.7; double height = 176.5;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            double age = 6;
+            // Act
+            var result1 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+            age = 7;
+            var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+
+            // Assert
+            Assert.AreEqual(Math.Pow(weight, 0.444) * Math.Pow(height, 0.663) * 0.008883, result1);
+            Assert.AreEqual(Math.Pow(weight, 0.444) * Math.Pow(height, 0.663) * 0.008883, result2);
+
+        }
+
+        [Test]
+        public void TC_122_TEST_GetBodySize_Test_Age_GreaterThan_0_And_LessThan_6()
+        {
+            //setup
+
+            double weight = 69.7; double height = 176.5;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            double age = 5;
+            var result1 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+            age = 1;
+            var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+
+            // Assert
+            Assert.AreEqual(Math.Pow(weight, 0.423) * Math.Pow(height, 0.362) * 0.038189, result1);
+            Assert.AreEqual(Math.Pow(weight, 0.423) * Math.Pow(height, 0.362) * 0.038189, result2);
+
+        }
+
+        [Test]
+        public void TC_123_TEST_GetBodySize_Test_Age_LessThan_1()
+        {
+            //setup
+
+            double weight = 69.7; double height = 176.5;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            double age = 0;
+            var result1 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+            age = -1;
+            var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+
+            // Assert
+            Assert.AreEqual(Math.Pow(weight, 0.473) * Math.Pow(height, 0.655) * 0.009568, result1);
+            Assert.AreEqual(Math.Pow(weight, 0.473) * Math.Pow(height, 0.655) * 0.009568, result2);
+
+        }
+
+        [Test]
+        public void TC_124_TEST_GetPatientHeight()
+        {
+            //setup
+
+            var hpId = 9999;
+            var ptId = 19999;
+            var birthDay = 19981212;
+            var sinDay = CIUtil.DateTimeToInt(DateTime.Now);
+
+            var kensaInfDetailModels = new List<KensaInfDetailModel>
+            {
+                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230101, 0, "V0001", "50", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0),
+                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230103, 0, "V0002", "60", "","",0,"cmtCd2","cmtCd3", DateTime.UtcNow, "", "UT KensaName2", 1),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            var sex = 1;
+            var result = realtimeCheckerFinder.GetPatientHeight(hpId, ptId, birthDay, sinDay, sex, kensaInfDetailModels);
+
+            // Assert
+            Assert.AreEqual(50, result);
+
         }
         [Test]
         public void TC_095_CheckDosage_TEST_MasterData_No_Fake_Data()
@@ -7383,7 +8835,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var currentHeight = -1;
             var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT27201" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT27201" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             // Act
@@ -7397,6 +8849,15 @@ namespace CloudUnitTest.CommonChecker.Finder
         public void TC_096_CheckDosage_TEST_MasterData_UnitName_Equal_YakkaUnit()
         {
             //setup
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
@@ -7405,6 +8866,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -7429,6 +8891,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -7460,16 +8923,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7498,10 +8953,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -7526,6 +8990,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -7557,16 +9022,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7595,10 +9052,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -7623,6 +9089,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -7654,16 +9121,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7692,10 +9151,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -7721,6 +9189,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -7752,16 +9221,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7790,10 +9251,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -7819,6 +9289,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -7850,16 +9321,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7889,10 +9352,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -7918,6 +9390,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -7949,16 +9422,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -7988,10 +9453,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8018,6 +9492,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8049,16 +9524,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8087,10 +9554,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8117,6 +9593,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8148,16 +9625,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8186,10 +9655,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8216,6 +9694,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8247,16 +9726,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8286,10 +9757,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8316,6 +9796,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8347,16 +9828,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8385,10 +9858,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8415,6 +9897,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8446,16 +9929,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8484,10 +9959,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8514,6 +9998,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8545,16 +10030,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8583,10 +10060,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8614,6 +10100,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8645,16 +10132,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8683,10 +10162,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8714,6 +10202,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8745,16 +10234,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8783,10 +10264,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8814,6 +10304,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8845,16 +10336,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8883,10 +10366,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -8917,6 +10409,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -8948,16 +10441,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -8986,10 +10471,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9020,6 +10514,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9051,16 +10546,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9089,10 +10576,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9123,6 +10619,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9154,16 +10651,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9192,10 +10681,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9226,6 +10724,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9257,16 +10756,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9295,10 +10786,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9330,6 +10830,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9361,16 +10862,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9399,10 +10892,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9434,6 +10936,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9465,16 +10968,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9503,10 +10998,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9538,6 +11042,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9569,16 +11074,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9597,7 +11094,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.TenMsts.RemoveRange(tenMsts);
                 tenantTracking.SaveChanges();
             }
-        }   
+        }
 
         [Test]
         public void TC_118_CheckDosage_TEST_MasterData_TermCheck_IsNotDayLimitFoundIntoAnyRecord()
@@ -9607,10 +11104,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9642,6 +11148,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9673,16 +11180,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9711,10 +11210,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9747,6 +11255,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9778,16 +11287,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9816,10 +11317,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9853,6 +11363,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9884,16 +11395,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -9923,10 +11426,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9961,6 +11473,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9992,16 +11505,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10030,10 +11535,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10069,6 +11583,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10100,16 +11615,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10138,10 +11645,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10177,6 +11693,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10208,16 +11725,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10247,10 +11756,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10286,6 +11804,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10317,16 +11836,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10355,10 +11866,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10395,6 +11915,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10426,16 +11947,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10465,10 +11978,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10505,6 +12027,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10536,16 +12059,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10574,10 +12089,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10614,6 +12138,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10645,16 +12170,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10683,10 +12200,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10723,6 +12249,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10754,16 +12281,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10792,10 +12311,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10832,6 +12360,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10863,16 +12392,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -10891,8 +12412,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.TenMsts.RemoveRange(tenMsts);
                 tenantTracking.SaveChanges();
             }
-        } 
-        
+        }
+
         [Test]
         public void TC_130_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other_Other()
         {
@@ -10901,10 +12422,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10941,6 +12471,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -10972,16 +12503,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1000,
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try

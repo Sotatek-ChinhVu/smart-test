@@ -70,7 +70,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.Get + "Setting")]
         public ActionResult<Response<GetSettingStickyNoteResponse>> GetSetting([FromQuery] GetSettingStickyNoteRequest request)
         {
-            var input = new GetSettingStickyNoteInputData(UserId);
+            var input = new GetSettingStickyNoteInputData(HpId, UserId);
             var output = _bus.Handle(input);
 
             var presenter = new GetSettingStickyNotePresenter();

@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M56_ALRGY_DERIVATIVES")]
+    [Table(name: "m56_alrgy_derivatives")]
     public class M56AlrgyDerivatives : EmrCloneable<M56AlrgyDerivatives>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 医薬品コード
         /// 
         /// </summary>
-        
-        [Column("YJ_CD", Order = 1)]
+
+        [Column("yj_cd", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
 
@@ -21,7 +24,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("DRVALRGY_CD", Order = 2)]
+        [Column("drvalrgy_cd", Order = 2)]
         [MaxLength(8)]
         public string DrvalrgyCd { get; set; } = string.Empty;
 
@@ -30,7 +33,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEIBUN_CD", Order = 3)]
+        [Column("seibun_cd", Order = 3)]
         [MaxLength(9)]
         public string SeibunCd { get; set; } = string.Empty;
     }

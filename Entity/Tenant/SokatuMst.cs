@@ -1,41 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SOKATU_MST")]
+    [Table(name: "sokatu_mst")]
     public class SokatuMst : EmrCloneable<SokatuMst>
     {
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        public int HpId { get; set; }
-
         /// <summary>
         /// 都道府県番号
         /// 
         /// </summary>
-        
-        [Column("PREF_NO", Order = 2)]
+
+        [Column("pref_no")]
         public int PrefNo { get; set; }
 
         /// <summary>
         /// 開始年月
         /// 
         /// </summary>
-        
-        [Column("START_YM", Order = 3)]
+
+        [Column("start_ym")]
         public int StartYm { get; set; }
 
         /// <summary>
         /// 終了年月
         /// 
         /// </summary>
-        [Column("END_YM")]
+        [Column("end_ym")]
         [CustomAttribute.DefaultValue(999999)]
         public int EndYm { get; set; }
 
@@ -55,23 +46,23 @@ namespace Entity.Tenant
         ///                     105:福祉請求書          
         ///                     106:福祉電子媒体請求          
         /// </summary>
-        
-        [Column("REPORT_ID", Order = 4)]
+
+        [Column("report_id")]
         public int ReportId { get; set; }
 
         /// <summary>
         /// 帳票枝番
         /// 帳票ID枝番(都道府県ごとに異なる)
         /// </summary>
-        
-        [Column("REPORT_EDA_NO", Order = 5)]
+
+        [Column("report_eda_no")]
         public int ReportEdaNo { get; set; }
 
         /// <summary>
         /// 並び順
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(0)]
         public int SortNo { get; set; }
 
@@ -79,7 +70,7 @@ namespace Entity.Tenant
         /// 帳票名
         /// 
         /// </summary>
-        [Column("REPORT_NAME")]
+        [Column("report_name")]
         [MaxLength(30)]
         public string? ReportName { get; set; } = string.Empty;
 
@@ -87,7 +78,7 @@ namespace Entity.Tenant
         /// 印刷タイプ
         /// 0:印刷 1:データ出力
         /// </summary>
-        [Column("PRINT_TYPE")]
+        [Column("print_type")]
         [CustomAttribute.DefaultValue(0)]
         public int PrintType { get; set; }
 
@@ -95,7 +86,7 @@ namespace Entity.Tenant
         /// 印刷番号指定タイプ
         /// 0:不可 1:患者番号 2:保険者番号
         /// </summary>
-        [Column("PRINT_NO_TYPE")]
+        [Column("print_no_type")]
         [CustomAttribute.DefaultValue(0)]
         public int PrintNoType { get; set; }
 
@@ -103,7 +94,7 @@ namespace Entity.Tenant
         /// 対象レセすべて
         /// 0:未使用 1:使用
         /// </summary>
-        [Column("DATA_ALL")]
+        [Column("data_all")]
         [CustomAttribute.DefaultValue(0)]
         public int DataAll { get; set; }
 
@@ -111,7 +102,7 @@ namespace Entity.Tenant
         /// 対象レセ電子請求
         /// 0:未使用 1:使用
         /// </summary>
-        [Column("DATA_DISK")]
+        [Column("data_disk")]
         [CustomAttribute.DefaultValue(0)]
         public int DataDisk { get; set; }
 
@@ -119,7 +110,7 @@ namespace Entity.Tenant
         /// 対象レセ紙請求
         /// 0:未使用 1:使用
         /// </summary>
-        [Column("DATA_PAPER")]
+        [Column("data_paper")]
         [CustomAttribute.DefaultValue(0)]
         public int DataPaper { get; set; }
 
@@ -127,7 +118,7 @@ namespace Entity.Tenant
         /// 対象レセ区分
         /// 0:すべて 1:電子請求 2:紙請求
         /// </summary>
-        [Column("DATA_KBN")]
+        [Column("data_kbn")]
         [CustomAttribute.DefaultValue(1)]
         public int DataKbn { get; set; }
 
@@ -136,7 +127,7 @@ namespace Entity.Tenant
         /// 0 0:非表示 1:表示
         ///                     1桁目:FD 2桁目:MO 3桁目:CD 4桁目:ｵﾝﾗｲﾝ          
         /// </summary>
-        [Column("DISK_KIND")]
+        [Column("disk_kind")]
         [MaxLength(10)]
         public string? DiskKind { get; set; } = string.Empty;
 
@@ -144,7 +135,7 @@ namespace Entity.Tenant
         /// 媒体枚数
         /// 0:非表示 1:表示
         /// </summary>
-        [Column("DISK_CNT")]
+        [Column("disk_cnt")]
         [CustomAttribute.DefaultValue(0)]
         public int DiskCnt { get; set; }
 
@@ -152,14 +143,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -167,7 +158,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -175,14 +166,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -190,7 +181,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 
@@ -198,7 +189,7 @@ namespace Entity.Tenant
         /// 印刷順指定
         /// 0:未使用 1:使用
         /// </summary>
-        [Column("IS_SORT")]
+        [Column("is_sort")]
         [CustomAttribute.DefaultValue(0)]
         public int IsSort { get; set; }
     }

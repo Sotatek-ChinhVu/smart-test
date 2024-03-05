@@ -84,7 +84,7 @@ namespace Infrastructure.Repositories
             // 初診日から1カ月以内は算定不可
             // 背反設定されている場合は不可
 
-            var byomeiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 4)?.Val ?? 0;
+            var byomeiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2002 && p.GrpEdaNo == 4)?.Val ?? 0;
             // 対象疾病の有無
             bool existByoMeiSpecial = ByomeiModelList
                                 .Any(b => (byomeiCondition != 1 || b.SyubyoKbn == 1) &&
@@ -94,7 +94,7 @@ namespace Infrastructure.Repositories
                                     (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate));
             if (existByoMeiSpecial)
             {
-                var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 0)?.Val ?? 0;
+                var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 0)?.Val ?? 0;
                 bool santei = false;
                 if (santeiKanren == 0)
                 {
@@ -143,9 +143,9 @@ namespace Infrastructure.Repositories
                 {
                     var tenMstModel = FindTenMst(hpId, detail.ItemCd, sinDate);
                     if (tenMstModel == null) continue;
-                    if ((tenMstModel.CdKbn == "C" && tenMstModel.CdKbnno == 1 && tenMstModel.Kokuji2 == "1") || tenMstModel.ItemCd.Contains("@Z"))
+                    if ((tenMstModel.CdKbn == "C" && tenMstModel.CdKbnno == 1 && tenMstModel.Kokuji2 == "1") || tenMstModel.ItemCd == "@Z")
                     {
-                        var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 0)?.Val ?? 0;
+                        var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 0)?.Val ?? 0;
                         if (santeiKanren == 0)
                         {
                             containCdKbn = false;
@@ -264,7 +264,7 @@ namespace Infrastructure.Repositories
             }
 
             // 背反設定されている場合は不可
-            var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 2)?.Val ?? 0;
+            var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 2)?.Val ?? 0;
             bool santei = false;
             if (santeiKanren == 0)
             {
@@ -474,7 +474,7 @@ namespace Infrastructure.Repositories
             }
 
             // 背反設定されている場合は不可
-            var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 2)?.Val ?? 0;
+            var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 2)?.Val ?? 0;
             bool santei = false;
             if (santeiKanren == 0)
             {
@@ -566,7 +566,7 @@ namespace Infrastructure.Repositories
                                     (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate));
             if (existByoMeiEpilepsy)
             {
-                var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 6)?.Val ?? 0;
+                var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 6)?.Val ?? 0;
                 var santei = false;
                 if (santeiKanren == 0)
                 {
@@ -678,7 +678,7 @@ namespace Infrastructure.Repositories
                                 (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate));
             if (existByoMeiSanteiGai)
             {
-                var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 7)?.Val;
+                var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 7)?.Val;
                 var santei = false;
                 if (santeiKanren == 0)
                 {
@@ -795,10 +795,10 @@ namespace Infrastructure.Repositories
             }
 
             CheckedOrderModel? checkedOdr = null;
-            bool isCheckShuByomeiOnly2 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 2)?.Val == 1;
-            bool isCheckTeikyoByomei2 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 3)?.Val == 1;
-            bool isCheckShuByomeiOnly1 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 0)?.Val == 1;
-            bool isCheckTeikyoByomei1 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 1)?.Val == 1;
+            bool isCheckShuByomeiOnly2 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2002 && p.GrpEdaNo == 2)?.Val == 1;
+            bool isCheckTeikyoByomei2 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2002 && p.GrpEdaNo == 3)?.Val == 1;
+            bool isCheckShuByomeiOnly1 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2002 && p.GrpEdaNo == 0)?.Val == 1;
+            bool isCheckTeikyoByomei1 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2002 && p.GrpEdaNo == 1)?.Val == 1;
 
             foreach (var odrInfDetail in checkedOdrList.Select(item => item.OrdInfDetails).ToList())
             {
@@ -867,7 +867,7 @@ namespace Infrastructure.Repositories
                 if (isSantei)
                 {
                     var santei = false;
-                    var touyaku = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 1)?.Val;
+                    var touyaku = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 1)?.Val;
                     if (touyaku == 1)
                     {
                         santei = true;
@@ -935,7 +935,7 @@ namespace Infrastructure.Repositories
         public List<CheckedOrderModel> ChikiHokatu(int hpId, long ptId, int userId, int sinDate, int primaryDoctor, int tantoId, List<OrdInfDetailModel> allOdrInfDetail, int syosaisinKbn)
         {
             var checkedOrderModelList = new List<CheckedOrderModel>();
-            var tikiHokatu = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 8)?.Val ?? 0;
+            var tikiHokatu = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 8)?.Val ?? 0;
 
             var tikiHokatuItem = allOdrInfDetail.FirstOrDefault(detail => detail.ItemCd == ItemCdConst.SaisinTiikiHoukatu1
                                                                         || detail.ItemCd == ItemCdConst.SaisinTiikiHoukatu2
@@ -1000,7 +1000,7 @@ namespace Infrastructure.Repositories
             {
                 return checkedOrderModelList;
             }
-            string userSName = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate))?.Sname ?? string.Empty;
+            string userSName = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.HpId == hpId && u.UserId == userId && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate))?.Sname ?? string.Empty;
             if (string.IsNullOrEmpty(userSName))
             {
                 return checkedOrderModelList;
@@ -1027,7 +1027,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            var tikiHokatuJidoSantei = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 4)?.Val ?? 0;
+            var tikiHokatuJidoSantei = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 4)?.Val ?? 0;
             foreach (var itemCd in santeiItemCds)
             {
                 var tenMstModel = FindTenMst(hpId, itemCd, sinDate);
@@ -1062,7 +1062,7 @@ namespace Infrastructure.Repositories
         public List<CheckedOrderModel> YakkuZai(int hpId, long ptId, int sinDate, int birthDay, List<OrdInfDetailModel> allOdrInfDetail, List<OrdInfModel> allOdrInf)
         {
             var checkedOrderModelList = new List<CheckedOrderModel>();
-            var yakkuzaiJoho = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 5)?.Val;
+            var yakkuzaiJoho = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 5)?.Val;
 
             var yakuzaiItem = allOdrInfDetail.FirstOrDefault(detail => detail.ItemCd == ItemCdConst.YakuzaiJoho);
 
@@ -1261,9 +1261,9 @@ namespace Infrastructure.Repositories
                 return checkedOrderModelList;
             }
 
-            var zanyakuSetting = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2012 && p.GrpEdaNo == 0)?.Val;
+            var zanyakuSetting = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2012 && p.GrpEdaNo == 0)?.Val;
 
-            var zangigiTenMstModel = FindTenMst(hpId, ItemCdConst.ZanGigi, sinDate);
+            var zangigiTenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.ZanGigi, sinDate);
             if (zangigiTenMstModel != null)
             {
                 var santei = zanyakuSetting == 1;
@@ -1273,7 +1273,7 @@ namespace Infrastructure.Repositories
                 checkedOrderModelList.Add(checkedOrderModelZangigi);
             }
 
-            var zanteikyotenMstModel = FindTenMst(hpId, ItemCdConst.ZanTeiKyo, sinDate);
+            var zanteikyotenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.ZanTeiKyo, sinDate);
             if (zanteikyotenMstModel != null)
             {
                 var santei = zanyakuSetting == 2;
@@ -1609,7 +1609,7 @@ namespace Infrastructure.Repositories
             return new List<SinKouiCountModel>();
         }
 
-        public Dictionary<string, DateTime> GetMaxAuditTrailLogDateForPrint(long ptID, int sinDate, long raiinNo)
+        public Dictionary<string, DateTime> GetMaxAuditTrailLogDateForPrint(int hpId, long ptID, int sinDate, long raiinNo)
         {
             Dictionary<string, DateTime> result = new Dictionary<string, DateTime>();
 
@@ -1624,6 +1624,7 @@ namespace Infrastructure.Repositories
 
             var auditTrailLogs = NoTrackingDataContext.AuditTrailLogs.Where(x =>
                             (x.EventCd != null && eventCds.Contains(x.EventCd)) &&
+                            x.HpId == hpId &&
                             x.PtId == ptID &&
                             x.SinDay == sinDate &&
                             x.RaiinNo == raiinNo).ToList();

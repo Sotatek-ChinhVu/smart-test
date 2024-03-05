@@ -181,7 +181,7 @@ namespace Interactor.MstItem
                         precriptionSettingTab = LoadPrecriptionSetting(itemCd, jiCd, ipnNameCd, hpId, sinDate);
                         break;
                     case CategoryItemEnums.UsageSetting:
-                        usageSettingTab = new UsageSettingTabModel(_mstItemRepository.GetYohoInfMstPrefixByItemCd(itemCd));
+                        usageSettingTab = new UsageSettingTabModel(_mstItemRepository.GetYohoInfMstPrefixByItemCd(hpId, itemCd));
                         break;
                     case CategoryItemEnums.SpecialMaterialSetting:
                         break;
@@ -201,7 +201,7 @@ namespace Interactor.MstItem
                         houkatsuTab = LoadHoukatsuTab(itemCd, hpId, sinDate);
                         break;
                     case CategoryItemEnums.CombinedContraindication:
-                        combinedContraindicationTab = LoadCombinedContraindication(itemCd, sinDate);
+                        combinedContraindicationTab = LoadCombinedContraindication(hpId, itemCd, sinDate);
                         break;
                     case CategoryItemEnums.RenkeiSetting:
                         break;
@@ -237,7 +237,7 @@ namespace Interactor.MstItem
 
         private PrecriptionSettingTabModel LoadPrecriptionSetting(string itemCd, string yiCd, string ipnNameCd, int hpId, int sinDate)
         {
-            List<M10DayLimitModel> m10DayLimits = _mstItemRepository.GetM10DayLimitModels(yiCd);
+            List<M10DayLimitModel> m10DayLimits = _mstItemRepository.GetM10DayLimitModels(hpId, yiCd);
             List<IpnMinYakkaMstModel> ipnMinYakkaMsts = _mstItemRepository.GetIpnMinYakkaMstModels(hpId, ipnNameCd);
             List<DrugDayLimitModel> drugDayLimits = _mstItemRepository.GetDrugDayLimitModels(hpId, itemCd);
 
@@ -294,9 +294,9 @@ namespace Interactor.MstItem
             return new HoukatsuTabModel(listDensiHoukatuModels, listDensiHoukatuGrpModels, listDensiHoukatuMasters);
         }
 
-        private CombinedContraindicationTabModel LoadCombinedContraindication(string itemCd, int sinDate)
+        private CombinedContraindicationTabModel LoadCombinedContraindication(int hpId, string itemCd, int sinDate)
         {
-            List<CombinedContraindicationModel> combinedContraindications = _mstItemRepository.GetContraindicationModelList(sinDate, itemCd);
+            List<CombinedContraindicationModel> combinedContraindications = _mstItemRepository.GetContraindicationModelList(hpId, sinDate, itemCd).OrderBy(x => x.BCd).ToList();
             return new CombinedContraindicationTabModel(combinedContraindications);
         }
     }

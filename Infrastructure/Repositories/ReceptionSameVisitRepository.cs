@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
         {
             var listDataRaiinInf = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.IsDeleted == DeleteTypes.None).OrderBy(p => p.OyaRaiinNo).ToList();
 
-            var _doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
+            var _doctors = NoTrackingDataContext.UserMsts.Where(p => p.HpId == hpId && p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
 
             var _departments = NoTrackingDataContext.KaMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None).ToList();
 
@@ -69,7 +69,7 @@ namespace Infrastructure.Repositories
 
                 ).ToList();
 
-            var listPtKohi = NoTrackingDataContext.PtKohis.Where(x => x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+            var listPtKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
 
             var query = from doraiItem in listDorai
                         join ptKohi1 in listPtKohi on

@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             string lockDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
 
             string rawSql =
-            "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\", \"LOGINKEY\")\r\n      " +
+            "INSERT INTO \"lock_inf\" (\"function_cd\", \"hp_id\", \"oya_raiin_no\", \"pt_id\", \"raiin_no\", \"sin_date\", \"lock_date\", \"machine\", \"user_id\", \"loginkey\")\r\n      " +
             $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{tabKey}', {userId}, '{loginKey}') ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
@@ -63,7 +63,7 @@ namespace Infrastructure.Repositories
                                                                                 && item.UserId == lockInf.UserId
                                                                                 && item.IsDeleted == 0);
 
-            var functionInf = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == lockInf.FunctionCd);
+            var functionInf = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.HpId == hpId && item.FunctionCd == lockInf.FunctionCd);
 
             return new LockModel(
                        lockInf.UserId,
@@ -114,7 +114,7 @@ namespace Infrastructure.Repositories
                     join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId)
                     on lockInf.UserId equals userMst.UserId into gj
                     from lockedUserInf in gj.DefaultIfEmpty()
-                    join functionMst in NoTrackingDataContext.FunctionMsts
+                    join functionMst in NoTrackingDataContext.FunctionMsts.Where(f => f.HpId == hpId)
                     on lockInf.FunctionCd equals functionMst.FunctionCd
                     where (lockMst.FunctionCdA != lockMst.FunctionCdB) || (lockMst.FunctionCdA == lockMst.FunctionCdB && lockInf.UserId != userId)
                     orderby lockMst.LockLevel, lockMst.LockRange
@@ -278,7 +278,7 @@ namespace Infrastructure.Repositories
                     on lockInf.FunctionCd equals lockMst.FunctionCdA
                     join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate_B && sinDate_B <= u.EndDate)
                     on lockInf.UserId equals userMst.UserId
-                    join functionMst in NoTrackingDataContext.FunctionMsts.AsQueryable()
+                    join functionMst in NoTrackingDataContext.FunctionMsts.Where(f => f.HpId == hpId).AsQueryable()
                     on lockInf.FunctionCd equals functionMst.FunctionCd
                     where lockInf.RaiinNo == 0 || lockInf.RaiinNo == raiinNo
                     orderby lockMst.LockLevel, lockMst.LockRange
@@ -331,7 +331,7 @@ namespace Infrastructure.Repositories
             List<LockModel> result = new();
             var functionCdList = lockInfList.Select(item => item.FunctionCd).Distinct().ToList();
             var lockMstList = NoTrackingDataContext.LockMsts.Where(item => functionCdList.Contains(item.FunctionCdB) && item.IsInvalid == 0).ToList();
-            var functionMstList = NoTrackingDataContext.FunctionMsts.Where(item => functionCdList.Contains(item.FunctionCd)).ToList();
+            var functionMstList = NoTrackingDataContext.FunctionMsts.Where(item => item.HpId == hpId && functionCdList.Contains(item.FunctionCd)).ToList();
             var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted != 1 && item.UserId == userId);
             foreach (var lockInf in lockInfList)
             {
@@ -351,10 +351,10 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public string GetFunctionNameLock(string functionCode)
+        public string GetFunctionNameLock(int hpId, string functionCode)
         {
             string result = string.Empty;
-            var functionItem = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == functionCode);
+            var functionItem = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.HpId == hpId && item.FunctionCd == functionCode);
             if (functionItem != null)
             {
                 result = functionItem.FunctionName ?? string.Empty;
@@ -375,7 +375,8 @@ namespace Infrastructure.Repositories
             {
                 raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.IsDeleted == DeleteTypes.None
                                                                              && item.SinDate == sinDate
-                                                                             && item.PtId == ptId)
+                                                                             && item.PtId == ptId
+                                                                             && item.HpId == hpId)
                                                               .ToList();
 
                 raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
@@ -386,10 +387,11 @@ namespace Infrastructure.Repositories
             }
 
             // Lock 
-            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => raiinNoList.Contains(item.RaiinNo)
-                                                                           && (item.FunctionCd == FunctionCode.MedicalExaminationCode
-                                                                               || item.FunctionCd == FunctionCode.TeamKarte
-                                                                               || item.FunctionCd == FunctionCode.SwitchOrderCode))
+            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => item.HpId == hpId
+                                                                                    && raiinNoList.Contains(item.RaiinNo)
+                                                                                    && (item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                    || item.FunctionCd == FunctionCode.TeamKarte
+                                                                                    || item.FunctionCd == FunctionCode.SwitchOrderCode))
                                                             .ToList();
             foreach (var raiinItem in raiinInfList)
             {
@@ -440,10 +442,11 @@ namespace Infrastructure.Repositories
             }
 
             // Lock 
-            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => raiinNoList.Contains(item.RaiinNo)
-                                                                           && (item.FunctionCd == FunctionCode.MedicalExaminationCode
-                                                                               || item.FunctionCd == FunctionCode.TeamKarte
-                                                                               || item.FunctionCd == FunctionCode.SwitchOrderCode))
+            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => item.HpId == hpId
+                                                                                    && raiinNoList.Contains(item.RaiinNo)
+                                                                                    && (item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                    || item.FunctionCd == FunctionCode.TeamKarte
+                                                                                    || item.FunctionCd == FunctionCode.SwitchOrderCode))
                                                             .ToList();
             foreach (var raiinItem in raiinInfList)
             {
@@ -485,7 +488,7 @@ namespace Infrastructure.Repositories
             List<LockModel> result = new();
             var functionCdList = lockInfList.Select(item => item.FunctionCd).Distinct().ToList();
             var lockMstList = NoTrackingDataContext.LockMsts.Where(item => functionCdList.Contains(item.FunctionCdB) && item.IsInvalid == 0).ToList();
-            var functionMstList = NoTrackingDataContext.FunctionMsts.Where(item => functionCdList.Contains(item.FunctionCd)).ToList();
+            var functionMstList = NoTrackingDataContext.FunctionMsts.Where(item => item.HpId == hpId && functionCdList.Contains(item.FunctionCd)).ToList();
             var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted != 1 && item.UserId == userId);
             foreach (var lockInf in lockInfList)
             {
@@ -515,7 +518,7 @@ namespace Infrastructure.Repositories
                 listLock = listLock.Where(x => x.UserId == userId);
             }
 
-            var listFunctMst = NoTrackingDataContext.FunctionMsts.Select(f => new { f.FunctionCd, f.FunctionName });
+            var listFunctMst = NoTrackingDataContext.FunctionMsts.Where(f => f.HpId == hpId).Select(f => new { f.FunctionCd, f.FunctionName });
             var listPtInf = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None).Select(pt => new { pt.PtId, pt.PtNum });
             ///var listCalcStatus = NoTrackingDataContext.CalcStatus.Where(cal => cal.HpId == hpId && !string.IsNullOrEmpty(cal.CreateMachine) && (cal.Status == 0 || cal.Status == 1));
             var listDocInf = NoTrackingDataContext.DocInfs.Where(d => d.HpId == hpId && d.IsLocked == 1 && !string.IsNullOrEmpty(d.LockMachine) && d.IsDeleted == DeleteStatus.None && (managerKbn != 0 || d.LockId == userId));
@@ -633,7 +636,7 @@ namespace Infrastructure.Repositories
                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate && sinDate <= u.EndDate)
                    on lockInf.UserId equals userMst.UserId into gj
                    from lockedUserInf in gj.DefaultIfEmpty()
-                   join functionMst in NoTrackingDataContext.FunctionMsts
+                   join functionMst in NoTrackingDataContext.FunctionMsts.Where(f => f.HpId == hpId)
                    on lockInf.FunctionCd equals functionMst.FunctionCd
                    where (lockInf.UserId != userId)
                    select new
@@ -660,7 +663,7 @@ namespace Infrastructure.Repositories
             {
 
 
-                _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", item.PtId, item.SinDateInt, item.RaiinNo, "", "LOCK_INF:" + item.FunctionName));
+                _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", item.PtId, item.SinDateInt, item.RaiinNo, "", "lock_inf:" + item.FunctionName));
 
                 var lockInf = TrackingDataContext.LockInfs.Where(x =>
                                                                    x.HpId == hpId &&

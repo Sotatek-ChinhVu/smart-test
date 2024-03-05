@@ -20,7 +20,7 @@ namespace Interactor.Reception
                     return new GetReceptionOutputData(new(), GetReceptionStatus.InvalidRaiinNo);
                 }
 
-                var receptionModel = _receptionRepository.Get(inputData.RaiinNo, inputData.Flag);
+                var receptionModel = _receptionRepository.Get(inputData.HpId, inputData.RaiinNo, inputData.Flag);
                 if (receptionModel.HpId == 0 && receptionModel.PtId == 0 && receptionModel.SinDate == 0 && receptionModel.RaiinNo == 0)
                 {
                     return new GetReceptionOutputData(new(), GetReceptionStatus.ReceptionNotExisted);

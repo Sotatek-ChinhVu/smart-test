@@ -42,7 +42,7 @@ namespace Interactor.MstItem
 
                 string startWithstr = TenMstMaintenanceUtil.GetStartWithByItemType(inputData.Type);
 
-                string itemCd = _mstItemRepository.GetMaxItemCdByTypeForAdd(startWithstr);
+                string itemCd = _mstItemRepository.GetMaxItemCdByTypeForAdd(inputData.HpId, startWithstr);
                 int jihiSbt = 0;
 
                 if (inputData.Type == ItemTypeEnums.JihiItem)
@@ -83,7 +83,7 @@ namespace Interactor.MstItem
                 return new();
             }
 
-           var finalItemCd = !string.IsNullOrEmpty(inputItemCd) ? existedItemCd : newItemCd;
+            var finalItemCd = !string.IsNullOrEmpty(inputItemCd) ? existedItemCd : newItemCd;
             int sinKouiKbn = 0;
             string kanaName1 = string.Empty;
             string kanaName2 = string.Empty;

@@ -3,10 +3,10 @@ using Helper.Common;
 using Infrastructure.Interfaces;
 using Reporting.AccountingCard.DB;
 using Reporting.AccountingCard.Model;
-using Reporting.Calculate.Interface;
-using Reporting.Calculate.Receipt.Constants;
-using Reporting.Calculate.Receipt.Models;
-using Reporting.Calculate.Receipt.ViewModels;
+using CalculateService.Interface;
+using CalculateService.Receipt.Constants;
+using CalculateService.Receipt.Models;
+using CalculateService.Receipt.ViewModels;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -116,7 +116,6 @@ namespace Reporting.AccountingCard.Service
             finally
             {
                 _finder.ReleaseResource();
-                _systemConfigProvider.ReleaseResource();
                 _tenantProvider.DisposeDataContext();
             }
 

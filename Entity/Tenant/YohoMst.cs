@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entity.Tenant;
@@ -7,19 +7,19 @@ namespace Entity.Tenant;
 /// 用法マスタ
 ///     電子処方箋管理サービスで管理する用法マスタ
 /// </summary>
-[Table(name: "YOHO_MST")]
+[Table(name: "yoho_mst")]
 public class YohoMst : EmrCloneable<YohoMst>
 {
     /// <summary>
     /// 医療機関識別ID
     /// </summary>
-    [Column("HP_ID", Order = 1)]
+    [Column("hp_id", Order = 1)]
     public int HpId { get; set; }
 
     /// <summary>
     /// 用法コード
     /// </summary>
-    [Column("YOHO_CD", Order = 2)]
+    [Column("yoho_cd", Order = 2)]
     [MaxLength(16)]
     public string YohoCd { get; set; } = string.Empty;
 
@@ -31,15 +31,15 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     4：注入、
     ///     X：ー（指定なし）
     /// </summary>
-    [Column("YOHO_KBN_CD")]
+    [Column("yoho_kbn_cd")]
     [MaxLength(1)]
-    [CustomAttribute.DefaultValue("X")]
+    [CustomAttribute.DefaultValue("x")]
     public string YohoKbnCd { get; set; } = string.Empty;
 
     /// <summary>
     /// 基本用法区分
     /// </summary>
-    [Column("YOHO_KBN")]
+    [Column("yoho_kbn")]
     [MaxLength(2)]
     public string YohoKbn { get; set; } = string.Empty;
 
@@ -65,15 +65,15 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     基本用法区分がX：ー（指定なし）の場合
     ///     X：ー（指定なし）
     /// </summary>
-    [Column("YOHO_DETAIL_KBN_CD")]
+    [Column("yoho_detail_kbn_cd")]
     [MaxLength(1)]
-    [CustomAttribute.DefaultValue("X")]
+    [CustomAttribute.DefaultValue("x")]
     public string YohoDetailKbnCd { get; set; } = string.Empty;
 
     /// <summary>
     /// 用法詳細区分
     /// </summary>
-    [Column("YOHO_DETAIL_KBN")]
+    [Column("yoho_detail_kbn")]
     [MaxLength(15)]
     public string YohoDetailKbn { get; set; } = string.Empty;
 
@@ -89,20 +89,20 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     7：回数のみ指定型　　　　　（１日回数のみ指定）
     ///     8：時間間隔指定型　　　　　（時間間隔のみ指定）
     /// </summary>
-    [Column("TIMING_KBN_CD")]
+    [Column("timing_kbn_cd")]
     public int TimingKbnCd { get; set; }
 
     /// <summary>
     /// タイミング指定区分
     /// </summary>
-    [Column("TIMING_KBN")]
+    [Column("timing_kbn")]
     [MaxLength(60)]
     public string TimingKbn { get; set; } = string.Empty;
 
     /// <summary>
     /// 用法名称
     /// </summary>
-    [Column("YOHO_NAME")]
+    [Column("yoho_name")]
     [MaxLength(50)]
     public string YohoName { get; set; } = string.Empty;
 
@@ -111,19 +111,19 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     「標準用法用語集（第2版）」（平成28年1月：日本薬剤師会、日本病院薬剤師会編）に収載されている4桁の整理番号
     ///     該当する標準用法整理番号が無い場合、記録を省略する
     /// </summary>
-    [Column("REFERENCE_NO")]
+    [Column("reference_no")]
     public int ReferenceNo { get; set; }
 
     /// <summary>
     /// 使用開始日
     /// </summary>
-    [Column("START_DATE", Order = 3)]
+    [Column("start_date", Order = 3)]
     public int StartDate { get; set; }
 
     /// <summary>
     /// 使用終了日
     /// </summary>
-    [Column("END_DATE")]
+    [Column("end_date")]
     public int EndDate { get; set; }
 
     /// <summary>
@@ -135,7 +135,7 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     2：汎用コード
     ///     （基本用法区分及び用法詳細区分を指定しない場合に汎用コードを用いて用法を記録する。用法レコードの用法名称欄に記録されたものを用法として用い、投与方法・経路を指示する場合は用法補足レコードに記録する。）
     /// </summary>
-    [Column("YOHO_CD_KBN")]
+    [Column("yoho_cd_kbn")]
     [CustomAttribute.DefaultValue(0)]
     public int YohoCdKbn { get; set; }
 
@@ -145,7 +145,7 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     0：不要、
     ///     1：必要
     /// </summary>
-    [Column("TONYO_JOKEN")]
+    [Column("tonyo_joken")]
     [CustomAttribute.DefaultValue(0)]
     public int TonyoJoken { get; set; }
 
@@ -157,7 +157,7 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     ※食事ベース型の拡張コードの場合、「朝食後」「夕食前」など食事等のタイミングを用法補足情報欄に記録する。
     ///     生活リズム型の拡張コードの場合、「朝昼夕」「起床時」など生活リズム上の出来事や行為を用法補足情報欄に記録する。
     /// </summary>
-    [Column("TOYO_TIMING")]
+    [Column("toyo_timing")]
     [CustomAttribute.DefaultValue(0)]
     public int ToyoTiming { get; set; }
 
@@ -167,7 +167,7 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     0：不要、
     ///     1：必要
     /// </summary>
-    [Column("TOYO_TIME")]
+    [Column("toyo_time")]
     [CustomAttribute.DefaultValue(0)]
     public int ToyoTime { get; set; }
 
@@ -177,7 +177,7 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     0：不要、
     ///     1：必要
     /// </summary>
-    [Column("TOYO_INTERVAL")]
+    [Column("toyo_interval")]
     [CustomAttribute.DefaultValue(0)]
     public int ToyoInterval { get; set; }
 
@@ -187,7 +187,7 @@ public class YohoMst : EmrCloneable<YohoMst>
     ///     0：不要、1：任意、2：左・右・両、3：必須
     ///     注）調剤結果情報の場合、部位を用法補足レコードの用法補足情報欄に記載する
     /// </summary>
-    [Column("BUI")]
+    [Column("bui")]
     [CustomAttribute.DefaultValue(0)]
     public int Bui { get; set; }
 
@@ -195,7 +195,7 @@ public class YohoMst : EmrCloneable<YohoMst>
     /// 用法カナ名称
     ///     用法名称のカナ（全角）
     /// </summary>
-    [Column("YOHO_KANA_NAME")]
+    [Column("yoho_kana_name")]
     [MaxLength(120)]
     public string YohoKanaName { get; set; } = string.Empty;
 
@@ -203,46 +203,46 @@ public class YohoMst : EmrCloneable<YohoMst>
     /// 用法コード（調剤レセプト）
     ///     オンライン又は光ディスク等による請求に係る記録条件仕様（調剤用）の「別表12　用法コード」に収載されているコード
     /// </summary>
-    [Column("CHOZAI_YOHO_CD")]
+    [Column("chozai_yoho_cd")]
     public int ChozaiYohoCd { get; set; }
 
     /// <summary>
     /// 作成日時
     /// </summary>
-    [Column("CREATE_DATE")]
+    [Column("create_date")]
     [CustomAttribute.DefaultValueSql("current_timestamp")]
     public DateTime CreateDate { get; set; }
 
     /// <summary>
     /// 作成ID
     /// </summary>
-    [Column("CREATE_ID")]
+    [Column("create_id")]
     public int CreateId { get; set; }
 
     /// <summary>
     /// 作成端末
     /// </summary>
-    [Column("CREATE_MACHINE")]
+    [Column("create_machine")]
     [MaxLength(60)]
     public string CreateMachine { get; set; } = string.Empty;
 
     /// <summary>
     /// 更新日時
     /// </summary>
-    [Column("UPDATE_DATE")]
+    [Column("update_date")]
     [CustomAttribute.DefaultValueSql("current_timestamp")]
     public DateTime UpdateDate { get; set; }
 
     /// <summary>
     /// 更新ID
     /// </summary>
-    [Column("UPDATE_ID")]
+    [Column("update_id")]
     public int UpdateId { get; set; }
 
     /// <summary>
     /// 更新端末
     /// </summary>
-    [Column("UPDATE_MACHINE")]
+    [Column("update_machine")]
     [MaxLength(60)]
     public string UpdateMachine { get; set; } = string.Empty;
 }

@@ -1,9 +1,9 @@
-using EmrCalculateApi.Futan.ViewModels;
-using EmrCalculateApi.Ika.ViewModels;
-using EmrCalculateApi.Implementation;
-using EmrCalculateApi.Interface;
+using CalculateService.Futan.ViewModels;
+using CalculateService.Ika.ViewModels;
+using CalculateService.Implementation;
+using CalculateService.Interface;
 using EmrCalculateApi.Realtime;
-using EmrCalculateApi.ReceFutan.ViewModels;
+using CalculateService.ReceFutan.ViewModels;
 using Helper.Messaging;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;

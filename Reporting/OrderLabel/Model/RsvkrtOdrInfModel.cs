@@ -416,9 +416,9 @@ public class RsvkrtOdrInfModel : IOdrInfModel<RsvkrtOdrInfDetailModel>
     {
         string result = Index + ") ";
 
-        int displaySetName = _userConfReportCommon.DisplaySetName();
-        int displayUserInput = _userConfReportCommon.DisplayUserInput();
-        int displayTimeInput = _userConfReportCommon.DisplayTimeInput();
+        int displaySetName = _userConfReportCommon.DisplaySetName(HpId);
+        int displayUserInput = _userConfReportCommon.DisplayUserInput(HpId);
+        int displayTimeInput = _userConfReportCommon.DisplayTimeInput(HpId);
 
         if (displaySetName == 1)
         {
@@ -459,7 +459,7 @@ public class RsvkrtOdrInfModel : IOdrInfModel<RsvkrtOdrInfDetailModel>
             //入力者
             if (CreateId != 0)
             {
-                result += " " + _userMstCache.GetUserSNameIncludedDeleted(CreateId);
+                result += " " + _userMstCache.GetUserSNameIncludedDeleted(HpId ,CreateId);
             }
         }
 
@@ -471,7 +471,7 @@ public class RsvkrtOdrInfModel : IOdrInfModel<RsvkrtOdrInfDetailModel>
         get
         {
             string result = string.Empty;
-            if (_userConfReportCommon.DisplayDrugPrice() == 0) return result;
+            if (_userConfReportCommon.DisplayDrugPrice(HpId) == 0) return result;
 
             if (IsDrug)
             {

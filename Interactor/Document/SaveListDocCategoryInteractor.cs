@@ -60,7 +60,7 @@ public class SaveListDocCategoryInteractor : ISaveListDocCategoryInputPort
         {
             return SaveListDocCategoryStatus.InvalidHpId;
         }
-        else if (!_userRepository.CheckExistedUserId(inputData.UserId))
+        else if (!_userRepository.CheckExistedUserId(inputData.HpId, inputData.UserId))
         {
             return SaveListDocCategoryStatus.InvalidUserId;
         }

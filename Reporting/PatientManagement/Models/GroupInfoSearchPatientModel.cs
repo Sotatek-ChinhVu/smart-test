@@ -12,7 +12,7 @@ public class GroupInfoSearchPatientModel
         GroupItemSelected = ptGrpItem;
     }
 
-    public int PtId
+    public long PtId
     {
         get; set;
     }

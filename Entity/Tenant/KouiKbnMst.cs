@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -6,48 +6,41 @@ namespace Entity.Tenant
     /// <summary>
     /// 行為区分マスタ
     /// </summary>
-    [Table(name: "KOUI_KBN_MST")]
+    [Table(name: "koui_kbn_mst")]
     public class KouiKbnMst
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// </summary>
-        
-        [Column("HP_ID", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 行為区分ID
         /// </summary>
-        
-        [Column("KOUI_KBN_ID", Order = 2)]
+
+        [Column("koui_kbn_id")]
         public int KouiKbnId { get; set; }
 
         /// <summary>
         /// 並び順
         /// </summary>
         [Required]
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 行為区分１
         /// </summary>
         [Required]
-        [Column("KOUI_KBN1")]
+        [Column("koui_kbn1")]
         public int KouiKbn1 { get; set; }
 
         /// <summary>
         /// 行為区分２
         /// </summary>
         [Required]
-        [Column("KOUI_KBN2")]
+        [Column("koui_kbn2")]
         public int KouiKbn2 { get; set; }
 
         /// <summary>
         /// 行為グループ名
         /// </summary>
-        [Column("KOUI_GRP_NAME")]
+        [Column("koui_grp_name")]
         [MaxLength(20)]
         public string? KouiGrpName { get; set; } = string.Empty;
 
@@ -55,36 +48,36 @@ namespace Entity.Tenant
         /// 行為グループ名
         /// </summary>
         [Required]
-        [Column("KOUI_NAME")]
+        [Column("koui_name")]
         [MaxLength(20)]
         public string? KouiName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者		
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末	
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
-        [Column("EXC_KOUI_KBN")]
+        [Column("exc_koui_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int ExcKouiKbn { get; set; }
 
-        [Column("OYA_KOUI_KBN_ID")]
+        [Column("oya_koui_kbn_id")]
         [CustomAttribute.DefaultValue(0)]
         public int OyaKouiKbnId { get; set; }
     }

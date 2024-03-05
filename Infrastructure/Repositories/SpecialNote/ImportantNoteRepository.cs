@@ -63,12 +63,12 @@ namespace Infrastructure.Repositories.SpecialNote
             TrackingDataContext.SaveChanges();
         }
 
-        public List<PtAlrgyDrugModel> GetAlrgyDrugList(long ptId)
+        public List<PtAlrgyDrugModel> GetAlrgyDrugList(int hpId, long ptId)
         {
             List<PtAlrgyDrugModel> ptAlrgyDrugs;
 
             // If exist cache, get data from cache then return data
-            var finalKey = key + CacheKeyConstant.PtAlrgyDrugGetList + "_" + ptId;
+            var finalKey = key + CacheKeyConstant.PtAlrgyDrugGetList + "_" + ptId + "_" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).AsString();
@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories.SpecialNote
             {
                 // If not, get data from database
                 ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.AsEnumerable()
-                                                                 .Where(x => x.PtId == ptId && x.IsDeleted == 0)
+                                                                 .Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
                                                                  .Select(x => new PtAlrgyDrugModel(
                                                                                   x.HpId,
                                                                                   x.PtId,
@@ -115,12 +115,12 @@ namespace Infrastructure.Repositories.SpecialNote
             return ptAlrgyDrugs.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
         }
 
-        public List<PtAlrgyElseModel> GetAlrgyElseList(long ptId)
+        public List<PtAlrgyElseModel> GetAlrgyElseList(int hpId, long ptId)
         {
             List<PtAlrgyElseModel> ptAlrgyElses;
 
             // If exist cache, get data from cache then return data
-            var finalKey = key + CacheKeyConstant.AlrgyElseGetList + "_" + ptId;
+            var finalKey = key + CacheKeyConstant.AlrgyElseGetList + "_" + ptId + "_" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).AsString();
@@ -129,7 +129,7 @@ namespace Infrastructure.Repositories.SpecialNote
             else
             {
                 // If not, get data from database
-                ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+                ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
                                                              .AsEnumerable()
                                                              .Select(x => new PtAlrgyElseModel(
                                                                               x.HpId,
@@ -165,12 +165,12 @@ namespace Infrastructure.Repositories.SpecialNote
             return ptAlrgyElses.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
         }
 
-        public List<PtAlrgyFoodModel> GetAlrgyFoodList(long ptId)
+        public List<PtAlrgyFoodModel> GetAlrgyFoodList(int hpId, long ptId)
         {
             List<PtAlrgyFoodModel> result;
 
             // If exist cache, get data from cache then return data
-            var finalKey = key + CacheKeyConstant.AlrgyFoodGetList + "_" + ptId;
+            var finalKey = key + CacheKeyConstant.AlrgyFoodGetList + "_" + ptId + "_" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).AsString();
@@ -179,8 +179,8 @@ namespace Infrastructure.Repositories.SpecialNote
             else
             {
                 // If not, get data from database
-                var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.ToList();
-                var ptAlrgyFoods = NoTrackingDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0).ToList();
+                var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.Where(m => m.HpId == hpId).ToList();
+                var ptAlrgyFoods = NoTrackingDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).ToList();
                 result = (from ale in ptAlrgyFoods
                           join mst in aleFoodKbns on ale.AlrgyKbn equals mst.FoodKbn
                           select new PtAlrgyFoodModel
@@ -203,9 +203,9 @@ namespace Infrastructure.Repositories.SpecialNote
             return result;
         }
 
-        public List<PtAlrgyFoodModel> GetAlrgyFoodList(long ptId, int sinDate)
+        public List<PtAlrgyFoodModel> GetAlrgyFoodList(int hpId, long ptId, int sinDate)
         {
-            var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.ToList();
+            var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.Where(m => m.HpId == hpId).ToList();
             var ptAlrgyFoods = NoTrackingDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0).ToList();
             var query = from ale in ptAlrgyFoods
                         join mst in aleFoodKbns on ale.AlrgyKbn equals mst.FoodKbn
@@ -227,12 +227,12 @@ namespace Infrastructure.Repositories.SpecialNote
                                             .OrderBy(p => p.SortNo).ToList();
         }
 
-        public List<PtInfectionModel> GetInfectionList(long ptId)
+        public List<PtInfectionModel> GetInfectionList(int hpId, long ptId)
         {
             List<PtInfectionModel> ptInfections;
 
             // If exist cache, get data from cache then return data
-            var finalKey = key + CacheKeyConstant.InfectionGetList + "_" + ptId;
+            var finalKey = key + CacheKeyConstant.InfectionGetList + "_" + ptId + "_" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).AsString();
@@ -241,7 +241,7 @@ namespace Infrastructure.Repositories.SpecialNote
             else
             {
                 // If not, get data from database
-                ptInfections = NoTrackingDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+                ptInfections = NoTrackingDataContext.PtInfection.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
                                                                 .AsEnumerable()
                                                                 .OrderBy(x => x.SortNo)
                                                                 .Select(x => new PtInfectionModel(
@@ -263,11 +263,11 @@ namespace Infrastructure.Repositories.SpecialNote
             return ptInfections;
         }
 
-        public List<PtKioRekiModel> GetKioRekiList(long ptId)
+        public List<PtKioRekiModel> GetKioRekiList(int hpId, long ptId)
         {
             List<PtKioRekiModel> ptKioRekis;
             // If exist cache, get data from cache then return data
-            var finalKey = key + CacheKeyConstant.KioRekiGetList + "_" + ptId;
+            var finalKey = key + CacheKeyConstant.KioRekiGetList + "_" + ptId + "_" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).AsString();
@@ -276,7 +276,7 @@ namespace Infrastructure.Repositories.SpecialNote
             else
             {
                 // If not, get data from database
-                ptKioRekis = NoTrackingDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+                ptKioRekis = NoTrackingDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
                                                              .AsEnumerable()
                                                              .OrderBy(p => p.SortNo)
                                                              .Select(x => new PtKioRekiModel(
@@ -298,11 +298,11 @@ namespace Infrastructure.Repositories.SpecialNote
             return ptKioRekis;
         }
 
-        public List<PtOtcDrugModel> GetOtcDrugList(long ptId)
+        public List<PtOtcDrugModel> GetOtcDrugList(int hpId, long ptId)
         {
             List<PtOtcDrugModel> ptOtcDrugs;
             // If exist cache, get data from cache then return data
-            var finalKey = key + CacheKeyConstant.OtcDrugGetList + "_" + ptId;
+            var finalKey = key + CacheKeyConstant.OtcDrugGetList + "_" + ptId + "_" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).AsString();
@@ -311,7 +311,7 @@ namespace Infrastructure.Repositories.SpecialNote
             else
             {
                 // If not, get data from database
-                ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+                ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
                                                             .AsEnumerable()
                                                             .Select(x => new PtOtcDrugModel(
                                                                              x.HpId,
@@ -350,12 +350,12 @@ namespace Infrastructure.Repositories.SpecialNote
                     .OrderBy(p => p.SortNo).ToList();
         }
 
-        public List<PtOtherDrugModel> GetOtherDrugList(long ptId)
+        public List<PtOtherDrugModel> GetOtherDrugList(int hpId, long ptId)
         {
             List<PtOtherDrugModel> ptOtherDrugs;
 
             // If exist cache, get data from cache then return data
-            var finalKey = key + CacheKeyConstant.OtherDrugGetList + "_" + ptId;
+            var finalKey = key + CacheKeyConstant.OtherDrugGetList + "_" + ptId + "_" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).AsString();
@@ -364,7 +364,7 @@ namespace Infrastructure.Repositories.SpecialNote
             else
             {
                 // If not, get data from database
-                ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+                ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
                                                                 .AsEnumerable()
                                                                 .Select(x => new PtOtherDrugModel(
                                                                                  x.HpId,
@@ -402,11 +402,11 @@ namespace Infrastructure.Repositories.SpecialNote
             return ptOtherDrugs.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.SortNo).ToList();
         }
 
-        public List<PtSuppleModel> GetSuppleList(long ptId)
+        public List<PtSuppleModel> GetSuppleList(int hpId, long ptId)
         {
             List<PtSuppleModel> ptSupples;
             // If exist cache, get data from cache then return data
-            var finalKey = key + CacheKeyConstant.SuppleGetList + "_" + ptId;
+            var finalKey = key + CacheKeyConstant.SuppleGetList + "_" + ptId + "_" + hpId;
             if (_cache.KeyExists(finalKey))
             {
                 var cacheString = _cache.StringGet(finalKey).AsString();
@@ -415,7 +415,7 @@ namespace Infrastructure.Repositories.SpecialNote
             else
             {
                 // If not, get data from database
-                ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+                ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
                                                            .AsEnumerable()
                                                            .OrderBy(x => x.SortNo)
                                                            .Select(x => new PtSuppleModel(

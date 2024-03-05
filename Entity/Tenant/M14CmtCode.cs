@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M14_CMT_CODE")]
+    [Table(name: "m14_cmt_code")]
     public class M14CmtCode : EmrCloneable<M14CmtCode>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 注意コメントコード
         /// 
         /// </summary>
-        
-        [Column("ATTENTION_CMT_CD", Order = 1)]
+
+        [Column("attention_cmt_cd", Order = 1)]
         [MaxLength(7)]
         public string AttentionCmtCd { get; set; } = string.Empty;
 
@@ -20,7 +23,7 @@ namespace Entity.Tenant
         /// 注意コメント
         /// 
         /// </summary>
-        [Column("ATTENTION_CMT")]
+        [Column("attention_cmt")]
         [MaxLength(500)]
         public string? AttentionCmt { get; set; } = string.Empty;
 

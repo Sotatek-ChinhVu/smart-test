@@ -1,28 +1,28 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "Z_UKETUKE_SBT_DAY_INF")]
+    [Table(name: "z_uketuke_sbt_day_inf")]
     public class ZUketukeSbtDayInf : EmrCloneable<ZUketukeSbtDayInf>
     {
         
-        [Column("OP_ID")]
+        [Column("op_id")]
         public long OpId { get; set; }
 
-        [Column("OP_TYPE")]
+        [Column("op_type")]
         [MaxLength(10)]
         public string? OpType { get; set; } = string.Empty;
 
-        [Column("OP_TIME")]
+        [Column("op_time")]
         public DateTime OpTime { get; set; }
 
-        [Column("OP_ADDR")]
+        [Column("op_addr")]
         [MaxLength(100)]
         public string? OpAddr { get; set; } = string.Empty;
 
-        [Column("OP_HOSTNAME")]
+        [Column("op_hostname")]
         [MaxLength(100)]
         public string? OpHostName { get; set; } = string.Empty;
 
@@ -30,43 +30,43 @@ namespace Entity.Tenant
         /// 医療機関識別ID 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// 診療日 
         /// </summary>
-        [Column("SIN_DATE")]
+        [Column("sin_date")]
         public int SinDate { get; set; }
 
         /// <summary>
         /// 連番 
         /// </summary>
-        [Column("SEQ_NO")]
+        [Column("seq_no")]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 受付種別 
         /// </summary>
-        [Column("UKETUKE_SBT")]
+        [Column("uketuke_sbt")]
         public int UketukeSbt { get; set; }
 
         /// <summary>
         /// 作成日時 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 

@@ -29,7 +29,8 @@ public class CancelSeikyuInteractor : ICancelSeikyuInputPort
                 return new CancelSeikyuOutputData(CancelSeikyuStatus.InvalidInputItem);
             }
             var seikyuKbn = inputData.SeikyuKbn == 0 ? 1 : inputData.SeikyuKbn;
-            int seqNo = _receSeikyuRepository.InsertNewReceSeikyu(new ReceSeikyuModel(inputData.PtId, seikyuKbn, 999999, inputData.SinYm, inputData.HokenId), inputData.UserId, inputData.HpId);
+            var receSeikyu = new ReceSeikyuModel(inputData.PtId, seikyuKbn, 999999, inputData.SinYm, inputData.HokenId);
+            int seqNo = _receSeikyuRepository.InsertNewReceSeikyu(receSeikyu, inputData.UserId, inputData.HpId);
             if (seqNo == 0)
             {
                 return new CancelSeikyuOutputData(CancelSeikyuStatus.Failed);
@@ -37,10 +38,10 @@ public class CancelSeikyuInteractor : ICancelSeikyuInputPort
             var receSeikyuDuplicate = _receSeikyuRepository.GetReceSeikyuDuplicate(inputData.HpId, inputData.PtId, inputData.SinYm, inputData.HokenId);
             if (receSeikyuDuplicate.PtId > 0)
             {
-                receSeikyuDuplicate.UpdateReceSeikyuModel(1);
-                _receSeikyuRepository.UpdateReceSeikyu(new List<ReceSeikyuModel>() { receSeikyuDuplicate }, inputData.UserId, inputData.HpId);
+                receSeikyu.UpdateReceSeikyuModel(seqNo, 1, receSeikyuDuplicate.PreHokenId, receSeikyuDuplicate.Cmt);
+                _receSeikyuRepository.UpdateReceSeikyu(new List<ReceSeikyuModel>() { receSeikyu }, inputData.UserId, inputData.HpId);
             }
-            _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long>() { inputData.PtId }, inputData.SeikyuYm, string.Empty));
+            _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.HpId, new List<long>() { inputData.PtId }, inputData.SeikyuYm, string.Empty));
             return new CancelSeikyuOutputData(CancelSeikyuStatus.Successed);
         }
         finally

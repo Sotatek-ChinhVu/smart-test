@@ -3,7 +3,7 @@ using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
-using Reporting.Calculate.Extensions;
+using CalculateService.Extensions;
 using Reporting.InDrug.Model;
 using System;
 using System.Collections.Generic;
@@ -119,7 +119,7 @@ namespace Reporting.InDrug.DB
                    (p.EndDate >= sinDate || p.EndDate == 0) &&
             p.IsDeleted == DeleteStatus.None
                 );
-            var foodAlrgyKbns = NoTrackingDataContext.M12FoodAlrgyKbn.FindListNoTrack();
+            var foodAlrgyKbns = NoTrackingDataContext.M12FoodAlrgyKbn.FindListNoTrack(m => m.HpId == hpId);
 
             var join = (
 

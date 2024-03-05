@@ -1,24 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SMARTKARTE_APP_SIGNALR_PORT")]
+    [Table(name: "smartkarte_app_signalr_port")]
     public class SmartKarteAppSignalRPort : EmrCloneable<SmartKarteAppSignalRPort>
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("ID", Order = 1)]
+        [Column("id", Order = 1)]
         public int Id { get; set; }
 
-        [Column("PORT_NUMBER")]
+        [Column("port_number")]
         [CustomAttribute.DefaultValue(0)]
         public int PortNumber { get; set; }
 
-        [Column("MACHINE_NAME")]
+        [Column("machine_name")]
         [MaxLength(60)]
         public string? MachineName { get; set; } = string.Empty;
 
-        [Column("IP")]
+        [Column("ip")]
         [MaxLength(60)]
         public string? Ip { get; set; } = string.Empty;
 
@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -34,14 +34,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -49,14 +49,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
     }

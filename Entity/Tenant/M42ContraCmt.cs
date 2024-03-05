@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M42_CONTRA_CMT")]
+    [Table(name: "m42_contra_cmt")]
     public class M42ContraCmt : EmrCloneable<M42ContraCmt>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// コメントコード
         /// CM または KJ で始まり5桁の数字が続く
         /// </summary>
-        
-        [Column("CMT_CD", Order = 1)]
+
+        [Column("cmt_cd", Order = 1)]
         [MaxLength(7)]
         public string CmtCd { get; set; } = string.Empty;
 
@@ -20,7 +23,7 @@ namespace Entity.Tenant
         /// コメント
         /// 
         /// </summary>
-        [Column("CMT")]
+        [Column("cmt")]
         [MaxLength(400)]
         public string? Cmt { get; set; } = string.Empty;
 

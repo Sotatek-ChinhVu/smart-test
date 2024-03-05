@@ -4,7 +4,7 @@ namespace UseCase.Accounting.GetPtByoMei
 {
     public class PtDiseaseDto
     {
-        public PtDiseaseDto(long ptId, string byomeiCd, long seqNo, int syubyoKbn, int sikkanKbn, string fullByomei, int startDate, string tenKiBinding, int tenkiDate)
+        public PtDiseaseDto(long ptId, string byomeiCd, long seqNo, int syubyoKbn, int sikkanKbn, string fullByomei, int startDate, string tenKiBinding, int tenkiDate, int hokenId)
         {
             PtId = ptId;
             ByomeiCd = byomeiCd;
@@ -15,6 +15,7 @@ namespace UseCase.Accounting.GetPtByoMei
             StartDate = CIUtil.SDateToShowSDate(startDate);
             TenKiBinding = tenKiBinding;
             TenkiDate = CIUtil.SDateToShowSDate(tenkiDate);
+            HokenId = hokenId;
         }
 
         public long PtId { get; private set; }
@@ -26,5 +27,6 @@ namespace UseCase.Accounting.GetPtByoMei
         public string StartDate { get; private set; }
         public string TenKiBinding { get; private set; }
         public string TenkiDate { get; private set; }
+        public int HokenId {  get; private set; }
     }
 }

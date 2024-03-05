@@ -13,10 +13,10 @@ public class CoNameLabelFinder : RepositoryBase, ICoNameLabelFinder
         DisposeDataContext();
     }
 
-    public CoPtInfModel FindPtInf(long ptId)
+    public CoPtInfModel FindPtInf(int hpId ,long ptId)
     {
         var ptInfs = NoTrackingDataContext.PtInfs.Where(p =>
-            p.HpId == 1 &&
+            p.HpId == hpId &&
             p.PtId == ptId &&
             p.IsDelete == 0
         );

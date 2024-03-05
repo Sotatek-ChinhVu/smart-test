@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RECE_STATUS")]
+    [Table(name: "rece_status")]
     public class ReceStatus : EmrCloneable<ReceStatus>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEIKYU_YM", Order = 3)]
+        [Column("seikyu_ym", Order = 3)]
         public int SeikyuYm { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HOKEN_ID", Order = 4)]
+        [Column("hoken_id", Order = 4)]
         public int HokenId { get; set; }
 
         /// <summary>
@@ -44,14 +44,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_YM", Order = 5)]
+        [Column("sin_ym", Order = 5)]
         public int SinYm { get; set; }
 
         /// <summary>
         /// 付箋区分
         /// 
         /// </summary>
-        [Column("FUSEN_KBN")]
+        [Column("fusen_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int FusenKbn { get; set; }
 
@@ -59,14 +59,14 @@ namespace Entity.Tenant
         /// 紙レセフラグ
         /// 1:紙レセプト
         /// </summary>
-        [Column("IS_PAPER_RECE")]
+        [Column("is_paper_rece")]
         [CustomAttribute.DefaultValue(0)]
         public int IsPaperRece { get; set; }
 
         /// <summary>
         /// 1:仮確認済
         /// </summary>
-        [Column("IS_PRECHECKED")]
+        [Column("is_prechecked")]
         [CustomAttribute.DefaultValue(0)]
         public int IsPrechecked { get; set; }
 
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         /// 出力フラグ
         /// 1:出力済み
         /// </summary>
-        [Column("OUTPUT")]
+        [Column("output")]
         [CustomAttribute.DefaultValue(0)]
         public int Output { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 状態区分
         /// 0:未確認 1:システム保留 2:保留1 3:保留2 4:保留3 8:仮確認 9:確認済
         /// </summary>
-        [Column("STATUS_KBN")]
+        [Column("status_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int StatusKbn { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -98,14 +98,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -121,14 +121,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -136,7 +136,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

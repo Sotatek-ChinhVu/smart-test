@@ -16,7 +16,7 @@ public class GetKaCodeMstInteractor : IGetKaCodeMstListInputPort
     {
         try
         {
-            var departments = _kaMstRepository.GetListKacode();
+            var departments = _kaMstRepository.GetListKacode(inputData.HpId);
             var status = departments.Any() ? GetKaCodeMstListStatus.Success : GetKaCodeMstListStatus.NoData;
             return new GetKaCodeMstListOutputData(status, departments);
         }

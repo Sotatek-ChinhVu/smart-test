@@ -496,7 +496,7 @@ namespace CloudUnitTest.SampleData
                                     ptInf.LoginId = text;
                                     break;
                                 case "K":
-                                    ptInf.LoginPass = text;
+                                    //ptInf.LoginPass = text;
                                     break;
                                 case "M":
                                     int.TryParse(text, out int startDate);

@@ -32,14 +32,14 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
 
     public List<CoUsedDrugInf> GetUsedDrugInfs(int hpId, CoSta3040PrintConf printConf)
     {
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && x.IsDelete == DeleteStatus.None);
         if (!printConf.IsTester)
         {
             //テスト患者を除く
             ptInfs = ptInfs.Where(x => x.IsTester == 0);
         }
 
-        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None);
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
         //自費・労災・自賠を除く
         int[] ExpHokKbns = new int[] { 0, 11, 12, 13, 14 };
         ptHokenPatterns = ptHokenPatterns.Where(x => !ExpHokKbns.Contains(x.HokenKbn));
@@ -51,10 +51,10 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
                                                                && printConf.FromYm * 100 <= x.SinDate
                                                                && x.SinDate <= printConf.ToYm * 100 + 31);
 
-        var odrInfDetails = NoTrackingDataContext.OdrInfDetails;
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.DrugKbn > 0);
+        var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(x => x.HpId == hpId);
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.DrugKbn > 0 && x.HpId == hpId);
         var yakkaSyusaiMsts = NoTrackingDataContext.YakkaSyusaiMsts;
-        var drugUnitConvs = NoTrackingDataContext.DrugUnitConvs;
+        var drugUnitConvs = NoTrackingDataContext.DrugUnitConvs.Where(d => d.HpId == hpId);
 
         var odrDrugJoinQuery = (
             from odrInf in odrInfs
@@ -71,8 +71,8 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
                 new { odrInfDetail.HpId, odrInfDetail.ItemCd } equals
                 new { tenMst.HpId, tenMst.ItemCd }
             join yakkaSyusaiMst in yakkaSyusaiMsts on
-                new { tenMst.HpId, tenMst.ItemCd, tenMst.YakkaCd } equals
-                new { yakkaSyusaiMst.HpId, yakkaSyusaiMst.ItemCd, yakkaSyusaiMst.YakkaCd } into yakkaSyusaiJoins
+                new { tenMst.ItemCd, tenMst.YakkaCd } equals
+                new { yakkaSyusaiMst.ItemCd, yakkaSyusaiMst.YakkaCd } into yakkaSyusaiJoins
             from yakkaSyusaiJoin in yakkaSyusaiJoins.DefaultIfEmpty()
             join drugUnitConv in drugUnitConvs on
                 new { tenMst.ItemCd } equals

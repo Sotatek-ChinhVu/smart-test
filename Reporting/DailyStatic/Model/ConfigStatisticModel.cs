@@ -168,11 +168,11 @@ public class ConfigStatisticModel
         ConfigStatistic3040 = configStatistic3040;
     }
 
-    public ConfigStatisticModel(int groupId = 0, int reportId = 0, int sortNo = 0)
+    public ConfigStatisticModel(int hpId, int groupId = 0, int reportId = 0, int sortNo = 0)
     {
         _reportId = reportId;
         _staMenu = new StaMenu();
-        _staMenu.HpId = Session.HospitalID;
+        _staMenu.HpId = hpId;
         _staMenu.GrpId = groupId;
         _staMenu.ReportId = reportId;
         _staMenu.SortNo = sortNo;

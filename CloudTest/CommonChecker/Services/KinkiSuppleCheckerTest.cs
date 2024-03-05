@@ -8,7 +8,7 @@ using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Entity.Tenant;
-using Reporting.Calculate.Extensions;
+using CalculateService.Extensions;
 
 namespace CloudUnitTest.CommonChecker.Services;
 
@@ -108,6 +108,7 @@ public class KinkiSuppleCheckerTest : BaseUT
     [Test]
     public void KinkiSuppleChecker_003_Test_ErrorSupple_SettingLevel_Is_4()
     {
+        int hpId = 1;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -125,14 +126,14 @@ public class KinkiSuppleCheckerTest : BaseUT
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var kinkiSuppleChecker = new KinkiSuppleChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiSuppleChecker.HpID = 1;
+        kinkiSuppleChecker.HpID = hpId;
         kinkiSuppleChecker.PtID = 13934;
         kinkiSuppleChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
         //setup SystemCof
         //KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -142,7 +143,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -157,10 +158,10 @@ public class KinkiSuppleCheckerTest : BaseUT
         var cache = new MasterDataCacheService(TenantProvider);
         kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
         //Setup Data test
-        var ptSupples = CommonCheckerData.ReadPtSupple();
-        var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef();
-        var m41IndexCode = CommonCheckerData.ReadM41SuppleIndexcode(); 
-        var m01Kinki = CommonCheckerData.ReadM01Kinki(); 
+        var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
+        var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+        var m41IndexCode = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.PtSupples.AddRange(ptSupples);
         tenantTracking.M41SuppleIndexdefs.AddRange(m41IndexDef);
         tenantTracking.M41SuppleIndexcodes.AddRange(m41IndexCode);
@@ -193,6 +194,7 @@ public class KinkiSuppleCheckerTest : BaseUT
     [Test]
     public void KinkiSuppleChecker_004_Test_WhenSettingLevel_Is_0()
     {
+        int hpId = 1;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -210,14 +212,14 @@ public class KinkiSuppleCheckerTest : BaseUT
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var kinkiSuppleChecker = new KinkiSuppleChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiSuppleChecker.HpID = 1;
+        kinkiSuppleChecker.HpID = hpId;
         kinkiSuppleChecker.PtID = 13934;
         kinkiSuppleChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
         //setup SystemCof
         //KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -227,7 +229,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -240,10 +242,10 @@ public class KinkiSuppleCheckerTest : BaseUT
         }
 
         //Setup Data test
-        var ptSupples = CommonCheckerData.ReadPtSupple();
-        var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef();
-        var m41IndexCode = CommonCheckerData.ReadM41SuppleIndexcode();
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
+        var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+        var m41IndexCode = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.PtSupples.AddRange(ptSupples);
         tenantTracking.M41SuppleIndexdefs.AddRange(m41IndexDef);
         tenantTracking.M41SuppleIndexcodes.AddRange(m41IndexCode);
@@ -279,6 +281,7 @@ public class KinkiSuppleCheckerTest : BaseUT
     [Test]
     public void KinkiSuppleChecker_005_Test_WhenSettingLevel_Is_5()
     {
+        int hpId = 1;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -296,14 +299,14 @@ public class KinkiSuppleCheckerTest : BaseUT
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var kinkiSuppleChecker = new KinkiSuppleChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiSuppleChecker.HpID = 1;
+        kinkiSuppleChecker.HpID = hpId;
         kinkiSuppleChecker.PtID = 13934;
         kinkiSuppleChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
         //setup SystemCof
         //KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -313,7 +316,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -327,10 +330,10 @@ public class KinkiSuppleCheckerTest : BaseUT
 
 
         //Setup Data test
-        var ptSupples = CommonCheckerData.ReadPtSupple();
-        var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef();
-        var m41IndexCode = CommonCheckerData.ReadM41SuppleIndexcode();
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
+        var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+        var m41IndexCode = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.PtSupples.AddRange(ptSupples);
         tenantTracking.M41SuppleIndexdefs.AddRange(m41IndexDef);
         tenantTracking.M41SuppleIndexcodes.AddRange(m41IndexCode);
@@ -370,6 +373,7 @@ public class KinkiSuppleCheckerTest : BaseUT
     [Test]
     public void KinkiSuppleChecker_006_Test_ErrorSupple_SettingLevel_Is_1()
     {
+        int hpId = 1;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -387,13 +391,13 @@ public class KinkiSuppleCheckerTest : BaseUT
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var kinkiSuppleChecker = new KinkiSuppleChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiSuppleChecker.HpID = 1;
+        kinkiSuppleChecker.HpID = hpId;
         kinkiSuppleChecker.PtID = 13934;
         kinkiSuppleChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        
+
         //setup SystemCof KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -403,7 +407,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -416,10 +420,10 @@ public class KinkiSuppleCheckerTest : BaseUT
         }
 
         //Setup Data test
-        var ptSupples = CommonCheckerData.ReadPtSupple();
-        var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef();
-        var m41IndexCode = CommonCheckerData.ReadM41SuppleIndexcode();
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
+        var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+        var m41IndexCode = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.PtSupples.AddRange(ptSupples);
         tenantTracking.M41SuppleIndexdefs.AddRange(m41IndexDef);
         tenantTracking.M41SuppleIndexcodes.AddRange(m41IndexCode);
@@ -427,7 +431,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(kinkiSuppleChecker.HpID, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
 
         try

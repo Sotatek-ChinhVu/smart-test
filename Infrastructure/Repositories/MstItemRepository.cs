@@ -42,11 +42,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     private readonly List<int> usageInjects = new List<int>() { 31, 32, 33, 34 };
     private readonly List<int> inspections = new List<int>() { 60, 61, 62, 63, 64 };
 
-    public List<DosageDrugModel> GetDosages(List<string> yjCds)
+    public List<DosageDrugModel> GetDosages(int hpId, List<string> yjCds)
     {
-        var listDosageDrugs = NoTrackingDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd)).ToList();
+        var listDosageDrugs = NoTrackingDataContext.DosageDrugs.Where(d => d.HpId == hpId && yjCds.Contains(d.YjCd)).ToList();
         var listDoeiCd = listDosageDrugs.Select(item => item.DoeiCd).ToList();
-        var listDosageDosages = NoTrackingDataContext.DosageDosages.Where(item => listDoeiCd.Contains(item.DoeiCd)).ToList();
+        var listDosageDosages = NoTrackingDataContext.DosageDosages.Where(item => item.HpId == hpId && listDoeiCd.Contains(item.DoeiCd)).ToList();
         return listDosageDrugs == null ? new List<DosageDrugModel>() : listDosageDrugs.Select(
                 r => new DosageDrugModel(
                         r.YjCd,
@@ -61,14 +61,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                )).ToList();
     }
 
-    public (List<OtcItemModel>, int) SearchOTCModels(string searchValue, int pageIndex, int pageSize)
+    public (List<OtcItemModel>, int) SearchOTCModels(int hpId, string searchValue, int pageIndex, int pageSize)
     {
         searchValue = searchValue.Trim();
-        var OtcFormCodes = NoTrackingDataContext.M38OtcFormCode.AsQueryable();
-        var OtcMakerCodes = NoTrackingDataContext.M38OtcMakerCode.AsQueryable();
-        var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
-        var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
-        var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
+        var OtcFormCodes = NoTrackingDataContext.M38OtcFormCode.Where(m => m.HpId == hpId).AsQueryable();
+        var OtcMakerCodes = NoTrackingDataContext.M38OtcMakerCode.Where(m => m.HpId == hpId).AsQueryable();
+        var OtcMains = NoTrackingDataContext.M38OtcMain.Where(m => m.HpId == hpId).AsQueryable();
+        var UsageCodes = NoTrackingDataContext.M56UsageCode.Where(item => item.HpId == hpId);
+        var OtcClassCodes = NoTrackingDataContext.M38ClassCode.Where(m => m.HpId == hpId).AsQueryable();
         var query = from main in OtcMains.AsEnumerable()
                     join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft
                     from clas in classLeft.DefaultIfEmpty()
@@ -105,9 +105,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return (models, total);
     }
 
-    public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
+    public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData(int hpId)
     {
-        var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.AsEnumerable()
+        var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.Where(m => m.HpId == hpId).AsEnumerable()
             .OrderBy(x => x.FoodKbn)
             .Select(x => new FoodAlrgyKbnModel(
              x.FoodKbn,
@@ -116,13 +116,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return aleFoodKbns;
     }
 
-    public List<SearchSupplementModel> GetListSupplement(string searchValue)
+    public List<SearchSupplementModel> GetListSupplement(int hpId, string searchValue)
     {
         searchValue = searchValue.Trim();
 
-        var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.AsQueryable();
-        var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.Where(u => string.IsNullOrEmpty(searchValue.Trim()) || (u.IndexWord ?? string.Empty).Contains(searchValue.Trim())).OrderBy(u => u.SeibunCd).ThenBy(u => u.IndexWord).ThenBy(u => u.TokuhoFlg);
-        var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.AsQueryable();
+        var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.Where(m => m.HpId == hpId).AsQueryable();
+        var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.Where(u => u.HpId == hpId && string.IsNullOrEmpty(searchValue.Trim()) || (u.IndexWord ?? string.Empty).Contains(searchValue.Trim())).OrderBy(u => u.SeibunCd).ThenBy(u => u.IndexWord).ThenBy(u => u.TokuhoFlg);
+        var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.Where(m => m.HpId == hpId).AsQueryable();
         var indexDefJoinIngreQueryList = from indexCode in listSuppleIndexCode
                                          join ingre in listSuppleIngre on indexCode.SeibunCd equals ingre.SeibunCd into suppleIngreList
                                          from ingreItem in suppleIngreList.DefaultIfEmpty()
@@ -340,7 +340,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                 .Replace("ﾖ", "ｮ")
                                 .Replace("ﾂ", "ｯ");
 
-        var queryResult = NoTrackingDataContext.TenMsts.Where(t =>
+        var queryResult = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId &&
                             t.ItemCd.StartsWith(keyword)
                             || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
                             || (t.KanaName1 != null && t.KanaName1 != "" && (t.KanaName1.StartsWith(sBigKeyword) || t.KanaName1.StartsWith(sSmallKeyword)))
@@ -647,16 +647,15 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
 
         // only get kensaMsts not deleted
-        var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd) && k.IsDelete == 0).ToList();
+        var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => k.HpId == hpId && kensaItemCdList.Contains(k.KensaItemCd) && k.IsDelete == 0).ToList();
 
         var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
-        var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.StartDate <= sinDate && u.EndDate >= sinDate);
-        var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sinDate && u.EndDate >= sinDate);
+        var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.StartDate <= sinDate && u.EndDate >= sinDate);
+        var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.StartDate <= sinDate && u.EndDate >= sinDate);
 
         var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
-                                                                       p.HpId == hpId &&
                                                                        p.StartDate <= sinDate &&
                                                                        p.EndDate >= sinDate);
 
@@ -773,7 +772,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                     .Replace("ｯ", "ﾂ");
 
         var queryResult = NoTrackingDataContext.TenMsts
-                .Where(t =>
+                .Where(t => t.HpId == hpId &&
                     t.ItemCd.StartsWith(keyword)
                     || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
                     || !string.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
@@ -1224,21 +1223,17 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
         var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u =>
-                                                                            u.HpId == hpId &&
                                                                             u.StartDate <= sTDDate &&
                                                                             u.EndDate >= sTDDate).ToList();
         var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u =>
-                                                                                    u.HpId == hpId &&
                                                                                     u.StartDate <= sTDDate &&
                                                                                     u.EndDate >= sTDDate).ToList();
 
         var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
-                                                                       p.HpId == hpId &&
                                                                        p.StartDate <= sTDDate &&
                                                                        p.EndDate >= sTDDate).ToList();
 
         var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p =>
-                                                                        p.HpId == hpId &&
                                                                         p.StartDate <= sTDDate &&
                                                                         p.EndDate > sTDDate &&
                                                                         ipnCdList.Contains(p.IpnNameCd)
@@ -1488,11 +1483,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return tenMstModels;
     }
 
-    public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize, bool isHasFreeByomei = true)
+    public List<ByomeiMstModel> DiseaseSearch(int hpId, bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize, bool isHasFreeByomei = true)
     {
         var keywordHalfSize = keyword != string.Empty ? CIUtil.ToHalfsize(keyword) : "";
 
-        var query = NoTrackingDataContext.ByomeiMsts.Where(item =>
+        var query = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId &&
                                 (item.KanaName1 != null &&
                                 item.KanaName1.StartsWith(keywordHalfSize))
                                 ||
@@ -1560,9 +1555,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return listByomeies;
     }
 
-    public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
+    public List<ByomeiMstModel> DiseaseSearch(int hpId, List<string> keyCodes)
     {
-        var listDatas = NoTrackingDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
+        var listDatas = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId && keyCodes.Contains(item.ByomeiCd)).ToList();
         List<ByomeiMstModel> listByomeies = new();
 
         if (listDatas != null)
@@ -1586,15 +1581,15 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return true;
     }
 
-    public bool CheckItemCd(string itemCd)
+    public bool CheckItemCd(int hpId, string itemCd)
     {
-        return NoTrackingDataContext.TenMsts.Any(t => t.ItemCd == itemCd.Trim());
+        return NoTrackingDataContext.TenMsts.Any(t => t.HpId == hpId && t.ItemCd == itemCd.Trim());
     }
 
-    public List<string> GetCheckItemCds(List<string> itemCds)
+    public List<string> GetCheckItemCds(int hpId, List<string> itemCds)
     {
         itemCds = itemCds.Distinct().ToList();
-        var result = NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).Distinct().ToList();
+        var result = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).Distinct().ToList();
         return result;
     }
 
@@ -1964,7 +1959,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(
                 (x) => x.HpId == hpId && x.IsDeleted == 0);
         var tenMsts = NoTrackingDataContext.TenMsts.Where(
-                (x) => x.HpId == Session.HospitalID && x.StartDate <= sinDay && x.EndDate >= sinDay);
+                (x) => x.HpId == hpId && x.StartDate <= sinDay && x.EndDate >= sinDay);
 
         var sinKouiCollection = new SinkouiCollection();
 
@@ -2075,6 +2070,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         List<ItemCommentSuggestionModel> result = NoTrackingDataContext.TenMsts.Where(item => listItemCd.Contains(item.ItemCd) &&
                                                                           item.StartDate <= sinDate &&
+                                                                          item.HpId == hpId &&
                                                                           sinDate <= item.EndDate)
                                              .AsEnumerable()
                                              .Select(item => new ItemCommentSuggestionModel(
@@ -2495,9 +2491,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                     )).ToList();
     }
 
-    public List<TenMstOriginModel> GetGroupTenMst(string itemCd)
+    public List<TenMstOriginModel> GetGroupTenMst(int hpId, string itemCd)
     {
-        return NoTrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd)
+        return NoTrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd && item.HpId == hpId)
                                             .OrderByDescending(item => item.StartDate)
                                             .Select(x => new TenMstOriginModel(x.HpId,
                                                                                x.ItemCd,
@@ -2683,9 +2679,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                                false)).ToList();
     }
 
-    public string GetMaxItemCdByTypeForAdd(string startWithstr)
+    public string GetMaxItemCdByTypeForAdd(int hpId, string startWithstr)
     {
-        var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.ItemCd.StartsWith(startWithstr)).ToList();
+        var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.ItemCd.StartsWith(startWithstr)).ToList();
 
         var tenMst = tenMstList.Where(item => item.ItemCd.Substring(startWithstr.Length).AsInteger() != 0)
                                .OrderByDescending(item => item.ItemCd.Replace(startWithstr, string.Empty).PadLeft(10, '0'))
@@ -2771,9 +2767,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return NoTrackingDataContext.OdrInfDetails.Any(x => x.HpId == hpId && x.ItemCd == itemCd);
     }
 
-    public bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds)
+    public bool SaveDeleteOrRecoverTenMstOrigin(int hpId, DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds)
     {
-        var tenMstDatabases = TrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd).ToList();
+        var tenMstDatabases = TrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.ItemCd == itemCd).ToList();
         if (mode == DeleteOrRecoverTenMstMode.Delete)
         {
             tenMstDatabases.ForEach(x =>
@@ -3053,10 +3049,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             return model.Name ?? string.Empty;
     }
 
-    public List<M10DayLimitModel> GetM10DayLimitModels(string yjCdItem)
+    public List<M10DayLimitModel> GetM10DayLimitModels(int hpId, string yjCdItem)
     {
         return NoTrackingDataContext.M10DayLimit.Where(
-                x => x.YjCd == yjCdItem)
+                x => x.HpId == hpId && x.YjCd == yjCdItem)
                 .Select(x => new M10DayLimitModel(x.YjCd,
                                                   x.SeqNo,
                                                   x.LimitDay,
@@ -3070,10 +3066,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public List<IpnMinYakkaMstModel> GetIpnMinYakkaMstModels(int hpId, string IpnNameCd)
     {
         return NoTrackingDataContext.IpnMinYakkaMsts.Where(
-                x => x.HpId == hpId &&
-                     x.IsDeleted == 0 &&
+                x => x.IsDeleted == 0 &&
                      x.IpnNameCd == IpnNameCd)
-                .Select(x => new IpnMinYakkaMstModel(x.Id, x.HpId, x.IpnNameCd, x.StartDate, x.EndDate, x.Yakka, x.SeqNo, x.IsDeleted, false))
+                .Select(x => new IpnMinYakkaMstModel(x.Id, hpId, x.IpnNameCd, x.StartDate, x.EndDate, x.Yakka, x.SeqNo, x.IsDeleted, false))
                 .ToList();
     }
 
@@ -3107,7 +3102,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public IpnNameMstModel GetIpnNameMstModel(int hpId, string ipnNameCd, int sinDate)
     {
         var model = NoTrackingDataContext.IpnNameMsts.FirstOrDefault(x =>
-                    x.HpId == hpId &&
                     x.IsDeleted == 0 &&
                     x.IpnNameCd == ipnNameCd &&
                     x.StartDate <= sinDate &&
@@ -3121,9 +3115,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
     }
 
-    public string GetYohoInfMstPrefixByItemCd(string itemCd)
+    public string GetYohoInfMstPrefixByItemCd(int hpId, string itemCd)
     {
-        var model = NoTrackingDataContext.YohoInfMsts.FirstOrDefault(x => x.ItemCd == itemCd);
+        var model = NoTrackingDataContext.YohoInfMsts.FirstOrDefault(x => x.ItemCd == itemCd && x.HpId == hpId);
         if (model == null)
             return string.Empty;
         else
@@ -3167,10 +3161,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         pathFull.Append("/");
         pathFull.Append(path);
 
-        var piImage = NoTrackingDataContext.PiImages.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == itemCd && u.ImageType == imageType);
+        var piImage = NoTrackingDataContext.PiImages.FirstOrDefault(u => u.ItemCd == itemCd && u.ImageType == imageType);
         if (piImage != null)
         {
-            return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, piImage.FileName ?? string.Empty, false, false, pathFull + piImage.FileName ?? string.Empty);
+            return new PiImageModel(hpId, piImage.ImageType, piImage.ItemCd, piImage.FileName ?? string.Empty, false, false, pathFull + piImage.FileName ?? string.Empty);
         }
         else
         {
@@ -3184,7 +3178,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var teikyoByomeis = NoTrackingDataContext.TekiouByomeiMsts.Where(
                 (x) => x.HpId == hpId && x.ItemCd == itemCd && (!isFromCheckingView || x.IsInvalidTokusyo != 1));
 
-        var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where((x) => x.HpId == Session.HospitalID);
+        var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where((x) => x.HpId == hpId);
 
         var query = from teikyoByomei in teikyoByomeis
                     join byomeiMst in byomeiMsts on
@@ -3494,7 +3488,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                                         u.StartDate <= sinDate &&
                                                                                         u.EndDate >= sinDate);
 
-        var tenMstQuery = NoTrackingDataContext.TenMsts.Where(e => e.StartDate <= sinDate && e.EndDate >= sinDate && e.IsDeleted == DeleteTypes.None);
+        var tenMstQuery = NoTrackingDataContext.TenMsts.Where(e => e.HpId == hpId && e.StartDate <= sinDate && e.EndDate >= sinDate && e.IsDeleted == DeleteTypes.None);
 
         var query = from hokatu in listHoukatu
                     join hokatuGrp in listHoukatuGrp on hokatu.HoukatuGrpNo equals hokatuGrp.HoukatuGrpNo
@@ -3543,7 +3537,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                               u.EndDate >= sinDate &&
                                                               !_HoukatuTermExclude.Contains(u.HoukatuTerm));
 
-        var tenMstQuery = NoTrackingDataContext.TenMsts.Where(e => e.StartDate <= sinDate && e.EndDate >= sinDate && e.IsDeleted == DeleteTypes.None);
+        var tenMstQuery = NoTrackingDataContext.TenMsts.Where(e => e.HpId == hpId && e.StartDate <= sinDate && e.EndDate >= sinDate && e.IsDeleted == DeleteTypes.None);
 
         var query = from hokatuGrp in listHoukatuGrp
                     join hokatu in listHoukatu on hokatuGrp.HoukatuGrpNo equals hokatu.HoukatuGrpNo
@@ -3617,38 +3611,27 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
-    public List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd)
+    public List<CombinedContraindicationModel> GetContraindicationModelList(int hpId, int sinDate, string itemCd)
     {
-        var kinkiQuery = NoTrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd);
-        var itemMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
+        var kinkiQuery = NoTrackingDataContext.KinkiMsts.Where(item => item.HpId == hpId && item.ACd == itemCd).ToList();
+        var itemMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.StartDate <= sinDate && kinkiQuery.Select(i => i.HpId).Contains(item.HpId) && kinkiQuery.Select(i => i.BCd).Contains(item.ItemCd) && item.IsDeleted == DeleteTypes.None).ToList();
 
-        var query = from kinki in kinkiQuery
-                    join tenMst in itemMstQuery on new { kinki.HpId, ItemCd = kinki.BCd }
-                                            equals new { tenMst.HpId, tenMst.ItemCd } into tenMstLeft
-                    from tMst in tenMstLeft.DefaultIfEmpty()
-                    select new
-                    {
-                        Kinki = kinki,
-                        TenMst = tMst ?? new TenMst()
-                    };
-
-        return query.AsEnumerable().Select(
-               data => new CombinedContraindicationModel(data.Kinki.Id,
-                                                         data.Kinki.HpId,
-                                                         data.Kinki.ACd,
-                                                         data.Kinki.BCd ?? string.Empty,
-                                                         data.Kinki.SeqNo,
-                                                         data.Kinki.IsDeleted == 1,
-                                                         data.TenMst?.Name ?? string.Empty,
+        return kinkiQuery.Select(data => new CombinedContraindicationModel(data.Id,
+                                                         data.HpId,
+                                                         data.ACd,
+                                                         data.BCd ?? string.Empty,
+                                                         data.SeqNo,
+                                                         data.IsDeleted == 1,
+                                                         itemMstQuery.OrderByDescending(i => i.EndDate).FirstOrDefault(i => i.ItemCd == data.BCd && i.HpId == data.HpId)?.Name ?? string.Empty, // By default, get the largest endDate
                                                          false,
                                                          false,
-                                                         data.Kinki.BCd ?? string.Empty)).ToList();
+                                                         data.BCd ?? string.Empty)).ToList();
     }
 
     public bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId)
     {
         #region handler tenMstOrigins
-        List<TenMst> tenMstDatabase = TrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd).ToList();
+        List<TenMst> tenMstDatabase = TrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.ItemCd == itemCd).ToList();
         tenMstGrigins.ForEach(x =>
         {
             if (x.IsAddNew && x.IsDeleted == DeleteTypes.None)
@@ -3819,7 +3802,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     if (model.CheckDefaultValue())
                     {
                         var dosageMsts = TrackingDataContext.DosageMsts.Where(x =>
-                                            x.HpId == Session.HospitalID &&
+                                            x.HpId == hpId &&
                                             x.IsDeleted == 0 &&
                                             x.ItemCd == model.ItemCd).ToList();
 
@@ -3857,7 +3840,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             if (ipnModel.ModelModified)
             {
                 var ipnDb = TrackingDataContext.IpnNameMsts.FirstOrDefault(x =>
-                      x.HpId == hpId &&
                       x.IpnNameCd == ipnModel.IpnNameCd &&
                       x.StartDate == ipnModel.StartDate &&
                       x.EndDate == ipnModel.EndDate);
@@ -3869,7 +3851,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         TrackingDataContext.IpnNameMsts.Add(new IpnNameMst()
                         {
                             IpnNameCd = ipnModel.IpnNameCdOrigin,
-                            HpId = hpId,
                             StartDate = ipnModel.StartDate,
                             SeqNo = 1,
                             EndDate = 99999999,
@@ -3914,7 +3895,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                             IsDeleted = DeleteTypes.None,
                             UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             EndDate = x.EndDate,
-                            HpId = hpId,
                             IpnNameCd = x.IpnNameCd,
                             SeqNo = 1,
                             StartDate = x.StartDate,
@@ -3923,7 +3903,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     }
                     else
                     {
-                        var updateIpnYk = TrackingDataContext.IpnMinYakkaMsts.FirstOrDefault(ip => ip.Id == x.Id && x.HpId == ip.HpId);
+                        var updateIpnYk = TrackingDataContext.IpnMinYakkaMsts.FirstOrDefault(ip => ip.Id == x.Id);
                         if (updateIpnYk != null)
                         {
                             updateIpnYk.UpdateId = userId;
@@ -3981,7 +3961,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         void UsageSettingUpdate()
         {
-            var yohoDb = TrackingDataContext.YohoInfMsts.FirstOrDefault(x => x.ItemCd == itemCd);
+            var yohoDb = TrackingDataContext.YohoInfMsts.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == itemCd);
             if (yohoDb != null)
             {
                 yohoDb.YohoSuffix = setDataTen.UsageSettingTab.YohoInfMstPrefix;
@@ -4055,7 +4035,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             IEnumerable<PiImageModel> addedImageModel = listPiImage.Where(k => k.IsNewModel && !k.IsDefaultModel);
             TrackingDataContext.PiImages.AddRange(Mapper.Map<PiImageModel, PiImage>(addedImageModel, (src, dest) =>
             {
-                dest.HpId = hpId;
                 dest.UpdateId = userId;
                 dest.CreateId = userId;
                 dest.ItemCd = itemCd;
@@ -4067,7 +4046,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             var updatedImageModel = listPiImage.Where(k => k.IsModified).ToList();
             updatedImageModel.ForEach(x =>
             {
-                var upIm = TrackingDataContext.PiImages.FirstOrDefault(i => i.HpId == x.HpId && i.ImageType == x.ImageType && i.ItemCd == x.ItemCd);
+                var upIm = TrackingDataContext.PiImages.FirstOrDefault(i => i.ImageType == x.ImageType && i.ItemCd == x.ItemCd);
                 if (upIm != null)
                 {
                     upIm.UpdateId = userId;
@@ -4917,7 +4896,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         void CombinedContraindicationUpdate()
         {
             List<CombinedContraindicationModel> source = setDataTen.CombinedContraindicationTab.CombinedContraindications;
-            var kinkiQueryDb = TrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd).ToList();
+            var kinkiQueryDb = TrackingDataContext.KinkiMsts.Where(item => item.HpId == hpId && item.ACd == itemCd).ToList();
             foreach (CombinedContraindicationModel model in source)
             {
                 if (model.CheckDefaultValue())
@@ -4998,7 +4977,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         List<TenMstMaintenanceModel> result;
 
-        IQueryable<TenMst> listTenMst = NoTrackingDataContext.TenMsts.Where(item => item.ItemCd.StartsWith(startWithstr) &&
+        IQueryable<TenMst> listTenMst = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.ItemCd.StartsWith(startWithstr) &&
                                                                             item.StartDate <= sinDate &&
                                                                             item.EndDate >= sinDate &&
                                                                             item.IsDeleted == DeleteTypes.None);
@@ -5145,7 +5124,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var yakkaSyusaiMstList = NoTrackingDataContext.YakkaSyusaiMsts.AsQueryable();
 
         var queryResult = NoTrackingDataContext.TenMsts
-               .Where(t =>
+               .Where(t => t.HpId == hpId &&
                    t.ItemCd.StartsWith(keyword)
                    || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
                    || !string.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
@@ -5398,12 +5377,12 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             queryResult = queryResult.Where(t => t.RousaiKbn != 1);
         }
 
-        queryResult = queryResult.Where(t => t.IsNosearch == 0);
+        queryResult = queryResult.Where(t => t.IsNosearch == 0 && t.HpId == hpId);
 
         var tenJoinYakkaSyusai = (from ten in queryResult
                                   join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                  on new { ten.HpId, ten.YakkaCd, ten.ItemCd, ten.StartDate }
-                                  equals new { yakkaSyusaiMstItem.HpId, yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd, yakkaSyusaiMstItem.StartDate }
+                                  on new { ten.YakkaCd, ten.ItemCd, ten.StartDate }
+                                  equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd, yakkaSyusaiMstItem.StartDate }
                                   into yakkaSyusaiMstItems
                                   from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
                                   select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem }).ToList();
@@ -5413,13 +5392,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                             where tenKN.ItemCd.StartsWith("KN")
                             select new { tenKN.ItemCd, ten.Ten }).ToList();
 
-        var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
-        var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
+        var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.StartDate <= sTDDate && u.EndDate >= sTDDate);
+        var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.StartDate <= sTDDate && u.EndDate >= sTDDate);
 
-        var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
-                                                                       p.HpId == hpId &&
-                                                                       p.StartDate <= sTDDate &&
-                                                                       p.EndDate >= sTDDate).ToList();
+        var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p => p.StartDate <= sTDDate &&
+                                                                           p.EndDate >= sTDDate).ToList();
         var sinKouiCollection = new SinkouiCollection();
 
         var queryFinal = (from ten in tenJoinYakkaSyusai
@@ -5444,8 +5421,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var ipnCdList = queryFinal.Where(q => q.TenMst.IpnNameCd != null && q.TenMst.IpnNameCd != string.Empty).Select(q => q.TenMst.IpnNameCd).Distinct().ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
-        var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p => p.HpId == hpId &&
-                                                                        p.StartDate <= sTDDate &&
+        var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p => p.StartDate <= sTDDate &&
                                                                         p.EndDate > sTDDate &&
                                                                         ipnCdList.Contains(p.IpnNameCd)
                                                                         ).ToList();
@@ -5476,7 +5452,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var totalCount = joinedQuery.Count();
 
-        var entities = joinedQuery.OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
+        var entities = joinedQuery.OrderByDescending(item => item.TenMst.IsAdopted).ThenBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
 
         var tenMstModels = entities.Select(item => new TenItemModel(
                                                          item.TenMst.HpId,
@@ -5540,10 +5516,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return (tenMstModels, totalCount);
     }
 
-    public string GetDrugAction(string yjCd)
+    public string GetDrugAction(int hpId, string yjCd)
     {
-        var m34DrugInfMain = NoTrackingDataContext.M34DrugInfoMains.Where(drug => drug.YjCd == yjCd);
-        var m34IndicationCode = NoTrackingDataContext.M34IndicationCodes.Where(ind => ind.KonoCd != null);
+        var m34DrugInfMain = NoTrackingDataContext.M34DrugInfoMains.Where(drug => drug.YjCd == yjCd && drug.HpId == hpId);
+        var m34IndicationCode = NoTrackingDataContext.M34IndicationCodes.Where(ind => ind.HpId == hpId && ind.KonoCd != null);
         var query = (from drug in m34DrugInfMain
                      join ind in m34IndicationCode on drug.KonoCd equals ind.KonoCd
                      select new
@@ -5556,16 +5532,16 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
-    public string GetPrecautions(string yjCd)
+    public string GetPrecautions(int hpId, string yjCd)
     {
         StringBuilder stringBuilder = new();
 
-        var listPrecautionCode = NoTrackingDataContext.M34Precautions.Where(pre => pre.YjCd == yjCd).AsEnumerable().Select(u => u.PrecautionCd).ToList();
+        var listPrecautionCode = NoTrackingDataContext.M34Precautions.Where(pre => pre.YjCd == yjCd && pre.HpId == hpId).AsEnumerable().Select(u => u.PrecautionCd).ToList();
         if (listPrecautionCode.Count == 0)
         {
             return string.Empty;
         }
-        var listPrecautionInf = NoTrackingDataContext.M34PrecautionCodes.Where(preCode => listPrecautionCode.Contains(preCode.PrecautionCd)).ToList();
+        var listPrecautionInf = NoTrackingDataContext.M34PrecautionCodes.Where(preCode => preCode.HpId == hpId && listPrecautionCode.Contains(preCode.PrecautionCd)).ToList();
         foreach (var item in listPrecautionInf)
         {
             stringBuilder.Append(item.PrecautionCmt ?? string.Empty);
@@ -5616,7 +5592,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             {
                 if (item.Status == ModelStatus.Modified)
                 {
-                    var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                    var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id && i.HpId == hpId);
                     if (data != null)
                     {
                         data.UnitName = item.UnitName;
@@ -5634,7 +5610,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 }
                 if (item.Status == ModelStatus.Deleted)
                 {
-                    var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                    var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id && i.HpId == hpId);
                     if (data != null)
                     {
                         singleDoseDelete.Add(data);
@@ -6024,7 +6000,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             if (item.MaterialModelStatus == ModelStatus.Deleted)
             {
-                var containerMaster = TrackingDataContext.MaterialMsts.Where(x => x.MaterialCd == item.MaterialCd);
+                var containerMaster = TrackingDataContext.MaterialMsts.Where(x => x.HpId == hpId && x.MaterialCd == item.MaterialCd);
                 if (containerMaster != null)
                 {
                     TrackingDataContext.MaterialMsts.RemoveRange(containerMaster);
@@ -6032,7 +6008,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             else
             {
-                var materialMaster = TrackingDataContext.MaterialMsts.FirstOrDefault(x => x.MaterialCd == item.MaterialCd);
+                var materialMaster = TrackingDataContext.MaterialMsts.FirstOrDefault(x => x.MaterialCd == item.MaterialCd && x.HpId == hpId);
                 if (materialMaster != null)
                 {
                     materialMaster.MaterialCd = item.MaterialCd;
@@ -6265,7 +6241,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             if (item.ContainerModelStatus == ModelStatus.Deleted)
             {
-                var containerMaster = TrackingDataContext.ContainerMsts.Where(x => x.ContainerCd == item.ContainerCd);
+                var containerMaster = TrackingDataContext.ContainerMsts.Where(x => x.HpId == hpId && x.ContainerCd == item.ContainerCd);
                 if (containerMaster != null)
                 {
                     TrackingDataContext.ContainerMsts.RemoveRange(containerMaster);
@@ -6273,7 +6249,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             else
             {
-                var containerMaster = TrackingDataContext.ContainerMsts.FirstOrDefault(x => x.ContainerCd == item.ContainerCd);
+                var containerMaster = TrackingDataContext.ContainerMsts.FirstOrDefault(x => x.HpId == hpId && x.ContainerCd == item.ContainerCd);
                 if (containerMaster != null)
                 {
                     containerMaster.ContainerCd = item.ContainerCd;
@@ -6328,7 +6304,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             if (itemKensa.IsDeleted == 1)
             {
-                var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == itemKensa.KensaItemCd && x.KensaItemSeqNo == itemKensa.KensaItemSeqNo);
+                var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.HpId == hpId && x.KensaItemCd == itemKensa.KensaItemCd && x.KensaItemSeqNo == itemKensa.KensaItemSeqNo);
                 if (listKensaMst != null)
                 {
                     listKensaMst.IsDelete = 1;
@@ -6336,7 +6312,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             else
             {
-                var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == itemKensa.KensaItemCd && x.KensaItemSeqNo == itemKensa.KensaItemSeqNo);
+                var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.HpId == hpId && x.KensaItemCd == itemKensa.KensaItemCd && x.KensaItemSeqNo == itemKensa.KensaItemSeqNo);
                 if (listKensaMst != null)
                 {
                     listKensaMst.CenterCd = itemKensa.CenterCd;
@@ -6375,7 +6351,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
             if (item.IsDeleted == 1)
             {
-                var childKensaMst = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                var childKensaMst = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.HpId == hpId && x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
                 if (childKensaMst != null)
                 {
                     childKensaMst.IsDelete = 1;
@@ -6383,7 +6359,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             else
             {
-                var childKensaMst = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                var childKensaMst = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.HpId == hpId && x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
                 if (childKensaMst != null)
                 {
                     childKensaMst.CenterCd = item.CenterCd;
@@ -6419,7 +6395,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             if (item.IsDeleted == 1)
             {
-                var listTenMst = TrackingDataContext.TenMsts.Where(x => x.ItemCd == item.ItemCd);
+                var listTenMst = TrackingDataContext.TenMsts.Where(x => x.HpId == hpId && x.ItemCd == item.ItemCd);
                 if (listTenMst != null)
                 {
                     foreach (var listTenMstItem in listTenMst)
@@ -6437,7 +6413,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             else
             {
-                var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
                 if (listTenMst != null)
                 {
                     listTenMst.SinKouiKbn = item.SinKouiKbn;
@@ -6479,7 +6455,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             if (item.IsDeleted == 1)
             {
-                var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
                 if (listTenMst != null)
                 {
                     TrackingDataContext.TenMsts.Remove(listTenMst);
@@ -6487,7 +6463,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             else
             {
-                var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
                 if (listTenMst != null)
                 {
                     listTenMst.SinKouiKbn = item.SinKouiKbn;
@@ -6636,7 +6612,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             if (item.IsDeleted)
             {
-                var kensaStdMaster = TrackingDataContext.KensaStdMsts.Where(x => x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
+                var kensaStdMaster = TrackingDataContext.KensaStdMsts.Where(x => x.HpId == hpId && x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
                 if (kensaStdMaster != null)
                 {
                     TrackingDataContext.KensaStdMsts.RemoveRange(kensaStdMaster);
@@ -6644,7 +6620,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             else
             {
-                var kensaStdMaster = TrackingDataContext.KensaStdMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
+                var kensaStdMaster = TrackingDataContext.KensaStdMsts.FirstOrDefault(x => x.HpId == hpId && x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
                 if (kensaStdMaster != null)
                 {
                     kensaStdMaster.MaleStd = item.MaleStd;
@@ -6739,7 +6715,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public List<string> GetTenItemCds(int hpId)
     {
         return NoTrackingDataContext.TenMsts
-                        .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
+                        .Where(p => p.HpId == hpId && (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
                         .Select(p => p.ItemCd).Distinct().ToList();
     }
 
@@ -6862,7 +6838,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                         .Select(item => new { item.ItemCd, item.SanteiItemCd, item.Name, item.KensaItemCd, item.StartDate })
                                                         .GroupBy(item => item.ItemCd)
                                                         .Select(key => key.OrderByDescending(s => s.StartDate).FirstOrDefault());
-        var itemMstQuery = NoTrackingDataContext.TenMsts.Where(u => u.IsDeleted == DeleteTypes.None)
+        var itemMstQuery = NoTrackingDataContext.TenMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteTypes.None)
                             .Select(item => new { item.ItemCd, item.StartDate, item.EndDate, item.SanteiItemCd, item.Ten, item.ReceName }).ToList();
 
         var santenInfList = from santei in santeiItemQuery.ToList()
@@ -6891,7 +6867,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public bool UpdateJihiSbtMst(int hpId, int userId, List<JihiSbtMstModel> jihiSbtMsts)
     {
-        int jihiSbt = NoTrackingDataContext.JihiSbtMsts.OrderByDescending(i => i.JihiSbt).FirstOrDefault()?.JihiSbt ?? 0;
+        int jihiSbt = NoTrackingDataContext.JihiSbtMsts.OrderByDescending(i => i.JihiSbt).FirstOrDefault(i => i.HpId == hpId)?.JihiSbt ?? 0;
         var jihiSbtMstAdd = new List<JihiSbtMst>();
         var jihiSbtMstUpdate = new List<JihiSbtMst>();
         foreach (var item in jihiSbtMsts)
@@ -6910,7 +6886,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             else if (item.Status == ModelStatus.Modified || item.Status == ModelStatus.Deleted)
             {
-                var jihiSbtMst = NoTrackingDataContext.JihiSbtMsts.FirstOrDefault(i => i.JihiSbt == item.JihiSbt);
+                var jihiSbtMst = NoTrackingDataContext.JihiSbtMsts.FirstOrDefault(i => i.HpId == hpId && i.JihiSbt == item.JihiSbt);
                 if (jihiSbtMst != null)
                 {
                     jihiSbtMst.Name = item.Name;
@@ -7563,7 +7539,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                                            && seqNoList.Contains(item.SeqNo))
                                                                             .ToList();
         var evendCdList = renkeiTimingConfDBList.Select(item => item.EventCd).Distinct().ToList();
-        var eventMstDBList = NoTrackingDataContext.EventMsts.Where(item => evendCdList.Contains(item.EventCd)).ToList();
+        var eventMstDBList = NoTrackingDataContext.EventMsts.Where(item => item.HpId == hpId && evendCdList.Contains(item.EventCd)).ToList();
 
         foreach (var renkeiMst in renkeiMstModelList)
         {
@@ -7652,7 +7628,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
         foreach (YohoSetMstModel yohoSetMstModel in listUpdate)
         {
-            var yohoSetMst = TrackingDataContext.YohoSetMsts.FirstOrDefault(i => i.SetId == yohoSetMstModel.SetId);
+            var yohoSetMst = TrackingDataContext.YohoSetMsts.FirstOrDefault(i => i.HpId == hpId && i.SetId == yohoSetMstModel.SetId);
             if (yohoSetMst != null)
             {
                 yohoSetMst.SortNo = yohoSetMstModel.SortNo;
@@ -7714,9 +7690,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
-    public List<EventMstModel> GetEventMstModelList()
+    public List<EventMstModel> GetEventMstModelList(int hpId)
     {
-        var result = NoTrackingDataContext.EventMsts.Select(item => new EventMstModel(item.EventCd, item.EventName ?? string.Empty, item.AuditTrailing, item.CreateDate)).ToList();
+        var result = NoTrackingDataContext.EventMsts.Where(item => item.HpId == hpId).Select(item => new EventMstModel(item.EventCd, item.EventName ?? string.Empty, item.AuditTrailing, item.CreateDate)).ToList();
         return result;
     }
 
@@ -7742,17 +7718,19 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
 
         idRenkeiList = idRenkeiList.Distinct().ToList();
-        var renkeiConfDBList = TrackingDataContext.RenkeiConfs.Where(item => idRenkeiList.Contains(item.Id)).ToList();
+        var renkeiConfDBList = TrackingDataContext.RenkeiConfs.Where(item => item.HpId == hpId && idRenkeiList.Contains(item.Id)).ToList();
 
         var renkeiIdList = renkeiConfDBList.Select(item => item.RenkeiId).Distinct().ToList();
         var seqNoList = renkeiConfDBList.Select(item => item.SeqNo).Distinct().ToList();
-        var renkeiPathConfDBList = TrackingDataContext.RenkeiPathConfs.Where(item => (idRenkeiPathList.Contains(item.Id)
-                                                                                      || renkeiIdList.Contains(item.RenkeiId))
-                                                                                     && seqNoList.Contains(item.SeqNo))
+        var renkeiPathConfDBList = TrackingDataContext.RenkeiPathConfs.Where(item => item.HpId == hpId
+                                                                                        && (idRenkeiPathList.Contains(item.Id)
+                                                                                        || renkeiIdList.Contains(item.RenkeiId))
+                                                                                        && seqNoList.Contains(item.SeqNo))
                                                                       .ToList();
-        var renkeiTimingDBList = TrackingDataContext.RenkeiTimingConfs.Where(item => (idRenkeiTimingList.Contains(item.Id)
-                                                                                      || renkeiIdList.Contains(item.RenkeiId))
-                                                                                     && seqNoList.Contains(item.SeqNo))
+        var renkeiTimingDBList = TrackingDataContext.RenkeiTimingConfs.Where(item => item.HpId == hpId
+                                                                                        && (idRenkeiTimingList.Contains(item.Id)
+                                                                                        || renkeiIdList.Contains(item.RenkeiId))
+                                                                                        && seqNoList.Contains(item.SeqNo))
                                                                       .ToList();
 
         foreach (var tab in renkeiTabList)
@@ -7771,7 +7749,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     renkeiEntity.HpId = hpId;
                     renkeiEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
                     renkeiEntity.CreateId = userId;
-                    renkeiEntity.SeqNo = GetSeqNo(renkeiModel.RenkeiId);
+                    renkeiEntity.SeqNo = GetSeqNo(hpId, renkeiModel.RenkeiId);
                 }
                 if (renkeiModel.IsDeleted)
                 {
@@ -7904,9 +7882,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
-    private int GetSeqNo(int renkeiId)
+    private int GetSeqNo(int hpId, int renkeiId)
     {
-        var renkeiConfByRenkeiIdList = NoTrackingDataContext.RenkeiConfs.Where(item => item.RenkeiId == renkeiId).ToList();
+        var renkeiConfByRenkeiIdList = NoTrackingDataContext.RenkeiConfs.Where(item => item.HpId == hpId && item.RenkeiId == renkeiId).ToList();
         if (renkeiConfByRenkeiIdList.Any())
         {
             var seqNo = renkeiConfByRenkeiIdList.Max(item => item.SeqNo) + 1;
@@ -7963,13 +7941,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         // Get list kensa childrens, parents 
         var allkensaKensaMst = (
-            from kensaMst in NoTrackingDataContext.KensaMsts
+            from kensaMst in NoTrackingDataContext.KensaMsts.Where(i => i.HpId == hpId)
             where kensaMst.IsDelete == DeleteTypes.None && (kensaItemCdSet.Contains(kensaMst.KensaItemCd) || (kensaMst.OyaItemCd != null && kensaItemCdSet.Contains(kensaMst.OyaItemCd)) || kensaOyaItemCdSet.Contains(kensaMst.KensaItemCd))
-            join centerMst in NoTrackingDataContext.KensaCenterMsts
+            join centerMst in NoTrackingDataContext.KensaCenterMsts.Where(i => i.HpId == hpId)
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
             from res in joinedData.DefaultIfEmpty()
-            join kensaStd in NoTrackingDataContext.KensaStdMsts
+            join kensaStd in NoTrackingDataContext.KensaStdMsts.Where(i => i.HpId == hpId)
                              on kensaMst.KensaItemCd equals kensaStd.KensaItemCd into leftJoinKensaStd
             from kensaStd in leftJoinKensaStd.DefaultIfEmpty()
             select new KensaMstModel(
@@ -8042,16 +8020,16 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         #region Append parent, childrens item, Childs of parent match keyword
 
         #region Apend Childs of parent match keyword
-        var kensaOyaItemCdMatchKeyword = NoTrackingDataContext.KensaMsts.Where(x => kensaItemCdSet.Contains(x.KensaItemCd) && x.OyaItemCd != string.Empty && x.OyaItemCd != null).Select(x => x.OyaItemCd).ToHashSet();
+        var kensaOyaItemCdMatchKeyword = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId && kensaItemCdSet.Contains(x.KensaItemCd) && x.OyaItemCd != string.Empty && x.OyaItemCd != null).Select(x => x.OyaItemCd).ToHashSet();
         // list child of parent item match keyword
         var listChilsMatchKeyword = (
-            from kensaMst in NoTrackingDataContext.KensaMsts
+            from kensaMst in NoTrackingDataContext.KensaMsts.Where(i => i.HpId == hpId)
             where kensaMst.IsDelete == DeleteTypes.None && kensaOyaItemCdMatchKeyword.Contains(kensaMst.OyaItemCd)
-            join centerMst in NoTrackingDataContext.KensaCenterMsts
+            join centerMst in NoTrackingDataContext.KensaCenterMsts.Where(i => i.HpId == hpId)
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
             from res in joinedData.DefaultIfEmpty()
-            join kensaStd in NoTrackingDataContext.KensaStdMsts
+            join kensaStd in NoTrackingDataContext.KensaStdMsts.Where(i => i.HpId == hpId)
                              on kensaMst.KensaItemCd equals kensaStd.KensaItemCd into leftJoinKensaStd
             from kensaStd in leftJoinKensaStd.DefaultIfEmpty()
             select new KensaMstModel(
@@ -8344,7 +8322,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return itemName;
     }
 
-    public TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate)
+    public TenItemModel GetTenMstByCode(int hpId, string itemCd, int setKbn, int sinDate)
     {
         List<int> setKbns = new()
         {
@@ -8366,7 +8344,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             setKbns.Add(setKbn);
         }
-        var item = NoTrackingDataContext.TenMsts.Where(tenMst => tenMst.ItemCd == itemCd && setKbns.Contains(tenMst.SinKouiKbn) && tenMst.StartDate <= sinDate && tenMst.EndDate >= sinDate && tenMst.IsDeleted == DeleteTypes.None)
+        var item = NoTrackingDataContext.TenMsts.Where(tenMst => tenMst.HpId == hpId && tenMst.ItemCd == itemCd && setKbns.Contains(tenMst.SinKouiKbn) && tenMst.StartDate <= sinDate && tenMst.EndDate >= sinDate && tenMst.IsDeleted == DeleteTypes.None)
             .AsEnumerable().Select(tenMst => new TenItemModel
             (
                 tenMst.HpId, tenMst.ItemCd, tenMst.Kokuji1 ?? string.Empty, tenMst.Kokuji2 ?? string.Empty, tenMst.SinKouiKbn, tenMst.Name ?? string.Empty, tenMst.KanaName1 ?? string.Empty, tenMst.KanaName2 ?? string.Empty, tenMst.KanaName3 ?? string.Empty, tenMst.KanaName4 ?? string.Empty, tenMst.KanaName5 ?? string.Empty, tenMst.KanaName6 ?? string.Empty, tenMst.KanaName7 ?? string.Empty,
@@ -8376,9 +8354,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return item ?? new();
     }
 
-    public ByomeiMstModel GetByomeiByCode(string byomeiCd)
+    public ByomeiMstModel GetByomeiByCode(int hpId, string byomeiCd)
     {
-        var byomeiMst = NoTrackingDataContext.ByomeiMsts.Where(b => b.ByomeiCd == byomeiCd).FirstOrDefault();
+        var byomeiMst = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && b.ByomeiCd == byomeiCd).FirstOrDefault();
         if (byomeiMst == null)
             return new ByomeiMstModel(string.Empty);
         return new ByomeiMstModel(byomeiMst.Byomei ?? string.Empty);
@@ -8389,7 +8367,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var renkeiTimingMsts = NoTrackingDataContext.RenkeiTimingMsts.Where(x =>
                 x.HpId == hpId &&
                 x.RenkeiId == renkeiId);
-        var eventMsts = NoTrackingDataContext.EventMsts;
+        var eventMsts = NoTrackingDataContext.EventMsts.Where(e => e.HpId == hpId);
         var query = from renkeiTimingMst in renkeiTimingMsts
                     join eventMst in eventMsts on renkeiTimingMst.EventCd equals eventMst.EventCd into eventMstTimings
                     from eventMstTiming in eventMstTimings
@@ -8411,10 +8389,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
-    public bool CheckJihiSbtExistsInTenMst(int jihiSbt)
+    public bool CheckJihiSbtExistsInTenMst(int hpId, int jihiSbt)
     {
         var tenMst = NoTrackingDataContext.TenMsts
-            .Where(item => item.JihiSbt == jihiSbt && item.IsDeleted == DeleteTypes.None)
+            .Where(item => item.HpId == hpId && item.JihiSbt == jihiSbt && item.IsDeleted == DeleteTypes.None)
             .FirstOrDefault();
 
         return tenMst != null;

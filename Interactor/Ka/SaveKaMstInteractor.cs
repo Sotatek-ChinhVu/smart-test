@@ -37,7 +37,7 @@ public class SaveKaMstInteractor : ISaveKaMstInputPort
             return new SaveKaMstOutputData(SaveKaMstStatus.InputNotFound);
         }
 
-        var listKaCode = _kaMstRepository.GetListKacode();
+        var listKaCode = _kaMstRepository.GetListKacode(inputData.HpId);
         foreach (var input in inputData.KaMstModels)
         {
             if (input.KaId <= 0)

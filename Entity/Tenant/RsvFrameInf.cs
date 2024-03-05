@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -6,66 +6,66 @@ namespace Entity.Tenant
     /// <summary>
     /// 予約枠情報
     /// </summary>
-    [Table("RSV_FRAME_INF")]
+    [Table("rsv_frame_inf")]
     public class RsvFrameInf : EmrCloneable<RsvFrameInf>
     {
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("ID", Order = 1)]
+        [Column("id", Order = 1)]
         public int Id { get; set; }
 
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
         
-        [Column("HP_ID", Order = 2)]
+        [Column("hp_id", Order = 2)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 予約枠ID
         /// </summary>
         
-        [Column("RSV_FRAME_ID", Order = 3)]
+        [Column("rsv_frame_id", Order = 3)]
         public int RsvFrameId { get; set; }
 
         /// <summary>
         /// 診療日
         /// </summary>
         
-        [Column("SIN_DATE", Order = 4)]
+        [Column("sin_date", Order = 4)]
         public int SinDate { get; set; }
 
         /// <summary>
         /// 開始時間
         /// </summary>
         
-        [Column("START_TIME", Order = 5)]
+        [Column("start_time", Order = 5)]
         public int StartTime { get; set; }
 
         /// <summary>
         /// 終了時間
         /// </summary>
-        [Column("END_TIME")]
+        [Column("end_time")]
         public int EndTime { get; set; }
 
         /// <summary>
         /// 枠番号
         /// </summary>
-        [Column("FRAME_NO")]
+        [Column("frame_no")]
         public int FrameNo { get; set; }
 
         /// <summary>
         /// 休診区分
         ///     1:休診日
         /// </summary>
-        [Column("IS_HOLIDAY")]
+        [Column("is_holiday")]
         [CustomAttribute.DefaultValue(0)]
         public int IsHoliday { get; set; }
 
         /// <summary>
         /// 予約番号
         /// </summary>
-        [Column("NUMBER")]
+        [Column("number")]
         [CustomAttribute.DefaultValue(0)]
         public long Number { get; set; }
 
@@ -73,55 +73,55 @@ namespace Entity.Tenant
         /// 枠種別
         ///     1: 追加枠
         /// </summary>
-        [Column("FRAME_SBT")]
+        [Column("frame_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int FrameSbt { get; set; }
 
         /// <summary>
         /// 受付種別
         /// </summary>
-        [Column("UKETUKE_SBT")]
+        [Column("uketuke_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int UketukeSbt { get; set; }
 
         /// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末	
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時	
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末	
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

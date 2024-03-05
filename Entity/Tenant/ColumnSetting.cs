@@ -1,31 +1,34 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant;
 
-[Table("COLUMN_SETTING")]
+[Table("column_setting")]
 public class ColumnSetting
 {
-    [Column("USER_ID")]
+    [Column("hp_id")]
+    public int HpId { get; set; }
+
+    [Column("user_id")]
     public int UserId { get; set; }
 
-    [Column("TABLE_NAME")]
+    [Column("table_name")]
     public string TableName { get; set; } = null!;
 
-    [Column("COLUMN_NAME")]
+    [Column("column_name")]
     public string ColumnName { get; set; } = null!;
 
-    [Column("DISPLAY_ORDER")]
+    [Column("display_order")]
     public int DisplayOrder { get; set; }
 
-    [Column("IS_PINNED")]
+    [Column("is_pinned")]
     public bool IsPinned { get; set; }
 
-    [Column("IS_HIDDEN")]
+    [Column("is_hidden")]
     public bool IsHidden { get; set; }
 
-    [Column("WIDTH")]
+    [Column("width")]
     public int Width { get; set; }
 
-    [Column("ORDER_BY")]
+    [Column("order_by")]
     public string OrderBy { get; set; } = null!;
 }

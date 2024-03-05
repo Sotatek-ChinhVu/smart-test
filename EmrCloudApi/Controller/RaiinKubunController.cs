@@ -26,7 +26,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList + "Mst")]
         public ActionResult<Response<GetRaiinKubunMstListResponse>> GetRaiinKubunMstList([FromQuery] GetRaiinKubunMstListRequest request)
         {
-            var input = new GetRaiinKubunMstListInputData(request.IsDeleted);
+            var input = new GetRaiinKubunMstListInputData(HpId, request.IsDeleted);
             var output = _bus.Handle(input);
 
             var presenter = new GetRaiinKubunMstListPresenter();
