@@ -9,6 +9,7 @@ using Domain.Models.OrdInfs;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Microsoft.Extensions.Configuration;
@@ -134,12 +135,13 @@ public class SaveMedicalRepositoryTest : BaseUT
         var monshinInforModel = new MonshinInforModel();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var userInfoService = new Mock<IUserInfoService>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
 
         FamilyRepository familyRepository = new FamilyRepository(TenantProvider);
-        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object);
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object, userInfoService.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
         NextOrderRepository nextOrderRepository = new NextOrderRepository(TenantProvider);
@@ -268,12 +270,13 @@ public class SaveMedicalRepositoryTest : BaseUT
         var monshinInforModel = new MonshinInforModel();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var userInfoService = new Mock<IUserInfoService>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
 
         FamilyRepository familyRepository = new FamilyRepository(TenantProvider);
-        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object);
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object, userInfoService.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
         NextOrderRepository nextOrderRepository = new NextOrderRepository(TenantProvider);
