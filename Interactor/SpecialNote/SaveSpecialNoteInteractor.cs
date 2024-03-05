@@ -67,7 +67,7 @@ namespace Interactor.SpecialNote
                         string.Empty,
                         p.SinDate
                     )
-                    ).ToList(), inputData.PatientInfoTab.PtCmtInfItems, inputData.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputData.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0)).ToList()) }), inputData.UserId);
+                    ).ToList(), inputData.PatientInfoTab.PtCmtInfItems, inputData.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputData.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0, string.Empty)).ToList()) }), inputData.UserId);
 
                 if (!result) return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Failed);
 
