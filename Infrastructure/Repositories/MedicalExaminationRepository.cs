@@ -168,7 +168,7 @@ namespace Infrastructure.Repositories
 
             result.AddRange(igakuTokusituItemOthers);
 
-            return result;
+            return result.Distinct().ToList();
         }
 
         public List<CheckedOrderModel> SihifuToku1(int hpId, long ptId, int sinDate, int hokenId, int syosaisinKbn, long raiinNo, long oyaRaiinNo, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
