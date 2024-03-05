@@ -6,5 +6,5 @@ public class OnlQuaConfirmationType
 
     public string InfConsFlg { get; set; } = string.Empty;
 
-    public int prescriptionIssueType { get; set; }
+    public int PrescriptionIssueType { get; set; }
 }

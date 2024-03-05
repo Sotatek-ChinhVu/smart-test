@@ -149,7 +149,7 @@ public class OnlineController : AuthorizeControllerBase
         Dictionary<string, (int confirmationType, string infConsFlg, int prescriptionIssueType)> onlQuaConfirmationTypeDict = new();
         foreach (var item in request.OnlQuaConfirmationTypeDict)
         {
-            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg, item.Value.prescriptionIssueType));
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg, item.Value.PrescriptionIssueType));
         }
         var input = new UpdateOQConfirmationInputData(HpId, UserId, request.OnlineHistoryId, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
         var output = _bus.Handle(input);
