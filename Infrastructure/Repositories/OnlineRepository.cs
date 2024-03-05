@@ -142,7 +142,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return idList.Count == countId;
     }
 
-    public bool UpdateOQConfirmation(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
+    public bool UpdateOQConfirmation(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg, int prescriptionIssueType)> onlQuaConfirmationTypeDict)
     {
         if (!onlQuaResFileDict.Any())
         {
@@ -164,6 +164,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     var item = onlQuaResFileDict.First();
                     history.ConfirmationType = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].confirmationType : 1;
                     history.InfoConsFlg = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ";
+                    history.PrescriptionIssueType = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].prescriptionIssueType : 0;
                     history.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     history.UpdateId = userId;
                     TrackingDataContext.SaveChanges();

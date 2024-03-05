@@ -4,7 +4,7 @@ namespace UseCase.Online.UpdateOQConfirmation;
 
 public class UpdateOQConfirmationInputData : IInputData<UpdateOQConfirmationOutputData>
 {
-    public UpdateOQConfirmationInputData(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
+    public UpdateOQConfirmationInputData(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg, int prescriptionIssueType)> onlQuaConfirmationTypeDict)
     {
         HpId = hpId;
         UserId = userId;
@@ -21,5 +21,5 @@ public class UpdateOQConfirmationInputData : IInputData<UpdateOQConfirmationOutp
 
     public Dictionary<string, string> OnlQuaResFileDict { get; private set; }
 
-    public Dictionary<string, (int confirmationType, string infConsFlg)> OnlQuaConfirmationTypeDict { get; private set; }
+    public Dictionary<string, (int confirmationType, string infConsFlg, int prescriptionIssueType)> OnlQuaConfirmationTypeDict { get; private set; }
 }

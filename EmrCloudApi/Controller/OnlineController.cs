@@ -146,10 +146,10 @@ public class OnlineController : AuthorizeControllerBase
     [HttpPost(ApiPath.UpdateOQConfirmation)]
     public ActionResult<Response<UpdateOQConfirmationResponse>> UpdateOQConfirmation([FromBody] UpdateOQConfirmationRequest request)
     {
-        Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict = new();
+        Dictionary<string, (int confirmationType, string infConsFlg, int prescriptionIssueType)> onlQuaConfirmationTypeDict = new();
         foreach (var item in request.OnlQuaConfirmationTypeDict)
         {
-            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg, item.Value.prescriptionIssueType));
         }
         var input = new UpdateOQConfirmationInputData(HpId, UserId, request.OnlineHistoryId, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
         var output = _bus.Handle(input);
