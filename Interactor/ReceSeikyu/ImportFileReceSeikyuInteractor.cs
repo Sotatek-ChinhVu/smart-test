@@ -408,10 +408,13 @@ namespace Interactor.ReceSeikyu
         public string ReadAsString(IFormFile file)
         {
             var result = new StringBuilder();
-            using (var reader = new StreamReader(file.OpenReadStream()))
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            using (var reader = new StreamReader(file.OpenReadStream(), Encoding.GetEncoding(932)))
             {
-                while (reader.Peek() >= 0)
+                while (!reader.EndOfStream)
+                {
                     result.AppendLine(reader.ReadLine());
+                }
             }
             return result.ToString();
         }
