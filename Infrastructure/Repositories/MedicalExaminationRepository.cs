@@ -134,8 +134,6 @@ namespace Infrastructure.Repositories
         public List<CheckedOrderModel> IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail)
         {
             var result = new List<CheckedOrderModel>();
-            var igakuTokusituItems = checkedOrders.Where(detail => detail.ItemCd == ItemCdConst.IgakuTokusitu || detail.ItemCd == ItemCdConst.IgakuTokusitu1);
-            var igakuTokusituItemOthers = checkedOrders.Where(detail => detail.ItemCd != ItemCdConst.IgakuTokusitu || detail.ItemCd != ItemCdConst.IgakuTokusitu1);
             if (syosaisinKbn == SyosaiConst.None)
             {
                 bool containCdKbn = false;
@@ -156,19 +154,19 @@ namespace Infrastructure.Repositories
                         }
                     }
                 }
-                if (igakuTokusituItems != null && igakuTokusituItems.Any())
+                foreach (var igaku in checkedOrders)
                 {
-                    var igaku = igakuTokusituItems.FirstOrDefault();
-                    if (igaku != null)
+                    if (igaku.ItemCd == ItemCdConst.IgakuTokusitu || igaku.ItemCd == ItemCdConst.IgakuTokusitu1)
                     {
-                        result.Add(igaku.ChangeSantei(containCdKbn));
+                        igaku.ChangeSantei(containCdKbn);
+                        break;
                     }
                 }
             }
 
-            result.AddRange(igakuTokusituItemOthers);
+            result.AddRange(checkedOrders);
 
-            return result.Distinct().ToList();
+            return result;
         }
 
         public List<CheckedOrderModel> SihifuToku1(int hpId, long ptId, int sinDate, int hokenId, int syosaisinKbn, long raiinNo, long oyaRaiinNo, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
