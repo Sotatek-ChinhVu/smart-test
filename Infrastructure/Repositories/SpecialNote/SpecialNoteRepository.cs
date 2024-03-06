@@ -9,7 +9,6 @@ using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Text;
@@ -115,7 +114,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 SaveAlrgyFoodItems(userId, hpId, ptId, importantNoteModel);
 
                 // delete cache key when save SaveAlrgyFoodItems
-                finalKey = key + CacheKeyConstant.AlrgyFoodGetList + "_" + ptId;
+                finalKey = key + CacheKeyConstant.AlrgyFoodGetList + "_" + ptId + "_" + hpId;
                 if (_cache.KeyExists(finalKey))
                 {
                     _cache.KeyDelete(finalKey);
@@ -126,7 +125,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 SaveElseItems(userId, hpId, ptId, importantNoteModel);
 
                 // delete cache key when save SaveElseItems
-                finalKey = key + CacheKeyConstant.AlrgyElseGetList + "_" + ptId;
+                finalKey = key + CacheKeyConstant.AlrgyElseGetList + "_" + ptId + "_" + hpId;
                 if (_cache.KeyExists(finalKey))
                 {
                     _cache.KeyDelete(finalKey);
@@ -137,7 +136,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 SaveDrugItems(userId, hpId, ptId, importantNoteModel);
 
                 // delete cache key when save SaveDrugItems
-                finalKey = key + CacheKeyConstant.PtAlrgyDrugGetList + "_" + ptId;
+                finalKey = key + CacheKeyConstant.PtAlrgyDrugGetList + "_" + ptId + "_" + hpId;
                 if (_cache.KeyExists(finalKey))
                 {
                     _cache.KeyDelete(finalKey);
@@ -148,7 +147,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 SaveKioRekiItems(userId, hpId, ptId, importantNoteModel);
 
                 // delete cache key when save SaveKioRekiItems
-                finalKey = key + CacheKeyConstant.KioRekiGetList + "_" + ptId;
+                finalKey = key + CacheKeyConstant.KioRekiGetList + "_" + ptId + "_" + hpId;
                 if (_cache.KeyExists(finalKey))
                 {
                     _cache.KeyDelete(finalKey);
@@ -159,7 +158,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 SaveInfectionsItems(userId, hpId, ptId, importantNoteModel);
 
                 // delete cache key when save SaveInfectionsItems
-                finalKey = key + CacheKeyConstant.InfectionGetList + "_" + ptId;
+                finalKey = key + CacheKeyConstant.InfectionGetList + "_" + ptId + "_" + hpId;
                 if (_cache.KeyExists(finalKey))
                 {
                     _cache.KeyDelete(finalKey);
@@ -170,7 +169,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 SaveOtherDrugItems(userId, hpId, ptId, importantNoteModel);
 
                 // delete cache key when save SaveOtherDrugItems
-                finalKey = key + CacheKeyConstant.OtherDrugGetList + "_" + ptId;
+                finalKey = key + CacheKeyConstant.OtherDrugGetList + "_" + ptId + "_" + hpId;
                 if (_cache.KeyExists(finalKey))
                 {
                     _cache.KeyDelete(finalKey);
@@ -181,7 +180,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 SaveOtcDrugItems(userId, hpId, ptId, importantNoteModel);
 
                 // delete cache key when save SaveOtcDrugItems
-                finalKey = key + CacheKeyConstant.OtcDrugGetList + "_" + ptId;
+                finalKey = key + CacheKeyConstant.OtcDrugGetList + "_" + ptId + "_" + hpId;
                 if (_cache.KeyExists(finalKey))
                 {
                     _cache.KeyDelete(finalKey);
@@ -192,7 +191,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 SaveSuppleItems(userId, hpId, ptId, importantNoteModel);
 
                 // delete cache key when save SaveSuppleItems
-                finalKey = key + CacheKeyConstant.SuppleGetList + "_" + ptId;
+                finalKey = key + CacheKeyConstant.SuppleGetList + "_" + ptId + "_" + hpId;
                 if (_cache.KeyExists(finalKey))
                 {
                     _cache.KeyDelete(finalKey);
@@ -815,7 +814,7 @@ namespace Infrastructure.Repositories.SpecialNote
             var updateKensaInfDetailList = new List<KensaInfDetail>();
             foreach (var item in kensaInfDetailListInputs)
             {
-                var updateSupple = kensaInfDetailUpdates.FirstOrDefault(a => a.HpId == item.HpId && a.PtId == item.PtId && a.SeqNo == item.SeqNo && item.IraiCd == a.IraiCd);
+                var updateSupple = kensaInfDetailUpdates.FirstOrDefault(a => a.HpId == item.HpId && a.PtId == item.PtId && a.SeqNo == item.SeqNo && item.IraiCd == a.IraiCd && item.IsDeleted == 0);
                 if (updateSupple != null)
                 {
                     item.CreateId = updateSupple.CreateId;

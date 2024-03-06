@@ -1,13 +1,12 @@
 ﻿using Domain.Common;
-using System.Linq.Expressions;
 
 namespace Domain.Models.PtTag
 {
     public interface IPtTagRepository : IRepositoryBase
     {
-        List<StickyNoteModel> SearchByPtId(int hpId, int ptId);
-        bool UpdateIsDeleted(int hpId, int ptId, int seqNo,int isDeleted, int userId);
+        List<StickyNoteModel> SearchByPtId(int hpId, long ptId);
+        bool UpdateIsDeleted(int hpId, long ptId, int seqNo, int isDeleted, int userId);
         bool SaveStickyNote(List<StickyNoteModel> stickyNoteModels, int userId);
-        StickyNoteModel GetStickyNoteModel(int hpId,long ptId,long seqNo);
+        StickyNoteModel GetStickyNoteModel(int hpId, long ptId, long seqNo);
     }
 }

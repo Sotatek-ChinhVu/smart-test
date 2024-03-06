@@ -539,11 +539,11 @@ namespace Interactor.MedicalExamination
                     break;
                 case "2":
                     //アレルギー 
-                    summaryInfItem = GetDrugInfo(ptId, sinDate);
+                    summaryInfItem = GetDrugInfo(hpId, ptId, sinDate);
                     break;
                 case "3":
                     // 病歴
-                    summaryInfItem = GetPathologicalStatus(ptId);
+                    summaryInfItem = GetPathologicalStatus(hpId, ptId);
                     break;
                 case "4":
                     // 相互作用
@@ -662,14 +662,14 @@ namespace Interactor.MedicalExamination
             return summaryInfItem;
         }
 
-        private SummaryInfItem GetDrugInfo(long ptId, int sinDate)
+        private SummaryInfItem GetDrugInfo(int hpId, long ptId, int sinDate)
         {
             int grpItemCd = 2;
             string headerName = "◆アレルギー";
             StringBuilder headerInf = new StringBuilder();
 
             var taskAlgryElse = Task<List<PtAlrgyElseModel>>.Factory.StartNew(() => _importantNoteDrugInfAlgryElseRepository.GetAlrgyElseList(ptId, sinDate));
-            var taskAlgryFood = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantNoteDrugInfAlgryFoodRepository.GetAlrgyFoodList(ptId, sinDate));
+            var taskAlgryFood = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantNoteDrugInfAlgryFoodRepository.GetAlrgyFoodList(hpId, ptId, sinDate));
             var taskAlgryDrug = Task<List<PtAlrgyDrugModel>>.Factory.StartNew(() => _importantNoteDrugInfAlgryDrugRepository.GetAlrgyDrugList(ptId, sinDate));
             Task.WaitAll(taskAlgryElse, taskAlgryFood, taskAlgryDrug);
 
@@ -720,14 +720,14 @@ namespace Interactor.MedicalExamination
             return summaryInfItem;
         }
 
-        private SummaryInfItem GetPathologicalStatus(long ptId)
+        private SummaryInfItem GetPathologicalStatus(int hpId, long ptId)
         {
             int grpItemCd = 3;
             string headerName = "◆病態";
             StringBuilder headerInfo = new StringBuilder();
 
-            var taskReki = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantNotePathologicalRekiRepository.GetKioRekiList(ptId));
-            var taskInflection = Task<List<PtInfectionModel>>.Factory.StartNew(() => _importantNotePathologicalInfectionRepository.GetInfectionList(ptId));
+            var taskReki = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantNotePathologicalRekiRepository.GetKioRekiList(hpId, ptId));
+            var taskInflection = Task<List<PtInfectionModel>>.Factory.StartNew(() => _importantNotePathologicalInfectionRepository.GetInfectionList(hpId, ptId));
             Task.WaitAll(taskReki, taskInflection);
 
             foreach (var ptKioRekiModel in taskReki.Result)

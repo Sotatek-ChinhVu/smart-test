@@ -333,7 +333,7 @@ public static class ReadDataInitKbnSetting
                         {
                             case "A":
                                 int.TryParse(text, out int hpId);
-                                kouiKbnMst.HpId = hpId;
+                                //kouiKbnMst.HpId = hpId;
                                 break;
                             case "B":
                                 int.TryParse(text, out int kouiKbnId);
@@ -362,7 +362,7 @@ public static class ReadDataInitKbnSetting
                         }
                         numberCell++;
                     }
-                    if (kouiKbnMst.HpId == 0 && kouiKbnMst.KouiKbnId == 0)
+                    if (kouiKbnMst.KouiKbnId == 0)
                     {
                         break;
                     }

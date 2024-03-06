@@ -16,7 +16,7 @@ public class GetUketukeSbtMstListInteractor : IGetUketukeSbtMstListInputPort
     {
         try
         {
-            var receptionTypes = _uketukeSbtMstRepository.GetList();
+            var receptionTypes = _uketukeSbtMstRepository.GetList(input.HpId);
             var status = receptionTypes.Any() ? GetUketukeSbtMstListStatus.Success : GetUketukeSbtMstListStatus.NoData;
             return new GetUketukeSbtMstListOutputData(status, receptionTypes);
         }

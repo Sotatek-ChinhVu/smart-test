@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Serializable()]
-    [Table(name: "TEMPLATE_MENU_DETAIL")]
+    [Table(name: "template_menu_detail")]
     public class TemplateMenuDetail : EmrCloneable<TemplateMenuDetail>
     {
         /// <summary>
@@ -12,8 +12,8 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HP_ID", Order = 1)]
-        //[Index("TEMPLATE_MENU_DETAIL_PKEY", 1)]
+        [Column("hp_id", Order = 1)]
+        //[Index("template_menu_detail_pkey", 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,8 +21,8 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("MENU_KBN", Order = 2)]
-        //[Index("TEMPLATE_MENU_DETAIL_PKEY", 2)]
+        [Column("menu_kbn", Order = 2)]
+        //[Index("template_menu_detail_pkey", 2)]
         public int MenuKbn { get; set; }
 
         /// <summary>
@@ -30,30 +30,30 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 3)]
+        [Column("seq_no", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        //[Index("TEMPLATE_MENU_DETAIL_PKEY", 3)]
+        //[Index("template_menu_detail_pkey", 3)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 項目名
         /// 
         /// </summary>
-        [Column("ITEM_NAME")]
+        [Column("item_name")]
         [MaxLength(100)]
         public string? ItemName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(0)]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 値
         /// </summary>
-        [Column("VAL")]
+        [Column("val")]
         [CustomAttribute.DefaultValue(0)]
         public double? Val { get; set; }
 
@@ -61,14 +61,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -76,7 +76,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -84,14 +84,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -99,7 +99,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

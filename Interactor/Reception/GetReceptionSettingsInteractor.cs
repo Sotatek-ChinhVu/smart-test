@@ -42,7 +42,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
         int mouseWheel = 0;
         int kanFocus = 0;
         int selectToDoSetting = 0;
-        var userConfigs = _userConfRepository.GetList(userId, UserConfCommon.GroupCodes.Font, UserConfCommon.GroupCodes.SelectTodoSetting);
+        var userConfigs = _userConfRepository.GetList(hpId, userId, UserConfCommon.GroupCodes.Font, UserConfCommon.GroupCodes.SelectTodoSetting);
         foreach (var config in userConfigs)
         {
             switch (config.GrpCd)

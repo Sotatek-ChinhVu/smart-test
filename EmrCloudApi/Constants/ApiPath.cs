@@ -98,6 +98,7 @@
         public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
         public const string UploadListFileKarte = "UploadListFileKarte";
         public const string GetListInsuranceScan = "GetListInsuranceScan";
+        public const string ResizeImage = "ResizeImage";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
@@ -412,7 +413,9 @@
         public const string SaveReceSeikyu = "SaveReceSeikyu";
         public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
+        public const string RecalculateInSeikyuPending = "RecalculateInSeikyuPending";
         public const string GetReceSeikyModelByPtNum = "GetReceSeikyModelByPtNum";
+        public const string GetRecedenHenJiyuuList = "GetRecedenHenJiyuuList";
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";
@@ -441,8 +444,8 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
-        public const string GetLockInf = "GetLockInf"; 
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
+        public const string GetLockInf = "GetLockInf";
         public const string Unlock = "Unlock";
         public const string CheckIsExistedOQLockInfo = "CheckIsExistedOQLockInfo";
 
@@ -555,5 +558,19 @@
         public const string GetSinrekiFilterMstList = "GetSinrekiFilterMstList";
         public const string SaveSinrekiFilterMstList = "SaveSinrekiFilterMstList";
         public const string GetContentDrugUsageHistory = "GetContentDrugUsageHistory";
+
+        //Yousiki
+        public const string GetYousiki1InfModelWithCommonInf = "GetYousiki1InfModelWithCommonInf";
+        public const string GetYousiki1InfDetails = "GetYousiki1InfDetails";
+        public const string GetYousiki1InfDetailsByCodeNo = "GetYousiki1InfDetailsByCodeNo";
+        public const string GetVisitingInfs = "GetVisitingInfs";
+        public const string GetHistoryYousiki = "GetHistoryYousiki";
+        public const string AddYousiki = "AddYousiki";
+        public const string DeleteYousikiInf = "DeleteYousikiInf";
+        public const string GetYousiki1InfModel = "GetYousiki1InfModel";
+        public const string GetKacodeYousikiMstDict = "GetKacodeYousikiMstDict";
+        public const string GetByomeisInMonth = "GetByomeisInMonth";
+        public const string CreateYuIchiFile = "CreateYuIchiFile";
+        public const string UpdateYousiki = "UpdateYousiki";
     }
 }

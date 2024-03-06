@@ -3,10 +3,10 @@ using Infrastructure.Interfaces;
 using Reporting.AccountingCardList.DB;
 using Reporting.AccountingCardList.Mapper;
 using Reporting.AccountingCardList.Model;
-using Reporting.Calculate.Interface;
-using Reporting.Calculate.Receipt.Constants;
-using Reporting.Calculate.Receipt.Models;
-using Reporting.Calculate.Receipt.ViewModels;
+using CalculateService.Interface;
+using CalculateService.Receipt.Constants;
+using CalculateService.Receipt.Models;
+using CalculateService.Receipt.ViewModels;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -111,7 +111,6 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         {
             _finder.ReleaseResource();
             _tenantProvider.DisposeDataContext();
-            _systemConfigProvider.ReleaseResource();
         }
     }
 

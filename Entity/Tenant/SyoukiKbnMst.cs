@@ -1,17 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SYOUKI_KBN_MST")]
+    [Table(name: "syouki_kbn_mst")]
     public class SyoukiKbnMst : EmrCloneable<SyoukiKbnMst>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 症状詳記区分
         /// 
         /// </summary>
-        
-        [Column("SYOUKI_KBN", Order = 1)]
+
+        [Column("syouki_kbn", Order = 1)]
         public int SyoukiKbn { get; set; }
 
         /// <summary>
@@ -19,7 +22,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("START_YM", Order = 2)]
+        [Column("start_ym", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int StartYm { get; set; }
 
@@ -27,7 +30,7 @@ namespace Entity.Tenant
         /// 適用終了年月
         /// 
         /// </summary>
-        [Column("END_YM")]
+        [Column("end_ym")]
         [CustomAttribute.DefaultValue(999999)]
         public int EndYm { get; set; }
 
@@ -35,7 +38,7 @@ namespace Entity.Tenant
         /// 症状詳記区分名称
         /// 
         /// </summary>
-        [Column("NAME")]
+        [Column("name")]
         [MaxLength(200)]
         public string? Name { get; set; } = string.Empty;
     }

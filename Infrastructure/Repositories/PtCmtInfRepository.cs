@@ -95,7 +95,7 @@ public class PtCmtInfRepository : RepositoryBase, IPtCmtInfRepository
     public void Upsert(int hpId, long ptId, string text, int userId)
     {
         var ptCmtList = TrackingDataContext.PtCmtInfs.AsTracking()
-            .Where(p => p.PtId == ptId && p.IsDeleted != 1)
+            .Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
             .ToList();
 
         if (ptCmtList.Count != 1)

@@ -52,16 +52,16 @@ public class CommonGetListParam : ICommonGetListParam
         int age = 0;
         var hpInf = _hpInfRepository.GetHpInf(hpId);
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
-        var userLogin = _userRepository.GetByUserId(userId, sinDate);
-        var tantoId = _raiinFilterMstRepository.GetTantoId(ptId, sinDate, raiinNo);
+        var userLogin = _userRepository.GetByUserId(hpId, userId, sinDate);
+        var tantoId = _raiinFilterMstRepository.GetTantoId(hpId, ptId, sinDate, raiinNo);
         if (ptInf != null)
         {
-            docInf = _userRepository.GetByUserId(ptInf.PrimaryDoctor, sinDate);
+            docInf = _userRepository.GetByUserId(hpId, ptInf.PrimaryDoctor, sinDate);
             age = CIUtil.SDateToAge(ptInf.Birthday, sinDate);
         }
         if (tantoId > 0)
         {
-            tantoInf = _userRepository.GetByUserId(tantoId, sinDate);
+            tantoInf = _userRepository.GetByUserId(hpId, tantoId, sinDate);
         }
         var sumaryContent = _summaryInfRepository.Get(hpId, ptId).Text;
         int lastTimeDate = _raiinFilterMstRepository.GetLastTimeDate(hpId, ptId, sinDate);

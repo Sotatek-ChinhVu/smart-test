@@ -6,12 +6,12 @@ namespace UseCase.ReceSeikyu.Save
 {
     public class SaveReceSeiKyuInputData : IInputData<SaveReceSeiKyuOutputData>
     {
-        public SaveReceSeiKyuInputData(List<ReceSeikyuModel> receSeiKyus, int sinYm, int hpId, int userAct, IMessenger messenger)
+        public SaveReceSeiKyuInputData(List<ReceSeikyuModel> receSeiKyus, int sinYm, int hpId, int userId, IMessenger messenger)
         {
             ReceSeiKyus = receSeiKyus;
             SinYm = sinYm;
             HpId = hpId;
-            UserAct = userAct;
+            UserId = userId;
             Messenger = messenger;
         }
 
@@ -21,7 +21,7 @@ namespace UseCase.ReceSeikyu.Save
 
         public int HpId { get; set; }
 
-        public int UserAct { get; set; }
+        public int UserId { get; set; }
 
         public IMessenger Messenger { get; set; }
     }

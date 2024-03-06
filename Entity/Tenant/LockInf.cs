@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "LOCK_INF")]
+    [Table(name: "lock_inf")]
     public class LockInf : EmrCloneable<LockInf>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("PT_ID", Order = 2)]
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("FUNCTION_CD", Order = 3)]
+        [Column("function_cd", Order = 3)]
         [MaxLength(8)]
         public string FunctionCd { get; set; } = string.Empty;
 
@@ -37,16 +37,16 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("SIN_DATE", Order = 4)]
+        [Column("sin_date", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
-        public long SinDate { get; set; }
+        public int SinDate { get; set; }
 
         /// <summary>
         /// 来院番号
         /// 
         /// </summary>
 
-        [Column("RAIIN_NO", Order = 5)]
+        [Column("raiin_no", Order = 5)]
         [CustomAttribute.DefaultValue(0)]
         public long RaiinNo { get; set; }
 
@@ -55,28 +55,28 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("OYA_RAIIN_NO", Order = 6)]
+        [Column("oya_raiin_no", Order = 6)]
         public long OyaRaiinNo { get; set; }
 
         /// <summary>
         /// 端末名
         /// 
         /// </summary>
-        [Column("MACHINE")]
+        [Column("machine")]
         public string? Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// 端末名
         /// 
         /// </summary>
-        [Column("LOGINKEY")]
+        [Column("loginkey")]
         public string? LoginKey { get; set; } = string.Empty;
 
         /// <summary>
         /// ユーザーID
         /// 
         /// </summary>
-        [Column("USER_ID")]
+        [Column("user_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UserId { get; set; }
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// ロック日時
         /// 
         /// </summary>
-        [Column("LOCK_DATE")]
+        [Column("lock_date")]
         public DateTime LockDate { get; set; }
     }
 }

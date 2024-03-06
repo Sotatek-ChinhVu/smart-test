@@ -52,10 +52,10 @@ public class CoPtByomeiFinder : RepositoryBase, ICoPtByomeiFinder
 
     public List<CoPtHokenInfModel> GetPtHokenInf(int hpId, long ptId, List<int> hokenIds, int sinDate)
     {
-        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(p => p.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8 }.Contains(p.HokenSbtKbn));
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(p => p.HpId == hpId && p.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8 }.Contains(p.HokenSbtKbn));
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= sinDate
+            h => h.HpId == hpId && h.StartDate <= sinDate
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(

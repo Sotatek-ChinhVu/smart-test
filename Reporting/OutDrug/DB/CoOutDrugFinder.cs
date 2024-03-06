@@ -182,10 +182,10 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
     /// <returns>患者公費情報のリスト</returns>
     public List<CoPtKohiModel> FindPtKohi(int hpId, long ptId, int sinDate, HashSet<int> kohiIds)
     {
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= sinDate
+            h => h.HpId == hpId && h.StartDate <= sinDate
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -198,8 +198,8 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
                 StartDate = x.Max(d => d.StartDate)
             }
         );
-
-        var kohiPriorities = NoTrackingDataContext.KohiPriorities;
+        
+        var kohiPriorities = NoTrackingDataContext.KohiPriorities.Where(k => k.HpId == hpId);
         var ptKohis = NoTrackingDataContext.PtKohis.Where(p =>
             p.HpId == hpId &&
             p.PtId == ptId &&
@@ -375,10 +375,10 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
     /// <returns></returns>
     public CoPtHokenInfModel FindPtHoken(int hpId, long ptId, int hokenId, int sinDate)
     {
-        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(p => p.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8 }.Contains(p.HokenSbtKbn));
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(p => p.HpId == hpId && p.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8 }.Contains(p.HokenSbtKbn));
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= sinDate
+            h => h.HpId == hpId && h.StartDate <= sinDate
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -596,10 +596,10 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
             p.EndDate >= sinDate &&
             p.IsDeleted == DeleteStatus.None);
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= sinDate
+            h => h.HpId == hpId && h.StartDate <= sinDate
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -777,9 +777,9 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
         return NoTrackingDataContext.SingleDoseMsts.Any(s => s.HpId == hpId && s.UnitName == unitName);
     }
 
-    public CoDosageDrugModel GetDosageDrugModel(string yjCode)
+    public CoDosageDrugModel GetDosageDrugModel(int hpId, string yjCode)
     {
-        var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(item => item.YjCd == yjCode);
+        var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(item => item.HpId == hpId && item.YjCd == yjCode);
         return new CoDosageDrugModel(dosageDrug ?? new());
 
     }

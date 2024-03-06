@@ -1,6 +1,6 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Reporting.Calculate.Receipt.ViewModels;
+using CalculateService.Receipt.ViewModels;
 
 namespace Reporting.AccountingCardList.Model;
 

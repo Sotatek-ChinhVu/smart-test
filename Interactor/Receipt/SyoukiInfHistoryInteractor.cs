@@ -23,7 +23,7 @@ public class SyoukiInfHistoryInteractor : ISyoukiInfHistoryInputPort
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0);
             var hokenInfList = insuranceData.ListHokenInf;
             var syoukiInfList = _receiptRepository.GetSyoukiInfList(inputData.HpId, 0, inputData.PtId, 0);
-            var syoukiKbnList = _receiptRepository.GetSyoukiKbnMstList(inputData.SinYm);
+            var syoukiKbnList = _receiptRepository.GetSyoukiKbnMstList(inputData.HpId, inputData.SinYm);
 
             var result = ConvertToResult(hokenInfList, syoukiInfList, syoukiKbnList);
             return new SyoukiInfHistoryOutputData(result, SyoukiInfHistoryStatus.Successed);

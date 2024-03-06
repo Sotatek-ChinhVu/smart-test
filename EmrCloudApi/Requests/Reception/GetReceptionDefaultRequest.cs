@@ -2,7 +2,7 @@
 {
     public class GetReceptionDefaultRequest
     {
-        public int PtId { get; set; }
+        public long PtId { get; set; }
 
         public int Sindate { get; set; }
 

@@ -43,6 +43,10 @@
         /// </summary>
         public const int SyosinCorona = 91;
         /// <summary>
+        /// 電話再診特例
+        /// </summary>
+        public const int SaisinDenwaTokurei = 93;
+        /// <summary>
         /// 初診情報通信機器
         /// </summary>
         public const int SyosinJouhou = 81;

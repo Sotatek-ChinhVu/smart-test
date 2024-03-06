@@ -1,7 +1,7 @@
-﻿using EmrCalculateApi.Interface;
-using EmrCalculateApi.Receipt.Constants;
-using EmrCalculateApi.Receipt.ViewModels;
-using EmrCalculateApi.Requests;
+﻿using CalculateService.Interface;
+using CalculateService.Receipt.Constants;
+using CalculateService.Receipt.ViewModels;
+using CalculateService.Requests;
 using EmrCalculateApi.Responses;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;

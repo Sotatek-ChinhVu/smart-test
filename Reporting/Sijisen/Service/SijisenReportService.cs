@@ -144,8 +144,8 @@ public class SijisenReportService : ISijisenReportService
 
             if (!string.IsNullOrEmpty(odrInf.RpName) &&
                 (
-                    (formType == CoSijisenFormType.Sijisen && _systemConfig.SijisenRpName() == 1) ||
-                    (formType == CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoRpName() == 1)
+                    (formType == CoSijisenFormType.Sijisen && _systemConfig.SijisenRpName(hpId) == 1) ||
+                    (formType == CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoRpName(hpId) == 1)
                 )
               )
             {
@@ -280,8 +280,8 @@ public class SijisenReportService : ISijisenReportService
 
         // アレルギー
         List<CoSijisenPrintDataModel> addAlrgyData = new List<CoSijisenPrintDataModel>();
-        if ((formType == CoSijisenFormType.Sijisen && _systemConfig.SijisenAlrgy() == 0) ||
-                (formType == CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoAlrgy() == 0))
+        if ((formType == CoSijisenFormType.Sijisen && _systemConfig.SijisenAlrgy(hpId) == 0) ||
+                (formType == CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoAlrgy(hpId) == 0))
         {
             addAlrgyData = _getAlrgyList();
         }
@@ -289,7 +289,7 @@ public class SijisenReportService : ISijisenReportService
 
         // 患者コメント
         List<CoSijisenPrintDataModel> addPtCmtData = new List<CoSijisenPrintDataModel>();
-        if ((formType == CoSijisenFormType.Sijisen && _systemConfig.SijisenPtCmt() == 0) || (formType == CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoPtCmt() == 0))
+        if ((formType == CoSijisenFormType.Sijisen && _systemConfig.SijisenPtCmt(hpId) == 0) || (formType == CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoPtCmt(hpId) == 0))
         {
             addPtCmtData = _getPtCmtList();
         }
@@ -298,7 +298,7 @@ public class SijisenReportService : ISijisenReportService
         List<CoSijisenPrintDataModel> addYokiData = new List<CoSijisenPrintDataModel>();
         if (
             (
-                (formType == CoSijisenFormType.Sijisen && _systemConfig.SijisenKensaYokiZairyo() == 1) || (formType == CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoKensaYokiZairyo() == 1)
+                (formType == CoSijisenFormType.Sijisen && _systemConfig.SijisenKensaYokiZairyo(hpId) == 1) || (formType == CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoKensaYokiZairyo(hpId) == 1)
             ) && kensaContainers.Any())
         {
             StringBuilder containers = new();
@@ -918,11 +918,11 @@ public class SijisenReportService : ISijisenReportService
         // 来院区分
         List<CoRaiinKbnInfModel> raiinKbnInfs = _finder.FindRaiinKbnInf(hpId, ptId, sinDate, raiinNo);
 
-        if (formType == CoSijisenFormType.JyusinHyo && !string.IsNullOrEmpty(_systemConfig.JyusinHyoRaiinKbn()))
+        if (formType == CoSijisenFormType.JyusinHyo && !string.IsNullOrEmpty(_systemConfig.JyusinHyoRaiinKbn(hpId)))
         {
             // 受診票 来院区分指定印刷
 
-            List<string> raiinKbns = _systemConfig.JyusinHyoRaiinKbn().Split(',').ToList();
+            List<string> raiinKbns = _systemConfig.JyusinHyoRaiinKbn(hpId).Split(',').ToList();
             foreach (string raiinKbn in raiinKbns)
             {
                 List<string> splitRaiinKbn = raiinKbn.Split('=').ToList();

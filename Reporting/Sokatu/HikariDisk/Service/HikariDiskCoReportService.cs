@@ -121,7 +121,7 @@ public class HikariDiskCoReportService : IHikariDiskCoReportService
             //媒体枚数
             SetFieldData("diskCnt", diskCnt.ToString());
             //備考
-            if (_systemConfig.HikariDiskIsTotalCnt() == 1)
+            if (_systemConfig.HikariDiskIsTotalCnt(hpId) == 1)
             {
                 if (hpInf.PrefNo == PrefCode.Ibaraki && hokenKbn == Helper.Constants.HokenKbn.Kokho)
                 {

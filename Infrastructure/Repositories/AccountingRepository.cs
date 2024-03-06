@@ -591,7 +591,7 @@ namespace Infrastructure.Repositories
             if (listPtByoMei == null || listPtByoMei.Count == 0)
                 return new List<PtDiseaseModel>();
 
-            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>(), data.TenkiKbn))
+            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, data.HokenId, new List<PrefixSuffixModel>(), data.TenkiKbn))
                 .OrderBy(data => data.TenkiKbn)
                 .ThenBy(data => data.SortNo)
                 .ThenByDescending(data => data.StartDate)
@@ -622,7 +622,8 @@ namespace Infrastructure.Repositories
                                                         p.TogetuByomei,
                                                         p.IsNodspRece,
                                                         p.TenkiKbn,
-                                                        SyusyokuCdToList(p)
+                                                        p.HokenPid,
+                                                        SyusyokuCdToList(hpId, p)
                                                         ))
                                             .ToList();
 
@@ -681,7 +682,7 @@ namespace Infrastructure.Repositories
             return PtDiseaseModels;
         }
 
-        private List<PrefixSuffixModel> SyusyokuCdToList(PtByomei ptByomei)
+        private List<PrefixSuffixModel> SyusyokuCdToList(int hpId, PtByomei ptByomei)
         {
             List<string> codeList = new()
             {
@@ -714,7 +715,7 @@ namespace Infrastructure.Repositories
                 return new List<PrefixSuffixModel>();
             }
 
-            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeList.Contains(b.ByomeiCd)).ToList();
 
             List<PrefixSuffixModel> result = new();
             foreach (var code in codeList)
@@ -1284,7 +1285,7 @@ namespace Infrastructure.Repositories
 
             if (patternId == 0 && raiinNo != 0)
             {
-                var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(u => u.RaiinNo == raiinNo && u.SinDate == sinDay && u.IsDeleted == DeleteTypes.None);
+                var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(u => u.HpId == hpId && u.RaiinNo == raiinNo && u.SinDate == sinDay && u.IsDeleted == DeleteTypes.None);
 
                 if (raiinInf == null) return hokenPattern;
 

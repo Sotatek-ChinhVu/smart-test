@@ -17,16 +17,12 @@ namespace Infrastructure.Repositories;
 public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 {
     private readonly IDatabase _cache;
-    private readonly string key;
+    private readonly string getListSystemConfigKey;
     private readonly IConfiguration _configuration;
 
     public SystemConfRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
-        key = GetCacheKey() + "SystemConf";
-        if (key.StartsWith("-"))
-        {
-            key = "ClinicID-SystemConfRepository" + "SystemConf";
-        }
+        getListSystemConfigKey = GetDomainKey() + CacheKeyConstant.GetListSystemConf;
         _configuration = configuration;
         GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
@@ -41,20 +37,20 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
     }
 
-    private List<SystemConf> ReloadCache(int hpId)
+    private List<SystemConf> ReloadCache(int hpId, string keySystemConfig)
     {
         var result = NoTrackingDataContext.SystemConfs
                                     .Where(item => item.HpId == hpId)
                                     .ToList();
         var json = JsonSerializer.Serialize(result);
-        _cache.StringSet(key, json);
+        _cache.StringSet(keySystemConfig, json);
 
         return result;
     }
 
-    private List<SystemConf> ReadCache()
+    private List<SystemConf> ReadCache(string keySystemConfig)
     {
-        var results = _cache.StringGet(key);
+        var results = _cache.StringGet(keySystemConfig);
         var json = results.AsString();
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SystemConf>>(json) : new();
         return datas ?? new();
@@ -62,14 +58,15 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     private List<SystemConf> GetData(int hpId)
     {
+        var keySystemConfig = getListSystemConfigKey + "_" + hpId;
         List<SystemConf> result;
-        if (!_cache.KeyExists(key))
+        if (!_cache.KeyExists(keySystemConfig))
         {
-            result = ReloadCache(hpId);
+            result = ReloadCache(hpId, keySystemConfig);
         }
         else
         {
-            result = ReadCache();
+            result = ReadCache(keySystemConfig);
         }
 
         return result;
@@ -128,7 +125,8 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var result = TrackingDataContext.SaveChanges();
         if (result > 0)
         {
-            ReloadCache(hpId);
+            var keySystemConfig = getListSystemConfigKey + "_" + hpId;
+            ReloadCache(hpId, keySystemConfig);
         }
 
         return true;
@@ -331,10 +329,10 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     }
 
     //Key: RoudouCd, Value: RoudouName
-    public Dictionary<string, string> GetRoudouMst()
+    public Dictionary<string, string> GetRoudouMst(int hpId)
     {
         var result = new Dictionary<string, string>();
-        List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
+        List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId).ToList();
         foreach (var item in RoudouMsts)
         {
             result.Add(item.RoudouCd, item.RoudouName ?? string.Empty);
@@ -486,6 +484,14 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             });
         }
 
+        // remove key when save SystemGenerationConf
+        int hpId = systemConfMenuModels.FirstOrDefault()?.HpId ?? 0;
+        var finalKey = GetDomainKey() + CacheKeyConstant.SystemGenerationConf + hpId;
+        if (_cache.KeyExists(finalKey))
+        {
+            _cache.KeyDelete(finalKey);
+        }
+
         return TrackingDataContext.SaveChanges() > 0;
     }
 
@@ -555,7 +561,8 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var result = TrackingDataContext.SaveChanges() > 0;
         if (result)
         {
-            ReloadCache(hpId);
+            var keySystemConfig = getListSystemConfigKey + "_" + hpId;
+            ReloadCache(hpId, keySystemConfig);
         }
 
         return result;

@@ -21,29 +21,29 @@ namespace Infrastructure.Repositories
         public DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd)
         {
             var queryItems = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && new[] { 20, 30 }.Contains(item.SinKouiKbn)
-                                                                    && item.StartDate <= sinDate && item.EndDate >= sinDate);
+                                                                && item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
 
             ////Join
-            var joinQuery = from m28DrugMst in NoTrackingDataContext.M28DrugMst
+            var joinQuery = from m28DrugMst in NoTrackingDataContext.M28DrugMst.Where(m => m.HpId == hpId)
                             join tenItem in queryItems
                             on m28DrugMst.KikinCd equals tenItem.ItemCd
-                            join m34DrugInfoMain in NoTrackingDataContext.M34DrugInfoMains
+                            join m34DrugInfoMain in NoTrackingDataContext.M34DrugInfoMains.Where(m => m.HpId == hpId)
                             on m28DrugMst.YjCd equals m34DrugInfoMain.YjCd
-                            join drugInf in NoTrackingDataContext.PiProductInfs
-                            on m28DrugMst.YjCd equals drugInf.YjCd
+                            join tekiouByomei in NoTrackingDataContext.TekiouByomeiMsts.Where(m => m.HpId == hpId)
+                               on tenItem.ItemCd equals tekiouByomei.ItemCd into listtekiouByomeis
                             where string.IsNullOrEmpty(itemCd) || tenItem.ItemCd == itemCd
                             select new
                             {
                                 m28DrugMst,
                                 tenItem,
                                 m34DrugInfoMain,
-                                drugInf
+                                TekiouByomei = listtekiouByomeis.FirstOrDefault()
                             };
 
             // piczai pichou
             string pathServerDefault = _configuration["PathImageDrugFolder"] ?? string.Empty;
 
-            var pathConfDb = NoTrackingDataContext.PathConfs.Where(p => p.GrpCd == PicImageConstant.GrpCodeDefault || p.GrpCd == PicImageConstant.GrpCodeCustomDefault).ToList();
+            var pathConfDb = NoTrackingDataContext.PathConfs.Where(p => p.HpId == hpId && p.GrpCd == PicImageConstant.GrpCodeDefault || p.GrpCd == PicImageConstant.GrpCodeCustomDefault).ToList();
 
             var pathConfDf = pathConfDb.FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
 
@@ -91,13 +91,15 @@ namespace Infrastructure.Repositories
             }
 
             var rs = joinQuery.FirstOrDefault();
+            var yjCd = rs?.m28DrugMst?.YjCd;
+            var drugInf = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.HpId == hpId && i.YjCd == yjCd);
             if (rs != null)
             {
                 return new DrugInforModel(rs.tenItem != null ? (rs.tenItem.Name ?? string.Empty) : string.Empty,
-                                          rs.drugInf != null ? (rs.drugInf.GenericName ?? string.Empty) : string.Empty,
-                                          rs.drugInf != null ? (rs.drugInf.Unit ?? string.Empty) : string.Empty,
-                                          rs.drugInf != null ? (rs.drugInf.Maker ?? string.Empty) : string.Empty,
-                                          rs.drugInf != null ? (rs.drugInf.Vender ?? string.Empty) : string.Empty,
+                                          drugInf != null ? (drugInf.GenericName ?? string.Empty) : string.Empty,
+                                          drugInf != null ? (drugInf.Unit ?? string.Empty) : string.Empty,
+                                          drugInf != null ? (drugInf.Maker ?? string.Empty) : string.Empty,
+                                          drugInf != null ? (drugInf.Vender ?? string.Empty) : string.Empty,
                                           rs.tenItem != null ? rs.tenItem.KohatuKbn : 0,
                                           rs.tenItem != null ? rs.tenItem.Ten : 0,
                                           rs.tenItem != null ? (rs.tenItem.ReceUnitName ?? string.Empty) : string.Empty,
@@ -246,7 +248,7 @@ namespace Infrastructure.Repositories
                                                                                                          && grpCdList.Contains(item.GrpCd)
                                                                                                          && item.IsDeleted == 0)
                                                                                           .ToList();
-            var allGrpCd = NoTrackingDataContext.SinrekiFilterMsts.Select(item => item.GrpCd).ToList();
+            var allGrpCd = NoTrackingDataContext.SinrekiFilterMsts.Where(i => i.HpId == hpId).Select(item => item.GrpCd).ToList();
             int maxGrpCd = allGrpCd != null && allGrpCd.Any() ? allGrpCd.Max() : 0;
             bool saveSuccess = false;
 
@@ -387,10 +389,10 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.SinrekiFilterMsts.Count(item => item.HpId == hpId && grpCdList.Contains(item.GrpCd)) == grpCdList.Count;
         }
 
-        public bool CheckExistKouiKbn(int hpId, List<int> kouiKbnIdList)
+        public bool CheckExistKouiKbn(List<int> kouiKbnIdList)
         {
             kouiKbnIdList = kouiKbnIdList.Distinct().ToList();
-            return NoTrackingDataContext.KouiKbnMsts.Count(item => item.HpId == hpId && kouiKbnIdList.Contains(item.KouiKbnId)) == kouiKbnIdList.Count;
+            return NoTrackingDataContext.KouiKbnMsts.Count(item => kouiKbnIdList.Contains(item.KouiKbnId)) == kouiKbnIdList.Count;
         }
 
         public bool CheckExistSinrekiFilterMstKoui(int hpId, List<long> kouiSeqNoList)
@@ -474,10 +476,9 @@ namespace Infrastructure.Repositories
                 .ToList();
         }
 
-        public List<KouiKbnMstModel> GetKouiKbnMstList(int hpId)
+        public List<KouiKbnMstModel> GetKouiKbnMstList()
         {
-            var result = NoTrackingDataContext.KouiKbnMsts.Where(item => item.HpId == hpId)
-                                                          .Select(item => new KouiKbnMstModel(
+            var result = NoTrackingDataContext.KouiKbnMsts.Select(item => new KouiKbnMstModel(
                                                                               item.KouiKbnId,
                                                                               item.KouiKbn1,
                                                                               item.KouiKbn2,

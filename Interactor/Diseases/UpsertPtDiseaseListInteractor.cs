@@ -73,7 +73,7 @@ namespace Interactor.Diseases
                     }
                 }
 
-                if (!_patientInforRepository.CheckExistIdList(datas.Select(i => i.PtId).Distinct().ToList()))
+                if (!_patientInforRepository.CheckExistIdList(inputData.HpId, datas.Select(i => i.PtId).Distinct().ToList()))
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist, new());
                 }

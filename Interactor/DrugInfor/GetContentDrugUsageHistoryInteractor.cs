@@ -47,7 +47,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
         {
             drugUsageHistoryList = drugUsageHistoryList.Where(item => item.SinDate >= startDate && item.SinDate <= endDate).ToList();
         }
-        var allKouiKbnMstList = _drugInforRepository.GetKouiKbnMstList(hpId);
+        var allKouiKbnMstList = _drugInforRepository.GetKouiKbnMstList();
         if (grpId > 0)
         {
             var sinrekiFilter = _drugInforRepository.GetSinrekiFilterMst(hpId, grpId);

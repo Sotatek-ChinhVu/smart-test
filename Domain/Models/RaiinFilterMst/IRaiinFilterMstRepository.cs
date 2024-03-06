@@ -4,9 +4,9 @@ namespace Domain.Models.RaiinFilterMst;
 
 public interface IRaiinFilterMstRepository : IRepositoryBase
 {
-    List<RaiinFilterMstModel> GetList();
+    List<RaiinFilterMstModel> GetList(int hpId);
 
-    int GetTantoId(long ptId, int sinDate, long raiinNo);
+    int GetTantoId(int hpId, long ptId, int sinDate, long raiinNo);
 
     int GetLastTimeDate(int hpId, long ptId, int sinDate);
 

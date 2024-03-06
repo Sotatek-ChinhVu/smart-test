@@ -16,7 +16,7 @@ public class GetSyoukiInfListInteractor : IGetSyoukiInfListInputPort
         try
         {
             var result = _receiptRepository.GetSyoukiInfList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-            var listSyoukiKbnMst = _receiptRepository.GetSyoukiKbnMstList(inputData.SinYm);
+            var listSyoukiKbnMst = _receiptRepository.GetSyoukiKbnMstList(inputData.HpId, inputData.SinYm);
             return new GetSyoukiInfListOutputData(result, listSyoukiKbnMst, GetSyoukiInfListStatus.Successed);
         }
         finally

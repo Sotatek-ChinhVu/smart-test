@@ -4,7 +4,7 @@ namespace Domain.Models.UserConf;
 
 public interface IUserConfRepository : IRepositoryBase
 {
-    List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd);
+    List<UserConfModel> GetList(int hpId, int userId, int fromGrpCd, int toGrpCd);
 
     List<UserConfModel> GetList(int hpId, int userId, List<int> grpCodes);
 

@@ -178,7 +178,7 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public KensaInfDetailModel Map()
         {
-            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, CIUtil.GetJapanDateTimeNow(), string.Empty, string.Empty, 0);
+            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, CIUtil.GetJapanDateTimeNow(), string.Empty, string.Empty, 0, string.Empty);
         }
     }
 }

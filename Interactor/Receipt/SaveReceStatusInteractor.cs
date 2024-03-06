@@ -32,7 +32,7 @@ public class SaveReceStatusInteractor : ISaveReceStatusInputPort
     {
         try
         {
-            var responseValidate = ValidateInput(inputData.ReceStatus);
+            var responseValidate = ValidateInput(inputData.HpId, inputData.ReceStatus);
             if (responseValidate != SaveReceStatusStatus.ValidateSuccess)
             {
                 return new SaveReceStatusOutputData(responseValidate);
@@ -73,9 +73,9 @@ public class SaveReceStatusInteractor : ISaveReceStatusInputPort
                    inputData.IsPrechecked);
     }
 
-    private SaveReceStatusStatus ValidateInput(ReceStatusItem inputData)
+    private SaveReceStatusStatus ValidateInput(int hpId, ReceStatusItem inputData)
     {
-        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(hpId, new List<long>() { inputData.PtId }))
         {
             return SaveReceStatusStatus.InvalidPtId;
         }
@@ -87,7 +87,7 @@ public class SaveReceStatusInteractor : ISaveReceStatusInputPort
         {
             return SaveReceStatusStatus.InvalidSeikyuYm;
         }
-        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
+        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(hpId, inputData.HokenId))
         {
             return SaveReceStatusStatus.InvalidHokenId;
         }

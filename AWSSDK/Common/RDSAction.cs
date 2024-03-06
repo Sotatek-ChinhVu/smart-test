@@ -71,7 +71,7 @@ namespace AWSSDK.Common
                     AllocatedStorage = 20,
                     //DBName = "smartkarte",
                     Engine = "postgres",
-                    EngineVersion = "14.4",
+                    EngineVersion = "15.5",
                     StorageType = "gp2",
                     StorageEncrypted = false,
                     AutoMinorVersionUpgrade = true,

@@ -99,7 +99,7 @@ namespace Reporting.SyojyoSyoki.DB
                     p.IsDeleted == DeleteStatus.None);
 
             var syoukiKbnMsts =
-                NoTrackingDataContext.SyoukiKbnMsts.AsQueryable();
+                NoTrackingDataContext.SyoukiKbnMsts.Where(item => item.HpId == hpId);
             var syoukiJoins = (
                 from receInf in receInfs
                 join syoukiInf in syoukiInfs on

@@ -17,7 +17,7 @@ public class GetKaCodeYousikiMstInteractor : IGetKaCodeYousikiMstInputPort
     {
         try
         {
-            var result = _kaMstRepository.GetKacodeYousikiMst();
+            var result = _kaMstRepository.GetKacodeYousikiMst(inputData.HpId);
             var status = result.Any() ? GetKaCodeYousikiMstStatus.Success : GetKaCodeYousikiMstStatus.NoData;
             return new GetKaCodeYousikiMstOutputData(status, result);
         }
@@ -27,3 +27,4 @@ public class GetKaCodeYousikiMstInteractor : IGetKaCodeYousikiMstInputPort
         }
     }
 }
+

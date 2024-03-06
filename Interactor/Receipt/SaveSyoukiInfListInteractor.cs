@@ -73,7 +73,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
 
     private SaveSyoukiInfListStatus ValidateInput(SaveSyoukiInfListInputData inputData)
     {
-        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return SaveSyoukiInfListStatus.InvalidPtId;
         }
@@ -81,7 +81,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
         {
             return SaveSyoukiInfListStatus.InvalidSinYm;
         }
-        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
+        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HpId, inputData.HokenId))
         {
             return SaveSyoukiInfListStatus.InvalidHokenId;
         }
@@ -90,7 +90,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
             return SaveSyoukiInfListStatus.Failed;
         }
         var listSyoukiKbn = inputData.SyoukiInfList.Select(item => new SyoukiKbnMstModel(item.SyoukiKbn, item.SyoukiKbnStartYm)).ToList();
-        if (listSyoukiKbn.Any() && !_receiptRepository.CheckExistSyoukiKbn(inputData.SinYm, listSyoukiKbn))
+        if (listSyoukiKbn.Any() && !_receiptRepository.CheckExistSyoukiKbn(inputData.HpId, inputData.SinYm, listSyoukiKbn))
         {
             return SaveSyoukiInfListStatus.InvalidSyoukiKbn;
         }

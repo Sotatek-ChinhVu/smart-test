@@ -394,19 +394,19 @@ namespace Reporting.Statistics.Sta2020.DB
 
         private List<CoSinKouiModel> GetOdrInfs(int hpId, CoSta2020PrintConf printConf)
         {
-            var odrInfs = NoTrackingDataContext.OdrInfs.Where(s => s.IsDeleted == DeleteStatus.None);
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(s => s.HpId == hpId && s.IsDeleted == DeleteStatus.None);
             odrInfs = printConf.StartSinYm >= 0 ?
                 odrInfs.Where(s => s.SinDate >= printConf.StartSinYm * 100 + 1 && s.SinDate <= printConf.EndSinYm * 100 + 31) :
                 odrInfs.Where(s => s.SinDate >= printConf.StartSinDate && s.SinDate <= printConf.EndSinDate);
 
             var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(o => o.HpId == hpId);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(o => o.HpId == hpId);
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             if (!printConf.IsTester)
             {
                 ptInfs = ptInfs.Where(p => p.IsTester == 0);
             }
-            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.Status > 3);
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.Status > 3);
             #region 条件指定
             //診療科
             if (printConf.KaIds?.Count >= 1)
@@ -460,7 +460,7 @@ namespace Reporting.Statistics.Sta2020.DB
             #endregion
 
             var kaMsts = NoTrackingDataContext.KaMsts.Where(o => o.HpId == hpId);
-            var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
+            var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteStatus.None);
 
             var joinOdrs = (
                 from odrInf in odrInfs
