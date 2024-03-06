@@ -33,9 +33,10 @@ namespace Interactor.PatientInfor
             _amazonS3Service = amazonS3Service;
             _ptDiseaseRepository = ptDiseaseRepository;
             _tenantProvider = tenantProvider;
-            if (_tenantProvider.CreateNewTrackingAdminDbContextOption() != null)
+            var dbContextOptions = _tenantProvider.CreateNewTrackingAdminDbContextOption();
+            if (dbContextOptions != null)
             {
-                _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+                _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
             }
         }
 
