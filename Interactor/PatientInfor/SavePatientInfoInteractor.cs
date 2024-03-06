@@ -22,7 +22,7 @@ namespace Interactor.PatientInfor
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly IPtDiseaseRepository _ptDiseaseRepository;
         private readonly IAmazonS3Service _amazonS3Service;
-        private readonly ILoggingHandler _loggingHandler;
+        private readonly ILoggingHandler? _loggingHandler;
         private readonly ITenantProvider _tenantProvider;
         private const byte retryNumber = 50;
 
@@ -33,7 +33,10 @@ namespace Interactor.PatientInfor
             _amazonS3Service = amazonS3Service;
             _ptDiseaseRepository = ptDiseaseRepository;
             _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            if (_tenantProvider.CreateNewTrackingAdminDbContextOption() != null)
+            {
+                _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            }
         }
 
         [Obsolete]
