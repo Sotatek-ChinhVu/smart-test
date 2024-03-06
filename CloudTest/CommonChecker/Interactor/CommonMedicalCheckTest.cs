@@ -55,8 +55,8 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindComponentNameDic(It.IsAny<int>(), It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindItemNameByItemCodeDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
-            .Returns((int hpId, List<string> inputList, int sinday) =>
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
@@ -67,6 +67,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             mock.Setup(finder => finder.FindDrvalrgyNameDic(It.IsAny<int>(), It.IsAny<List<string>>()))
            .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
+            mock.Setup(finder => finder.FindItemNameByItemCodeDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
             commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
@@ -153,6 +156,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             mock.Setup(finder => finder.FindFoodNameDic(hpId, It.IsAny<List<string>>()))
            .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
             // Act
@@ -228,6 +235,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
@@ -302,6 +313,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             mock.Setup(finder => finder.FindDiseaseNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -385,6 +400,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -509,6 +528,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -637,6 +660,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
@@ -761,6 +788,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
@@ -879,6 +910,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             // Act
             commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
@@ -951,6 +986,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             // Act
             commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
@@ -1020,6 +1059,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             mock.Setup(finder => finder.GetUsageDosageDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -3876,6 +3919,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                                    { "124", "Sebun Mock 2" }
                                                                                  });
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
 
             // Assert
@@ -3931,6 +3978,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                                    { "4", "Food Name Mock 2" }
                                                                                  });
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
 
             // Assert
@@ -3977,6 +4028,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                                               { "93112345", "Item Mock 1" },
                                                                                               { "93112346", "Item Mock 2" }
                                                                                              });
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
 
@@ -4034,6 +4089,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                                               { "33333", "Byotai Mock 1" },
                                                                                               { "44444", "Byotai Mock 2" }
                                                                                              });
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
 
@@ -4101,6 +4160,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                         { "33333", "Byotai Mock 1" },
                                                                         { "44444", "Byotai Mock 2" }
                                                                        });
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> input) => new Dictionary<string, string>
@@ -4184,6 +4247,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                         { "B1235", "Item Mock 2" },
                                                                        });
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             // Act
 
             var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
@@ -4225,6 +4292,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             mock.Setup(finder => finder.FindItemName(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
             .Returns((int hpId, string stringInput, int sinday) => "Item Name Mock");
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
 
@@ -4279,6 +4350,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                         { "444555", "ItemName Mock 2" }
                                                                       });
 
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
             // Act
             var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
 
@@ -4325,6 +4400,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             mock.Setup(finder => finder.FindItemNameByItemCodeDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
+            mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
+            .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act

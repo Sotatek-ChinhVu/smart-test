@@ -1608,7 +1608,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 DateTime.MinValue,
                 string.Empty,
                 string.Empty,
-                0
+                0,
+                string.Empty
               )
           ).ToList();
 
