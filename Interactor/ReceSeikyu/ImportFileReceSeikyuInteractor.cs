@@ -374,10 +374,7 @@ namespace Interactor.ReceSeikyu
             _receSeikyuRepository.DeleteReceSeikyu(hpId, userId, ptId, sinYm, hokenId);
 
             // PRE_HOKEN_IDに紐づくレセ電返戻事由を削除する
-            if (hokenId != preHokenId)
-            {
-                _receSeikyuRepository.DeleteHenJiyuuRireki(hpId, userId, ptId, sinYm, hokenId);
-            }
+            _receSeikyuRepository.DeleteHenJiyuuRireki(hpId, userId, ptId, sinYm, hokenId);
 
             // RECE_SEIKYUにレコードを追加する
             var insertAfterReceSeikuu = new ReceSeikyuModel(hpId, ptId, 3, seiKyuYm, sinYm, hokenId);
