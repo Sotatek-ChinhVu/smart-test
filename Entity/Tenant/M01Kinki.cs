@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M01_KINKI")]
+    [Table(name: "m01_kinki")]
     public class M01Kinki : EmrCloneable<M01Kinki>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// Aコード
         /// YJコードの上位7,8,9,12桁
         /// </summary>
-        
-        [Column("A_CD", Order = 1)]
+
+        [Column("a_cd", Order = 1)]
         [MaxLength(12)]
         public string ACd { get; set; } = string.Empty;
 
@@ -21,7 +24,7 @@ namespace Entity.Tenant
         /// YJコードの上位4,7,8,9,12桁 or H or Zで始まり、4桁の数字が続く
         /// </summary>
         
-        [Column("B_CD", Order = 2)]
+        [Column("b_cd", Order = 2)]
         [MaxLength(12)]
         public string BCd { get; set; } = string.Empty;
 
@@ -30,7 +33,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("CMT_CD", Order = 3)]
+        [Column("cmt_cd", Order = 3)]
         [MaxLength(6)]
         public string CmtCd { get; set; } = string.Empty;
 
@@ -39,7 +42,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SAYOKIJYO_CD", Order = 4)]
+        [Column("sayokijyo_cd", Order = 4)]
         [MaxLength(6)]
         public string SayokijyoCd { get; set; } = string.Empty;
 
@@ -47,7 +50,7 @@ namespace Entity.Tenant
         /// 強度コード
         /// 
         /// </summary>
-        [Column("KYODO_CD")]
+        [Column("kyodo_cd")]
         [MaxLength(3)]
         public string? KyodoCd { get; set; } = string.Empty;
 
@@ -55,7 +58,7 @@ namespace Entity.Tenant
         /// 強度
         /// 
         /// </summary>
-        [Column("KYODO")]
+        [Column("kyodo")]
         [MaxLength(2)]
         public string? Kyodo { get; set; } = string.Empty;
 
@@ -63,7 +66,7 @@ namespace Entity.Tenant
         /// データ区分
         /// 
         /// </summary>
-        [Column("DATA_KBN")]
+        [Column("data_kbn")]
         [MaxLength(1)]
         public string? DataKbn { get; set; } = string.Empty;
 

@@ -75,11 +75,11 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
         {
             return SaveReceiptEditStatus.InvalidSeikyuYm;
         }
-        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return SaveReceiptEditStatus.InvalidPtId;
         }
-        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
+        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HpId, inputData.HokenId))
         {
             return SaveReceiptEditStatus.InvalidHokenId;
         }

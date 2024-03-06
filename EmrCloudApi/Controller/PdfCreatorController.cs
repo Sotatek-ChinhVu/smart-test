@@ -1,13 +1,16 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.UserToken;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.DrugInfor;
 using EmrCloudApi.Requests.ExportPDF;
+using EmrCloudApi.Requests.File;
 using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.PatientManagement;
 using Helper.Enum;
 using Helper.Extension;
+using Helper.Redis;
 using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
@@ -21,15 +24,15 @@ using Reporting.Mappers.Common;
 using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using StackExchange.Redis;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Web;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
-using StackExchange.Redis;
-using Helper.Redis;
-using Reporting.OutDrug.Model.Output;
 
 namespace EmrCloudApi.Controller;
 
@@ -53,7 +56,7 @@ public class PdfCreatorController : CookieController
                                                                                                              SmartKarteにログインしてから、再度読み込みしてください。</p>
                                               ";
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor, IUserTokenRepository userTokenRepository) : base(httpContextAccessor, userTokenRepository)
     {
         _reportService = reportService;
         _configuration = configuration;
@@ -95,7 +98,7 @@ public class PdfCreatorController : CookieController
         {
             return Content(NotAuhorize, "text/html");
         }
-        var data = _reportService.GetNameLabelReportingData(request.PtId, request.KanjiName, request.SinDate);
+        var data = _reportService.GetNameLabelReportingData(HpId, request.PtId, request.KanjiName, request.SinDate);
         _reportService.ReleaseResource();
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -670,10 +673,10 @@ public class PdfCreatorController : CookieController
                 htmlData = _commonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
             case TypeHTMLObject.ShowKanjaMuke:
-                htmlData = _commonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                htmlData = _commonDrugInf.ShowKanjaMuke(HpId, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
             case TypeHTMLObject.ShowMdbByomei:
-                htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                htmlData = _commonDrugInf.ShowMdbByomei(HpId, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
         }
         var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, (int)inputData.Type);
@@ -728,6 +731,46 @@ public class PdfCreatorController : CookieController
                     return File(result, "application/pdf");
                 }
             }
+        }
+    }
+
+    [HttpGet(ApiPath.ResizeImage)]
+    public async Task<IActionResult> ResizeImage([FromQuery] ResizeImageRequest request)
+    {
+        try
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(request.ImagePath))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest($"Failed to download image from {request.ImagePath}");
+                    }
+
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    {
+                        using (var image = Image.Load(stream))
+                        {
+                            image.Mutate(x => x.Resize(new ResizeOptions
+                            {
+                                Size = new Size(image.Width * request.Height / image.Height, request.Height),
+                                Mode = ResizeMode.Max
+                            }));
+
+                            var resultStream = new MemoryStream();
+                            image.SaveAsJpeg(resultStream);
+                            resultStream.Position = 0;
+
+                            return File(resultStream, "image/jpeg");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+            return BadRequest("Error resizing image");
         }
     }
 

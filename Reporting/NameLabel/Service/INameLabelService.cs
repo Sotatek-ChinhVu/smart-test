@@ -4,5 +4,5 @@ namespace Reporting.NameLabel.Service;
 
 public interface INameLabelService
 {
-    CommonReportingRequestModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate);
+    CommonReportingRequestModel GetNameLabelReportingData(int hpId,long ptId, string kanjiName, int sinDate);
 }

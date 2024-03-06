@@ -5,7 +5,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
     public class KensaInfDetailModel
     {
         [JsonConstructor]
-        public KensaInfDetailModel(int hpId, long ptId, long iraiCd, long seqNo, int iraiDate, long raiinNo, string kensaItemCd, string resultVal, string resultType, string abnormalKbn, int isDeleted, string cmtCd1, string cmtCd2, DateTime updateDate, string unit, string kensaName, int sortNo)
+        public KensaInfDetailModel(int hpId, long ptId, long iraiCd, long seqNo, int iraiDate, long raiinNo, string kensaItemCd, string resultVal, string resultType, string abnormalKbn, int isDeleted, string cmtCd1, string cmtCd2, DateTime updateDate, string unit, string kensaName, int sortNo, string formula)
         {
             HpId = hpId;
             PtId = ptId;
@@ -24,6 +24,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
             Unit = unit;
             KensaName = kensaName;
             SortNo = sortNo;
+            Formula = formula;
         }
 
         public KensaInfDetailModel(string kensaItemCd, string unit, string kensaName, long sortNo)
@@ -37,6 +38,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
             AbnormalKbn = string.Empty;
             CmtCd1 = string.Empty;
             CmtCd2 = string.Empty;
+            Formula = string.Empty;
         }
 
         public KensaInfDetailModel()
@@ -49,6 +51,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
             CmtCd1 = string.Empty;
             CmtCd2 = string.Empty;
             KensaItemCd = string.Empty;
+            Formula = string.Empty;
         }
 
         public KensaInfDetailModel(long sortNo, string kensaName, string kensaItemCd, string resultVal)
@@ -62,6 +65,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
             AbnormalKbn = string.Empty;
             CmtCd1 = string.Empty;
             CmtCd2 = string.Empty;
+            Formula = string.Empty;
         }
 
         public KensaInfDetailModel(int iraiDate, string resultVal)
@@ -75,6 +79,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
             CmtCd1 = string.Empty;
             CmtCd2 = string.Empty;
             IraiDate = iraiDate;
+            Formula = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -110,5 +115,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
         public long SortNo { get; set; }
 
         public DateTime UpdateDate { get; private set; }
+
+        public string Formula { get; private set; }
     }
 }

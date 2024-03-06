@@ -1,13 +1,16 @@
-﻿namespace Infrastructure.Interfaces
+﻿using Entity.Tenant;
+
+namespace Infrastructure.Interfaces;
+
+public interface IUserInfoService
 {
-    public interface IUserInfoService
-    {
-        void Reload();
+    void Reload();
 
-        string GetNameById(int id);
+    string GetNameById(int id);
 
-        string GetFullNameById(int id);
+    string GetFullNameById(int id);
 
-        void DisposeSource();
-    }
+    void DisposeSource();
+
+    List<UserMst> AllUserMstList(int hpId);
 }

@@ -1,28 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "IPN_KASAN_EXCLUDE")]
-    [Index(nameof(HpId), nameof(StartDate), nameof(EndDate), nameof(IpnNameCd), Name = "IPN_KASAN_EXCLUDE_IDX01")]
+    [Table(name: "ipn_kasan_exclude")]
+    [Index(nameof(StartDate), nameof(EndDate), nameof(IpnNameCd), Name = "ipn_kasan_exclude_idx01")]
     public class IpnKasanExclude : EmrCloneable<IpnKasanExclude>
     {
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        public int HpId { get; set; }
-
         /// <summary>
         /// 一般名コード
         /// 
         /// </summary>
 
-        [Column("IPN_NAME_CD", Order = 2)]
+        [Column("ipn_name_cd")]
         [MaxLength(12)]
         public string IpnNameCd { get; set; } = string.Empty;
 
@@ -31,7 +22,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("START_DATE", Order = 3)]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -39,7 +30,7 @@ namespace Entity.Tenant
         /// 終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -48,7 +39,7 @@ namespace Entity.Tenant
         /// 同一一般名コード、開始日内の連番
         /// </summary>
 
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 
@@ -56,14 +47,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -71,7 +62,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -79,14 +70,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -94,7 +85,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

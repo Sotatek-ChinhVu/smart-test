@@ -1,28 +1,28 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "Z_RECE_CMT")]
+    [Table(name: "z_rece_cmt")]
     public class ZReceCmt : EmrCloneable<ZReceCmt>
     {
         
-        [Column("OP_ID", Order = 1)]
+        [Column("op_id", Order = 1)]
         public long OpId { get; set; }
 
-        [Column("OP_TYPE")]
+        [Column("op_type")]
         [MaxLength(10)]
         public string? OpType { get; set; } = string.Empty;
 
-        [Column("OP_TIME")]
+        [Column("op_time")]
         public DateTime OpTime { get; set; }
 
-        [Column("OP_ADDR")]
+        [Column("op_addr")]
         [MaxLength(100)]
         public string? OpAddr { get; set; } = string.Empty;
 
-        [Column("OP_HOSTNAME")]
+        [Column("op_hostname")]
         [MaxLength(100)]
         public string? OpHostName { get; set; } = string.Empty;
 
@@ -31,39 +31,39 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID")]
-        //[Index("RECE_CMT_IDX01", 1)]
+        [Column("hp_id")]
+        //[Index("rece_cmt_idx01", 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 
         /// </summary>
-        [Column("PT_ID")]
-        //[Index("RECE_CMT_IDX01", 2)]
+        [Column("pt_id")]
+        //[Index("rece_cmt_idx01", 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療年月
         /// 
         /// </summary>
-        [Column("SIN_YM")]
-        //[Index("RECE_CMT_IDX01", 3)]
+        [Column("sin_ym")]
+        //[Index("rece_cmt_idx01", 3)]
         public int SinYm { get; set; }
 
         /// <summary>
         /// 保険ID
         /// 
         /// </summary>
-        [Column("HOKEN_ID")]
-        //[Index("RECE_CMT_IDX01", 4)]
+        [Column("hoken_id")]
+        //[Index("rece_cmt_idx01", 4)]
         public int HokenId { get; set; }
 
         /// <summary>
         /// コメント区分
         /// 1:ヘッダー 2:フッター
         /// </summary>
-        [Column("CMT_KBN")]
+        [Column("cmt_kbn")]
         [CustomAttribute.DefaultValue(1)]
         public int CmtKbn { get; set; }
 
@@ -71,14 +71,14 @@ namespace Entity.Tenant
         /// コメント種別
         /// 0:コメント文（ITEM_CDあり）、1:フリーコメント
         /// </summary>
-        [Column("CMT_SBT")]
+        [Column("cmt_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtSbt { get; set; }
 
         /// <summary>
         /// ID
         /// </summary>
-        [Column("ID")]
+        [Column("id")]
         [CustomAttribute.DefaultValue(0)]
         public long Id { get; set; }
 
@@ -86,7 +86,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Column("SEQ_NO")]
+        [Column("seq_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// コメントコード
         /// フリーコメントはNULL
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -102,14 +102,14 @@ namespace Entity.Tenant
         /// コメント
         /// 
         /// </summary>
-        [Column("CMT")]
+        [Column("cmt")]
         public string? Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントデータ
         /// コメントマスターの定型文に組み合わせる文字情報
         /// </summary>
-        [Column("CMT_DATA")]
+        [Column("cmt_data")]
         [MaxLength(38)]
         public string? CmtData { get; set; } = string.Empty;
 
@@ -117,23 +117,23 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
-        //[Index("RECE_CMT_IDX01", 5)]
+        //[Index("rece_cmt_idx01", 5)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -141,7 +141,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -149,14 +149,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -164,7 +164,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
     }

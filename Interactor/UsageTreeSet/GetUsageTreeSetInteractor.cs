@@ -48,7 +48,7 @@ namespace Interactor.UsageTreeSet
                 else
                     setDrugKbn = OdrUtil.GetGroupKoui(inputData.KouiKbn);
 
-                int generationId = _usageTreeSetRepository.GetGenerationId(inputData.SinDate);
+                int generationId = _usageTreeSetRepository.GetGenerationId(inputData.HpId, inputData.SinDate);
 
                 List<ListSetMstModel> result = new List<ListSetMstModel>();
                 if (setDrugKbn != 0)

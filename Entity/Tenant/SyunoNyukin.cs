@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SYUNO_NYUKIN")]
+    [Table(name: "syuno_nyukin")]
     public class SyunoNyukin : EmrCloneable<SyunoNyukin>
     {
         /// <summary>
@@ -12,24 +12,24 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        //[Index("SYUNO_NYUKIN_IDX01", 1)]
+        [Column("hp_id", Order = 1)]
+        //[Index("syuno_nyukin_idx01", 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        [Column("PT_ID")]
-        //[Index("SYUNO_NYUKIN_IDX01", 2)]
+        [Column("pt_id")]
+        //[Index("syuno_nyukin_idx01", 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// 
         /// </summary>
-        [Column("SIN_DATE")]
-        //[Index("SYUNO_NYUKIN_IDX01", 3)]
+        [Column("sin_date")]
+        //[Index("syuno_nyukin_idx01", 3)]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -37,8 +37,8 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO", Order = 2)]
-        //[Index("SYUNO_NYUKIN_IDX01", 4)]
+        [Column("raiin_no", Order = 2)]
+        //[Index("syuno_nyukin_idx01", 4)]
         public long RaiinNo { get; set; }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 3)]
+        [Column("seq_no", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
 
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// 入金順番
         /// 同一来院に対して分割入金した場合の入金の順番
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(0)]
         public int SortNo { get; set; }
 
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// 調整額
         /// 
         /// </summary>
-        [Column("ADJUST_FUTAN")]
+        [Column("adjust_futan")]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustFutan { get; set; }
 
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// 入金額
         /// 
         /// </summary>
-        [Column("NYUKIN_GAKU")]
+        [Column("nyukin_gaku")]
         [CustomAttribute.DefaultValue(0)]
         public int NyukinGaku { get; set; }
 
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// 支払方法コード
         /// PAYMENT_METHOD_MST.PAYMENT_METHOD_CD
         /// </summary>
-        [Column("PAYMENT_METHOD_CD")]
+        [Column("payment_method_cd")]
         [CustomAttribute.DefaultValue(0)]
         public int PaymentMethodCd { get; set; }
 
@@ -86,7 +86,7 @@ namespace Entity.Tenant
         /// 入金日
         /// 
         /// </summary>
-        [Column("NYUKIN_DATE")]
+        [Column("nyukin_date")]
         [CustomAttribute.DefaultValue(0)]
         public int NyukinDate { get; set; }
 
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// 受付種別
         /// UKETUKE_SBT_MST.KBN_ID（入金時の受付種別）
         /// </summary>
-        [Column("UKETUKE_SBT")]
+        [Column("uketuke_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int UketukeSbt { get; set; }
 
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// 入金コメント
         /// 
         /// </summary>
-        [Column("NYUKIN_CMT")]
+        [Column("nyukin_cmt")]
         [MaxLength(100)]
         public string? NyukinCmt { get; set; } = string.Empty;
 
@@ -110,7 +110,7 @@ namespace Entity.Tenant
         /// 入金時請求点数
         /// 入金時の診療点数
         /// </summary>
-        [Column("NYUKINJI_TENSU")]
+        [Column("nyukinji_tensu")]
         [CustomAttribute.DefaultValue(0)]
         public int NyukinjiTensu { get; set; }
 
@@ -118,7 +118,7 @@ namespace Entity.Tenant
         /// 入金時請求額
         /// 入金時の請求額
         /// </summary>
-        [Column("NYUKINJI_SEIKYU")]
+        [Column("nyukinji_seikyu")]
         [CustomAttribute.DefaultValue(0)]
         public int NyukinjiSeikyu { get; set; }
 
@@ -126,15 +126,15 @@ namespace Entity.Tenant
         /// 入金時請求詳細
         /// 入金時の診療明細
         /// </summary>
-        [Column("NYUKINJI_DETAIL")]
+        [Column("nyukinji_detail")]
         public string? NyukinjiDetail { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
-        //[Index("SYUNO_NYUKIN_IDX01", 5)]
+        [Column("is_deleted")]
+        //[Index("syuno_nyukin_idx01", 5)]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -142,14 +142,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -157,7 +157,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -165,14 +165,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -180,7 +180,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

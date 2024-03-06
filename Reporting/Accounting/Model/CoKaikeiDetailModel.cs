@@ -331,7 +331,7 @@ public class CoKaikeiDetailModel
     /// 点数単価
     /// PT_HOKEN_INF.EN_TEN
     /// </summary>
-    public int EnTen
+    public double EnTen
     {
         get { return KaikeiDetail.EnTen; }
     }
@@ -632,6 +632,15 @@ public class CoKaikeiDetailModel
     public int Jitunisu
     {
         get { return KaikeiDetail.Jitunisu; }
+    }
+
+    /// <summary>
+    /// 労災イ点数
+    /// 
+    /// </summary>
+    public int RousaiITensu
+    {
+        get { return KaikeiDetail.RousaiITensu; }
     }
 
     /// <summary>

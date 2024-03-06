@@ -33,7 +33,7 @@ namespace Interactor.MedicalExamination
             }
         }
 
-        private bool CheckHokenPatternSelect(int hpId, int ptId, int sinDate, List<int> odrInfHokenPid)
+        private bool CheckHokenPatternSelect(int hpId, long ptId, int sinDate, List<int> odrInfHokenPid)
         {
             var listHokenPattern = _accountingRepository.FindPtHokenPatternList(hpId, ptId, sinDate);
             var listHokenPids = listHokenPattern.Select(u => u.HokenPid).ToList();
@@ -43,7 +43,7 @@ namespace Interactor.MedicalExamination
             return true;
         }
 
-        private List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
+        private List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
         {
             var check = _todayOdrRepository.GetValidGairaiRiha(hpId, ptId, raiinNo, sinDate, syosaiKbn, allOdrInfItem);
             return check;

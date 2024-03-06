@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
                 {
                     return new();
                 }
-                var karteKbnInsert = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2003 && item.GrpEdaNo == 0)?.Val ?? 0;
+                var karteKbnInsert = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2003 && item.GrpEdaNo == 0)?.Val ?? 0;
                 if (karteKbnInsert > 0 && ptId > 0)
                 {
                     var ptPregnancy = NoTrackingDataContext.PtPregnancies.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == 0

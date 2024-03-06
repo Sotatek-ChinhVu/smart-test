@@ -31,25 +31,25 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
             RedisConnectorHelper.RedisHost = connection;
         }
     }
-    public List<ColumnSettingModel> GetList(int userId, string tableName)
+    public List<ColumnSettingModel> GetList(int hpId, int userId, string tableName)
     {
         return NoTrackingDataContext.ColumnSettings
-            .Where(c => c.UserId == userId && c.TableName == tableName)
+            .Where(c => c.HpId == hpId && c.UserId == userId && c.TableName == tableName)
             .AsEnumerable().Select(c => ToModel(c)).ToList();
     }
 
-    public Dictionary<string, List<ColumnSettingModel>> GetList(int userId, List<string> tableNameList)
+    public Dictionary<string, List<ColumnSettingModel>> GetList(int hpId, int userId, List<string> tableNameList)
     {
-        var finalKey = key + "_" + userId;
+        var finalKey = key + "_" + hpId + "_" + userId;
         tableNameList = tableNameList.Distinct().ToList();
         IEnumerable<ColumnSetting> columnSettingList;
         if (!_cache.KeyExists(finalKey))
         {
-            columnSettingList = ReloadCache(userId);
+            columnSettingList = ReloadCache(hpId, userId);
         }
         else
         {
-            columnSettingList = ReadCache(userId);
+            columnSettingList = ReadCache(hpId, userId);
         }
         columnSettingList = columnSettingList!.Where(item => tableNameList.Contains(item.TableName))
                                                                     .ToList();
@@ -59,18 +59,18 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
                                                                     .ToList());
         return result;
     }
-    private IEnumerable<ColumnSetting> ReloadCache(int userId)
+    private IEnumerable<ColumnSetting> ReloadCache(int hpId, int userId)
     {
-        var finalKey = key + "_" + userId;
-        var columnSettingList = NoTrackingDataContext.ColumnSettings.Where(item => item.UserId == userId).ToList();
+        var finalKey = key + "_" + hpId + "_" + userId;
+        var columnSettingList = NoTrackingDataContext.ColumnSettings.Where(item => item.HpId == hpId && item.UserId == userId).ToList();
         var json = JsonSerializer.Serialize(columnSettingList);
         _cache.StringSet(finalKey, json);
 
         return columnSettingList;
     }
-    private IEnumerable<ColumnSetting> ReadCache(int userId)
+    private IEnumerable<ColumnSetting> ReadCache(int hpId, int userId)
     {
-        var finalKey = key + "_" + userId;
+        var finalKey = key + "_" + hpId + "_" + userId;
         var results = _cache.StringGet(finalKey);
         var json = results.AsString();
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<ColumnSetting>>(json) : new();
@@ -84,6 +84,7 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
             return true;
         }
 
+        var hpId = settingModels.First().HpId;
         var userId = settingModels.First().UserId;
         var tableName = settingModels.First().TableName;
 
@@ -94,20 +95,20 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
         }
 
         var existingSettings = TrackingDataContext.ColumnSettings
-            .Where(c => c.UserId == userId && c.TableName == tableName).ToList();
+            .Where(c => c.HpId == hpId && c.UserId == userId && c.TableName == tableName).ToList();
         TrackingDataContext.ColumnSettings.RemoveRange(existingSettings);
 
         var newSettings = settingModels.Select(m => ToEntity(m));
         TrackingDataContext.ColumnSettings.AddRange(newSettings);
 
         TrackingDataContext.SaveChanges();
-        ReloadCache(userId);
+        ReloadCache(hpId, userId);
         return true;
     }
 
     private ColumnSettingModel ToModel(ColumnSetting c)
     {
-        return new ColumnSettingModel(c.UserId, c.TableName,
+        return new ColumnSettingModel(c.HpId, c.UserId, c.TableName,
             c.ColumnName, c.DisplayOrder, c.IsPinned, c.IsHidden, c.Width, c.OrderBy);
     }
 
@@ -115,6 +116,7 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
     {
         return new ColumnSetting
         {
+            HpId = model.HpId,
             UserId = model.UserId,
             TableName = model.TableName,
             ColumnName = model.ColumnName,

@@ -1,16 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SANTEI_AUTO_ORDER")]
+    [Table(name: "santei_auto_order")]
     public class SanteiAutoOrder : EmrCloneable<SanteiAutoOrder>
     {
         /// <summary>
         /// ID
         /// </summary>
         
-        [Column("ID", Order = 1)]
+        [Column("id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 2)]
+        [Column("hp_id", Order = 2)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// SANTEI_GRP_MST.SANTEI_GRP_CD
         /// </summary>
         
-        [Column("SANTEI_GRP_CD", Order = 3)]
+        [Column("santei_grp_cd", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SanteiGrpCd { get; set; }
 
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int SeqNo { get; set; }
 
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 適用開始日
         /// YYYYMMDD
         /// </summary>
-        [Column("START_DATE")]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// 適用終了日
         /// YYYYMMDD
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// "1:別Rpに追加する
         /// 2:同一Rpに追加する"
         /// </summary>
-        [Column("ADD_TYPE")]
+        [Column("add_type")]
         [CustomAttribute.DefaultValue(0)]
         public int AddType { get; set; }
 
@@ -72,7 +72,7 @@ namespace Entity.Tenant
         /// 　（詳細が複数の時のみ有効）
         /// 2:詳細のすべての項目を追加する"
         /// </summary>
-        [Column("ADD_TARGET")]
+        [Column("add_target")]
         [CustomAttribute.DefaultValue(0)]
         public int AddTarget { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// ※TERM_SBT in (1,4)のときのみ有効
         /// 例）2日の場合、TERM_CNT=2, TERM_SBT=1と登録"
         /// </summary>
-        [Column("TERM_CNT")]
+        [Column("term_cnt")]
         [CustomAttribute.DefaultValue(0)]
         public int TermCnt { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// チェック期間種別
         /// 0:未指定 1:来院 2:日 3:暦週 4:暦月 5:週 6:月 9:患者あたり
         /// </summary>
-        [Column("TERM_SBT")]
+        [Column("term_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int TermSbt { get; set; }
 
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// 2:オーダー数量ベース
         /// 3:オーダー回数ベース"
         /// </summary>
-        [Column("CNT_TYPE")]
+        [Column("cnt_type")]
         [CustomAttribute.DefaultValue(0)]
         public int CntType { get; set; }
 
@@ -109,7 +109,7 @@ namespace Entity.Tenant
         /// 算定回数上限
         /// 
         /// </summary>
-        [Column("MAX_CNT")]
+        [Column("max_cnt")]
         [CustomAttribute.DefaultValue(0)]
         public long MaxCnt { get; set; }
 
@@ -118,7 +118,7 @@ namespace Entity.Tenant
         /// "0:通常条件
         /// 1:リハビリ特殊処理(起算日からの経過日数チェック)"
         /// </summary>
-        [Column("SP_CONDITION")]
+        [Column("sp_condition")]
         [CustomAttribute.DefaultValue(0)]
         public int SpCondition { get; set; }
 
@@ -126,14 +126,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -141,7 +141,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -149,14 +149,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -164,7 +164,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

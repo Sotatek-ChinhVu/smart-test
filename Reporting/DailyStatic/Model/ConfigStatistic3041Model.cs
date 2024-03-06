@@ -31,16 +31,24 @@ public class ConfigStatistic3041Model : StatisticModelBase
         }
     }
 
-    public ConfigStatistic3041Model(int groupId = 0, int reportId = 0, int sortNo = 0)
+    public ConfigStatistic3041Model(int hpId, int groupId = 0, int reportId = 0, int sortNo = 0)
     {
         StaMenu = new StaMenu();
-        StaMenu.HpId = Session.HospitalID;
+        StaMenu.HpId = hpId;
         StaMenu.GrpId = groupId;
         StaMenu.ReportId = reportId;
         StaMenu.SortNo = sortNo;
 
         ListStaConf = new List<StaConf>();
         ModelStatus = ModelStatus.Added;
+    }
+
+    /// <summary>
+    /// Hospital ID
+    /// </summary>
+    public int HpId
+    {
+        get => StaMenu.HpId;
     }
 
     /// <summary>
@@ -101,11 +109,11 @@ public class ConfigStatistic3041Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(1);
+            return GetValueConf(HpId, 1);
         }
         set
         {
-            SettingConfig(1, value.AsString());
+            SettingConfig(HpId, 1, value.AsString());
         }
     }
 
@@ -116,11 +124,11 @@ public class ConfigStatistic3041Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(2);
+            return GetValueConf(HpId, 2);
         }
         set
         {
-            SettingConfig(2, value.AsString());
+            SettingConfig(HpId, 2, value.AsString());
         }
     }
 
@@ -132,11 +140,11 @@ public class ConfigStatistic3041Model : StatisticModelBase
     {
         get
         {
-            return GetValueConf(30).AsInteger();
+            return GetValueConf(HpId, 30).AsInteger();
         }
         set
         {
-            SettingConfig(30, value.AsString());
+            SettingConfig(HpId, 30, value.AsString());
         }
     }
 

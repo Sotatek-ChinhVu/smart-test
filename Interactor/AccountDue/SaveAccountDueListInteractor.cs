@@ -44,8 +44,8 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
             }
             var listAccountDueModel = ConvertToListAccountDueModel(inputData.SyunoNyukinInputItems.Where(item => item.IsUpdated).ToList());
             var listRaiinNo = listAccountDueModel.Select(item => item.RaiinNo).ToList();
-            var listSyunoSeikyuDB = _accountDueRepository.GetListSyunoSeikyuModel(listRaiinNo);
-            var listSyunoNyukinDB = _accountDueRepository.GetListSyunoNyukinModel(listRaiinNo);
+            var listSyunoSeikyuDB = _accountDueRepository.GetListSyunoSeikyuModel(inputData.HpId, listRaiinNo);
+            var listSyunoNyukinDB = _accountDueRepository.GetListSyunoNyukinModel(inputData.HpId, listRaiinNo);
             List<ArgumentModel> listTraiLogModels = new();
 
             if (!listAccountDueModel.Any())
@@ -182,11 +182,11 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         {
             return SaveAccountDueListStatus.InvalidHpId;
         }
-        else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
+        else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.HpId, inputData.UserId))
         {
             return SaveAccountDueListStatus.InvalidUserId;
         }
-        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
+        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long> { inputData.PtId }))
         {
             return SaveAccountDueListStatus.InvalidUserId;
         }

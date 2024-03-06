@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SYOUKI_INF")]
+    [Table(name: "syouki_inf")]
     public class SyoukiInf : EmrCloneable<SyoukiInf>
     {
         /// <summary>
@@ -12,8 +12,8 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        //[Index("SYOUKI_INF_IDX01", 1)]
+        [Column("hp_id", Order = 1)]
+        //[Index("syouki_inf_idx01", 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,8 +21,8 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
-        //[Index("SYOUKI_INF_IDX01", 2)]
+        [Column("pt_id", Order = 2)]
+        //[Index("syouki_inf_idx01", 2)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -30,8 +30,8 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_YM", Order = 3)]
-        //[Index("SYOUKI_INF_IDX01", 3)]
+        [Column("sin_ym", Order = 3)]
+        //[Index("syouki_inf_idx01", 3)]
         public int SinYm { get; set; }
 
         /// <summary>
@@ -39,8 +39,8 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HOKEN_ID", Order = 4)]
-        //[Index("SYOUKI_INF_IDX01", 4)]
+        [Column("hoken_id", Order = 4)]
+        //[Index("syouki_inf_idx01", 4)]
         public int HokenId { get; set; }
 
         /// <summary>
@@ -49,51 +49,51 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("SEQ_NO", Order = 5)]
+        [Column("seq_no", Order = 5)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 並び順
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 症状詳記区分
         /// SYOUKI_KBN_MST.SYOUKI_KBN
         /// </summary>
-        [Column("SYOUKI_KBN")]
+        [Column("syouki_kbn")]
         public int SyoukiKbn { get; set; }
 
         /// <summary>
         /// 症状詳記
         /// 
         /// </summary>
-        [Column("SYOUKI")]
+        [Column("syouki")]
         public string? Syouki { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
         /// 1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
-        //[Index("SYOUKI_INF_IDX01", 5)]
+        //[Index("syouki_inf_idx01", 5)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -109,14 +109,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -124,7 +124,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

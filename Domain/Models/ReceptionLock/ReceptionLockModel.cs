@@ -2,7 +2,7 @@
 {
     public class ReceptionLockModel
     {
-        public ReceptionLockModel(int hpId, long ptId, string functionCd, long sinDate, long raiinNo, long oyaRaiinNo, string machine, int userId, DateTime lockDate)
+        public ReceptionLockModel(int hpId, long ptId, string functionCd, int sinDate, long raiinNo, long oyaRaiinNo, string machine, int userId, DateTime lockDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -18,7 +18,7 @@
         public int HpId { get; private set; }
         public long PtId { get; private set; }
         public string FunctionCd { get; private set; }
-        public long SinDate { get; private set; }
+        public int SinDate { get; private set; }
         public long RaiinNo { get; private set; }
         public long OyaRaiinNo { get; private set; }
         public string Machine { get; private set; }

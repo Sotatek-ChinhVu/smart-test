@@ -2,7 +2,7 @@
 {
     public class DeleteReceiptInfEditRequest
     {
-        public int PtId { get; set; }
+        public long PtId { get; set; }
 
         public int SeikyuYm { get; set; }
 

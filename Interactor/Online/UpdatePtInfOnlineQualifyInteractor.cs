@@ -21,7 +21,7 @@ public class UpdatePtInfOnlineQualifyInteractor : IUpdatePtInfOnlineQualifyInput
     public UpdatePtInfOnlineQualifyOutputData Handle(UpdatePtInfOnlineQualifyInputData inputData)
     {
         List<PtInfConfirmationModel> resultList = new();
-        if (!_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (!_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return new UpdatePtInfOnlineQualifyOutputData(UpdatePtInfOnlineQualifyStatus.InvalidPtId);
         }

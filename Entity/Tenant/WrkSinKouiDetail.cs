@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "WRK_SIN_KOUI_DETAIL")]
+    [Table(name: "wrk_sin_koui_detail")]
     public class WrkSinKouiDetail : EmrCloneable<WrkSinKouiDetail>
     {
         /// <summary>
@@ -12,24 +12,24 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        //[Index("WRK_SIN_KOUI_DETAIL_IDX01", 1)]
+        [Column("hp_id", Order = 1)]
+        //[Index("wrk_sin_koui_detail_idx01", 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 
         /// </summary>
-        [Column("PT_ID")]
-        //[Index("WRK_SIN_KOUI_DETAIL_IDX01", 2)]
+        [Column("pt_id")]
+        //[Index("wrk_sin_koui_detail_idx01", 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// 
         /// </summary>
-        [Column("SIN_DATE")]
-        //[Index("WRK_SIN_KOUI_DETAIL_IDX01", 3)]
+        [Column("sin_date")]
+        //[Index("wrk_sin_koui_detail_idx01", 3)]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO", Order = 2)]
+        [Column("raiin_no", Order = 2)]
         public long RaiinNo { get; set; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 0:健保 1:労災 2:アフターケア 3:自賠 4:自費
         /// </summary>
         
-        [Column("HOKEN_KBN", Order = 3)]
+        [Column("hoken_kbn", Order = 3)]
         public int HokenKbn { get; set; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// WRK_SIN_KOUI.RP_NO
         /// </summary>
         
-        [Column("RP_NO", Order = 4)]
+        [Column("rp_no", Order = 4)]
         public int RpNo { get; set; }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// WRK_SIN_KOUI.SEQ_NO
         /// </summary>
         
-        [Column("SEQ_NO", Order = 5)]
+        [Column("seq_no", Order = 5)]
         public int SeqNo { get; set; }
 
         /// <summary>
@@ -69,14 +69,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ROW_NO", Order = 6)]
+        [Column("row_no", Order = 6)]
         public int RowNo { get; set; }
 
         /// <summary>
         /// レコード識別
         /// レセプト電算に記録するレコード識別
         /// </summary>
-        [Column("REC_ID")]
+        [Column("rec_id")]
         [MaxLength(2)]
         public string? RecId { get; set; } = string.Empty;
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// 項目種別
         /// 1:コメント
         /// </summary>
-        [Column("ITEM_SBT")]
+        [Column("item_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int ItemSbt { get; set; }
 
@@ -92,7 +92,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// オーダー項目コード
         /// 
         /// </summary>
-        [Column("ODR_ITEM_CD")]
+        [Column("odr_item_cd")]
         [MaxLength(10)]
         public string? OdrItemCd { get; set; } = string.Empty;
 
@@ -108,7 +108,7 @@ namespace Entity.Tenant
         /// 項目名称
         /// 
         /// </summary>
-        [Column("ITEM_NAME")]
+        [Column("item_name")]
         [MaxLength(1000)]
         public string? ItemName { get; set; } = string.Empty;
 
@@ -116,7 +116,7 @@ namespace Entity.Tenant
         /// 数量
         /// 
         /// </summary>
-        [Column("SURYO")]
+        [Column("suryo")]
         [CustomAttribute.DefaultValue(0)]
         public double Suryo { get; set; }
 
@@ -124,7 +124,7 @@ namespace Entity.Tenant
         /// 数量２
         /// レセ電にのみ記載する数量（分、ｃｍ２など）
         /// </summary>
-        [Column("SURYO2")]
+        [Column("suryo2")]
         [CustomAttribute.DefaultValue(0)]
         public double Suryo2 { get; set; }
 
@@ -132,7 +132,7 @@ namespace Entity.Tenant
         /// 書式区分
         /// 1: 列挙対象項目
         /// </summary>
-        [Column("FMT_KBN")]
+        [Column("fmt_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int FmtKbn { get; set; }
 
@@ -140,7 +140,7 @@ namespace Entity.Tenant
         /// 単位コード
         /// 
         /// </summary>
-        [Column("UNIT_CD")]
+        [Column("unit_cd")]
         [CustomAttribute.DefaultValue(0)]
         public int UnitCd { get; set; }
 
@@ -148,7 +148,7 @@ namespace Entity.Tenant
         /// 単位名称
         /// 
         /// </summary>
-        [Column("UNIT_NAME")]
+        [Column("unit_name")]
         [MaxLength(20)]
         public string? UnitName { get; set; } = string.Empty;
 
@@ -166,7 +166,7 @@ namespace Entity.Tenant
         /// 10: 除算金額（金額を10で除す。） ※ベントナイト用
         /// 11: 乗算金額（金額を10で乗ずる。） ※ステミラック注用"
         /// </summary>
-        [Column("TEN_ID")]
+        [Column("ten_id")]
         [CustomAttribute.DefaultValue(0)]
         public int TenId { get; set; }
 
@@ -174,7 +174,7 @@ namespace Entity.Tenant
         /// 点数
         /// 
         /// </summary>
-        [Column("TEN")]
+        [Column("ten")]
         [CustomAttribute.DefaultValue(0)]
         public double Ten { get; set; }
 
@@ -192,7 +192,7 @@ namespace Entity.Tenant
         /// 枝番：
         /// 項番："
         /// </summary>
-        [Column("CD_KBN")]
+        [Column("cd_kbn")]
         [MaxLength(1)]
         public string? CdKbn { get; set; } = string.Empty;
 
@@ -200,7 +200,7 @@ namespace Entity.Tenant
         /// コード表用区分－区分番号
         /// コード表用区分－区分を参照。
         /// </summary>
-        [Column("CD_KBNNO")]
+        [Column("cd_kbnno")]
         [CustomAttribute.DefaultValue(0)]
         public int CdKbnno { get; set; }
 
@@ -208,7 +208,7 @@ namespace Entity.Tenant
         /// コード表用区分－区分番号－枝番
         /// コード表用区分－区分を参照。
         /// </summary>
-        [Column("CD_EDANO")]
+        [Column("cd_edano")]
         [CustomAttribute.DefaultValue(0)]
         public int CdEdano { get; set; }
 
@@ -216,7 +216,7 @@ namespace Entity.Tenant
         /// コード表用区分－項番
         /// コード表用区分－区分を参照。
         /// </summary>
-        [Column("CD_KOUNO")]
+        [Column("cd_kouno")]
         [CustomAttribute.DefaultValue(0)]
         public int CdKouno { get; set; }
 
@@ -224,7 +224,7 @@ namespace Entity.Tenant
         /// 告示等識別区分１
         /// 
         /// </summary>
-        [Column("KOKUJI1")]
+        [Column("kokuji1")]
         [MaxLength(1)]
         public string? Kokuji1 { get; set; } = string.Empty;
 
@@ -232,7 +232,7 @@ namespace Entity.Tenant
         /// 告示等識別区分２
         /// 
         /// </summary>
-        [Column("KOKUJI2")]
+        [Column("kokuji2")]
         [MaxLength(1)]
         public string? Kokuji2 { get; set; } = string.Empty;
 
@@ -240,7 +240,7 @@ namespace Entity.Tenant
         /// 注加算コード
         /// 
         /// </summary>
-        [Column("TYU_CD")]
+        [Column("tyu_cd")]
         [MaxLength(4)]
         public string? TyuCd { get; set; } = string.Empty;
 
@@ -248,14 +248,14 @@ namespace Entity.Tenant
         /// 注加算通番
         /// 
         /// </summary>
-        [Column("TYU_SEQ")]
+        [Column("tyu_seq")]
         [MaxLength(1)]
         public string? TyuSeq { get; set; } = string.Empty;
 
         /// <summary>
         /// 通則年齢加算
         /// </summary>
-        [Column("TUSOKU_AGE")]
+        [Column("tusoku_age")]
         [CustomAttribute.DefaultValue(0)]
         public int TusokuAge { get; set; }
         /// <summary>
@@ -263,7 +263,7 @@ namespace Entity.Tenant
         /// "コメント以外の項目で、オーダー順
         /// コメントの場合、付随する項目と同じ番号"
         /// </summary>
-        [Column("ITEM_SEQ_NO")]
+        [Column("item_seq_no")]
         [CustomAttribute.DefaultValue(0)]
         public int ItemSeqNo { get; set; }
 
@@ -271,7 +271,7 @@ namespace Entity.Tenant
         /// 項目枝番
         /// ITEM_SEQ_NO内の連番（オーダー順）
         /// </summary>
-        [Column("ITEM_EDA_NO")]
+        [Column("item_eda_no")]
         [CustomAttribute.DefaultValue(0)]
         public int ItemEdaNo { get; set; }
 
@@ -280,7 +280,7 @@ namespace Entity.Tenant
         /// "1:非表示
         /// 2:電算のみ非表示"
         /// </summary>
-        [Column("IS_NODSP_RECE")]
+        [Column("is_nodsp_rece")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNodspRece { get; set; }
 
@@ -288,7 +288,7 @@ namespace Entity.Tenant
         /// 紙レセ非表示区分
         /// 1:非表示
         /// </summary>
-        [Column("IS_NODSP_PAPER_RECE")]
+        [Column("is_nodsp_paper_rece")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNodspPaperRece { get; set; }
 
@@ -296,7 +296,7 @@ namespace Entity.Tenant
         /// 領収証非表示区分
         /// 1:非表示
         /// </summary>
-        [Column("IS_NODSP_RYOSYU")]
+        [Column("is_nodsp_ryosyu")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNodspRyosyu { get; set; }
 
@@ -304,7 +304,7 @@ namespace Entity.Tenant
         /// 自動発生項目
         /// 1:自動発生項目
         /// </summary>
-        [Column("IS_AUTO_ADD")]
+        [Column("is_auto_add")]
         [CustomAttribute.DefaultValue(0)]
         public int IsAutoAdd { get; set; }
 
@@ -312,7 +312,7 @@ namespace Entity.Tenant
         /// コメント文
         /// 
         /// </summary>
-        [Column("CMT_OPT")]
+        [Column("cmt_opt")]
         [MaxLength(160)]
         public string? CmtOpt { get; set; } = string.Empty;
 
@@ -320,7 +320,7 @@ namespace Entity.Tenant
         /// コメント１
         /// コメントコード１とコメント文１から成り立つ表示用文字列
         /// </summary>
-        [Column("CMT1")]
+        [Column("cmt1")]
         [MaxLength(1000)]
         public string? Cmt1 { get; set; } = string.Empty;
 
@@ -328,7 +328,7 @@ namespace Entity.Tenant
         /// コメントコード１
         /// 
         /// </summary>
-        [Column("CMT_CD1")]
+        [Column("cmt_cd1")]
         [MaxLength(10)]
         public string? CmtCd1 { get; set; } = string.Empty;
 
@@ -336,7 +336,7 @@ namespace Entity.Tenant
         /// コメント文１
         /// 
         /// </summary>
-        [Column("CMT_OPT1")]
+        [Column("cmt_opt1")]
         [MaxLength(160)]
         public string? CmtOpt1 { get; set; } = string.Empty;
 
@@ -344,7 +344,7 @@ namespace Entity.Tenant
         /// コメント２
         /// コメントコード２とコメント文２から成り立つ表示用文字列
         /// </summary>
-        [Column("CMT2")]
+        [Column("cmt2")]
         [MaxLength(1000)]
         public string? Cmt2 { get; set; } = string.Empty;
 
@@ -352,7 +352,7 @@ namespace Entity.Tenant
         /// コメントコード２
         /// 
         /// </summary>
-        [Column("CMT_CD2")]
+        [Column("cmt_cd2")]
         [MaxLength(10)]
         public string? CmtCd2 { get; set; } = string.Empty;
 
@@ -360,7 +360,7 @@ namespace Entity.Tenant
         /// コメント文２
         /// 
         /// </summary>
-        [Column("CMT_OPT2")]
+        [Column("cmt_opt2")]
         [MaxLength(160)]
         public string? CmtOpt2 { get; set; } = string.Empty;
 
@@ -368,7 +368,7 @@ namespace Entity.Tenant
         /// コメント３
         /// コメントコード３とコメント文３から成り立つ表示用文字列
         /// </summary>
-        [Column("CMT3")]
+        [Column("cmt3")]
         [MaxLength(1000)]
         public string? Cmt3 { get; set; } = string.Empty;
 
@@ -376,7 +376,7 @@ namespace Entity.Tenant
         /// コメントコード３
         /// 
         /// </summary>
-        [Column("CMT_CD3")]
+        [Column("cmt_cd3")]
         [MaxLength(10)]
         public string? CmtCd3 { get; set; } = string.Empty;
 
@@ -384,7 +384,7 @@ namespace Entity.Tenant
         /// コメント文３
         /// 
         /// </summary>
-        [Column("CMT_OPT3")]
+        [Column("cmt_opt3")]
         [MaxLength(160)]
         public string? CmtOpt3 { get; set; } = string.Empty;
 
@@ -392,8 +392,24 @@ namespace Entity.Tenant
         /// 削除フラグ
         ///     1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// EF対象フラグ
+        ///     1:EFファイル出力対象の削除項目   
+        /// </summary>
+        [Column("ef_flg")]
+        [CustomAttribute.DefaultValue(0)]
+        public int EfFlg { get; set; }
+
+        /// <summary>
+        /// 一般名処方フラグ
+        ///     1:一般名処方(院外処方薬剤のみ有効)
+        /// </summary>
+        [Column("ipn_flg")]
+        [CustomAttribute.DefaultValue(0)]
+        public int IpnFlg { get; set; }
     }
 }

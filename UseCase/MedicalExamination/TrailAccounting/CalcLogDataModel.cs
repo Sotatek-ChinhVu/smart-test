@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.TrailAccounting
 {
     public class CalcLogDataModel
     {
-        public CalcLogDataModel(CalcLog calcLog, int hpId, int ptId, int sinDate, int raiinNo, int seqNo, int logSbt, string text, int hokenId, string itemCd, string delItemCd, int delSbt, int isWarning, int termCnt, int termSbt, DateTime createDate, int createId, string createMachine, DateTime updateDate, int updateId, string updateMachine)
+        public CalcLogDataModel(CalcLog calcLog, int hpId, long ptId, int sinDate, long raiinNo, int seqNo, int logSbt, string text, int hokenId, string itemCd, string delItemCd, int delSbt, int isWarning, int termCnt, int termSbt, DateTime createDate, int createId, string createMachine, DateTime updateDate, int updateId, string updateMachine)
         {
             CalcLog = calcLog;
             HpId = hpId;
@@ -31,9 +31,9 @@ namespace UseCase.MedicalExamination.TrailAccounting
 
         public CalcLog CalcLog { get; private set; }
         public int HpId { get; private set; }
-        public int PtId { get; private set; }
+        public long PtId { get; private set; }
         public int SinDate { get; private set; }
-        public int RaiinNo { get; private set; }
+        public long RaiinNo { get; private set; }
         public int SeqNo { get; private set; }
         public int LogSbt { get; private set; }
         public string Text { get; private set; }

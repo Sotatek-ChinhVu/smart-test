@@ -75,7 +75,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.Get)]
         public ActionResult<Response<GetReceptionResponse>> Get([FromQuery] GetReceptionRequest request)
         {
-            var input = new GetReceptionInputData(request.RaiinNo, request.Flag);
+            var input = new GetReceptionInputData(HpId, request.RaiinNo, request.Flag);
             var output = _bus.Handle(input);
 
             var presenter = new GetReceptionPresenter();

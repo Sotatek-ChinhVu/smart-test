@@ -5,7 +5,7 @@ namespace Domain.Models.RaiinKubunMst
 {
     public interface IRaiinKubunMstRepository : IRepositoryBase
     {
-        List<RaiinKubunMstModel> GetList(bool isDeleted);
+        List<RaiinKubunMstModel> GetList(int hpId, bool isDeleted);
 
         List<RaiinKubunMstModel> LoadDataKubunSetting(int hpId, int userId);
 
@@ -25,7 +25,7 @@ namespace Domain.Models.RaiinKubunMst
 
         List<RaiinKbnModel> InitDefaultByRsv(int hpId, int frameID, List<RaiinKbnModel> raiinKbns);
 
-        IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, int raiinNo, int sinDate);
+        IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, long raiinNo, int sinDate);
 
         bool SaveRaiinKbnInfs(int hpId, long ptId, int sinDate, long raiinNo, int userId, IEnumerable<RaiinKbnInfDto> kbnInfDtos);
 

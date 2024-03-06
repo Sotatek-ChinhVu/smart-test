@@ -27,7 +27,7 @@ public class SearchPatientInfoAdvancedInteractor : ISearchPatientInfoAdvancedInp
             bool sortGroup = input.SortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
             var patientInfos = _patientInforRepository.GetAdvancedSearchResults(input.SearchInput, input.HpId, input.PageIndex, input.PageSize, input.SortData);
             var ptIds = patientInfos.Select(p => p.PtId).ToList();
-            var patientGroups = _groupInfRepository.GetAllByPtIdList(ptIds);
+            var patientGroups = _groupInfRepository.GetAllByPtIdList(ptIds, input.HpId);
             var patientInfoList =
                 from pt in patientInfos
                 join grp in patientGroups on pt.PtId equals grp.PtId into groups

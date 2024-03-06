@@ -1,32 +1,35 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M34_DRUG_INFO_MAIN")]
+    [Table(name: "m34_drug_info_main")]
     public class M34DrugInfoMain : EmrCloneable<M34DrugInfoMain>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 医薬品コード
         /// 
         /// </summary>
-        
-        [Column("YJ_CD", Order = 1)]
+
+        [Column("yj_cd", Order = 1)]
         public string YjCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 剤形コード
         /// 
         /// </summary>
-        [Column("FORM_CD")]
+        [Column("form_cd")]
         public string? FormCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 色調
         /// 
         /// </summary>
-        [Column("COLOR")]
+        [Column("color")]
         [MaxLength(20)]
         public string? Color { get; set; } = string.Empty;
 
@@ -34,7 +37,7 @@ namespace Entity.Tenant
         /// 本体記号
         /// 
         /// </summary>
-        [Column("MARK")]
+        [Column("mark")]
         [MaxLength(20)]
         public string? Mark { get; set; } = string.Empty;
 
@@ -42,21 +45,21 @@ namespace Entity.Tenant
         /// 効能効果コード
         /// 
         /// </summary>
-        [Column("KONO_CD")]
+        [Column("kono_cd")]
         public string? KonoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 副作用コード
         /// 
         /// </summary>
-        [Column("FUKUSAYO_CD")]
+        [Column("fukusayo_cd")]
         public string? FukusayoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 副作用初期症状コード
         /// 
         /// </summary>
-        [Column("FUKUSAYO_INIT_CD")]
+        [Column("fukusayo_init_cd")]
         public string? FukusayoInitCd { get; set; } = string.Empty;
 
     }

@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RSV_RENKEI_INF")]
+    [Table(name: "rsv_renkei_inf")]
     public class RsvRenkeiInf : EmrCloneable<RsvRenkeiInf>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,21 +20,21 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO", Order = 2)]
+        [Column("raiin_no", Order = 2)]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 予約システム連番
         /// 
         /// </summary>
-        [Column("OTHER_SEQ_NO")]
+        [Column("other_seq_no")]
         [CustomAttribute.DefaultValue(0)]
         public long OtherSeqNo { get; set; }
 
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 予約システム連番2
         /// 
         /// </summary>
-        [Column("OTHER_SEQ_NO2")]
+        [Column("other_seq_no2")]
         [CustomAttribute.DefaultValue(0)]
         public long OtherSeqNo2 { get; set; }
 
@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// 予約システム患者番号
         /// 
         /// </summary>
-        [Column("OTHER_PT_ID")]
+        [Column("other_pt_id")]
         [CustomAttribute.DefaultValue(0)]
         public long OtherPtId { get; set; }
 
@@ -58,14 +58,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -73,7 +73,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -81,14 +81,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -96,7 +96,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

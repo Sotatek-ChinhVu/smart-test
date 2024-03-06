@@ -39,7 +39,7 @@ public class VisitingController : AuthorizeControllerBase
     [HttpGet(ApiPath.Get + "ReceptionLock")]
     public ActionResult<Response<GetReceptionLockRespone>> GetList([FromQuery] GetReceptionLockRequest request)
     {
-        var input = new GetReceptionLockInputData(request.SinDate, request.PtId, request.RaiinNo, request.FunctionCd);
+        var input = new GetReceptionLockInputData(HpId, request.SinDate, request.PtId, request.RaiinNo, request.FunctionCd);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionLockPresenter();
         presenter.Complete(output);

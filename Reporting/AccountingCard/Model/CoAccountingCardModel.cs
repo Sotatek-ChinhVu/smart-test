@@ -1,6 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Constants;
-using Reporting.Calculate.Receipt.ViewModels;
+using CalculateService.Receipt.ViewModels;
 
 namespace Reporting.AccountingCard.Model
 {

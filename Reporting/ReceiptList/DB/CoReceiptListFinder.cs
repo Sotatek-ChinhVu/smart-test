@@ -200,8 +200,8 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                         ptHokenInf.JibaiHokenTel
                     };
 
-        var rosaiReceden = _systemConfig.RosaiReceden();
-        string rosaiRecedenTerm = _systemConfig.RosaiRecedenTerm();
+        var rosaiReceden = _systemConfig.RosaiReceden(hpId);
+        string rosaiRecedenTerm = _systemConfig.RosaiRecedenTerm(hpId);
         result = query.AsEnumerable().Select(
                 data => new ReceiptListModel(data.ReceInf, rosaiReceden, rosaiRecedenTerm)
                 {
@@ -475,7 +475,7 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                         IsSyobyoKeikaExist = syobyokeika != null ? 1 : 0,
                         SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt : string.Empty,
                         LastVisitDate = ptLastVisitDate != null ? ptLastVisitDate.SinDate : 0,
-                        kaMst.KaName,
+                        KaName = kaMst?.KaName ?? string.Empty, // Check null KaMst.KaName
                         UserName = userMst?.Name ?? string.Empty,
                         IsPtKyuseiExist = ptKyusei != null ? 1 : 0,
                         FutansyaNoKohi1 = ptKohi1 != null ? ptKohi1.FutansyaNo : string.Empty,
@@ -521,8 +521,8 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
         #endregion
 
         #region Convert to list model
-        var rosaiReceden = _systemConfig.RosaiReceden();
-        string rosaiRecedenTerm = _systemConfig.RosaiRecedenTerm();
+        var rosaiReceden = _systemConfig.RosaiReceden(hpId);
+        string rosaiRecedenTerm = _systemConfig.RosaiRecedenTerm(hpId);
 
         var receInfAll = query.Select(
         data => new ReceiptListModel(

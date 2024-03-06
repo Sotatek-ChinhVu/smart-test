@@ -108,7 +108,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetDosageDrugList)]
         public ActionResult<Response<GetDosageDrugListResponse>> GetDosageDrugList([FromBody] GetDosageDrugListRequest request)
         {
-            var input = new GetDosageDrugListInputData(request.YjCds);
+            var input = new GetDosageDrugListInputData(HpId, request.YjCds);
             var output = _bus.Handle(input);
 
             var presenter = new GetDosageDrugListPresenter();
@@ -120,7 +120,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetFoodAlrgy)]
         public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy()
         {
-            var input = new GetFoodAlrgyInputData();
+            var input = new GetFoodAlrgyInputData(HpId);
             var output = _bus.Handle(input);
 
             var presenter = new FoodAlrgyMasterDataPresenter();
@@ -132,7 +132,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SearchOTC)]
         public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
         {
-            var input = new SearchOTCInputData(request.SearchValue, request.PageIndex, request.PageSize);
+            var input = new SearchOTCInputData(HpId, request.SearchValue, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
 
             var presenter = new SearchOTCPresenter();
@@ -144,7 +144,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SearchSupplement)]
         public ActionResult<Response<SearchSupplementResponse>> SearchSupplement([FromBody] SearchSupplementRequest request)
         {
-            var input = new SearchSupplementInputData(request.SearchValue, request.PageIndex, request.PageSize);
+            var input = new SearchSupplementInputData(HpId, request.SearchValue, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
 
             var presenter = new SearchSupplementPresenter();
@@ -176,7 +176,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.DiseaseSearch)]
         public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
         {
-            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize, request.IsHasFreeByomei);
+            var input = new DiseaseSearchInputData(HpId, request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize, request.IsHasFreeByomei);
             var output = _bus.Handle(input);
 
             var presenter = new DiseaseSearchPresenter();
@@ -200,7 +200,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetDiseaseList)]
         public ActionResult<Response<DiseaseSearchResponse>> GetDiseaseList([FromBody] GetDiseaseListRequest request)
         {
-            var input = new GetDiseaseListInputData(request.ItemCdList);
+            var input = new GetDiseaseListInputData(HpId, request.ItemCdList);
             var output = _bus.Handle(input);
 
             var presenter = new GetDiseaseListPresenter();
@@ -333,7 +333,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListTenMstOrigin)]
         public ActionResult<Response<GetListTenMstOriginResponse>> GetListTenMstOrigin([FromQuery] GetListTenMstOriginRequest request)
         {
-            var input = new GetListTenMstOriginInputData(request.ItemCd);
+            var input = new GetListTenMstOriginInputData(HpId, request.ItemCd);
             var output = _bus.Handle(input);
             var presenter = new GetListTenMstOriginPresenter();
             presenter.Complete(output);
@@ -649,7 +649,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetDrugAction)]
         public ActionResult<Response<GetDrugActionResponse>> GetDrugAction([FromQuery] GetDrugActionRequest request)
         {
-            var input = new GetDrugActionInputData(request.YjCd);
+            var input = new GetDrugActionInputData(HpId, request.YjCd);
             var output = _bus.Handle(input);
             var presenter = new GetDrugActionPresenter();
             presenter.Complete(output);
@@ -669,7 +669,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetDefaultPrecautions)]
         public ActionResult<Response<GetDefaultPrecautionsResponse>> GetDefaultPrecautions([FromQuery] GetDefaultPrecautionsRequest request)
         {
-            var input = new GetDefaultPrecautionsInputData(request.YjCd);
+            var input = new GetDefaultPrecautionsInputData(HpId, request.YjCd);
             var output = _bus.Handle(input);
             var presenter = new GetDefaultPrecautionsPresenter();
             presenter.Complete(output);
@@ -1026,7 +1026,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetTenMstByCode)]
         public ActionResult<Response<GetTenMstByCodeResponse>> GetTenMstByCode([FromQuery] GetTenMstByCodeRequest request)
         {
-            var input = new GetTenMstByCodeInputData(request.ItemCd, request.SetKbn, request.SinDate);
+            var input = new GetTenMstByCodeInputData(HpId, request.ItemCd, request.SetKbn, request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new GetTenMstByCodePresenter();
             presenter.Complete(output);
@@ -1036,7 +1036,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetByomeiByCode)]
         public ActionResult<Response<GetByomeiByCodeResponse>> GetByomeiByCode([FromQuery] GetByomeiByCodeRequest request)
         {
-            var input = new GetByomeiByCodeInputData(request.ByomeiCd);
+            var input = new GetByomeiByCodeInputData(HpId, request.ByomeiCd);
             var output = _bus.Handle(input);
             var presenter = new GetByomeiByCodePresenter();
             presenter.Complete(output);
@@ -1084,7 +1084,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.CheckJihiSbtExistsInTenMst)]
         public ActionResult<Response<CheckJihiSbtExistsInTenMstResponse>> CheckJihiSbtExistsInTenMst([FromQuery] int jihiSbt)
         {
-            var input = new CheckJihiSbtExistsInTenMstInputData(jihiSbt);
+            var input = new CheckJihiSbtExistsInTenMstInputData(HpId, jihiSbt);
             var output = _bus.Handle(input);
             var presenter = new CheckJihiSbtExistsInTenMstPresenter();
             presenter.Complete(output);

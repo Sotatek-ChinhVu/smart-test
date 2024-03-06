@@ -81,16 +81,15 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var ipnCds = allSetOrderInfDetails?.Select(detail => detail.IpnCd);
         var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sinDate && t.EndDate >= sinDate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
         var kensaMsts = NoTrackingDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
-        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDate && ipn.IsDeleted == 0).ToList();
+        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.StartDate <= sinDate && ipn.IsDeleted == 0).ToList();
         var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sinDate && ipn.EndDate >= sinDate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
-        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
-        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
-        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
+        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate).ToList();
+        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate).ToList();
+        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2019 && item.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
-        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
+        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2019 && item.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
         var allIpnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(p =>
-                   p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
                    (ipnCds != null && ipnCds.Contains(p.IpnNameCd))).ToList();
@@ -205,7 +204,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             codeLists.AddRange(GetCodeLists(item));
             codeLists.Add(item.ByomeiCd ?? string.Empty);
         }
-        var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
+        var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
 
         var listSetByomeiModels = listByomeis.Select(mst => ConvertSetByomeiModel(mst, byomeiMstList)).ToList();
         return listSetByomeiModels;
@@ -216,12 +215,16 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         bool isSyobyoKbn = mst.SyobyoKbn == 1;
         int sikkanKbn = mst.SikkanKbn;
         int nanByoCd = mst.NanbyoCd;
-        string fullByomei = mst.Byomei ?? string.Empty;
+        string displayByomei = mst.Byomei ?? string.Empty; // displayByomei is saved in the database
         bool isDspRece = mst.IsNodspRece == 0;
         bool isDspKarte = mst.IsNodspKarte == 0;
         string byomeiCmt = mst.HosokuCmt ?? string.Empty;
         string byomeiCd = mst.ByomeiCd ?? string.Empty;
+
+        // fullByomei is main byomei get by byomeiCd
+        string fullByomei = mst.ByomeiCd != FREE_WORD ? byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(mst.ByomeiCd))?.Byomei ?? string.Empty : displayByomei;
         var codeLists = GetCodeLists(mst);
+
         //prefix and suffix
         var prefixSuffixList = codeLists?.Select(code => new PrefixSuffixModel(code, byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(code))?.Byomei ?? string.Empty)).ToList();
         bool isSuspected = false;
@@ -237,6 +240,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 isSyobyoKbn,
                 sikkanKbn,
                 nanByoCd,
+                displayByomei,
                 fullByomei,
                 isSuspected,
                 isDspRece,
@@ -335,14 +339,14 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sindate && t.EndDate >= sindate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
         var kensaMsts = NoTrackingDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
         var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sindate && ipn.EndDate >= sindate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
-        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
-        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
-        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
+        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.StartDate <= sindate && item.EndDate >= sindate).ToList();
+        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.StartDate <= sindate && item.EndDate >= sindate).ToList();
+        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2019 && item.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
-        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
+        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2019 && item.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
         var listUserId = allSetOdrInfs.Select(user => user.CreateId).ToList();
-        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sindate && ipn.IsDeleted == 0).ToList();
+        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.StartDate <= sindate && ipn.IsDeleted == 0).ToList();
         var yohoSetMsts = NoTrackingDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
         var sinKouiKbns = allSetOdrInfDetails?.Select(od => od.SinKouiKbn).Distinct().ToList() ?? new();
         var itemCdYohos = yohoSetMsts?.Select(od => od.ItemCd ?? string.Empty);
@@ -703,11 +707,11 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             bool kensaCondition;
             if (kensaIraiCondition == 0)
             {
-                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9";
             }
             else
             {
-                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
             }
 
             if (kensaCondition && inOutKbn == 1)
@@ -854,7 +858,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         mst.SyusyokuCd20 = listPrefixSuffix.Count > 19 ? listPrefixSuffix[19].Code : string.Empty;
         mst.SyusyokuCd21 = listPrefixSuffix.Count > 20 ? listPrefixSuffix[20].Code : string.Empty;
 
-        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD && itemSuspected == null)
+        // if item IsSuspected, alway set ByomeiCd = SUSPECTED_CD in SyusyokuCd21
+        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD)
         {
             mst.SyusyokuCd21 = SUSPECTED_CD;
         }
@@ -1165,7 +1170,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         SystemConf? systemConf;
         if (!fromLastestDb)
         {
-            systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
         }
         else
         {
@@ -1698,14 +1703,15 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     public (bool SaveSuccess, List<SetMstModel> SetMstUpdateList) SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList, List<OdrSetNameModel> updateSetNameList)
     {
-        var setOdrInfId = setNameModelList.Select(item => item.SetOrdInfId).Distinct().ToList();
         var rowNoList = setNameModelList.Select(item => item.RowNo).Distinct().ToList();
-        var setCdList = setNameModelList.Select(item => item.SetCd).Distinct().ToList();
+        var setCdList = setNameModelList.Select(item => item.SetCd).ToList();
+        setCdList.AddRange(updateSetNameList.Select(item => item.SetCd));
+        setCdList = setCdList.Distinct().ToList();
         var itemCdList = setNameModelList.Select(item => item.ItemCd).Distinct().ToList();
 
-        var odrInfDbList = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
-                                                                         && item.IsDeleted == 0
-                                                                         && setOdrInfId.Contains(item.Id))
+        var odrInfDbList = TrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
+                                                                       && item.IsDeleted == 0
+                                                                       && setCdList.Contains(item.SetCd))
                                                           .ToList();
 
         var tenMstDBList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
@@ -1723,8 +1729,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                                                    && rowNoList.Contains(item.RowNo)
                                                                                    && rpEdaNoList.Contains(item.RpEdaNo))
                                                                      .ToList();
-        var ipnNameMstDBList = NoTrackingDataContext.IpnNameMsts.Where(item => item.HpId == hpId
-                                                                               && item.StartDate <= sinDate
+        var ipnNameMstDBList = NoTrackingDataContext.IpnNameMsts.Where(item => item.StartDate <= sinDate
                                                                                && item.EndDate >= sinDate
                                                                                && ipnNameCdList.Contains(item.IpnNameCd))
                                                                 .ToList();
@@ -1842,6 +1847,15 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
             setMst.UpdateId = userId;
             generationIdList.Add(setMst.GenerationId);
+
+            // update rpName
+            var setOdrInfUpdateRpNameList = odrInfDbList.Where(item => item.SetCd == model.SetCd).ToList();
+            foreach (var setOdrInf in setOdrInfUpdateRpNameList)
+            {
+                setOdrInf.RpName = setMst.SetName;
+                setOdrInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                setOdrInf.UpdateId = userId;
+            }
         }
         #endregion
         var saveSuccess = TrackingDataContext.SaveChanges() > 0;
