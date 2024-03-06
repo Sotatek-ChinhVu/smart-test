@@ -48,6 +48,16 @@ public class FamilyModel
         DiseaseName = string.Empty;
     }
 
+    public FamilyModel()
+    {
+        ZokugaraCd = string.Empty;
+        Name = string.Empty;
+        KanaName = string.Empty;
+        Biko = string.Empty;
+        ListPtFamilyRekis = new();
+        DiseaseName = string.Empty;
+    }
+
     public FamilyModel(long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int isDead, int sinDate)
     {
         FamilyId = 0;
