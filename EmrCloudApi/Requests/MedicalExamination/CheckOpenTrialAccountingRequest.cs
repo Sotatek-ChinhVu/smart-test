@@ -2,7 +2,7 @@
 {
     public class CheckOpenTrialAccountingRequest
     {
-        public int PtId { get; set; }
+        public long PtId { get; set; }
         public long RaiinNo { get; set; }
         public int SinDate { get; set; }
         public int SyosaiKbn { get; set; }

@@ -1,9 +1,11 @@
 ﻿using CloudUnitTest.SampleData;
+using CommonChecker.DB;
 using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Repositories;
@@ -3503,8 +3505,8 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 21000101;
         var mockConfiguration = new Mock<IConfiguration>();
         var mockMstItem = new Mock<IMstItemRepository>();
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3523,6 +3525,11 @@ public class CheckedOrderTest : BaseUT
                 new()
                 )
         };
+
+        var tenItem = new TenItemModel();
+
+        mockMstItem.Setup(finder => finder.GetTenMstInfo(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            .Returns((int hpId, string itemCd, int sinDate) => tenItem);
 
         // Act
         var checkModel1s = medicalExaminationRepository.Zanyaku(hpId, sinDate, ordInfDetailModels, ordInfs);
@@ -6817,4 +6824,48 @@ public class CheckedOrderTest : BaseUT
     }
 
     #endregion
+
+    /// <summary>
+    /// Check Zanyaku is drug
+    /// </summary>
+    [Test]
+    public void Zanyaku_076_Drug()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101;
+        var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "123421341",
+                1
+            ),
+            new OrdInfDetailModel(
+                "123421342",
+                1
+            )
+        };
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                new()
+                )
+        };
+
+        var tenItem = new TenItemModel();
+
+        var mock = new Mock<IMstItemRepository>();
+        mock.Setup(finder => finder.GetTenMstInfo(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            .Returns((int hpId, string itemCd, int sinDate) => null);
+
+        // Act
+        var checkModel1s = medicalExaminationRepository.Zanyaku(hpId, sinDate, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModel1s.Count == 0);
+    }
 }

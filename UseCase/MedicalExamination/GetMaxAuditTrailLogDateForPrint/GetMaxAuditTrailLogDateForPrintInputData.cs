@@ -4,12 +4,15 @@ namespace UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint
 {
     public class GetMaxAuditTrailLogDateForPrintInputData : IInputData<GetMaxAuditTrailLogDateForPrintOutputData>
     {
-        public GetMaxAuditTrailLogDateForPrintInputData(long ptId, int sinDate, long raiinNo)
+        public GetMaxAuditTrailLogDateForPrintInputData(int hpId, long ptId, int sinDate, long raiinNo)
         {
+            HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
             RaiinNo = raiinNo;
         }
+
+        public int HpId { get; private set; }
 
         public long PtId { get; private set; }
 

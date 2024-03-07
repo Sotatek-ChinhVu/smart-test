@@ -16,7 +16,7 @@ public class GetTokkiMstListInteractor : IGetTokkiMstListInputPort
     {
         try
         {
-            var result = _patientInforRepository.GetListTokki(inputData.HpId, inputData.SeikyuYm * 100 + 1);
+            var result = _patientInforRepository.GetListTokki(inputData.SeikyuYm * 100 + 1);
             return new GetTokkiMstListOutputData(result, GetTokkiMstListStatus.Successed);
         }
         finally

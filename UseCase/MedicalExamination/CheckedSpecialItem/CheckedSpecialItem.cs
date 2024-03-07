@@ -4,6 +4,13 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
 {
     public class CheckedSpecialItem
     {
+        public CheckedSpecialItem() 
+        {
+            Label = string.Empty;
+            CheckingContent = string.Empty;
+            ItemCd = string.Empty;
+        }
+
         /// <summary>
         /// 種別
         /// </summary>

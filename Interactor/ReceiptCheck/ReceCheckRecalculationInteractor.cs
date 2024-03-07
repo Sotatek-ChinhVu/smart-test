@@ -46,18 +46,18 @@ namespace Interactor.ReceiptCheck
                     });
 
                 SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
-                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty));
+                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.HpId, inputData.PtIds, inputData.SeikyuYm, string.Empty));
 
                 SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
 
                 var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SeikyuYm, inputData.PtIds);
                 int allCheckCount = receRecalculationList.Count;
 
-                var success = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIds, inputData.SeikyuYm, inputData.UserId, receRecalculationList, allCheckCount, _messenger, true);
+                var resultCheckError = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIds, inputData.SeikyuYm, inputData.UserId, receRecalculationList, allCheckCount, _messenger, RunRecalculationStatus.RunReceCheck);
 
                 _receiptRepository.UpdateReceStatus(inputData.ReceStatus, inputData.HpId, inputData.UserId);
 
-                return new ReceiptCheckRecalculationOutputData(success);
+                return new ReceiptCheckRecalculationOutputData(resultCheckError.Success);
             }
             catch (Exception ex)
             {

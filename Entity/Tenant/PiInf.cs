@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "PI_INF")]
+    [Table(name: "pi_inf")]
     public class PiInf : EmrCloneable<PiInf>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 添付文書ID
         /// 
         /// </summary>
-        
-        [Column("PI_ID", Order = 1)]
+
+        [Column("pi_id", Order = 1)]
         [MaxLength(6)]
         public string PiId { get; set; } = string.Empty;
 
@@ -20,14 +23,14 @@ namespace Entity.Tenant
         /// 最終作業日
         /// 
         /// </summary>
-        [Column("W_DATE")]
+        [Column("w_date")]
         public int WDate { get; set; }
 
         /// <summary>
         /// 添付文書標題
         /// 
         /// </summary>
-        [Column("TITLE")]
+        [Column("title")]
         [MaxLength(60)]
         public string? Title { get; set; } = string.Empty;
 
@@ -35,14 +38,14 @@ namespace Entity.Tenant
         /// 改定年月
         /// 
         /// </summary>
-        [Column("R_DATE")]
+        [Column("r_date")]
         public int RDate { get; set; }
 
         /// <summary>
         /// 版数
         /// 
         /// </summary>
-        [Column("REVISION")]
+        [Column("revision")]
         [MaxLength(100)]
         public string? Revision { get; set; } = string.Empty;
 
@@ -50,7 +53,7 @@ namespace Entity.Tenant
         /// 改訂種別
         /// 
         /// </summary>
-        [Column("R_TYPE")]
+        [Column("r_type")]
         [MaxLength(20)]
         public string? RType { get; set; } = string.Empty;
 
@@ -58,7 +61,7 @@ namespace Entity.Tenant
         /// 改訂理由
         /// 
         /// </summary>
-        [Column("R_REASON")]
+        [Column("r_reason")]
         [MaxLength(200)]
         public string? RReason { get; set; } = string.Empty;
 
@@ -66,7 +69,7 @@ namespace Entity.Tenant
         /// 商品分類番号
         /// 
         /// </summary>
-        [Column("SCCJNO")]
+        [Column("sccjno")]
         [MaxLength(200)]
         public string? Sccjno { get; set; } = string.Empty;
 
@@ -74,7 +77,7 @@ namespace Entity.Tenant
         /// 薬効分類名
         /// 
         /// </summary>
-        [Column("THERAPEUTICCLASSIFICATION")]
+        [Column("therapeuticclassification")]
         [MaxLength(200)]
         public string? Therapeuticclassification { get; set; } = string.Empty;
 
@@ -82,7 +85,7 @@ namespace Entity.Tenant
         /// 製剤名
         /// 
         /// </summary>
-        [Column("PREPARATION_NAME")]
+        [Column("preparation_name")]
         [MaxLength(200)]
         public string? PreparationName { get; set; } = string.Empty;
 
@@ -90,7 +93,7 @@ namespace Entity.Tenant
         /// ハイライト
         /// 
         /// </summary>
-        [Column("HIGHLIGHT")]
+        [Column("highlight")]
         [MaxLength(200)]
         public string? Highlight { get; set; } = string.Empty;
 
@@ -98,7 +101,7 @@ namespace Entity.Tenant
         /// 製剤の特徴
         /// 
         /// </summary>
-        [Column("FEATURE")]
+        [Column("feature")]
         [MaxLength(200)]
         public string? Feature { get; set; } = string.Empty;
 
@@ -106,7 +109,7 @@ namespace Entity.Tenant
         /// 関連事項
         /// 
         /// </summary>
-        [Column("RELATEDMATTER")]
+        [Column("relatedmatter")]
         [MaxLength(200)]
         public string? Relatedmatter { get; set; } = string.Empty;
 
@@ -114,7 +117,7 @@ namespace Entity.Tenant
         /// 総称名
         /// 
         /// </summary>
-        [Column("COMMONNAME")]
+        [Column("commonname")]
         [MaxLength(200)]
         public string? Commonname { get; set; } = string.Empty;
 
@@ -122,7 +125,7 @@ namespace Entity.Tenant
         /// 一般的名称
         /// 
         /// </summary>
-        [Column("GENERICNAME")]
+        [Column("genericname")]
         public string? Genericname { get; set; } = string.Empty;
     }
 }

@@ -46,6 +46,7 @@ public class SanteiInfRepositoryTest : BaseUT
             // Act
             long ptId = 123456789;
             var resultQuery = santeiInfRepository.GetListSanteiInf(1, ptId, 20221212);
+
             Assert.True(CompareListSanteiInf(ptId, resultQuery, santeiInfs, santeiInfDetails, orderInfs, orderInfDetails, tenMsts));
         }
         finally
@@ -474,8 +475,10 @@ public class SanteiInfRepositoryTest : BaseUT
         string hosokuCommentNew = "hosokuCommentNewUnitTest";
         string commentNew = "commentNewUnitTest";
         var tenant = TenantProvider.GetNoTrackingDataContext();
+        int hpId = 1;
         var santeiInfDetailUnitTest = new SanteiInfDetail()
         {
+            HpId = hpId,
             PtId = ptId,
             ItemCd = itemCd,
             EndDate = endDate,
@@ -503,7 +506,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                 hosokuCommentNew,
                                                                 commentNew
                                                             );
-        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, 1, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
+        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, hpId, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
 
         var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
                                                      .LastOrDefault(item => item.Id == santeiInfDetailUnitTest.Id);
@@ -548,8 +551,10 @@ public class SanteiInfRepositoryTest : BaseUT
         string hosokuComment = "hosokuCommentUnitTest";
         string comment = "commentUnitTest";
         var tenant = TenantProvider.GetNoTrackingDataContext();
+        int hpId = 1;
         var santeiInfDetailUnitTest = new SanteiInfDetail()
         {
+            HpId = hpId,
             PtId = ptId,
             ItemCd = itemCd,
             EndDate = endDate,
@@ -578,7 +583,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                 comment,
                                                                 true
                                                             );
-        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, 1, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
+        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, hpId, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
 
         var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
                                                      .LastOrDefault(item => item.Id == santeiInfDetailUnitTest.Id);

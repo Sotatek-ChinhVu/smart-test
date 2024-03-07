@@ -1007,7 +1007,8 @@ namespace Infrastructure.Repositories
             var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => byomeiCds.Contains(b.ByomeiCd)).ToList();
 
             string fullByomei = string.Empty;
-            StringBuilder byomeiStringBuilder = new();
+
+            //Map Byomei with prefix suffix
             foreach (var item in byomeiCds)
             {
                 var byomei = byomeiMstList.FirstOrDefault(b => item == b.ByomeiCd);
@@ -1015,10 +1016,18 @@ namespace Infrastructure.Repositories
                 {
                     continue;
                 }
-                byomeiStringBuilder.Append(byomei.Byomei ?? string.Empty);
+
+                if (byomei.ByomeiCd.StartsWith('8'))
+                {
+                    ptByomei.Byomei += byomei.Byomei;
+                }
+                else
+                {
+                    fullByomei += byomei.Byomei;
+                }
             }
 
-            fullByomei += byomeiStringBuilder.ToString();
+            fullByomei += ptByomei.Byomei;
 
             return new PtDiseaseModel(ptByomei != null ? ptByomei.HokenPid : 0,
                                       ptByomei != null ? ptByomei.ByomeiCd ?? string.Empty : string.Empty,
@@ -1548,7 +1557,7 @@ namespace Infrastructure.Repositories
                                                                                         && item.PtId == ptId
                                                                                         && item.HokenId == hokenId);
             if (hoken == null) return false;
-            var kantoku = NoTrackingDataContext.KantokuMsts.FirstOrDefault(item => item.RoudouCd == hoken.RousaiRoudouCd && item.KantokuCd == hoken.RousaiKantokuCd);
+            var kantoku = NoTrackingDataContext.KantokuMsts.FirstOrDefault(item => item.RoudouCd == hoken.RousaiRoudouCd && item.KantokuCd == hoken.RousaiKantokuCd && item.HpId == hpId);
             return kantoku != null;
         }
 

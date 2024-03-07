@@ -2,7 +2,7 @@
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Reporting.Calculate.Extensions;
+using CalculateService.Extensions;
 using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.Models;
@@ -41,16 +41,16 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
         private List<CoWelfareReceInfModel> getReceInf(int hpId, int seikyuYm, SeikyuType seikyuType, List<int> kohiHokenNos, List<string> kohiHoubetus,
             FutanCheck futanCheck, int hokenKbn, bool isReceKisai)
         {
-            var receInfs = NoTrackingDataContext.ReceInfs.FindListQueryableNoTrack();
-            var receStatuses = NoTrackingDataContext.ReceStatuses.FindListQueryableNoTrack();
-            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.FindListQueryableNoTrack(
-                p => p.IsDeleted == DeleteStatus.None
+            var receInfs = NoTrackingDataContext.ReceInfs.Where(x => x.HpId == hpId);
+            var receStatuses = NoTrackingDataContext.ReceStatuses.Where(x => x.HpId == hpId);
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(
+                p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None
             );
-            var ptKohis = NoTrackingDataContext.PtKohis.FindListQueryableNoTrack(
-                p => p.IsDeleted == DeleteStatus.None
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(
+                p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None
             );
-            var ptInfs = NoTrackingDataContext.PtInfs.FindListQueryableNoTrack(
-                p => p.IsDelete == DeleteStatus.None
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(
+                p => p.HpId == hpId && p.IsDelete == DeleteStatus.None
             );
 
             var joinQuery = (

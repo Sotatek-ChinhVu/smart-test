@@ -2,72 +2,74 @@
 
 namespace CommonChecker.DB
 {
-    public interface IRealtimeOrderErrorFinder :IRepositoryBase
+    public interface IRealtimeOrderErrorFinder : IRepositoryBase
     {
-        bool IsNoMasterData();
+        bool IsNoMasterData(int hpId);
 
-        string FindItemName(string yjCd, int sinday);
+        string FindItemName(int hpId, string yjCd, int sinday);
 
-        Dictionary<string, string> FindItemNameDic(List<string> yjCdList, int sinday);
+        Dictionary<string, string> FindItemNameDic(int hpId, List<string> yjCdList, int sinday);
 
-        string FindComponentName(string conponentCode);
+        Dictionary<string, string> FindLastItemNameByYjCdDic(int hpId, List<string> yjCdList, int sinday, bool dontCheckIsDeleted = true);
 
-        Dictionary<string, string> FindComponentNameDic(List<string> conponentCodeList);
+        string FindComponentName(int hpId, string conponentCode);
 
-        string FindAnalogueName(string analogueCode);
+        Dictionary<string, string> FindComponentNameDic(int hpId, List<string> conponentCodeList);
 
-        Dictionary<string, string> FindAnalogueNameDic(List<string> analogueCodeList);
+        string FindAnalogueName(int hpId, string analogueCode);
 
-        string FindDrvalrgyName(string drvalrgyCode);
+        Dictionary<string, string> FindAnalogueNameDic(int hpId, List<string> analogueCodeList);
 
-        Dictionary<string, string> FindDrvalrgyNameDic(List<string> drvalrgyCodeList);
+        string FindDrvalrgyName(int hpId, string drvalrgyCode);
 
-        string FindItemNameByItemCode(string itemCd, int sinday);
+        Dictionary<string, string> FindDrvalrgyNameDic(int hpId, List<string> drvalrgyCodeList);
 
-        Dictionary<string, string> FindItemNameByItemCodeDic(List<string> itemCdList, int sinday);
+        string FindItemNameByItemCode(int hpId, string itemCd, int sinday);
 
-        string FindFoodName(string foodCode);
+        Dictionary<string, string> FindItemNameByItemCodeDic(int hpId, List<string> itemCdList, int sinday);
 
-        Dictionary<string, string> FindFoodNameDic(List<string> foodCodeList);
+        string FindFoodName(int hpId, string foodCode);
 
-        string FindAgeComment(string commentCode);
+        Dictionary<string, string> FindFoodNameDic(int hpId, List<string> foodCodeList);
 
-        string FindDiseaseName(string byotaiCd);
+        string FindAgeComment(int hpId, string commentCode);
 
-        Dictionary<string, string> FindDiseaseNameDic(List<string> byotaiCdList);
+        string FindDiseaseName(int hpId, string byotaiCd);
 
-        string FindDiseaseComment(string commentCode);
+        Dictionary<string, string> FindDiseaseNameDic(int hpId, List<string> byotaiCdList);
 
-        string FindOTCItemName(int serialNum);
+        string FindDiseaseComment(int hpId, string commentCode);
 
-        Dictionary<string, string> FindOTCItemNameDic(List<string> serialNumList);
+        string FindOTCItemName(int hpId, int serialNum);
 
-        string FindKinkiComment(string commentCode);
+        Dictionary<string, string> FindOTCItemNameDic(int hpId, List<string> serialNumList);
 
-        Dictionary<string, string> FindKinkiCommentDic(List<string> commentCodeList);
+        string FindKinkiComment(int hpId, string commentCode);
 
-        string FindKijyoComment(string commentCode);
+        Dictionary<string, string> FindKinkiCommentDic(int hpId, List<string> commentCodeList);
 
-        Dictionary<string, string> FindKijyoCommentDic(List<string> commentCodeList);
+        string FindKijyoComment(int hpId, string commentCode);
 
-        string FindSuppleItemName(string seibunCd);
+        Dictionary<string, string> FindKijyoCommentDic(int hpId, List<string> commentCodeList);
 
-        Dictionary<string, string> FindSuppleItemNameDic(List<string> seibunCdList);
+        string FindSuppleItemName(int hpId, string seibunCd);
 
-        string GetOTCComponentInfo(string seibunCd);
+        Dictionary<string, string> FindSuppleItemNameDic(int hpId, List<string> seibunCdList);
 
-        Dictionary<string, string> GetOTCComponentInfoDic(List<string> seibunCdList);
+        string GetOTCComponentInfo(int hpId, string seibunCd);
 
-        string GetSupplementComponentInfo(string seibunCd);
+        Dictionary<string, string> GetOTCComponentInfoDic(int hpId, List<string> seibunCdList);
 
-        Dictionary<string, string> GetSupplementComponentInfoDic(List<string> seibunCdList);
+        string GetSupplementComponentInfo(int hpId, string seibunCd);
 
-        string FindClassName(string classCd);
+        Dictionary<string, string> GetSupplementComponentInfoDic(int hpId, List<string> seibunCdList);
+
+        string FindClassName(int hpId, string classCd);
 
         string FindIppanNameByIppanCode(string ippanCode);
 
-        string GetUsageDosage(string yjCd);
+        string GetUsageDosage(int hpId, string yjCd);
 
-        Dictionary<string, string> GetUsageDosageDic(List<string> yjCdList);
+        Dictionary<string, string> GetUsageDosageDic(int hpId, List<string> yjCdList);
     }
 }

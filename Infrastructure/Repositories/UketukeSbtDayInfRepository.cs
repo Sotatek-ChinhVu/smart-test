@@ -13,10 +13,10 @@ public class UketukeSbtDayInfRepository : RepositoryBase, IUketukeSbtDayInfRepos
     {
     }
 
-    public List<UketukeSbtDayInfModel> GetListBySinDate(int sinDate)
+    public List<UketukeSbtDayInfModel> GetListBySinDate(int hpId, int sinDate)
     {
         return NoTrackingDataContext.UketukeSbtDayInfs
-            .Where(u => u.SinDate == sinDate).AsEnumerable()
+            .Where(u => u.HpId == hpId && u.SinDate == sinDate).AsEnumerable()
             .Select(u => ToModel(u)).ToList();
     }
 
@@ -25,9 +25,9 @@ public class UketukeSbtDayInfRepository : RepositoryBase, IUketukeSbtDayInfRepos
         DisposeDataContext();
     }
 
-    public void Upsert(int sinDate, int uketukeSbt, int seqNo, int userId)
+    public void Upsert(int hpId, int sinDate, int uketukeSbt, int seqNo, int userId)
     {
-        var dayInf = TrackingDataContext.UketukeSbtDayInfs.AsTracking().Where(d => d.SinDate == sinDate).FirstOrDefault();
+        var dayInf = TrackingDataContext.UketukeSbtDayInfs.AsTracking().Where(d => d.HpId == hpId && d.SinDate == sinDate).FirstOrDefault();
         if (dayInf is null)
         {
             TrackingDataContext.UketukeSbtDayInfs.Add(new UketukeSbtDayInf

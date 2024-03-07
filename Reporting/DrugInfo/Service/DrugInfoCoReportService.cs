@@ -38,7 +38,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         try
         {
             basicInfo = _coDrugInfFinder.GetBasicInfo(hpId, ptId, sinDate);
-            var partItem = _coDrugInfFinder.GetDefaultPathPicture();
+            var partItem = _coDrugInfFinder.GetDefaultPathPicture(hpId);
             _defaultPicHou = partItem.PathPicHou;
             _defaultPicZai = partItem.PathPicZai;
 
@@ -46,7 +46,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
 
             selectedFormType = (int)_systemConfRepository.GetSettingValue(92004, 17, hpId);
 
-            orderInfoModels = _coDrugInfFinder.GetOrderByRaiinNo(raiinNo);
+            orderInfoModels = _coDrugInfFinder.GetOrderByRaiinNo(hpId, raiinNo);
 
             // get common data to setup print data
             List<string> itemCdList = new();
@@ -119,7 +119,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
                 drugInfoModel.UsageSpan = usage.Suryo + usage.UnitName;
                 string itemCd = usage.ItemCd;
 
-                var tenMst = _coDrugInfFinder.GetTenMstModel(itemCd);
+                var tenMst = _coDrugInfFinder.GetTenMstModel(hpId, itemCd);
 
                 if (tenMst == null) return;
 
@@ -215,7 +215,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             //ConfigType=3: No image
             if (configType != 3)
             {
-                SetupPrintImage(hpId, drug, drugInfoModel, yjCd);
+                SetupPrintImage(drug, drugInfoModel, yjCd);
             }
 
             if (selectedFormType == 1)
@@ -258,9 +258,9 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
 
     }
 
-    private void SetupPrintImage(int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel, string yjCd)
+    private void SetupPrintImage(OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel, string yjCd)
     {
-        var images = _coDrugInfFinder.GetProductImages(hpId, orderInfDetailModel.ItemCd);
+        var images = _coDrugInfFinder.GetProductImages(orderInfDetailModel.ItemCd);
         string YJCode = yjCd;
         if (images == null || images.Count == 0)
         {

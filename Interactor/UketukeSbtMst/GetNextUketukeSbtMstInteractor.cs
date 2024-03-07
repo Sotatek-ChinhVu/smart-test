@@ -20,12 +20,12 @@ public class GetNextUketukeSbtMstInteractor : IGetNextUketukeSbtMstInputPort
     {
         try
         {
-            var nextReceptionType = GetNextReceptionType(input.CurrentKbnId);
+            var nextReceptionType = GetNextReceptionType(input.HpId, input.CurrentKbnId);
             var status = GetNextUketukeSbtMstStatus.NotFound;
             if (nextReceptionType is not null)
             {
                 status = GetNextUketukeSbtMstStatus.Success;
-                _uketukeSbtDayInfRepository.Upsert(input.SinDate, nextReceptionType.KbnId, 0, input.UserId);
+                _uketukeSbtDayInfRepository.Upsert(input.HpId, input.SinDate, nextReceptionType.KbnId, 0, input.UserId);
             }
 
             return new GetNextUketukeSbtMstOutputData(status, nextReceptionType);
@@ -33,13 +33,13 @@ public class GetNextUketukeSbtMstInteractor : IGetNextUketukeSbtMstInputPort
         finally
         {
             _uketukeSbtMstRepository.ReleaseResource();
-            _uketukeSbtDayInfRepository.ReleaseResource(); 
+            _uketukeSbtDayInfRepository.ReleaseResource();
         }
     }
 
-    private UketukeSbtMstModel? GetNextReceptionType(int currentKbnId)
+    private UketukeSbtMstModel? GetNextReceptionType(int hpId, int currentKbnId)
     {
-        var uketukeSbtMsts = _uketukeSbtMstRepository.GetList().OrderBy(u => u.SortNo).ToList();
+        var uketukeSbtMsts = _uketukeSbtMstRepository.GetList(hpId).OrderBy(u => u.SortNo).ToList();
         if (uketukeSbtMsts.Count == 0)
         {
             return null;

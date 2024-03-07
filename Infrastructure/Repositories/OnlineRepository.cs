@@ -95,18 +95,18 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         string updateDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
 
-        string updateQuery = $"UPDATE \"ONLINE_CONFIRMATION_HISTORY\" SET \"UKETUKE_STATUS\" = {uketukeStatus}, \"UPDATE_DATE\" = '{updateDate}'"
-                             + $", \"UPDATE_ID\" = {userId}"
-                             + $" WHERE \"ID\" = {id} AND \"UKETUKE_STATUS\" = 0";
+        string updateQuery = $"UPDATE \"online_confirmation_history\" SET \"uketuke_status\" = {uketukeStatus}, \"update_date\" = '{updateDate}'"
+                             + $", \"update_id\" = {userId}"
+                             + $" WHERE \"id\" = {id} AND \"uketuke_status\" = 0";
 
         return TrackingDataContext.Database.ExecuteSqlRaw(updateQuery) > 0;
     }
 
     public long UpdateRefNo(int hpId, long ptId)
     {
-        var allRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')").ToList();
+        var allRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"pt_inf_reference_no_seq\"')").ToList();
         var nextRefNo = allRefNo?.FirstOrDefault() ?? 1;
-        string updateQuery = $"UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = {nextRefNo} WHERE \"HP_ID\" = {hpId} AND \"PT_ID\" = {ptId}";
+        string updateQuery = $"UPDATE \"pt_inf\" SET \"reference_no\" = {nextRefNo} WHERE \"hp_id\" = {hpId} AND \"pt_id\" = {ptId}";
         TrackingDataContext.Database.ExecuteSqlRaw(updateQuery);
         return nextRefNo;
     }
@@ -289,7 +289,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     TrackingDataContext.SaveChanges();
                     if (isUpdateRaiinInf)
                     {
-                        UpdateOnlineInRaiinInf(hpId, userId, ptId, onlineConfirmationDate, confirmationType, infConsFlg);
+                        UpdateOnlineInRaiinInfAction(hpId, userId, ptId, onlineConfirmationDate, confirmationType, infConsFlg);
                     }
                     transaction.Commit();
                     success = true;
@@ -313,13 +313,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 using var transaction = TrackingDataContext.Database.BeginTransaction();
                 try
                 {
-                    int sindate = CIUtil.DateTimeToInt(onlineConfirmationDate);
-                    var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == ptId).ToList();
-                    UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, confirmationType);
-                    if (!string.IsNullOrEmpty(infConsFlg))
-                    {
-                        UpdateInfConsFlgInRaiinInf(userId, raiinInfsInSameday, infConsFlg);
-                    }
+                    UpdateOnlineInRaiinInfAction(hpId, userId, ptId, onlineConfirmationDate, confirmationType, infConsFlg);
                     transaction.Commit();
                     success = true;
                 }
@@ -330,6 +324,26 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 }
             });
         return success;
+    }
+
+    /// <summary>
+    /// UpdateOnlineInRaiinInf action without transaction
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="ptId"></param>
+    /// <param name="onlineConfirmationDate"></param>
+    /// <param name="confirmationType"></param>
+    /// <param name="infConsFlg"></param>
+    private void UpdateOnlineInRaiinInfAction(int hpId, int userId, long ptId, DateTime onlineConfirmationDate, int confirmationType, string infConsFlg)
+    {
+        int sindate = CIUtil.DateTimeToInt(onlineConfirmationDate);
+        var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == ptId).ToList();
+        UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, confirmationType);
+        if (!string.IsNullOrEmpty(infConsFlg))
+        {
+            UpdateInfConsFlgInRaiinInf(userId, raiinInfsInSameday, infConsFlg);
+        }
     }
 
     public bool UpdatePtInfOnlineQualify(int hpId, int userId, long ptId, List<PtInfConfirmationModel> resultList)

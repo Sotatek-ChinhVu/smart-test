@@ -2,5 +2,5 @@
 
 public interface IUserMstCache
 {
-    string GetUserSNameIncludedDeleted(int userId, bool fromLastestDb = false);
+    string GetUserSNameIncludedDeleted(int hpId, int userId, bool fromLastestDb = false);
 }

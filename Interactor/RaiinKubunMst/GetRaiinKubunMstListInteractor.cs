@@ -15,7 +15,7 @@ namespace Interactor.RaiinKubunMst
         {
             try
             {
-                List<RaiinKubunMstModel> raiinKubunList = _raiinKubunMstRepository.GetList(inputData.IsDeleted);
+                List<RaiinKubunMstModel> raiinKubunList = _raiinKubunMstRepository.GetList(inputData.HpId, inputData.IsDeleted);
 
                 return new GetRaiinKubunMstListOutputData(raiinKubunList);
             }

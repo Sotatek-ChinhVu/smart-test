@@ -4,11 +4,13 @@ namespace UseCase.StickyNote
 {
     public class GetSettingStickyNoteInputData : IInputData<GetSettingStickyNoteOutputData>
     {
-        public GetSettingStickyNoteInputData(int userId)
+        public GetSettingStickyNoteInputData(int hpId, int userId)
         {
+            HpId = hpId;
             UserId = userId;
         }
 
+        public int HpId { get; private set; }
         public int UserId { get; private set; }
     }
 }

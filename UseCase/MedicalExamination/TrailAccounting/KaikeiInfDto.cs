@@ -2,7 +2,7 @@
 {
     public class KaikeiInfDto
     {
-        public KaikeiInfDto(int hpId, int ptId, int sinDate, int raiinNo, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, int hokenSbtCd, string receSbt, string houbetu, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, int hokenRate, int ptRate, int dispRate, int tensu, int totalIryohi, int ptFutan, int jihiFutan, int jihiTax, int jihiOuttax, int jihiFutanTaxfree, int jihiFutanTaxNr, int jihiFutanTaxGen, int jihiFutanOuttaxNr, int jihiFutanOuttaxGen, int jihiTaxNr, int jihiTaxGen, int jihiOuttaxNr, int jihiOuttaxGen, int adjustFutan, int adjustRound, int totalPtFutan, int adjustFutanVal, int adjustFutanRange, int adjustRateVal, int adjustRateRange, DateTime createDate, int createId, string createMachine, string kohi1Priority, string kohi2Priority, string kohi3Priority, string kohi4Priority)
+        public KaikeiInfDto(int hpId, long ptId, int sinDate, long raiinNo, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, int hokenSbtCd, string receSbt, string houbetu, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, int hokenRate, int ptRate, int dispRate, int tensu, int totalIryohi, int ptFutan, int jihiFutan, int jihiTax, int jihiOuttax, int jihiFutanTaxfree, int jihiFutanTaxNr, int jihiFutanTaxGen, int jihiFutanOuttaxNr, int jihiFutanOuttaxGen, int jihiTaxNr, int jihiTaxGen, int jihiOuttaxNr, int jihiOuttaxGen, int adjustFutan, int adjustRound, int totalPtFutan, int adjustFutanVal, int adjustFutanRange, int adjustRateVal, int adjustRateRange, DateTime createDate, int createId, string createMachine, string kohi1Priority, string kohi2Priority, string kohi3Priority, string kohi4Priority)
         {
             HpId = hpId;
             PtId = ptId;
@@ -57,9 +57,9 @@
         }
 
         public int HpId { get; private set; }
-        public int PtId { get; private set; }
+        public long PtId { get; private set; }
         public int SinDate { get; private set; }
-        public int RaiinNo { get; private set; }
+        public long RaiinNo { get; private set; }
         public int HokenId { get; private set; }
         public int Kohi1Id { get; private set; }
         public int Kohi2Id { get; private set; }

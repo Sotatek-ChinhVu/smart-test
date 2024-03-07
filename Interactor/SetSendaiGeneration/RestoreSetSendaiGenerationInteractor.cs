@@ -136,7 +136,7 @@ namespace Interactor.SetSendaiGeneration
                         _messenger.Send(new ProcessSetSendaiGenerationStatus($"Add MstBackup Faild!", 0, false, false));
                     }
                     _setGenerationMstRepository.ReloadCache(inputData.HpId, true);
-                    _setMstRepository.DeleteKey(result.TargetGeneration);
+                    _setMstRepository.DeleteKey(result.TargetGeneration, inputData.HpId);
                     return new RestoreSetSendaiGenerationOutputData(true, RestoreSetSendaiGenerationStatus.Success);
                 }
                 return new RestoreSetSendaiGenerationOutputData(false, RestoreSetSendaiGenerationStatus.Faild);

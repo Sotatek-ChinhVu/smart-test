@@ -9,7 +9,7 @@ namespace UseCase.Reception.GetReceptionDefault
 {
     public class GetReceptionDefaultInputData: IInputData<GetReceptionDefaultOutputData>
     {
-        public GetReceptionDefaultInputData(int hpId, int ptId, int sindate, int defaultDoctorSetting)
+        public GetReceptionDefaultInputData(int hpId, long ptId, int sindate, int defaultDoctorSetting)
         {
             HpId = hpId;
             PtId = ptId;
@@ -19,7 +19,7 @@ namespace UseCase.Reception.GetReceptionDefault
 
         public int HpId { get; private set; }
 
-        public int PtId { get; private set; }
+        public long PtId { get; private set; }
 
         public int Sindate { get; private set; }
 

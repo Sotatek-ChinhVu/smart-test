@@ -49,7 +49,7 @@ namespace Interactor.PatientInfor
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                     }
-                    return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(new List<PatientInforModel> { ptInfModel }), SearchPatientInfoSimpleStatus.Success);
+                    return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(new List<PatientInforModel> { ptInfModel }, inputData.HpId), SearchPatientInfoSimpleStatus.Success);
                 }
 
                 int searchType = DetectSearchType(inputData.Keyword);
@@ -87,7 +87,7 @@ namespace Interactor.PatientInfor
                         }
                         break;
                 }
-                var result = AppendGroupInfo(patientInfoList);
+                var result = AppendGroupInfo(patientInfoList, inputData.HpId);
                 if (sortGroup)
                 {
                     result = _sortPatientCommon.SortData(result, inputData.SortData, inputData.PageIndex, inputData.PageSize);
@@ -101,7 +101,7 @@ namespace Interactor.PatientInfor
             }
         }
 
-        public List<PatientInfoWithGroup> AppendGroupInfo(List<PatientInforModel> patientInfList)
+        public List<PatientInfoWithGroup> AppendGroupInfo(List<PatientInforModel> patientInfList, int hpId)
         {
             if (patientInfList.Count == 0)
             {
@@ -109,7 +109,7 @@ namespace Interactor.PatientInfor
             }
 
             var ptIdList = patientInfList.Select(p => p.PtId).ToList();
-            var patientGroupInfList = _groupInfRepository.GetAllByPtIdList(ptIdList);
+            var patientGroupInfList = _groupInfRepository.GetAllByPtIdList(ptIdList, hpId);
 
             List<PatientInfoWithGroup> patientInfoListWithGroup = new();
             foreach (var patientInfo in patientInfList)

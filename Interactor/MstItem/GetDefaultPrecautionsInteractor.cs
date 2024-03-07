@@ -16,7 +16,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                var result = _mstItemRepository.GetPrecautions(inputData.YjCd);
+                var result = _mstItemRepository.GetPrecautions(inputData.HpId, inputData.YjCd);
 
                 return new GetDefaultPrecautionsOutputData(result, GetDefaultPrecautionsStatus.Successed);
             }

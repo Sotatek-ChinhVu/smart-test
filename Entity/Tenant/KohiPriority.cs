@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,63 +11,66 @@ namespace Entity.Tenant
     /// <summary>
     /// 公費優先順位
     /// </summary>
-    [Table(name: "KOHI_PRIORITY")]
+    [Table(name: "kohi_priority")]
     public class KohiPriority : EmrCloneable<KohiPriority>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 都道府県番号
         /// </summary>
-        
-        [Column("PREF_NO", Order = 1)]
+
+        [Column("pref_no", Order = 1)]
         public int PrefNo { get; set; }
         /// <summary>
         /// 法別番号
         /// </summary>
         
-        [Column("HOUBETU", Order = 2)]
+        [Column("houbetu", Order = 2)]
         [MaxLength(3)]
         public string Houbetu { get; set; } = string.Empty;
         /// <summary>
         /// 優先順位
         /// </summary>
         
-        [Column("PRIORITY_NO", Order = 3)]
+        [Column("priority_no", Order = 3)]
         [MaxLength(5)]
         public string PriorityNo { get; set; } = string.Empty;
         /// <summary>
         /// 作成日時
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
         /// <summary>
         /// 作成端末
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime UpdateDate { get; set; }
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
         /// <summary>
         /// 更新端末
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
     }

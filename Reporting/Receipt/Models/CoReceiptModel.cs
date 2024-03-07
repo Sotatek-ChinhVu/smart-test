@@ -1,7 +1,7 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Reporting.Calculate.Ika.Models;
-using Reporting.Calculate.Receipt.Models;
+using CalculateService.Ika.Models;
+using CalculateService.Receipt.Models;
 
 namespace Reporting.Receipt.Models
 {
@@ -334,7 +334,7 @@ namespace Reporting.Receipt.Models
         /// <summary>
         /// 円点レート
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get
             {

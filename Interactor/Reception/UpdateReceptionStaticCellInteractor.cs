@@ -117,7 +117,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 success = _receptionRepository.UpdateSinStartTime(input.HpId, input.RaiinNo, input.CellValue, input.UserId);
                 return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.UketukeSbtId):
-                var uketukeSbt = _uketukeSbtMstRepository.GetByKbnId(int.Parse(input.CellValue));
+                var uketukeSbt = _uketukeSbtMstRepository.GetByKbnId(input.HpId, int.Parse(input.CellValue));
                 if (uketukeSbt is null)
                 {
                     return UpdateReceptionStaticCellStatus.InvalidUketukeSbtId;
@@ -125,7 +125,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 success = _receptionRepository.UpdateUketukeSbt(input.HpId, input.RaiinNo, uketukeSbt.KbnId, input.UserId);
                 return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.TantoId):
-                var tanto = _userRepository.GetByUserId(int.Parse(input.CellValue));
+                var tanto = _userRepository.GetByUserId(input.HpId, int.Parse(input.CellValue));
                 if (tanto is null)
                 {
                     return UpdateReceptionStaticCellStatus.InvalidTantoId;
@@ -133,7 +133,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 success = _receptionRepository.UpdateTantoId(input.HpId, input.RaiinNo, tanto.UserId, input.UserId);
                 return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.KaId):
-                var ka = _kaMstRepository.GetByKaId(int.Parse(input.CellValue));
+                var ka = _kaMstRepository.GetByKaId(input.HpId, int.Parse(input.CellValue));
                 if (ka is null)
                 {
                     return UpdateReceptionStaticCellStatus.InvalidKaId;

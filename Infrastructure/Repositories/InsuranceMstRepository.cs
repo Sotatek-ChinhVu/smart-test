@@ -20,14 +20,13 @@ namespace Infrastructure.Repositories
         public (InsuranceMstModel insurance, int prefNo) GetDataInsuranceMst(int hpId, long ptId, int sinDate)
         {
             // data combobox 1 toki
-            var TokkiMsts = NoTrackingDataContext.TokkiMsts.Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
-                    .OrderBy(entity => entity.HpId)
-                    .ThenBy(entity => entity.TokkiCd)
-                    .Select(x => new TokkiMstModel(
-                                    x.TokkiCd,
-                                    x.TokkiName ?? string.Empty
-                        ))
-                    .ToList();
+            var TokkiMsts = NoTrackingDataContext.TokkiMsts.Where(entity => entity.StartDate <= sinDate && entity.EndDate >= sinDate)
+                                                           .OrderBy(entity => entity.TokkiCd)
+                                                           .Select(x => new TokkiMstModel(
+                                                                           x.TokkiCd,
+                                                                           x.TokkiName ?? string.Empty
+                                                               ))
+                                                           .ToList();
 
             int prefNo = 0;
             var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
@@ -43,7 +42,7 @@ namespace Infrastructure.Repositories
                                 .ThenBy(e => e.SortNo)
                                 .ThenByDescending(e => e.StartDate);
 
-            IQueryable<RoudouMst> roudouMsts = NoTrackingDataContext.RoudouMsts;
+            IQueryable<RoudouMst> roudouMsts = NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId);
 
             List<HokenMstModel> allHokenMst = (from hoken in allHokenMstEntity
                                                join rou in roudouMsts on hoken.PrefNo.ToString() equals rou.RoudouCd into rouList
@@ -105,10 +104,10 @@ namespace Infrastructure.Repositories
 
 
             // data combobox Kantoku
-            IOrderedQueryable<KantokuMst> kantokuMsts = NoTrackingDataContext.KantokuMsts.OrderBy(entity => entity.RoudouCd).ThenBy(entity => entity.KantokuCd);
+            IOrderedQueryable<KantokuMst> kantokuMsts = NoTrackingDataContext.KantokuMsts.Where(k => k.HpId == hpId).OrderBy(entity => entity.RoudouCd).ThenBy(entity => entity.KantokuCd);
 
             // data combobox ByomeiMstAftercares
-            var byomeiMstAftercares = NoTrackingDataContext.ByomeiMstAftercares.OrderBy(entity => entity.ByomeiCd)
+            var byomeiMstAftercares = NoTrackingDataContext.ByomeiMstAftercares.Where(b => b.HpId == hpId).OrderBy(entity => entity.ByomeiCd)
                                          .Select(x => new ByomeiMstAftercareModel(
                                                 x.ByomeiCd,
                                                 x.Byomei
@@ -276,7 +275,8 @@ namespace Infrastructure.Repositories
             IQueryable<HokenMst> query;
 
             query = NoTrackingDataContext.HokenMsts.Where(kohiInf =>
-                (kohiInf.HokenSbtKbn == 2 || kohiInf.HokenSbtKbn == 5 || kohiInf.HokenSbtKbn == 6 || kohiInf.HokenSbtKbn == 7)
+                kohiInf.HpId == hpId
+                && (kohiInf.HokenSbtKbn == 2 || kohiInf.HokenSbtKbn == 5 || kohiInf.HokenSbtKbn == 6 || kohiInf.HokenSbtKbn == 7)
                 && kohiInf.StartDate < sinDate
                 && kohiInf.EndDate > sinDate
                 && (kohiInf.PrefNo == prefCd || kohiInf.PrefNo == 0 || kohiInf.IsOtherPrefValid == 1)
@@ -750,7 +750,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExcepHokenSyas.Where(x => x.Id == 0).Select(x => new ExceptHokensya()
+                    TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExcepHokenSyas.Where(x => x.HpId == hpId && x.Id == 0).Select(x => new ExceptHokensya()
                     {
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
@@ -1025,7 +1025,7 @@ namespace Infrastructure.Repositories
 
             var rousaiRoudouCdList = hokenList.Select(item => item.RousaiRoudouCd).ToList();
             var rousaiKantokuCdList = hokenList.Select(item => item.RousaiKantokuCd).ToList();
-            var kantokuMstList = NoTrackingDataContext.KantokuMsts.Where(item => rousaiRoudouCdList.Contains(item.RoudouCd)
+            var kantokuMstList = NoTrackingDataContext.KantokuMsts.Where(item => item.HpId == hpId && rousaiRoudouCdList.Contains(item.RoudouCd)
                                                                          && rousaiKantokuCdList.Contains(item.KantokuCd))
                                                           .Select(item => new KantokuMstModel(
                                                                   item.RoudouCd,

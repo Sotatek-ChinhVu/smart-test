@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M38_ING_CODE")]
+    [Table(name: "m38_ing_code")]
     public class M38IngCode : EmrCloneable<M38IngCode>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 成分コード
         /// 英数字7桁
         /// </summary>
-        
-        [Column("SEIBUN_CD", Order = 1)]
+
+        [Column("seibun_cd", Order = 1)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;
 
@@ -20,7 +23,7 @@ namespace Entity.Tenant
         /// 成分
         /// 
         /// </summary>
-        [Column("SEIBUN")]
+        [Column("seibun")]
         [MaxLength(200)]
         public string? Seibun { get; set; } = string.Empty;
     }

@@ -120,10 +120,6 @@ namespace Domain.Models.ReceSeikyu
                 }
                 result += HokenId.ToString().PadLeft(2, '0');
                 result += " ";
-                if (string.IsNullOrEmpty(HokensyaNo))
-                {
-                    return string.Empty;
-                }
 
                 switch (HokenKbn)
                 {

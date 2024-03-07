@@ -1,6 +1,6 @@
-﻿using Helper.Common;
+﻿using CalculateService.Constants;
+using Helper.Common;
 using Helper.Extension;
-using Reporting.Calculate.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.KokhoSokatu.DB;

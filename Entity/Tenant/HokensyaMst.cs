@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,41 +7,41 @@ namespace Entity.Tenant
     // <summary>
     /// 保険者マスタ
     /// </summary>
-    [Table(name: "HOKENSYA_MST")]
+    [Table(name: "hokensya_mst")]
     public class HokensyaMst : EmrCloneable<HokensyaMst>
     {
         /// <summary>
 		/// 医療機関識別ID
 		/// </summary>
 		
-        [Column(name: "HP_ID", Order = 1)]
+        [Column(name: "hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 名称
         /// </summary>
-        [Column(name: "NAME")]
+        [Column(name: "name")]
         [MaxLength(100)]
         public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称
         /// </summary>
-        [Column(name: "KANA_NAME")]
+        [Column(name: "kana_name")]
         [MaxLength(100)]
         public string? KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 法別区分
         /// </summary>
-        [Column(name: "HOUBETU_KBN")]
+        [Column(name: "houbetu_kbn")]
         [MaxLength(2)]
         public string? HoubetuKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 法別番号
         /// </summary>
-        [Column(name: "HOUBETU")]
+        [Column(name: "houbetu")]
         [MaxLength(3)]
         public string? Houbetu { get; set; } = string.Empty;
 
@@ -52,14 +52,14 @@ namespace Entity.Tenant
         ///     3:公費
         ///     4:その他
         /// </summary>
-        [Column(name: "HOKEN_KBN")]
+        [Column(name: "hoken_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int HokenKbn { get; set; }
 
         /// <summary>
         /// 都道府県番号
         /// </summary>
-        [Column(name: "PREF_NO")]
+        [Column(name: "pref_no")]
         [CustomAttribute.DefaultValue(0)]
         public int PrefNo { get; set; }
 
@@ -67,123 +67,123 @@ namespace Entity.Tenant
         /// 保険者番号
         /// </summary>
         
-        [Column(name: "HOKENSYA_NO", Order = 2)]
+        [Column(name: "hokensya_no", Order = 2)]
         [MaxLength(8)]
         public string? HokensyaNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 記号
         /// </summary>
-        [Column(name: "KIGO")]
+        [Column(name: "kigo")]
         [MaxLength(80)]
         public string? Kigo { get; set; } = string.Empty;
 
         /// <summary>
         /// 番号
         /// </summary>
-        [Column(name: "BANGO")]
+        [Column(name: "bango")]
         [MaxLength(80)]
         public string? Bango { get; set; } = string.Empty;
 
         /// <summary>
         /// 1:保険登録時に記号なしで登録可
         /// </summary>
-        [Column(name: "IS_KIGO_NA")]
+        [Column(name: "is_kigo_na")]
         [CustomAttribute.DefaultValue(0)]
         public int IsKigoNa { get; set; }
 
         /// <summary>
         /// 給付割合本人
         /// </summary>
-        [Column(name: "RATE_HONNIN")]
+        [Column(name: "rate_honnin")]
         public int RateHonnin { get; set; }
 
         /// <summary>
         /// 給付割合家族
         /// </summary>
-        [Column(name: "RATE_KAZOKU")]
+        [Column(name: "rate_kazoku")]
         public int RateKazoku { get; set; }
 
         /// <summary>
         /// 郵便番号
         /// </summary>
-        [Column(name: "POST_CODE")]
+        [Column(name: "post_code")]
         [MaxLength(7)]
         public string? PostCode { get; set; } = string.Empty;
 
         /// <summary>
         /// 住所１
         /// </summary>
-        [Column(name: "ADDRESS1")]
+        [Column(name: "address1")]
         [MaxLength(200)]
         public string? Address1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 住所２
         /// </summary>
-        [Column(name: "ADDRESS2")]
+        [Column(name: "address2")]
         [MaxLength(200)]
         public string? Address2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 電話番号
         /// </summary>
-        [Column(name: "TEL1")]
+        [Column(name: "tel1")]
         [MaxLength(15)]
         public string? Tel1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除日
         /// </summary>
-        [Column(name: "DELETE_DATE")]
+        [Column(name: "delete_date")]
         public int DeleteDate { get; set; }
 
         /// <summary>
         /// 削除区分
         ///     1:削除・廃止・消滅・解散
         /// </summary>
-        [Column(name: "IS_DELETED")]
+        [Column(name: "is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDelete { get; set; }
 
         /// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者		
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末			
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者			
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末			
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

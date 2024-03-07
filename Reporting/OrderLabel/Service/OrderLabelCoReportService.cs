@@ -24,6 +24,8 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
         Comment = 2
     }
 
+    private int _hpId = 0;
+
     private readonly ITenantProvider _tenantProvider;
     private CoOrderLabelModel? _coModel = null;
     private List<CoUserMstModel> _userMsts = new();
@@ -43,6 +45,8 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             var finder = new CoOrderLabelFinder(_tenantProvider);
             try
             {
+                _hpId = hpId;
+
                 if (mode == 0)
                 {
                     _coModel = GetData(hpId, ptId, sinDate, raiinNo, odrKouiKbns, finder);
@@ -348,7 +352,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                 if (!_coModel.IsYoyaku)
                 {
                     // 診療科名＋担当医
-                    if (_systemConfig.OrderLabelKaPrint() == 1)
+                    if (_systemConfig.OrderLabelKaPrint(_hpId) == 1)
                     {
                         // 診療科印字あり
                         addPrintOutData.Add(AddItem(TargetControl.Comment, $"{_coModel.KaName} {_coModel.TantoName}"));
@@ -360,7 +364,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                     }
 
                     // 初再診
-                    if (_systemConfig.OrderLabelSyosaiPrint() == 1 && _coModel.OdrInfDetailModels.Any(p => p.OdrKouiKbn >= 10 && p.OdrKouiKbn <= 12))
+                    if (_systemConfig.OrderLabelSyosaiPrint(_hpId) == 1 && _coModel.OdrInfDetailModels.Any(p => p.OdrKouiKbn >= 10 && p.OdrKouiKbn <= 12))
                     {
                         string syosai = string.Empty;
                         CoCommonOdrInfDetailModel odrDtlSin = _coModel.OdrInfDetailModels.FirstOrDefault(p => p.ItemCd == "@SHIN") ?? new();
@@ -389,7 +393,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                     }
                 }
 
-                if (_systemConfig.OrderLabelCreateNamePrint() == 1 &&
+                if (_systemConfig.OrderLabelCreateNamePrint(_hpId) == 1 &&
                     createId != odrInf.CreateId)
                 {
                     // 入力者
@@ -402,7 +406,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                     }
                 }
             }
-            else if (_systemConfig.OrderLabelHeaderPrint() == 1 && i > 0)
+            else if (_systemConfig.OrderLabelHeaderPrint(_hpId) == 1 && i > 0)
             {
                 // ヘッダーをRpごとに出力する設定の場合
                 // 1行あけて・・・
@@ -417,7 +421,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                     addPrintOutData.Add(AddItem(TargetControl.Comment, $"{user}"));
                 }
             }
-            else if (_systemConfig.OrderLabelCreateNamePrint() == 1 &&
+            else if (_systemConfig.OrderLabelCreateNamePrint(_hpId) == 1 &&
                 createId != odrInf.CreateId)
             {
                 string user = getCreateUserName(odrInf.CreateId);
@@ -441,7 +445,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                 inout = "院外";
             }
 
-            if (odrInf.OdrKouiKbn >= 60 && odrInf.OdrKouiKbn < 69 && _systemConfig.OrderLabelKensaDsp() == 0)
+            if (odrInf.OdrKouiKbn >= 60 && odrInf.OdrKouiKbn < 69 && _systemConfig.OrderLabelKensaDsp(_hpId) == 0)
             {
                 // 検査1行複数表示
                 StringBuilder itemName = new();
@@ -520,7 +524,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
         }
 
         // 予約情報
-        if (_systemConfig.OrderLabelYoyakuDateDsp() == 1 && _coModel.YoyakuModels != null && _coModel.YoyakuModels.Any())
+        if (_systemConfig.OrderLabelYoyakuDateDsp(_hpId) == 1 && _coModel.YoyakuModels != null && _coModel.YoyakuModels.Any())
         {
             if (_printOutData.Any())
             {
@@ -562,7 +566,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
     {
         string sikyu = string.Empty;
 
-        if (_systemConfig.OrderLabelSanteiGaiDsp() == 1 && santeiKbn == 1)
+        if (_systemConfig.OrderLabelSanteiGaiDsp(_hpId) == 1 && santeiKbn == 1)
         {
             sikyu = "■";
         }

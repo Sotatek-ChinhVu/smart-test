@@ -78,11 +78,11 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         {
             return SaveListSanteiInfStatus.InvalidHpId;
         }
-        else if (input.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { input.PtId }))
+        else if (input.PtId <= 0 || !_patientInforRepository.CheckExistIdList(input.HpId, new List<long>() { input.PtId }))
         {
             return SaveListSanteiInfStatus.InvalidPtId;
         }
-        else if (input.UserId <= 0 || !_userRepository.CheckExistedUserId(input.UserId))
+        else if (input.UserId <= 0 || !_userRepository.CheckExistedUserId(input.HpId, input.UserId))
         {
             return SaveListSanteiInfStatus.InvalidUserId;
         }

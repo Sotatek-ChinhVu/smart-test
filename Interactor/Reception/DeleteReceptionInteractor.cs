@@ -37,7 +37,7 @@ public class DeleteReceptionInteractor : IDeleteReceptionInputPort
             {
                 return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidRaiinNo, new(), receptionInfos, sameVisitList);
             }
-            if (!_raiinInfRepository.CheckExistOfRaiinNos(raiinNos.Select(r => r.RaiinNo).ToList()))
+            if (!_raiinInfRepository.CheckExistOfRaiinNos(inputData.HpId, raiinNos.Select(r => r.RaiinNo).ToList()))
             {
                 return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidRaiinNo, new(), receptionInfos, sameVisitList);
             }

@@ -16,7 +16,7 @@ public class UpdateVisitTimesManagementNeedSaveInteractor : IUpdateVisitTimesMan
     {
         try
         {
-            if (!_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+            if (!_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
             {
                 return new UpdateVisitTimesManagementNeedSaveOutputData(UpdateVisitTimesManagementNeedSaveStatus.InvalidPtId);
             }

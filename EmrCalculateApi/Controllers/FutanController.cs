@@ -1,5 +1,5 @@
-﻿using EmrCalculateApi.Interface;
-using EmrCalculateApi.Requests;
+﻿using CalculateService.Interface;
+using CalculateService.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +21,7 @@ namespace EmrCalculateApi.Controllers
         {
             _futanCalculate.FutanCalculation
             (
+                calculateRequest.HpId,
                 calculateRequest.PtId,
                 calculateRequest.SinDate,
                 null, null, null, null,

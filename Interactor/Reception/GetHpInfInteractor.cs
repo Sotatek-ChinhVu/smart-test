@@ -17,7 +17,7 @@ public class GetHpInfInteractor : IGetHpInfInputPort
         try
         {
             var hpInfList = _hpInfRepository.GetListHpInf(inputData.HpId);
-            var hpInf = hpInfList.FirstOrDefault(item => item.StartDate <= inputData.SinDate);
+            var hpInf = hpInfList.OrderByDescending(item => item.StartDate).FirstOrDefault(item => item.StartDate <= inputData.SinDate);
             if (hpInf == null)
             {
                 hpInf = hpInfList.OrderByDescending(item => item.StartDate).FirstOrDefault() ?? new();
