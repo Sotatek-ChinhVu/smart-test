@@ -12,10 +12,10 @@ using UseCase.Core.Sync;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class RemoveCacheController : AuthorizeControllerBase
+    public class RemoveCacheController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public RemoveCacheController(UseCaseBus bus, IUserService userService) : base(userService)
+        public RemoveCacheController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

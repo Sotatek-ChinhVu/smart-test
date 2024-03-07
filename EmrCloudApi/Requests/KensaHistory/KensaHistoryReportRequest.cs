@@ -2,7 +2,6 @@
 {
     public class KensaHistoryReportRequest
     {
-        public int HpId {  get; set; }
         public int UserId {  get; set; }
         public long PtId { get; set; }
         public int SetId { get; set; } = 0;

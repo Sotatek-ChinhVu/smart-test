@@ -31,11 +31,11 @@ using UseCase.SuperSetDetail.SuperSetDetail;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class SetController : AuthorizeControllerBase
+public class SetController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
     private readonly IWebSocketService _webSocketService;
-    public SetController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
+    public SetController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor, IWebSocketService webSocketService) : base(httpContextAccessor)
     {
         _bus = bus;
         _webSocketService = webSocketService;

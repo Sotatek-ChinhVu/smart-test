@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.DrugDetail;
 using EmrCloudApi.Presenters.DrugDetailData;
 using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.ListSetMst;
-using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Presenters.UsageTreeSet;
 using EmrCloudApi.Presenters.YohoSetMst;
 using EmrCloudApi.Requests.DrugDetail;
@@ -14,12 +13,9 @@ using EmrCloudApi.Requests.YohoSetMst;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.DrugDetail;
 using EmrCloudApi.Responses.DrugInfor;
-using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.NewFolder;
 using EmrCloudApi.Responses.UsageTreeSetResponse;
 using EmrCloudApi.Responses.YohoSetMst;
-using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.DrugDetail;
@@ -36,11 +32,11 @@ using UseCase.YohoSetMst.GetByItemCd;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class InputItemController : AuthorizeControllerBase
+    public class InputItemController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
 
-        public InputItemController(UseCaseBus bus, IUserService userService) : base(userService)
+        public InputItemController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

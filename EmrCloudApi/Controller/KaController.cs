@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.Ka;
 using EmrCloudApi.Requests.Ka;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Ka;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Ka.GetKaCodeList;
@@ -15,11 +14,11 @@ using UseCase.Ka.SaveList;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class KaController : AuthorizeControllerBase
+public class KaController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public KaController(UseCaseBus bus, IUserService userService) : base(userService)
+    public KaController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

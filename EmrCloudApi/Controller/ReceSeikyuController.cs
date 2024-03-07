@@ -1,34 +1,33 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.ReceSeikyu;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.ReceSeikyu;
 using EmrCloudApi.Requests.ReceSeikyu;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.ReceSeikyu;
-using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Mvc;
-using UseCase.Core.Sync;
-using UseCase.ReceSeikyu.GetList;
-using UseCase.ReceSeikyu.SearchReceInf;
-using UseCase.ReceSeikyu.Save;
-using System.Text;
-using Helper.Messaging.Data;
 using Helper.Messaging;
-using Domain.Models.ReceSeikyu;
-using UseCase.ReceSeikyu.ImportFile;
+using Helper.Messaging.Data;
+using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using UseCase.Core.Sync;
 using UseCase.ReceSeikyu.CancelSeikyu;
+using UseCase.ReceSeikyu.GetList;
 using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
+using UseCase.ReceSeikyu.ImportFile;
+using UseCase.ReceSeikyu.Save;
+using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
 using UseCase.ReceSeikyu.RecalculateInSeikyuPending;
 
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class ReceSeikyuController : AuthorizeControllerBase
+    public class ReceSeikyuController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
         private CancellationToken? _cancellationToken;
         private readonly IMessenger _messenger;
 
-        public ReceSeikyuController(UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
+        public ReceSeikyuController(UseCaseBus bus, IMessenger messenger, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
             _messenger = messenger;

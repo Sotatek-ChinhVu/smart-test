@@ -1,27 +1,26 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.RaiinListMst;
+using Domain.Models.RaiinListSetting;
+using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.RaiinListSetting;
+using EmrCloudApi.Requests.RaiinListSetting;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Services;
+using EmrCloudApi.Responses.RaiinListSetting;
+using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using EmrCloudApi.Responses.RaiinListSetting;
 using UseCase.RaiinListSetting.GetDocCategory;
-using EmrCloudApi.Presenters.RaiinListSetting;
 using UseCase.RaiinListSetting.GetFilingcategory;
 using UseCase.RaiinListSetting.GetRaiiinListSetting;
 using UseCase.RaiinListSetting.SaveRaiinListSetting;
-using EmrCloudApi.Requests.RaiinListSetting;
-using Helper.Mapping;
-using Domain.Models.RaiinListMst;
-using Domain.Models.RaiinListSetting;
 
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class RaiinListSettingController : AuthorizeControllerBase
+    public class RaiinListSettingController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
 
-        public RaiinListSettingController(UseCaseBus bus, IUserService userService) : base(userService)
+        public RaiinListSettingController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }
@@ -119,7 +118,7 @@ namespace EmrCloudApi.Controller
 
                                                               )).ToList();
 
-            var input = new SaveRaiinListSettingInputData(HpId, inputModel , UserId);
+            var input = new SaveRaiinListSettingInputData(HpId, inputModel, UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveRaiinListSettingPresenter();
             presenter.Complete(output);

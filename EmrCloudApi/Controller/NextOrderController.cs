@@ -16,10 +16,10 @@ using UseCase.NextOrder.Validation;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class NextOrderController : AuthorizeControllerBase
+public class NextOrderController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
-    public NextOrderController(UseCaseBus bus, IUserService userService) : base(userService)
+    public NextOrderController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

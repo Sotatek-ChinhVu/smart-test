@@ -10,7 +10,6 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Insurance;
 using EmrCloudApi.Responses.MainMenu;
 using EmrCloudApi.Responses.ReleasenoteRead;
-using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -40,14 +39,14 @@ namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class MainMenuController : AuthorizeControllerBase
+public class MainMenuController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
     private static HttpClient _httpClient = new HttpClient();
     private readonly IConfiguration _configuration;
     private readonly IMessenger _messenger;
 
-    public MainMenuController(IConfiguration configuration, UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
+    public MainMenuController(IConfiguration configuration, UseCaseBus bus, IMessenger messenger, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
         _configuration = configuration;

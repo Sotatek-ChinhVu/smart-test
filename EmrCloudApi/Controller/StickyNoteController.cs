@@ -11,10 +11,10 @@ using EmrCloudApi.Presenters.StickyNote;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class StickyNoteController : AuthorizeControllerBase
+    public class StickyNoteController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public StickyNoteController(UseCaseBus bus, IUserService userService) : base(userService)
+        public StickyNoteController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

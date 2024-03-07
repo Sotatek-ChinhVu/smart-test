@@ -15,10 +15,10 @@ using UseCase.Core.Sync;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    public class ChartApprovalController : AuthorizeControllerBase
+    public class ChartApprovalController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public ChartApprovalController(UseCaseBus bus, IUserService userService) : base(userService)
+        public ChartApprovalController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }
@@ -44,9 +44,9 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.CheckSaveLogOutChartApporval)]
-        public ActionResult<Response<CheckSaveLogOutResponse>> CheckSaveLogOut()
+        public ActionResult<Response<CheckSaveLogOutResponse>> CheckSaveLogOut([FromBody] CheckSaveLogOutRequest request)
         {
-            var input = new CheckSaveLogOutInputData(HpId, UserId, DepartmentId);
+            var input = new CheckSaveLogOutInputData(HpId, UserId, request.DepartmentId);
             var output = _bus.Handle(input);
             var presenter = new CheckSaveLogOutPresenter();
             presenter.Complete(output);
