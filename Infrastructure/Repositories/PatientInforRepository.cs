@@ -1156,14 +1156,6 @@ namespace Infrastructure.Repositories
                 if (ptExists != null)
                     patientInsert.PtNum = GetAutoPtNum(hpId);
             }
-            if (patientInsert.DeathDate > 0)
-            {
-                patientInsert.IsDead = 1;
-            }
-            else
-            {
-                patientInsert.IsDead = 0;
-            }
             patientInsert.CreateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.CreateId = userId;
             patientInsert.UpdateId = userId;
@@ -1463,16 +1455,18 @@ namespace Infrastructure.Repositories
 
             Mapper.Map(ptInf, patientInfo, (source, dest) =>
             {
-                if (dest.DeathDate > 0)
-                {
-                    dest.IsDead = 1;
-                }
-                else
-                {
-                    dest.IsDead = 0;
-                }
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
+                if (ptInf.IsDead > 0)
+                {
+                    var ptFamilyList = TrackingDataContext.PtFamilys.Where(x=>x.HpId ==hpId && x.FamilyPtId == ptInf.PtId && x.IsDeleted == DeleteTypes.None).ToList();
+                    foreach (var ptFamily in ptFamilyList)
+                    {
+                        ptFamily.IsDead = ptInf.IsDead;
+                        ptFamily.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        ptFamily.UpdateId = ptInf.HpId;
+                    }
+                }
                 return dest;
             });
             #endregion
