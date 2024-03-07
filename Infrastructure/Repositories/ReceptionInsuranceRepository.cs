@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
             {
                 foreach (var item in listhokenInf)
                 {
-                    var HokenMasterModel = NoTrackingDataContext.HokenMsts.Where(hoken => hoken.HokenNo == item.HokenNo && hoken.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
+                    var HokenMasterModel = NoTrackingDataContext.HokenMsts.Where(hoken => hoken.HpId == hpId && hoken.HokenNo == item.HokenNo && hoken.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
                     var isReceKisaiOrNoHoken = false;
                     var isExpirated = IsExpirated(item.StartDate, item.EndDate, sinDate);
                     if (HokenMasterModel != null)
@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
                                             item.Bango ?? string.Empty,
                                             item.StartDate,
                                             item.EndDate,
-                                            GetConfirmDate(item.HokenId, HokenGroupConstant.HokenGroupHokenPattern),
+                                            GetConfirmDate(hpId, item.HokenId, HokenGroupConstant.HokenGroupHokenPattern),
                                             item.EdaNo ?? string.Empty,
                                             item.HokensyaNo ?? string.Empty,
                                             item.RousaiKofuNo ?? string.Empty,
@@ -66,7 +66,7 @@ namespace Infrastructure.Repositories
             {
                 foreach (var item in listKohi)
                 {
-                    var HokenMasterModel = NoTrackingDataContext.HokenMsts.Where(hoken => hoken.HokenNo == item.HokenNo && hoken.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
+                    var HokenMasterModel = NoTrackingDataContext.HokenMsts.Where(hoken => hoken.HpId == hpId && hoken.HokenNo == item.HokenNo && hoken.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
                     var isExpirated = IsExpirated(item.StartDate, item.EndDate, sinDate);
                     if (isShowExpiredReception || isExpirated)
                     {
@@ -76,7 +76,7 @@ namespace Infrastructure.Repositories
                                             "",
                                             item.StartDate,
                                             item.EndDate,
-                                            GetConfirmDate(item.HokenId, HokenGroupConstant.HokenGroupKohi),
+                                            GetConfirmDate(hpId, item.HokenId, HokenGroupConstant.HokenGroupKohi),
                                             "",
                                             "",
                                             "",
@@ -137,12 +137,12 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
-      
+
         public string IsValidAgeCheck(int sinDate, int hokenPid, int hpId, long ptId, int ptInfBirthday)
         {
-            int CheckAgeReception = (int)this.GetSettingValue(1005, 0 , hpId);
+            int CheckAgeReception = (int)this.GetSettingValue(1005, 0, hpId);
             string checkResult = "";
-            if(CheckAgeReception == 1)
+            if (CheckAgeReception == 1)
             {
                 // pattern
                 var listPattern = NoTrackingDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
@@ -172,7 +172,7 @@ namespace Infrastructure.Repositories
                     return checkResult;
                 }
 
-                string checkParam = GetSettingParam(hpId ,1005);
+                string checkParam = GetSettingParam(hpId, 1005);
                 var splittedParam = checkParam.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 int invalidAgeCheck = 0;
@@ -186,7 +186,7 @@ namespace Infrastructure.Repositories
 
                     foreach (var pattern in validPattern)
                     {
-                        var ptCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.HokenId == pattern.ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
+                        var ptCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.HokenId == pattern.ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
                                         .OrderByDescending(x => x.CheckDate).FirstOrDefault();
                         int confirmDate = GetConfirmDateHokenInf(ptCheck);
                         if (!IsValidAgeCheckConfirm(ageCheck, confirmDate, patientInfBirthDay, sinDate) && invalidAgeCheck <= ageCheck)
@@ -221,7 +221,7 @@ namespace Infrastructure.Repositories
             return ptHokenCheck is null ? 0 : DateTimeToInt(ptHokenCheck.CheckDate);
         }
 
-        private string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0 , string defaultParam = "")
+        private string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0, string defaultParam = "")
         {
             var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
             //Fix comment 894 (duong.vu)
@@ -259,9 +259,9 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private int GetConfirmDate(int hokenId, int typeHokenGroup)
+        private int GetConfirmDate(int hpId, int hokenId, int typeHokenGroup)
         {
-            var validHokenCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.IsDeleted == 0 && x.HokenId == hokenId && x.HokenGrp == typeHokenGroup)
+            var validHokenCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.HokenId == hokenId && x.HokenGrp == typeHokenGroup)
                 .OrderByDescending(x => x.CheckDate)
                 .ToList();
             if (!validHokenCheck.Any())

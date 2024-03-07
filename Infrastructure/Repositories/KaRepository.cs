@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Domain.Models.Ka;
+﻿using Domain.Models.Ka;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -16,12 +15,14 @@ public class KaRepository : RepositoryBase, IKaRepository
     private readonly string key;
     private readonly IDatabase _cache;
     private readonly IConfiguration _configuration;
-    public KaRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+    private readonly IKaService _kaService;
+    public KaRepository(ITenantProvider tenantProvider, IConfiguration configuration, IKaService kaService) : base(tenantProvider)
     {
         key = GetDomainKey();
         _configuration = configuration;
         GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
+        _kaService = kaService;
     }
 
     public void GetRedis()
@@ -33,55 +34,53 @@ public class KaRepository : RepositoryBase, IKaRepository
         }
     }
 
-    public bool CheckKaId(int kaId)
+    public bool CheckKaId(int hpId, int kaId)
     {
-        var check = NoTrackingDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
+        // get KaMstList from kaService
+        var check = _kaService.AllKaMstList().Any(k => k.HpId == hpId && k.KaId == kaId && k.IsDeleted == 0);
         return check;
     }
-    public bool CheckKaId(List<int> kaIds)
+    public bool CheckKaId(List<int> kaIds, int hpId)
     {
         kaIds = kaIds.Distinct().ToList();
-        var countKaMsts = NoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
+
+        // get KaMstList from kaService
+        var countKaMsts = _kaService.AllKaMstList().Count(u => u.HpId == hpId && kaIds.Contains(u.KaId));
         return kaIds.Count == countKaMsts;
     }
 
-    public KaMstModel GetByKaId(int kaId)
+    public KaMstModel GetByKaId(int hpId, int kaId)
     {
-        var entity = NoTrackingDataContext.KaMsts
-            .Where(k => k.KaId == kaId && k.IsDeleted == DeleteTypes.None).FirstOrDefault();
+        // get KaMstList from kaService
+        var entity = _kaService.AllKaMstList().FirstOrDefault(k => k.HpId == hpId && k.KaId == kaId && k.IsDeleted == DeleteTypes.None);
         return entity is null ? new KaMstModel() : ConvertToKaMstModel(entity);
     }
 
-    public List<KaMstModel> GetByKaIds(List<int> kaIds)
+    public List<KaMstModel> GetList(int hpId, int isDeleted)
     {
-        var entities = NoTrackingDataContext.KaMsts
-           .Where(k => kaIds.Contains(k.KaId) && k.IsDeleted == DeleteTypes.None).AsEnumerable();
-        return entities is null ? new List<KaMstModel>() : entities.Select(e => ConvertToKaMstModel(e)).ToList();
+        // get KaMstList from kaService
+        return _kaService.AllKaMstList()
+               .Where(k => k.HpId == hpId && (isDeleted == 2 || k.IsDeleted == isDeleted))
+               .OrderBy(k => k.SortNo)
+               .Select(k => ConvertToKaMstModel(k)).ToList();
     }
 
-    public List<KaMstModel> GetList(int isDeleted)
-    {
-        return NoTrackingDataContext.KaMsts
-            .Where(k => (isDeleted == 2 || k.IsDeleted == isDeleted))
-            .OrderBy(k => k.SortNo).AsEnumerable()
-            .Select(k => ConvertToKaMstModel(k)).ToList();
-    }
-
-    public List<KaCodeMstModel> GetListKacode()
+    public List<KaCodeMstModel> GetListKacode(int hpId)
     {
         return NoTrackingDataContext.KacodeMsts
-                                            .OrderBy(u => u.ReceKaCd)
-                                            .Select(ka => new KaCodeMstModel(
-                                                        ka.ReceKaCd,
-                                                        ka.SortNo,
-                                                        ka.KaName ?? string.Empty,
-                                                        string.Empty
-                                             )).ToList();
+                .Where(k => k.HpId == hpId)
+               .OrderBy(u => u.ReceKaCd)
+               .Select(ka => new KaCodeMstModel(
+                                 ka.ReceKaCd,
+                                 ka.SortNo,
+                                 ka.KaName ?? string.Empty,
+                                 string.Empty
+               )).ToList();
     }
 
     public bool SaveKaMst(int hpId, int userId, List<KaMstModel> kaMstModels)
     {
-        var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
+        var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.HpId == hpId && item.IsDeleted != 1).ToList();
         int sortNo = 1;
         List<KaMst> listAddNews = new();
         foreach (var model in kaMstModels)
@@ -144,11 +143,11 @@ public class KaRepository : RepositoryBase, IKaRepository
             );
     }
 
-    public List<KaCodeMstModel> GetKacodeMstYossi()
+    public List<KaCodeMstModel> GetKacodeMstYossi(int hpId)
     {
-        var kacodeMsts = NoTrackingDataContext.KacodeMsts.AsQueryable();
+        var kacodeMsts = NoTrackingDataContext.KacodeMsts.Where(k => k.HpId == hpId).AsQueryable();
 
-        var kacodeReceYousikis = NoTrackingDataContext.KacodeReceYousikis.AsQueryable();
+        var kacodeReceYousikis = NoTrackingDataContext.KacodeReceYousikis.Where(k => k.HpId == hpId).AsQueryable();
 
         var query = from kacodeMst in kacodeMsts
                     join kacodeReceYousiki in kacodeReceYousikis
@@ -162,14 +161,15 @@ public class KaRepository : RepositoryBase, IKaRepository
         return query.AsEnumerable().Select(p => new KaCodeMstModel(p.KacodeMst?.ReceKaCd ?? string.Empty, p.KacodeMst?.SortNo ?? 0, p.KacodeMst?.KaName ?? string.Empty, p.KacodeReceYousiki?.YousikiKaCd ?? string.Empty)).OrderBy(p => p.ReceKaCd).ToList();
     }
 
-    public List<KacodeYousikiMstModel> GetKacodeYousikiMst()
+    public List<KacodeYousikiMstModel> GetKacodeYousikiMst(int hpId)
     {
-        var kacodeMsts = NoTrackingDataContext.KacodeYousikiMsts.AsEnumerable().OrderBy(u => u.YousikiKaCd);
+        var kacodeMsts = NoTrackingDataContext.KacodeYousikiMsts.Where(k => k.HpId == hpId).AsEnumerable().OrderBy(u => u.YousikiKaCd);
         return kacodeMsts.Select(p => new KacodeYousikiMstModel(p.YousikiKaCd, p.SortNo, p.KaName)).ToList();
     }
 
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _kaService.DisposeSource();
     }
 }

@@ -17,11 +17,11 @@ public class CoReceiptCheckFinder : RepositoryBase, ICoReceiptCheckFinder
 
     public List<CoReceiptCheckModel> GetCoReceiptChecks(int hpId, List<long> ptIds, int sinYm)
     {
-        var listReceCheckErr = NoTrackingDataContext.ReceCheckErrs;
+        var listReceCheckErr = NoTrackingDataContext.ReceCheckErrs.Where(x => x.HpId == hpId);
 
-        var listPtInf = NoTrackingDataContext.PtInfs;
-        var listReceInf = NoTrackingDataContext.ReceInfs;
-        var listReceSeikyu = NoTrackingDataContext.ReceSeikyus.Where(receSeikyu => receSeikyu.SeikyuYm == sinYm);
+        var listPtInf = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId);
+        var listReceInf = NoTrackingDataContext.ReceInfs.Where(x => x.HpId == hpId);
+        var listReceSeikyu = NoTrackingDataContext.ReceSeikyus.Where(receSeikyu => receSeikyu.HpId == hpId && receSeikyu.SeikyuYm == sinYm);
 
         var lisResultReceSeikyu = from receiptErr in listReceCheckErr
                                   join receInf in listReceInf on new { receiptErr.HpId, receiptErr.PtId, receiptErr.HokenId, receiptErr.SinYm }

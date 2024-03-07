@@ -24,7 +24,7 @@ namespace Interactor.ReceiptCheck
 
                 var ptIds = new List<long>() { inputData.PtId };
 
-                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(ptIds, inputData.SeikyuYm, string.Empty));
+                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.HpId, ptIds, inputData.SeikyuYm, string.Empty));
 
                 return new DeleteReceiptInfEditOutputData(DeleteReceiptInfStatus.Successed);
 

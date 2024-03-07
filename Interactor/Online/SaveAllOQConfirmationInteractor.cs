@@ -25,7 +25,7 @@ public class SaveAllOQConfirmationInteractor : ISaveAllOQConfirmationInputPort
     {
         try
         {
-            if (inputData.PtId != 0 && !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+            if (inputData.PtId != 0 && !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
             {
                 return new SaveAllOQConfirmationOutputData(SaveAllOQConfirmationStatus.InvalidPtId);
             }

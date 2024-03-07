@@ -1,4 +1,5 @@
-﻿using System;
+using Emr.DatabaseEntity;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,14 +8,17 @@ namespace Entity.Tenant
 	/// <summary>
 	/// 診療科マスタ
 	/// </summary>
-	[Table(name: "KANTOKU_MST")]
+	[Table(name: "kantoku_mst")]
     public class KantokuMst : EmrCloneable<KantokuMst>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 労働局コード	
         /// </summary>
-        
-        [Column(name: "ROUDOU_CD", Order = 1)]
+
+        [Column(name: "roudou_cd", Order = 1)]
 		[MaxLength(2)]
         public string RoudouCd { get; set; } = string.Empty;
 
@@ -22,14 +26,14 @@ namespace Entity.Tenant
         /// 監督署コード
         /// </summary>
         
-        [Column(name: "KANTOKU_CD", Order = 2)]
+        [Column(name: "kantoku_cd", Order = 2)]
 		[MaxLength(2)]
         public string KantokuCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 監督署名
         /// </summary>
-        [Column(name: "KANTOKU_NAME")]
+        [Column(name: "kantoku_name")]
         [MaxLength(60)]
         [Required]
         public string? KantokuName { get; set; } = string.Empty;
@@ -37,14 +41,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 登録日時		
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
 		[CustomAttribute.DefaultValueSql("current_timestamp")]
 		public DateTime CreateDate { get; set; }
 
 		/// <summary>
 		/// 更新日時			
 		/// </summary>
-		[Column("UPDATE_DATE")]
+		[Column("update_date")]
 		public DateTime UpdateDate { get; set; }
 	}
 }

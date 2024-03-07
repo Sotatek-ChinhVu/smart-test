@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
-    [Table(name: "LIST_SET_MST")]
+    [Table(name: "list_set_mst")]
     public class ListSetMst : EmrCloneable<ListSetMst>
     {
         /// <summary>
@@ -17,7 +17,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("GENERATION_ID", Order = 2)]
+        [Column("generation_id", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int GenerationId { get; set; }
 
@@ -33,7 +33,7 @@ namespace Entity.Tenant
         /// セット区分
         /// ○
         /// </summary>
-        [Column("SET_KBN")]
+        [Column("set_kbn")]
         public int SetKbn { get; set; }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SET_ID", Order = 3)]
+        [Column("set_id", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SetId { get; set; }
 
@@ -49,42 +49,42 @@ namespace Entity.Tenant
         /// レベル１
         /// ○
         /// </summary>
-        [Column("LEVEL1")]
+        [Column("level1")]
         public int Level1 { get; set; }
 
         /// <summary>
         /// レベル２
         /// ○
         /// </summary>
-        [Column("LEVEL2")]
+        [Column("level2")]
         public int Level2 { get; set; }
 
         /// <summary>
         /// レベル３
         /// ○
         /// </summary>
-        [Column("LEVEL3")]
+        [Column("level3")]
         public int Level3 { get; set; }
 
         /// <summary>
         /// レベル４
         /// ○
         /// </summary>
-        [Column("LEVEL4")]
+        [Column("level4")]
         public int Level4 { get; set; }
 
         /// <summary>
         /// レベル５
         /// ○
         /// </summary>
-        [Column("LEVEL5")]
+        [Column("level5")]
         public int Level5 { get; set; }
 
         /// <summary>
         /// 項目コード
         /// 
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -92,7 +92,7 @@ namespace Entity.Tenant
         /// 名称
         /// 
         /// </summary>
-        [Column("SET_NAME")]
+        [Column("set_name")]
         [MaxLength(240)]
         public string? SetName { get; set; } = string.Empty;
 
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// タイトル
         /// 
         /// </summary>
-        [Column("IS_TITLE")]
+        [Column("is_title")]
         [CustomAttribute.DefaultValue(0)]
         public int IsTitle { get; set; }
 
@@ -108,14 +108,14 @@ namespace Entity.Tenant
         /// 選択方式
         /// 
         /// </summary>
-        [Column("SELECT_TYPE")]
+        [Column("select_type")]
         public int SelectType { get; set; }
 
         /// <summary>
         /// 数量
         /// 
         /// </summary>
-        [Column("SURYO")]
+        [Column("suryo")]
         [CustomAttribute.DefaultValue(0)]
         public double Suryo { get; set; }
 
@@ -123,7 +123,7 @@ namespace Entity.Tenant
         /// 単位種別
         /// 
         /// </summary>
-        [Column("UNIT_SBT")]
+        [Column("unit_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int UnitSbt { get; set; }
 
@@ -131,7 +131,7 @@ namespace Entity.Tenant
         /// 至急区分
         /// 
         /// </summary>
-        [Column("SIKYU_KBN")]
+        [Column("sikyu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SikyuKbn { get; set; }
 
@@ -139,7 +139,7 @@ namespace Entity.Tenant
         /// コメント名称
         /// 
         /// </summary>
-        [Column("CMT_NAME")]
+        [Column("cmt_name")]
         [MaxLength(240)]
         public string? CmtName { get; set; } = string.Empty;
 
@@ -147,7 +147,7 @@ namespace Entity.Tenant
         /// コメント文
         /// 
         /// </summary>
-        [Column("CMT_OPT")]
+        [Column("cmt_opt")]
         [MaxLength(38)]
         public string? CmtOpt { get; set; } = string.Empty;
 
@@ -155,7 +155,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -163,14 +163,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -178,7 +178,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -186,14 +186,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -201,7 +201,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
     }

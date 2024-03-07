@@ -28,7 +28,7 @@ namespace Interactor.SystemConf
                 var systemSetting = new List<SystemConfMenuModel>();
 
                 //tab IryoKikanJoho
-                var roudouMst = _systemConfRepository.GetRoudouMst();
+                var roudouMst = _systemConfRepository.GetRoudouMst(inputData.HpId);
                 var hpInfs = _hpInfRepository.GetListHpInf(inputData.HpId);
                 systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuWithGeneration(inputData.HpId, new List<int> { 2000, 2001 }));
                 systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, new List<int> { 1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014 }));

@@ -38,7 +38,7 @@ public interface ICoSta9000Finder : IRepositoryBase
     /// <summary>
     /// 病名情報
     /// </summary>
-    List<CoPtByomeiModel> GetPtByomeis(
+    List<CoPtByomeiModel> GetPtByomeis(int hpId,
         CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf
     );

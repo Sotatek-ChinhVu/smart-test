@@ -26,13 +26,13 @@ public interface ITodayOdrRepository : IRepositoryBase
 
     Dictionary<string, string> CheckNameChanged(List<OrdInfModel> odrInfModelList);
 
-    List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems);
+    List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems);
 
     (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<string> itemCds);
 
     List<RaiinKbnModel> InitDefaultByTodayOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<OrdInfModel> todayOrds);
 
-    Dictionary<string, bool> ConvertInputItemToTodayOdr(int hpId, int sinDate, Dictionary<string, string> detailInfs);
+    Dictionary<string, bool> ConvertInputItemToTodayOdr(int sinDate, Dictionary<string, string> detailInfs);
 
     List<OrdInfModel> FromNextOrderToTodayOrder(int hpId, int sinDate, long raiinNo, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels);
 

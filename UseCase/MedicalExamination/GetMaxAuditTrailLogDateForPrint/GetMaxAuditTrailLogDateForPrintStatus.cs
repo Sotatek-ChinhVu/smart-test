@@ -5,6 +5,7 @@
         Successed = 1,
         InvalidPtId = 2,
         InvalidRaiinNo = 3,
-        InvalidSinDate = 4
+        InvalidSinDate = 4,
+        InvalidHpId = 5
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
-    [Table(name: "ACCOUNTING_FORM_MST")]
+    [Table(name: "accounting_form_mst")]
     public class AccountingFormMst : EmrCloneable<AccountingFormMst>
     {
         /// <summary>
@@ -16,7 +16,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -24,14 +24,14 @@ namespace Entity.Tenant
         /// 連番[0..zzzz]
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("FORM_NO", Order = 2)]
+        [Column("form_no", Order = 2)]
         public int FormNo { get; set; }
 
         /// <summary>
         /// 帳票名
         /// 
         /// </summary>
-        [Column("FORM_NAME")]
+        [Column("form_name")]
         [MaxLength(100)]
         public string? FormName { get; set; } = string.Empty;
 
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 2: 1患者1帳票（保険外請求ありのみ）
         /// 3: 連記          
         /// </summary>
-        [Column("FORM_TYPE")]
+        [Column("form_type")]
         [CustomAttribute.DefaultValue(0)]
         public int FormType { get; set; }
 
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// 0: 患者番号・患者カナ氏名順
         /// 1: 患者カナ氏名・患者番号順          
         /// </summary>
-        [Column("PRINT_SORT")]
+        [Column("print_sort")]
         [CustomAttribute.DefaultValue(0)]
         public int PrintSort { get; set; }
 
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// 0: 未精算分(RAIIN_INF.STATUS<9)は印刷しない
         /// 1: 未精算分(RAIIN_INF.STATUS<9)も印刷する          
         /// </summary>
-        [Column("MISEISAN_KBN")]
+        [Column("miseisan_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int MiseisanKbn { get; set; }
 
@@ -73,7 +73,7 @@ namespace Entity.Tenant
         ///    SYUNO_SEIKYU.NEW_SEIKYU_GAKU
         ///    に差がある分も印刷する          
         /// </summary>
-        [Column("SAI_KBN")]
+        [Column("sai_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SaiKbn { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 0: 未収関係なく印刷
         /// 1: 未収分(SYUNO_SEIKYU.NYUKIN_KBN=1)のみ印刷          
         /// </summary>
-        [Column("MISYU_KBN")]
+        [Column("misyu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int MisyuKbn { get; set; }
 
@@ -91,7 +91,7 @@ namespace Entity.Tenant
         /// 0: SYUNO_SEIKYU.SEIKYU_GAKU=0は印刷しない
         /// 1: SYUNO_SEIKYU.SEIKYU_GAKUに関係なく印刷          
         /// </summary>
-        [Column("SEIKYU_KBN")]
+        [Column("seikyu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SeikyuKbn { get; set; }
 
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// 1: PT_HOKEN_INF.HOKEN_KBN = 1,2（社保国保）
         ///    を対象とする          
         /// </summary>
-        [Column("HOKEN_KBN")]
+        [Column("hoken_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int HokenKbn { get; set; }
 
@@ -110,7 +110,7 @@ namespace Entity.Tenant
         /// フォームファイル名
         /// 
         /// </summary>
-        [Column("FORM")]
+        [Column("form")]
         [MaxLength(100)]
         public string? Form { get; set; } = string.Empty;
 
@@ -118,7 +118,7 @@ namespace Entity.Tenant
         /// 初期設定ベース
         /// 0: 請求日ベース、1: 入金日ベース
         /// </summary>
-        [Column("BASE")]
+        [Column("base")]
         [CustomAttribute.DefaultValue(0)]
         public int Base { get; set; }
 
@@ -126,7 +126,7 @@ namespace Entity.Tenant
         /// 順番
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(0)]
         public int SortNo { get; set; }
 
@@ -134,7 +134,7 @@ namespace Entity.Tenant
         /// 削除フラグ
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -142,14 +142,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -157,7 +157,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -165,14 +165,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -180,7 +180,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

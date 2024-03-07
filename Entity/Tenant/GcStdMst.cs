@@ -1,155 +1,145 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "GC_STD_MST")]
+    [Table(name: "gc_std_mst")]
     public class GcStdMst : EmrCloneable<GcStdMst>
     {
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        public int HpId { get; set; }
-
         /// <summary>
         /// 基準値区分
         /// 0:体重 1:身長
         /// </summary>
-        
-        [Column("STD_KBN", Order = 2)]
+
+        [Column("std_kbn")]
         public int StdKbn { get; set; }
 
         /// <summary>
         /// 性別
         /// 1:男 2:女
         /// </summary>
-        
-        [Column("SEX", Order = 3)]
+
+        [Column("sex")]
         public int Sex { get; set; }
 
         /// <summary>
         /// 位置
         /// 
         /// </summary>
-        
-        [Column("POINT", Order = 4)]
+        [Column("point")]
         public double Point { get; set; }
 
         /// <summary>
         /// SD
         /// N
         /// </summary>
-        [Column("SD_M25")]
+        [Column("sd_m25")]
         public double SdM25 { get; set; }
 
         /// <summary>
         /// SD
         /// N
         /// </summary>
-        [Column("SD_M20")]
+        [Column("sd_m20")]
         public double SdM20 { get; set; }
 
         /// <summary>
         /// SD
         /// N
         /// </summary>
-        [Column("SD_M10")]
+        [Column("sd_m10")]
         public double SdM10 { get; set; }
 
         /// <summary>
         /// SD
         /// N
         /// </summary>
-        [Column("SD_AVG")]
+        [Column("sd_avg")]
         public double SdAvg { get; set; }
 
         /// <summary>
         /// SD
         /// N
         /// </summary>
-        [Column("SD_P10")]
+        [Column("sd_p10")]
         public double SdP10 { get; set; }
 
         /// <summary>
         /// SD
         /// N
         /// </summary>
-        [Column("SD_P20")]
+        [Column("sd_p20")]
         public double SdP20 { get; set; }
 
         /// <summary>
         /// SD
         /// N
         /// </summary>
-        [Column("SD_P25")]
+        [Column("sd_p25")]
         public double SdP25 { get; set; }
 
         /// <summary>
         /// 3%
         /// 
         /// </summary>
-        [Column("PER_03")]
+        [Column("per_03")]
         public double Per03 { get; set; }
 
         /// <summary>
         /// 10%
         /// 
         /// </summary>
-        [Column("PER_10")]
+        [Column("per_10")]
         public double Per10 { get; set; }
 
         /// <summary>
         /// 25%
         /// 
         /// </summary>
-        [Column("PER_25")]
+        [Column("per_25")]
         public double Per25 { get; set; }
 
         /// <summary>
         /// 50%
         /// 
         /// </summary>
-        [Column("PER_50")]
+        [Column("per_50")]
         public double Per50 { get; set; }
 
         /// <summary>
         /// 75%
         /// 
         /// </summary>
-        [Column("PER_75")]
+        [Column("per_75")]
         public double Per75 { get; set; }
 
         /// <summary>
         /// 90%
         /// 
         /// </summary>
-        [Column("PER_90")]
+        [Column("per_90")]
         public double Per90 { get; set; }
 
         /// <summary>
         /// 97%
         /// 
         /// </summary>
-        [Column("PER_97")]
+        [Column("per_97")]
         public double Per97 { get; set; }
 
         /// <summary>
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -157,7 +147,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -165,14 +155,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -180,7 +170,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

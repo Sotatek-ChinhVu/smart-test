@@ -87,8 +87,8 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
 
             switch (welfareType)
             {
-                case 0: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareGreenSeikyuType() == 0); break;
-                case 1: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareBlueSeikyuType() == 0); break;
+                case 0: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareGreenSeikyuType(hpId) == 0); break;
+                case 1: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareBlueSeikyuType(hpId) == 0); break;
             }
 
             currentPage = 1;

@@ -4,7 +4,7 @@ namespace UseCase.Lock.Unlock
 {
     public class LockPtInfInputItem
     {
-        public LockPtInfInputItem(long ptId, string functionName, long ptNum, long sinDate, DateTime lockDate, string machine, string functionCd, long raiinNo, long oyaRaiinNo, int userId)
+        public LockPtInfInputItem(long ptId, string functionName, long ptNum, int sinDate, DateTime lockDate, string machine, string functionCd, long raiinNo, long oyaRaiinNo, int userId)
         {
             PtId = ptId;
             FunctionName = functionName;
@@ -24,7 +24,7 @@ namespace UseCase.Lock.Unlock
 
         public long PtNum { get; private set; }
 
-        public long SinDate { get; private set; }
+        public int SinDate { get; private set; }
 
         public DateTime LockDate { get; private set; }
 

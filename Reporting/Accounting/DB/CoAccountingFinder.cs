@@ -77,10 +77,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             (hokenKbn != 1 || new int[] { 1, 2 }.Contains(p.HokenKbn))
         );
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
+            h => h.HpId == hpId && h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -254,10 +254,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             p.PtId == ptId &&
             ((hokenKbn != 1) || new int[] { 1, 2 }.Contains(p.HokenKbn)));
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
+            h => h.HpId == hpId && h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -421,12 +421,12 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
 
         var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p =>
             p.HpId == hpId &&
-            ((hokenKbn != 1) || new int[] { 1, 2 }.Contains(p.HokenKbn)));
+            (hokenKbn == 1 ? new int[] { 1, 2 }.Contains(p.HokenKbn) : true));
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
+            h => h.HpId == hpId && h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -465,9 +465,9 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             p.HpId == hpId &&
             p.SinDate >= startDate &&
             p.SinDate <= endDate &&
-            (saiKbn != 0 || p.SeikyuGaku == p.NewSeikyuGaku) &&
-            (misyuKbn != 1 || p.NyukinKbn == 1) &&
-            (seikyuKbn != 0 || p.SeikyuGaku > 0)
+            (saiKbn == 0 ? p.SeikyuGaku == p.NewSeikyuGaku : true) &&
+            (misyuKbn == 1 ? p.NyukinKbn == 1 : true) &&
+            (seikyuKbn == 0 ? p.SeikyuGaku > 0 : true)
         );
 
         // 収納入金
@@ -489,7 +489,8 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                     nyukinGroups.Key.PtId,
                     nyukinGroups.Key.SinDate,
                     nyukinGroups.Key.RaiinNo,
-                    NyukinGaku = nyukinGroups.Sum(p => p.NyukinGaku)
+                    NyukinGaku = nyukinGroups.Sum(p => p.NyukinGaku),
+                    NyukinAdjust = nyukinGroups.Sum(p => p.AdjustFutan)
                 }
             );
 
@@ -564,6 +565,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                 kaikeiInfGroups.Key.RenrakuTel,
                 SeikyuGaku = kaikeiInfGroups.Sum(p => p.syunoInf.syunoSeikyu.SeikyuGaku),
                 NyukinGaku = kaikeiInfGroups.Sum(p => p.syunoInf.syunoNyukinJoin.NyukinGaku),
+                NyukinAdjust = kaikeiInfGroups.Sum(p => p.syunoInf.syunoNyukinJoin.NyukinAdjust),
                 Misyu = kaikeiInfGroups.Sum(p => p.syunoInf.syunoSeikyu.SeikyuGaku) - kaikeiInfGroups.Sum(p => p.syunoInf.syunoNyukinJoin.NyukinGaku),
                 Tensu = kaikeiInfGroups.Sum(p => p.kaikeiInf.Tensu),
                 TotalIryohi = kaikeiInfGroups.Sum(p => p.kaikeiInf.TotalIryohi),
@@ -590,46 +592,47 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             data =>
                 new CoKaikeiInfListModel(
                     data.HpId,
-                    data.PtId,
-                    data.PtNum,
-                    data.Name,
-                    data.KanaName,
-                    data.Sex,
-                    data.Birthday,
-                    data.HomePost,
-                    data.HomeAddress1,
-                    data.HomeAddress2,
-                    data.Tel1,
-                    data.Tel2,
-                    data.RenrakuTel,
-                    // 請求額、入金額、未収額については、後で再設定する
-                    // (この時点では、同一来院に複数保険種の保険を使用した場合、重複した金額が入ってしまう為）
-                    data.SeikyuGaku,
-                    data.NyukinGaku,
-                    data.Misyu,
-                    data.Tensu,
-                    data.TotalIryohi,
-                    data.PtFutan,
-                    data.AdjustFutan,
-                    data.AdjustRound,
-                    data.TotalPtFutan,
-                    data.JihiFutan,
-                    data.JihiOuttax,
-                    data.JihiTax,
-                    data.JihiFutanFree,
-                    data.JihiFutanOuttaxNr,
-                    data.JihiFutanOuttaxGen,
-                    data.JihiFutanTaxNr,
-                    data.JihiFutanTaxGen,
-                    data.JihiOuttaxNr,
-                    data.JihiOuttaxGen,
-                    data.JihiTaxNr,
-                    data.JihiTaxGen,
-                    new(),
-                    new(),
-                    new(),
-                    new(),
-                    new()
+                        data.PtId,
+                        data.PtNum,
+                        data.Name,
+                        data.KanaName,
+                        data.Sex,
+                        data.Birthday,
+                        data.HomePost,
+                        data.HomeAddress1,
+                        data.HomeAddress2,
+                        data.Tel1,
+                        data.Tel2,
+                        data.RenrakuTel,
+                        // 請求額、入金額、未収額については、後で再設定する
+                        // (この時点では、同一来院に複数保険種の保険を使用した場合、重複した金額が入ってしまう為）
+                        data.SeikyuGaku,
+                        data.NyukinGaku,
+                        data.NyukinAdjust,
+                        data.Misyu,
+                        data.Tensu,
+                        data.TotalIryohi,
+                        data.PtFutan,
+                        data.AdjustFutan,
+                        data.AdjustRound,
+                        data.TotalPtFutan,
+                        data.JihiFutan,
+                        data.JihiOuttax,
+                        data.JihiTax,
+                        data.JihiFutanFree,
+                        data.JihiFutanOuttaxNr,
+                        data.JihiFutanOuttaxGen,
+                        data.JihiFutanTaxNr,
+                        data.JihiFutanTaxGen,
+                        data.JihiOuttaxNr,
+                        data.JihiOuttaxGen,
+                        data.JihiTaxNr,
+                        data.JihiTaxGen,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
                 )
             )
             .ToList();
@@ -671,9 +674,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                     entity.Tel1,
                     entity.Tel2,
                     entity.RenrakuTel,
-                    // 請求額、入金額、未収額について重複のない金額を設定する
+                    // 請求額、入金額、入金調整額、未収額について重複のない金額を設定する
                     filterdSyunoInfs.Sum(p => p.syunoSeikyu.SeikyuGaku),
                     filterdSyunoInfs.Sum(p => p.syunoNyukinJoin.NyukinGaku),
+                    filterdSyunoInfs.Sum(p => p.syunoNyukinJoin.NyukinAdjust),
                     filterdSyunoInfs.Sum(p => p.syunoSeikyu.SeikyuGaku) - filterdSyunoInfs.Sum(p => p.syunoNyukinJoin.NyukinGaku),
                     entity.Tensu,
                     entity.TotalIryohi,
@@ -777,7 +781,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             p.HpId == hpId &&
             (hokenKbn != 1 || new int[] { 1, 2 }.Contains(p.HokenKbn)));
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
 
         // 来院情報の取得
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r =>
@@ -814,7 +818,8 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                     nyukinGroups.Key.PtId,
                     nyukinGroups.Key.SinDate,
                     nyukinGroups.Key.RaiinNo,
-                    NyukinGaku = nyukinGroups.Sum(p => p.NyukinGaku)
+                    NyukinGaku = nyukinGroups.Sum(p => p.NyukinGaku),
+                    NyukinAdjust = nyukinGroups.Sum(p => p.AdjustFutan)
                 }
             );
 
@@ -980,10 +985,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
 
     public List<CoPtKohiModel> FindPtKohi(int hpId, long ptId, int sinDate, HashSet<int> kohiIds)
     {
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= sinDate
+            h => h.HpId == hpId && h.StartDate <= sinDate
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -997,7 +1002,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
         );
 
-        var kohiPriorities = NoTrackingDataContext.KohiPriorities;
+        var kohiPriorities = NoTrackingDataContext.KohiPriorities.Where(k => k.HpId == hpId);
         var ptKohis = NoTrackingDataContext.PtKohis.Where(p =>
             p.HpId == hpId &&
             p.PtId == ptId &&
@@ -1929,5 +1934,18 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                            x.PtGrpItems.AsEnumerable().Select(grpItem => new PtGrpItemModel(grpItem)).OrderBy(gi => gi.SortNo)
                        )).OrderBy(gr => gr.SortNo).ToList();
         return result;
+    }
+
+    public bool ExistCalculateRequest(int hpId, long ptId, int startDate, int endDate)
+    {
+        var calcStatuies = NoTrackingDataContext.CalcStatus.Any(p =>
+            p.HpId == hpId &&
+            p.PtId == ptId &&
+            p.SinDate >= startDate &&
+            p.SinDate <= endDate &&
+            p.Status == 1
+        );
+
+        return calcStatuies;
     }
 }

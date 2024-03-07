@@ -77,7 +77,7 @@ namespace Reporting.AccountingCard.DB
             var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
             //診療日基準で保険番号マスタのキー情報を取得
             var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-                h => h.StartDate <= sinYm * 100 + 31 && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
+                h => h.HpId == hpId && h.StartDate <= sinYm * 100 + 31 && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
             ).GroupBy(
                 x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
             ).Select(
@@ -180,7 +180,7 @@ namespace Reporting.AccountingCard.DB
             var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
             //診療日基準で保険番号マスタのキー情報を取得
             var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-                h => h.StartDate <= sinDate
+                h => h.HpId == hpId && h.StartDate <= sinDate
             ).GroupBy(
                 x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
             ).Select(
@@ -194,7 +194,7 @@ namespace Reporting.AccountingCard.DB
                 }
             );
 
-            var kohiPriorities = NoTrackingDataContext.KohiPriorities.AsQueryable();
+            var kohiPriorities = NoTrackingDataContext.KohiPriorities.Where(k => k.HpId == hpId).AsQueryable();
             var ptKohis = NoTrackingDataContext.PtKohis.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&

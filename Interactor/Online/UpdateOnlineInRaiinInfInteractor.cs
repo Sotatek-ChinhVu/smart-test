@@ -24,13 +24,13 @@ public class UpdateOnlineInRaiinInfInteractor : IUpdateOnlineInRaiinInfInputPort
     {
         try
         {
-            var  resultValidate = ValidateData(inputData);
-            if (resultValidate!=UpdateOnlineInRaiinInfStatus.ValidateSuccess)
+            var resultValidate = ValidateData(inputData);
+            if (resultValidate != UpdateOnlineInRaiinInfStatus.ValidateSuccess)
             {
                 return new UpdateOnlineInRaiinInfOutputData(resultValidate);
             }
             DateTime confirmationDate = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(inputData.OnlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)); ;
-            if(_onlineRepository.UpdateOnlineInRaiinInf(inputData.HpId, inputData.UserId, inputData.PtId, confirmationDate, inputData.ConfirmationType, inputData.InfConsFlg))
+            if (_onlineRepository.UpdateOnlineInRaiinInf(inputData.HpId, inputData.UserId, inputData.PtId, confirmationDate, inputData.ConfirmationType, inputData.InfConsFlg))
             {
                 int sindate = CIUtil.DateTimeToInt(confirmationDate);
                 var receptionInfos = _receptionRepository.GetList(inputData.HpId, sindate, CommonConstants.InvalidId, inputData.PtId, isDeleted: 0);
@@ -47,7 +47,7 @@ public class UpdateOnlineInRaiinInfInteractor : IUpdateOnlineInRaiinInfInputPort
 
     private UpdateOnlineInRaiinInfStatus ValidateData(UpdateOnlineInRaiinInfInputData inputData)
     {
-        if (inputData.PtId != 0 && inputData.PtId != -1 && !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (inputData.PtId != 0 && inputData.PtId != -1 && !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return UpdateOnlineInRaiinInfStatus.InvalidPtId;
         }

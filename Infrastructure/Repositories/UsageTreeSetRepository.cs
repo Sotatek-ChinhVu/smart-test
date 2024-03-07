@@ -12,10 +12,10 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public int GetGenerationId(int sinDate)
+        public int GetGenerationId(int hpId, int sinDate)
         {
             ListSetGenerationMst? generation = NoTrackingDataContext.ListSetGenerationMsts.Where
-                            (item => item.StartDate < sinDate)
+                            (item => item.HpId == hpId && item.StartDate < sinDate)
                             .OrderByDescending(item => item.StartDate)
                             .FirstOrDefault();
 
@@ -32,6 +32,7 @@ namespace Infrastructure.Repositories
             var ItemCds = list.Select(x => x.ItemCd);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
+                                        && item.HpId == hpId
                                         && item.EndDate >= sinDate).Select(x => new
                                         {
                                             x.ItemCd,
@@ -76,6 +77,7 @@ namespace Infrastructure.Repositories
             var ItemCds = list.Select(x => x.ItemCd);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
+                                        && item.HpId == hpId
                                         && item.EndDate >= sinDate).Select(x => new
                                         {
                                             x.ItemCd,
@@ -119,6 +121,7 @@ namespace Infrastructure.Repositories
             var ItemCds = list.Select(x => x.ItemCd);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
+                                        && item.HpId == hpId
                                         && item.EndDate >= sinDate).Select(x => new
                                         {
                                             x.ItemCd,

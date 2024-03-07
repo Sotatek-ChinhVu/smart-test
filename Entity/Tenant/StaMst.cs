@@ -1,33 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "STA_MST")]
+    [Table(name: "sta_mst")]
     public class StaMst : EmrCloneable<StaMst>
     {
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        public int HpId { get; set; }
-
         /// <summary>
         /// 帳票ID
         /// 
         /// </summary>
-        
-        [Column("REPORT_ID", Order = 2)]
+
+        [Column("report_id")]
         public int ReportId { get; set; }
 
         /// <summary>
         /// 帳票名
         /// 
         /// </summary>
-        [Column("REPORT_NAME")]
+        [Column("report_name")]
         [MaxLength(20)]
         public string? ReportName { get; set; } = string.Empty;
 
@@ -35,14 +26,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -50,7 +41,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -58,14 +49,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -73,7 +64,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 

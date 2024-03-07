@@ -15,7 +15,7 @@ public class GetColumnSettingByTableNameListInteractor : IGetColumnSettingByTabl
     {
         try
         {
-            var settingList = _columnSettingRepository.GetList(input.UserId, input.TableNameList);
+            var settingList = _columnSettingRepository.GetList(input.HpId, input.UserId, input.TableNameList);
             return new GetColumnSettingByTableNameListOutputData(settingList, GetColumnSettingByTableNameListStatus.Successed);
         }
         finally

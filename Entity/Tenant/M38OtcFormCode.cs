@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
    
@@ -7,21 +7,24 @@ namespace Entity.Tenant
     /// <summary>
     /// OTC剤形コードテーブル
     /// </summary>
-    [Table(name: "M38_OTC_FORM_CODE")]
+    [Table(name: "m38_otc_form_code")]
     public class M38OtcFormCode : EmrCloneable<M38OtcFormCode>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 剤形コード
         /// FMで始まり、4桁の数字が続く
         /// </summary>
-        
-        [Column(name: "FORM_CD", Order = 1)]
+
+        [Column(name: "form_cd", Order = 1)]
         public string FormCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 剤形
         /// </summary>
-        [Column(name: "FORM")]
+        [Column(name: "form")]
         [MaxLength(80)]
         public string? Form { get; set; } = string.Empty;
     }

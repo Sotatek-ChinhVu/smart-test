@@ -17,17 +17,17 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<RaiinKubunMstModel> GetList(bool isDeleted)
+        public List<RaiinKubunMstModel> GetList(int hpId, bool isDeleted)
         {
             List<RaiinKbnMst> raiinKubunMstList = NoTrackingDataContext.RaiinKbnMsts
-                .Where(r => isDeleted || r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && isDeleted || r.IsDeleted == 0)
                 .OrderBy(r => r.SortNo)
                 .ToList();
 
             List<int> groupIdList = raiinKubunMstList.Select(r => r.GrpCd).ToList();
 
             List<RaiinKbnDetail> raiinKubunDetailList = NoTrackingDataContext.RaiinKbnDetails
-                .Where(r => groupIdList.Contains(r.GrpCd) && (isDeleted || r.IsDeleted == 0))
+                .Where(r => r.HpId == hpId && groupIdList.Contains(r.GrpCd) && (isDeleted || r.IsDeleted == 0))
                 .ToList();
 
             List<RaiinKubunMstModel> result = new();
@@ -116,7 +116,7 @@ namespace Infrastructure.Repositories
 
 
             var itemCdList = query.Where(x => x.kbnItem != null).Select(item => item.kbnItem.ItemCd).Distinct().ToList();
-            var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.IsDeleted == 0 && itemCdList.Contains(item.ItemCd)).ToList();
+            var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0 && itemCdList.Contains(item.ItemCd)).ToList();
 
             var raiinKbnItemList = query.Where(x => x.kbnItem != null).Select(x => new RaiinKbnItemModel(
                 x.kbnItem.HpId,
@@ -173,11 +173,11 @@ namespace Infrastructure.Repositories
         public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId, int hpId)
         {
             List<string> result = new();
-            var currentKubunMstList = TrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunDetailList = TrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunKouiList = TrackingDataContext.RaiinKbnKouis.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunItemList = TrackingDataContext.RaiinKbItems.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunYoyakuList = TrackingDataContext.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunMstList = TrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var currentKubunDetailList = TrackingDataContext.RaiinKbnDetails.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var currentKubunKouiList = TrackingDataContext.RaiinKbnKouis.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var currentKubunItemList = TrackingDataContext.RaiinKbItems.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var currentKubunYoyakuList = TrackingDataContext.RaiinKbnYayokus.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
 
             result = ValidateRaiinKbnMst(raiinKubunMstModels);
 
@@ -254,10 +254,9 @@ namespace Infrastructure.Repositories
 
         public List<(string, string)> GetListColumnName(int hpId)
         {
-            var listRaiinKbnMst = NoTrackingDataContext.RaiinKbnMsts
-              .Where(item => item.HpId == hpId && item.IsDeleted == 0)
-              .OrderBy(item => item.SortNo)
-              .ToDictionary(item => item.GrpName ?? string.Empty, item => item.GrpCd);
+            var listRaiinKbnMst = NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0)
+                                                                    .OrderBy(item => item.SortNo)
+                                                                    .ToDictionary(item => item.GrpName ?? string.Empty, item => item.GrpCd);
 
             var listColumnName = new List<(string, string)>()
             {
@@ -265,12 +264,10 @@ namespace Infrastructure.Repositories
                 new("kanaName","カナ氏名"), new("name", "氏名"), new("sex", "性"), new("birthday","生年月日"), new("age", "年齢"),
                 new("nameDuplicateState", "読"),new("yoyakuTime", "予約時間"), new ("reservationName", "予約名"), new("uketukeSbtId", "受付種別"),
                 new("uketukeTime", "受付時間"), new("sinStartTime", "診察開始"), new("sinEndTime", "診察終了"), new("kaikeiTime", "精算時間"),
-                new("raiinCmt", "来院コメント"), new ("ptComment", "患者コメント"), new ("hokenPatternName", "保険"), new ("tantoId", "担当医"),
+                new("raiinCmt", "来院コメント"), new ("ptComment", "患者コメント"),  new ("tantoId", "担当医"),
                 new ("kaId", "診療科"), new("lastVisitDate", "前回来院"), new ("sname", "主治医"), new ("raiinRemark",
-                "備考"), new("confirmationState", "資格確認状況"), new ("confirmationResult", "資格確認結果")
+                "備考"), new("confirmationState", "資格確認状況"), new ("confirmationResult", "資格確認結果"), new ("infoConsFlg", "閲覧同意")
             };
-
-
 
             if (listRaiinKbnMst != null && listRaiinKbnMst.Count > 0)
             {
@@ -290,7 +287,7 @@ namespace Infrastructure.Repositories
         {
             var result = new List<(int, int, int, int)>();
             var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None);
-            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == hpId);
+            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts;
             var query = from raiinKouiKbn in raiinKouiKbns
                         join kouiKbnMst in kouiKbnMsts
                         on raiinKouiKbn.KouiKbnId equals kouiKbnMst.KouiKbnId
@@ -430,7 +427,7 @@ namespace Infrastructure.Repositories
             return raiinKbns;
         }
 
-        public IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, int raiinNo, int sinDate)
+        public IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, long raiinNo, int sinDate)
         {
             var raiinKbnMst = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == DeleteStatus.None && x.HpId == hpId).ToList();
 
@@ -506,29 +503,32 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if (existingEntity is null)
+                    if (kbnInfDto.KbnCd > 0)
                     {
-                        // Insert
-                        TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                        if (existingEntity is null)
                         {
-                            HpId = hpId,
-                            PtId = raiinInf.PtId,
-                            SinDate = raiinInf.SinDate,
-                            RaiinNo = raiinInf.RaiinNo,
-                            GrpId = kbnInfDto.GrpId,
-                            KbnCd = kbnInfDto.KbnCd,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            CreateId = userId
-                        });
-                    }
-                    else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
-                    {
-                        // Update
-                        existingEntity.KbnCd = kbnInfDto.KbnCd;
-                        existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        existingEntity.UpdateId = userId;
+                            // Insert
+                            TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                            {
+                                HpId = hpId,
+                                PtId = raiinInf.PtId,
+                                SinDate = raiinInf.SinDate,
+                                RaiinNo = raiinInf.RaiinNo,
+                                GrpId = kbnInfDto.GrpId,
+                                KbnCd = kbnInfDto.KbnCd,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                CreateId = userId
+                            });
+                        }
+                        else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
+                        {
+                            // Update
+                            existingEntity.KbnCd = kbnInfDto.KbnCd;
+                            existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            existingEntity.UpdateId = userId;
+                        }
                     }
                 }
             }

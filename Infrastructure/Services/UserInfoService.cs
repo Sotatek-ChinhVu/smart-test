@@ -57,6 +57,11 @@ namespace Infrastructure.Services
             return userInfo.Name ?? string.Empty;
         }
 
+        public List<UserMst> AllUserMstList(int hpId)
+        {
+            return _userInfoList.Where(i => i.HpId == hpId).ToList();
+        }
+
         public void Reload()
         {
             // check if cache exists, load data from cache

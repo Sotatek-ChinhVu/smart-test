@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M42_CONTRAINDI_DIS_CON")]
+    [Table(name: "m42_contraindi_dis_con")]
     public class M42ContraindiDisCon : EmrCloneable<M42ContraindiDisCon>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 病態コード
         /// BY で始まり5桁の数字が続く
         /// </summary>
-        
-        [Column("BYOTAI_CD", Order = 1)]
+
+        [Column("byotai_cd", Order = 1)]
         [MaxLength(7)]
         public string ByotaiCd { get; set; } = string.Empty;
 
@@ -20,7 +23,7 @@ namespace Entity.Tenant
         /// 標準化病態
         /// あれば原則、標準病名を設定。よく使われる同義語を（）内に記載
         /// </summary>
-        [Column("STANDARD_BYOTAI")]
+        [Column("standard_byotai")]
         [MaxLength(400)]
         public string? StandardByotai { get; set; } = string.Empty;
 
@@ -28,14 +31,14 @@ namespace Entity.Tenant
         /// 病態抽出区分
         /// 1:代表的病態　3:準代表的病態　7:詳細病態
         /// </summary>
-        [Column("BYOTAI_KBN")]
+        [Column("byotai_kbn")]
         public int ByotaiKbn { get; set; }
 
         /// <summary>
         /// 基本病名
         /// 標準化病態を、標準病名マスターにおける病名表記と照合し、対応する病名がある場合、これを設定する
         /// </summary>
-        [Column("BYOMEI")]
+        [Column("byomei")]
         [MaxLength(400)]
         public string? Byomei { get; set; } = string.Empty;
 
@@ -43,7 +46,7 @@ namespace Entity.Tenant
         /// ＩＣＤ１０コード
         /// 基本病名に対応するICD10コード
         /// </summary>
-        [Column("ICD10")]
+        [Column("icd10")]
         [MaxLength(5)]
         public string? Icd10 { get; set; } = string.Empty;
 
@@ -51,7 +54,7 @@ namespace Entity.Tenant
         /// レセ電算コード
         /// 基本病名に対応する傷病名のコード
         /// </summary>
-        [Column("RECE_CD")]
+        [Column("rece_cd")]
         [MaxLength(33)]
         public string? ReceCd { get; set; } = string.Empty;
 

@@ -20,7 +20,7 @@ namespace Interactor.MstItem
                 {
                     return new GetByomeiByCodeOutputData(new(), GetByomeiByCodeStatus.InvalidItemCd);
                 }
-                var data = _inputItemRepository.GetByomeiByCode(inputData.ByomeiCd);
+                var data = _inputItemRepository.GetByomeiByCode(inputData.HpId, inputData.ByomeiCd);
 
                 var item = new ByomeiMstItem(data?.Byomei ?? string.Empty);
 

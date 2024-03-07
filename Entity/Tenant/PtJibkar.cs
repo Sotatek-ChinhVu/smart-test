@@ -1,73 +1,73 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table("PT_JIBKAR")]
-    [Index(nameof(HpId), nameof(WebId), nameof(PtId), Name = "PT_JIBKAR_IDX01")]
+    [Table("pt_jibkar")]
+    [Index(nameof(HpId), nameof(WebId), nameof(PtId), Name = "pt_jibkar_idx01")]
     public class PtJibkar : EmrCloneable<PtJibkar>
     {
         
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         
-        [Column("WEB_ID", Order = 2)]
+        [Column("web_id", Order = 2)]
         [MaxLength(16)]
         public string WebId { get; set; } = string.Empty;
 
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
-        [Column("ODR_KAIJI")]
+        [Column("odr_kaiji")]
         [CustomAttribute.DefaultValue(0)]
         public int OdrKaiji { get; set; }
 
-        [Column("ODR_UPDATE_DATE")]
+        [Column("odr_update_date")]
         public DateTime OdrUpdateDate { get; set; }
 
-        [Column("KARTE_KAIJI")]
+        [Column("karte_kaiji")]
         [CustomAttribute.DefaultValue(0)]
         public int KarteKaiji { get; set; }
 
-        [Column("KARTE_UPDATE_DATE")]
+        [Column("karte_update_date")]
         public DateTime KarteUpdateDate { get; set; }
 
-        [Column("KENSA_KAIJI")]
+        [Column("kensa_kaiji")]
         [CustomAttribute.DefaultValue(0)]
         public int KensaKaiji { get; set; }
 
-        [Column("KENSA_UPDATE_DATE")]
+        [Column("kensa_update_date")]
         public DateTime KensaUpdateDate { get; set; }
 
-        [Column("BYOMEI_KAIJI")]
+        [Column("byomei_kaiji")]
         [CustomAttribute.DefaultValue(0)]
         public int ByomeiKaiji { get; set; }
 
-        [Column("BYOMEI_UPDATE_DATE")]
+        [Column("byomei_update_date")]
         public DateTime ByomeiUpdateDate { get; set; }
 
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

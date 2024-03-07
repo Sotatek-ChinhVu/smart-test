@@ -2,7 +2,7 @@
 {
     public class DeleteRevertStickyNoteRequest
     {
-        public int PtId { get; set; }
+        public long PtId { get; set; }
         public int SeqNo { get; set; }
     }
 }

@@ -5,13 +5,13 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Reporting.Calculate.Constants;
-using Reporting.Calculate.Ika.Models;
-using Reporting.Calculate.Interface;
-using Reporting.Calculate.ReceFutan.ViewModels;
-using Reporting.Calculate.Receipt.Constants;
-using Reporting.Calculate.Receipt.Models;
-using Reporting.Calculate.Receipt.ViewModels;
+using CalculateService.Constants;
+using CalculateService.Ika.Models;
+using CalculateService.Interface;
+using CalculateService.ReceFutan.ViewModels;
+using CalculateService.Receipt.Constants;
+using CalculateService.Receipt.Models;
+using CalculateService.Receipt.ViewModels;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -21,8 +21,8 @@ using Reporting.Receipt.Mapper;
 using Reporting.Receipt.Models;
 using Reporting.Structs;
 using static Helper.Common.CIUtil;
-using ReceFutanReceFutanKbnModel = Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel;
-using ReceFutanReceInfModel = Reporting.Calculate.ReceFutan.Models.ReceInfModel;
+using ReceFutanReceFutanKbnModel = CalculateService.ReceFutan.Models.ReceFutanKbnModel;
+using ReceFutanReceInfModel = CalculateService.ReceFutan.Models.ReceInfModel;
 
 namespace Reporting.Receipt.Service;
 
@@ -126,9 +126,9 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
     {
         try
         {
-            ReceFutanViewModel receFutanViewModel = new ReceFutanViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
+            ReceFutanViewModel receFutanViewModel = new ReceFutanViewModel(_tenantProvider, _systemConfigProvider, _emrLogger, null);
 
-            receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm);
+            receFutanViewModel.ReceFutanCalculateMain(hpId, new List<long> { ptId }, sinYm, string.Empty);
 
             var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
             if (receSeikyu != null)
@@ -138,14 +138,14 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                     var receInf = CoModelFinder.GetReceInf(hpId, ptId, hokenId, sinYm, receSeikyu.SeikyuYm);
                     if (receInf == null)
                     {
-                        receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, receSeikyu.SeikyuYm);
+                        receFutanViewModel.ReceFutanCalculateMain(hpId, new List<long> { ptId }, receSeikyu.SeikyuYm, string.Empty);
                         HokenId = hokenId;
                         SeikyuYm = receSeikyu.SeikyuYm;
                     }
                 }
                 else
                 {
-                    var receInfModels = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
+                    var receInfModels = receFutanViewModel.KaikeiTotalCalculate(hpId, ptId, sinYm);
                     var receFutanKbnModels = receFutanViewModel.ReceFutanKbns;
                     var receInf = receInfModels.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
                     if (receInf != null)
@@ -180,7 +180,7 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
             // ReceInf will not be NULL
             if (ReceInf == null)
             {
-                var receInf = listReceInf.FirstOrDefault(item => item.HpId == Session.HospitalID &&
+                var receInf = listReceInf.FirstOrDefault(item => item.HpId == hpId &&
                 item.SeikyuYm == SeikyuYm &&
                 item.PtId == ptId &&
                 item.SinYm == sinYm &&
@@ -198,7 +198,6 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         finally
         {
             _tenantProvider.DisposeDataContext();
-            _systemConfigProvider.ReleaseResource();
             _systemConfRepository.ReleaseResource();
             _accountingRepository.ReleaseResource();
             CoModelFinder.ReleaseResource();
@@ -280,7 +279,6 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         {
             CoModelFinder.ReleaseResource();
             _systemConfRepository.ReleaseResource();
-            _systemConfigProvider.ReleaseResource();
             _accountingRepository.ReleaseResource();
             _tenantProvider.DisposeDataContext();
         }
@@ -339,7 +337,6 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         {
             CoModelFinder.ReleaseResource();
             _systemConfRepository.ReleaseResource();
-            _systemConfigProvider.ReleaseResource();
             _accountingRepository.ReleaseResource();
             _tenantProvider.DisposeDataContext();
         }
@@ -1455,14 +1452,14 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                 tmpRaiinNos.Add(kaikeiDtl.RaiinNo);
                 tmpSyokeiGaku_I = kaikeiDtl.RousaiIFutan;
                 tmpSyokeiGaku_RO = kaikeiDtl.RousaiRoFutan;
-                tmpSyokei = kaikeiDtl.RousaiIFutan / receInf.HokenMst.EnTen;
+                tmpSyokei = kaikeiDtl.RousaiITensu;
             }
             else
             {
                 tmpRaiinNos.Add(kaikeiDtl.RaiinNo);
                 tmpSyokeiGaku_I += kaikeiDtl.RousaiIFutan;
                 tmpSyokeiGaku_RO += kaikeiDtl.RousaiRoFutan;
-                tmpSyokei += kaikeiDtl.RousaiIFutan / receInf.HokenMst.EnTen;
+                tmpSyokei += kaikeiDtl.RousaiITensu;
             }
         }
 
@@ -1484,7 +1481,7 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         if (rousaiReceiptModel != null)
         {
             rousaiReceiptModel.JituNissu = receInf.HokenNissu;
-            rousaiReceiptModel.Syokei = receInf.RousaiIFutan / (receInf.HokenMst.EnTen == 0 ? 1 : receInf.HokenMst.EnTen);
+            rousaiReceiptModel.Syokei = receInf.RousaiITensu;
             rousaiReceiptModel.SyokeiGaku_I = receInf.RousaiIFutan;
             rousaiReceiptModel.SyokeiGaku_RO = receInf.RousaiRoFutan;
 

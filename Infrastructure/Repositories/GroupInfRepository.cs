@@ -14,10 +14,10 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList)
+        public IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList, int hpId)
         {
-            var listGroupPatient = NoTrackingDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId)).ToList();
-            var listGroupDetailMst = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
+            var listGroupPatient = NoTrackingDataContext.PtGrpInfs.Where(x => x.HpId == hpId && x.IsDeleted == 0 && ptIdList.Contains(x.PtId)).ToList();
+            var listGroupDetailMst = NoTrackingDataContext.PtGrpItems.Where(p => p.HpId == hpId && p.IsDeleted == 0).ToList();
             var result =
                 (from groupPatient in listGroupPatient
                  join groupDetailMst in listGroupDetailMst
@@ -62,9 +62,9 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
-            var groupMstList = NoTrackingDataContext.PtGrpNameMsts.Where(p => p.IsDeleted == 0).ToList();
-            var groupDetailList = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
-            var dataPtGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId).ToList();
+            var groupMstList = NoTrackingDataContext.PtGrpNameMsts.Where(p => p.HpId == hpId && p.IsDeleted == 0).ToList();
+            var groupDetailList = NoTrackingDataContext.PtGrpItems.Where(p => p.HpId == hpId && p.IsDeleted == 0).ToList();
+            var dataPtGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.PtId == ptId).ToList();
             return dataPtGrpInfs.Select(x => ConvertToGroupInfModel(hpId, ptId, x, groupMstList, groupDetailList)).ToList();
         }
 
