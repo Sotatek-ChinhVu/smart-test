@@ -164,6 +164,7 @@ namespace Infrastructure.Repositories
 
         public UserMstModel? GetByLoginId(string loginId, string password)
         {
+            var temp123 = NoTrackingDataContext.UserMsts.Where(u => u.HpId == 3).Select(u => u.UserId).DefaultIfEmpty()?.Max();
             var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
             var entity = NoTrackingDataContext.UserMsts
                 .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
@@ -181,7 +182,7 @@ namespace Infrastructure.Repositories
         public int MaxUserId(int hpId)
         {
             // get data from UserMstList
-            return _userInfoService.AllUserMstList(hpId).DefaultIfEmpty()?.Max(u => u?.UserId) ?? 0;
+            return _userInfoService.AllUserMstList(hpId).Select(u => u.UserId).DefaultIfEmpty()?.Max() ?? 0;
         }
 
         public bool Upsert(int hpId, List<UserMstModel> upsertUserList, int userId)

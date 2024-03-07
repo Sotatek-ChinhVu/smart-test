@@ -972,6 +972,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             p.PtId == ptId &&
             p.SinYm >= startYm &&
             p.SinYm <= endYm &&
+            p.IsDeleted == 0 &&
             itemCds.Contains(p.ItemCd ?? string.Empty) &&
             p.FmtKbn != 10  // 在がん医総のダミー項目を除く
             );
@@ -994,7 +995,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
             var joinQuery = (
                 from sinKouiDetail in sinKouiDetails
-                join joinSinkouiCount in joinSinkouiWithSinKouiCount on
+                join joinSinkouiCount in joinSinkouiWithSinKouiCount.Where(p => p.SinKoui.IsNodspRece == 0) on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
                     new { joinSinkouiCount.SinKouiCount.HpId, joinSinkouiCount.SinKouiCount.PtId, joinSinkouiCount.SinKouiCount.SinYm, joinSinkouiCount.SinKouiCount.RpNo, joinSinkouiCount.SinKouiCount.SeqNo }
                 join sinRpInf in sinRpInfs on
@@ -1007,8 +1008,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     sinKouiDetail.SinYm <= endYm &&
                     itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
                     joinSinkouiCount.SinKouiCount.SinDate >= startDate &&
-                    joinSinkouiCount.SinKouiCount.SinDate <= endDate &&
-                    joinSinkouiCount.SinKouiCount.RaiinNo != raiinNo
+                    joinSinkouiCount.SinKouiCount.SinDate <= endDate 
                 group new { sinKouiDetail, joinSinkouiCount } by new { joinSinkouiCount.SinKouiCount.HpId } into A
                 select new { sum = A.Sum(a => (double)a.joinSinkouiCount.SinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
             );
@@ -3521,7 +3521,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         if (OdrDateInfList.Count != 0)
         {
-            grpIdMax = (NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).DefaultIfEmpty()?.Max(x => x.GrpId) ?? 0) + 1;
+            grpIdMax = (NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).Select(x => x.GrpId).DefaultIfEmpty()?.Max() ?? 0) + 1;
         }
         else
         {
@@ -3530,7 +3530,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         if (OdrDateDetailList.Count != 0)
         {
-            seqNoMax = (NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).DefaultIfEmpty()?.Max(x => x.SeqNo) ?? 0) + 1;
+            seqNoMax = (NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0) + 1;
         }
         else
         {

@@ -413,7 +413,9 @@
         public const string SaveReceSeikyu = "SaveReceSeikyu";
         public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
+        public const string RecalculateInSeikyuPending = "RecalculateInSeikyuPending";
         public const string GetReceSeikyModelByPtNum = "GetReceSeikyModelByPtNum";
+        public const string GetRecedenHenJiyuuList = "GetRecedenHenJiyuuList";
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";

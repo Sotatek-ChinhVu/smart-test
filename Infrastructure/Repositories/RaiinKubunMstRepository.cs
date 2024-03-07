@@ -264,7 +264,7 @@ namespace Infrastructure.Repositories
                 new("kanaName","カナ氏名"), new("name", "氏名"), new("sex", "性"), new("birthday","生年月日"), new("age", "年齢"),
                 new("nameDuplicateState", "読"),new("yoyakuTime", "予約時間"), new ("reservationName", "予約名"), new("uketukeSbtId", "受付種別"),
                 new("uketukeTime", "受付時間"), new("sinStartTime", "診察開始"), new("sinEndTime", "診察終了"), new("kaikeiTime", "精算時間"),
-                new("raiinCmt", "来院コメント"), new ("ptComment", "患者コメント"), new ("hokenPatternName", "保険"), new ("tantoId", "担当医"),
+                new("raiinCmt", "来院コメント"), new ("ptComment", "患者コメント"),  new ("tantoId", "担当医"),
                 new ("kaId", "診療科"), new("lastVisitDate", "前回来院"), new ("sname", "主治医"), new ("raiinRemark",
                 "備考"), new("confirmationState", "資格確認状況"), new ("confirmationResult", "資格確認結果"), new ("infoConsFlg", "閲覧同意")
             };
@@ -794,7 +794,7 @@ namespace Infrastructure.Repositories
 
         public int GetMaxGrpId(int hpId)
         {
-            return NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId).DefaultIfEmpty()?.Max(item => item.GrpCd) ?? 0;
+            return NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId).Select(item => item.GrpCd).DefaultIfEmpty()?.Max() ?? 0;
         }
 
         private int GetMaxKbnCd(int hpId, int grpId)
