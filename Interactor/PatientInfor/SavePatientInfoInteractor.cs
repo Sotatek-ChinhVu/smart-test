@@ -506,7 +506,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private void SplitName(string name, out string firstName, out string lastName)
+        public void SplitName(string name, out string firstName, out string lastName)
         {
             firstName = "";
             lastName = "";
@@ -532,7 +532,7 @@ namespace Interactor.PatientInfor
             }
         }
 
-        private bool IsValidAgeCheckConfirm(int ageCheck, int confirmDate, int birthDay, int sinDay)
+        public bool IsValidAgeCheckConfirm(int ageCheck, int confirmDate, int birthDay, int sinDay)
         {
             // 但し、2日生まれ以降の場合は翌月１日を誕生日とする。
             if (CIUtil.Copy(birthDay.AsString(), 7, 2) != "01")
