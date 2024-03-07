@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// ログインID
         /// </summary>
         [Column(name: "login_id")]
-        [MaxLength(20)]
+        [MaxLength(30)]
         [Required]
         public string? LoginId { get; set; } = string.Empty;
 
@@ -187,7 +187,7 @@ namespace Entity.Tenant
 
         [Column("id", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         [Column("login_type")]
         [CustomAttribute.DefaultValue(0)]
@@ -202,13 +202,26 @@ namespace Entity.Tenant
         public string? HpkiIssuerDn { get; set; } = string.Empty;
 
         [Column(name: "hash_password")]
-        public byte[]? HashPassword { get; set; } = new byte[0];
+        public string? HashPassword { get; set; } = string.Empty;
 
         /// <summary>
         /// 連携コード１
         /// </summary>
         [Column(name: "salt")]
         [MaxLength(14)]
-        public byte[]? Salt { get; set; } = new byte[0];
+        public string? Salt { get; set; } = string.Empty;
+
+        [Column(name: "email")]
+        [MaxLength(300)]
+        public string? Email { get; set; } = string.Empty;
+
+        [Column(name: "is_init_password")]
+        public int IsInitPassword { get; set; }
+
+        [Column(name: "miss_login_count")]
+        public int MissLoginCount { get; set; }
+
+        [Column(name: "status")]
+        public int Status { get; set; }
     }
 }
