@@ -163,7 +163,7 @@ namespace Interactor.PatientInfor
             return false;
         }
 
-        private IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
+        public IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
             bool isPatientTempotary = model.Patient.PtId == 0 && !model.Insurances.Any(x => x.IsDeleted == DeleteTypes.None);
