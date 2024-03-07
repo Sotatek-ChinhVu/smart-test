@@ -1,13 +1,9 @@
-﻿using CalculateService.Requests;
-using CloudUnitTest.SampleData;
+﻿using CloudUnitTest.SampleData;
 using Domain.Models.ChartApproval;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
-using Domain.Models.Santei;
 using Domain.Models.SystemConf;
-using Entity.SuperAdmin;
-using Entity.Tenant;
 using Infrastructure.Repositories;
 using Moq;
 
@@ -34,8 +30,17 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
             TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
-            var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
-            Assert.True(!result.Any());
+            try
+            {
+                var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
+                Assert.True(!result.Any());
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                todayOdrRepository.ReleaseResource();
+                #endregion
+            }
         }
 
         [Test]
@@ -59,8 +64,17 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
             TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
-            var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
-            Assert.True(!result.Any());
+            try
+            {
+                var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
+                Assert.True(!result.Any());
+            }            
+            finally
+            {
+                #region Remove Data Fetch
+                todayOdrRepository.ReleaseResource();
+                #endregion
+            }
         }
 
         [Test]
