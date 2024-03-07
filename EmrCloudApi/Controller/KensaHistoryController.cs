@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.KensaHistory;
 using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.KensaHistory;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KensaHistory.GetListKensaCmtMst;
@@ -17,11 +16,11 @@ using UseCase.KensaHistory.UpdateKensaSet;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class KensaHistoryController : AuthorizeControllerBase
+    public class KensaHistoryController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
 
-        public KensaHistoryController(UseCaseBus bus, IUserService userService) : base(userService)
+        public KensaHistoryController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

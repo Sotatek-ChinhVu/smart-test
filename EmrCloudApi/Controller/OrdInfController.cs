@@ -18,10 +18,10 @@ using UseCase.OrdInfs.ValidationInputItem;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class OrdInfController : AuthorizeControllerBase
+    public class OrdInfController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public OrdInfController(UseCaseBus bus, IUserService userService) : base(userService)
+        public OrdInfController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

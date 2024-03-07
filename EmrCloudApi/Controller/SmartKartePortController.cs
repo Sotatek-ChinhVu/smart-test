@@ -12,10 +12,10 @@ using UseCase.SmartKartePort.UpdatePort;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class SmartKartePortController : AuthorizeControllerBase
+    public class SmartKartePortController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SmartKartePortController(UseCaseBus bus, IUserService userService) : base(userService)
+        public SmartKartePortController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.RaiinKubun;
 using EmrCloudApi.Requests.RaiinKubun;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.RaiinKubun;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.RaiinKubunMst.GetList;
@@ -15,10 +14,10 @@ using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class RaiinKubunController : AuthorizeControllerBase
+    public class RaiinKubunController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public RaiinKubunController(UseCaseBus bus, IUserService userService) : base(userService)
+        public RaiinKubunController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

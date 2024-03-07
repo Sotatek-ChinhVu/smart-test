@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.KarteFilter;
 using EmrCloudApi.Requests.KarteFilter;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.KarteFilter;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KarteFilter.GetListKarteFilter;
@@ -12,10 +11,10 @@ using UseCase.KarteFilter.SaveListKarteFilter;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class KarteFilterController : AuthorizeControllerBase
+    public class KarteFilterController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public KarteFilterController(UseCaseBus bus, IUserService userService) : base(userService)
+        public KarteFilterController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

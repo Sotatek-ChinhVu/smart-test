@@ -4,26 +4,25 @@ using EmrCloudApi.Requests.Receipt;
 using EmrCloudApi.Requests.ReceiptCheck;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Receipt;
-using EmrCloudApi.Services;
+using EmrCloudApi.Responses.Receipt.Dto;
+using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR.Client;
 using System.Text;
 using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Receipt.Recalculation;
 using UseCase.ReceiptCheck.Recalculation;
 using UseCase.ReceiptCheck.ReceiptInfEdit;
-using EmrCloudApi.Responses.Receipt.Dto;
-using Microsoft.AspNetCore.SignalR.Client;
-using Infrastructure.Interfaces;
-using Helper.Constants;
 
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RecalculationController : AuthorizeControllerBase
+public class RecalculationController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
     private CancellationToken? _cancellationToken;
@@ -35,7 +34,7 @@ public class RecalculationController : AuthorizeControllerBase
     private bool stopCalculate = false;
     private bool allowNextStep = false;
 
-    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider, IMessenger messenger) : base(userService)
+    public RecalculationController(UseCaseBus bus, IConfiguration configuration, ITenantProvider tenantProvider, IMessenger messenger, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
         _tenantProvider = tenantProvider;

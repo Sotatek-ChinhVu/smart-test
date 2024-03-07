@@ -3,11 +3,11 @@ using Domain.Models.KensaIrai;
 using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
-using EmrCloudApi.Requests.ListSetMst;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
@@ -16,16 +16,13 @@ using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseNameMstSearch;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
-using EmrCloudApi.Services;
-using Helper.Extension;
 using Helper.Mapping;
-using Interactor.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
-using UseCase.ListSetMst.UpdateListSetMst;
 using UseCase.IsUsingKensa;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
 using UseCase.MstItem.CompareTenMst;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
@@ -35,6 +32,7 @@ using UseCase.MstItem.ExistUsedKensaItemCd;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
+using UseCase.MstItem.GetByomeiByCode;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
@@ -44,20 +42,22 @@ using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetListDrugImage;
-using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.MstItem.GetListKensaIjiSetting;
+using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
-using UseCase.MstItem.GetListYohoSetMstModelByUserID;
 using UseCase.MstItem.GetListUser;
+using UseCase.MstItem.GetListYohoSetMstModelByUserID;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiConf;
 using UseCase.MstItem.GetRenkeiMst;
+using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetSetNameMnt;
 using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 using UseCase.MstItem.GetTeikyoByomei;
+using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
@@ -66,8 +66,8 @@ using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.IsKensaItemOrdering;
 using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.SaveAddressMst;
-using UseCase.MstItem.SaveRenkei;
 using UseCase.MstItem.SaveCompareTenMst;
+using UseCase.MstItem.SaveRenkei;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.MstItem.SearchOTC;
@@ -83,24 +83,19 @@ using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UpdateJihiSbtMst;
 using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.UpdateSingleDoseMst;
+using UseCase.MstItem.UpdateYohoSetMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
-using Domain.Models.OrdInfDetails;
-using UseCase.MstItem.UpdateYohoSetMst;
-using UseCase.MstItem.GetTenMstByCode;
-using UseCase.MstItem.GetByomeiByCode;
-using UseCase.MstItem.GetRenkeiTiming;
-using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
 
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class MstItemController : AuthorizeControllerBase
+    public class MstItemController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
 
-        public MstItemController(UseCaseBus bus, IUserService userService) : base(userService)
+        public MstItemController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

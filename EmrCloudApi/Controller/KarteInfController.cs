@@ -5,7 +5,6 @@ using EmrCloudApi.Requests.KarteInf;
 using EmrCloudApi.Requests.KarteInfs;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.KarteInf;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KarteInf.ConvertTextToRichText;
@@ -14,10 +13,10 @@ using UseCase.KarteInf.GetList;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class KarteInfController : AuthorizeControllerBase
+    public class KarteInfController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public KarteInfController(UseCaseBus bus, IUserService userService) : base(userService)
+        public KarteInfController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

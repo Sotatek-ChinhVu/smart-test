@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.Schema;
 using EmrCloudApi.Requests.Schema;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Schema;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
@@ -13,10 +12,10 @@ using UseCase.Schema.SaveListFileTodayOrder;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class SchemaController : AuthorizeControllerBase
+    public class SchemaController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SchemaController(UseCaseBus bus, IUserService userService) : base(userService)
+        public SchemaController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

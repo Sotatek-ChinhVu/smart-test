@@ -13,11 +13,11 @@ using UseCase.JsonSetting.Upsert;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class JsonSettingController : AuthorizeControllerBase
+public class JsonSettingController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public JsonSettingController(UseCaseBus bus, IUserService userService) : base(userService)
+    public JsonSettingController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }
