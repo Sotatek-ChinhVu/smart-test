@@ -14,7 +14,7 @@ public interface IDrugInforRepository : IRepositoryBase
 
     bool CheckExistGrpCd(int hpId, List<int> grpCdList);
 
-    bool CheckExistKouiKbn(int hpId, List<int> kouiKbnIdList);
+    bool CheckExistKouiKbn(List<int> kouiKbnIdList);
 
     bool CheckExistSinrekiFilterMstKoui(int hpId, List<long> kouiSeqNoList);
 
@@ -22,5 +22,5 @@ public interface IDrugInforRepository : IRepositoryBase
 
     List<DrugUsageHistoryModel> GetDrugUsageHistoryList(int hpId, long ptId);
 
-    List<KouiKbnMstModel> GetKouiKbnMstList(int hpId);
+    List<KouiKbnMstModel> GetKouiKbnMstList();
 }

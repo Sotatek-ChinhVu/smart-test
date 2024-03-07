@@ -9,6 +9,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
+using Reporting.CommonMasters.Config;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
 
@@ -599,10 +600,229 @@ namespace Interactor.MedicalExamination
                     suryo += (item.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(odrDetail.ItemCd)) ? 1 : item.Suryo;
                 }
 
-                var densiSanteiKaisuModelFilters = densiSanteiKaisuModels.Where(d => d.ItemCd == santeiItemCd).ToList();
+                int hokenKbn = GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds);
 
-                checkSpecialItemList.AddRange(ExecuteDensiSantei(ptId, hpId, endDate, raiinNo, hokensyuHandling, sinDate, syosinDate, suryo, itemName, densiSanteiKaisuModelFilters, odrDetail, hokenIds, allOdrInfDetail, itemGrpMsts));
-                // チェック期間と表記を取得する
+                if (hokenKbn == 11 || hokenKbn == 12 || hokenKbn == 13 || (hokenKbn == 14 && _systemConfRepository?.GetSettingValue(3001, 0, hpId) == 1))
+                {
+                    densiSanteiKaisuModels = densiSanteiKaisuModels.FindAll(p => p.TargetKbn == 2 || p.TargetKbn == 0);
+                }
+                else
+                {
+                    densiSanteiKaisuModels = densiSanteiKaisuModels.FindAll(p => p.TargetKbn == 1 || p.TargetKbn == 0);
+                }
+
+                foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
+                {
+                    string sTerm = string.Empty;
+                    int startDate = 0;
+                    List<int> checkHokenKbnTmp = new List<int>();
+                    checkHokenKbnTmp.AddRange(GetCheckHokenKbns(GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds), hokensyuHandling));
+
+                    if (densiSanteiKaisu.TargetKbn == 1)
+                    {
+                        // 健保のみ対象の場合はすべて対象
+                    }
+                    else if (densiSanteiKaisu.TargetKbn == 2)
+                    {
+                        // 労災のみ対象の場合、健保は抜く
+                        checkHokenKbnTmp.RemoveAll(p => new int[] { 0 }.Contains(p));
+                    }
+
+                    List<int> checkSanteiKbnTmp = new List<int>();
+                    checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns(GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds), hokensyuHandling));
+
+                    switch (densiSanteiKaisu.UnitCd)
+                    {
+                        case 53:    //患者あたり
+                            sTerm = "患者あたり";
+                            break;
+                        case 121:   //1日
+                            startDate = sinDate;
+                            sTerm = "日";
+                            break;
+                        case 131:   //1月
+                            startDate = sinDate / 100 * 100 + 1;
+                            sTerm = "月";
+                            break;
+                        case 138:   //1週
+                            startDate = WeeksBefore(sinDate, 1);
+                            sTerm = "週";
+                            break;
+                        case 141:   //一連
+                            startDate = -1;
+                            sTerm = "一連";
+                            break;
+                        case 142:   //2週
+                            startDate = WeeksBefore(sinDate, 2);
+                            sTerm = "2週";
+                            break;
+                        case 143:   //2月
+                            startDate = MonthsBefore(sinDate, 1);
+                            sTerm = "2月";
+                            break;
+                        case 144:   //3月
+                            startDate = MonthsBefore(sinDate, 2);
+                            sTerm = "3月";
+                            break;
+                        case 145:   //4月
+                            startDate = MonthsBefore(sinDate, 3);
+                            sTerm = "4月";
+                            break;
+                        case 146:   //6月
+                            startDate = MonthsBefore(sinDate, 5);
+                            sTerm = "6月";
+                            break;
+                        case 147:   //12月
+                            startDate = MonthsBefore(sinDate, 11);
+                            sTerm = "12月";
+                            break;
+                        case 148:   //5年
+                            startDate = YearsBefore(sinDate, 5);
+                            sTerm = "5年";
+                            break;
+                        case 997:   //初診から1カ月（休日除く）
+                            if (allOdrInfDetail.Where(d => d != odrDetail).Count(p => _syosinls.Contains(p.ItemCd)) > 0)
+                            {
+                                // 初診関連項目を算定している場合、算定不可
+                                endDate = 99999999;
+                            }
+                            else
+                            {
+                                // 直近の初診日から１か月後を取得する（休日除く）
+                                endDate = syosinDate;
+                                endDate = _todayOdrRepository.MonthsAfterExcludeHoliday(hpId, endDate, 1);
+                            }
+                            break;
+                        case 998:   //初診から1カ月
+                            if (allOdrInfDetail.Where(d => d != odrDetail).Count(p => _syosinls.Contains(p.ItemCd)) > 0)
+                            {
+                                // 初診関連項目を算定している場合、算定不可
+                                endDate = 99999999;
+                            }
+                            else
+                            {
+                                // 直近の初診日から１か月後を取得する（休日除く）
+                                endDate = syosinDate;
+                                endDate = MonthsAfter(endDate, 1);
+                            }
+                            break;
+                        case 999:   //カスタム
+                            if (densiSanteiKaisu.TermSbt == 2)
+                            {
+                                //日
+                                startDate = DaysBefore(sinDate, densiSanteiKaisu.TermCount);
+                                if (densiSanteiKaisu.TermCount == 1)
+                                {
+                                    sTerm = "日";
+                                }
+                                else
+                                {
+                                    sTerm = densiSanteiKaisu.TermCount + "日";
+                                }
+                            }
+                            else if (densiSanteiKaisu.TermSbt == 3)
+                            {
+                                //週
+                                startDate = WeeksBefore(sinDate, densiSanteiKaisu.TermCount);
+                                if (densiSanteiKaisu.TermCount == 1)
+                                {
+                                    sTerm = "週";
+                                }
+                                else
+                                {
+                                    sTerm = densiSanteiKaisu.TermCount + "週";
+                                }
+                            }
+                            else if (densiSanteiKaisu.TermSbt == 4)
+                            {
+                                //月
+                                startDate = MonthsBefore(sinDate, densiSanteiKaisu.TermCount);
+                                if (densiSanteiKaisu.TermCount == 1)
+                                {
+                                    sTerm = "月";
+                                }
+                                else
+                                {
+                                    sTerm = densiSanteiKaisu.TermCount + "月";
+                                }
+                            }
+                            else if (densiSanteiKaisu.TermSbt == 5)
+                            {
+                                //年
+                                startDate = (sinDate / 10000 - (densiSanteiKaisu.TermCount - 1)) * 10000 + 101;
+                                if (densiSanteiKaisu.TermCount == 1)
+                                {
+                                    sTerm = "年間";
+                                }
+                                else
+                                {
+                                    sTerm = densiSanteiKaisu.TermCount + "年間";
+                                }
+                            }
+                            break;
+                        default:
+                            startDate = -1;
+                            break;
+                    }
+
+                    if (densiSanteiKaisu.UnitCd == 997 || densiSanteiKaisu.UnitCd == 998)
+                    {
+                        //初診から1カ月
+                        if (endDate > sinDate)
+                        {
+                            string conditionMsg = string.Empty;
+                            //算定不可
+                            if (densiSanteiKaisu.SpJyoken == 1)
+                            {
+                                conditionMsg = "算定できない可能性があります。";
+                            }
+                            else
+                            {
+                                conditionMsg = "算定できません。";
+                            }
+
+                            string errMsg = string.Format("'{0}' は、初診から1カ月以内のため、" + conditionMsg, odrDetail.ItemName);
+                            var checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
+                            checkSpecialItemList.Add(checkSpecialItem);
+                        }
+                    }
+                    else
+                    {
+                        double count = 0;
+                        if (startDate >= 0)
+                        {
+                            List<string> itemCds = new List<string>();
+
+                            if (densiSanteiKaisu.ItemGrpCd > 0)
+                            {
+                                // 項目グループの設定がある場合
+                                itemGrpMsts = _mstItemRepository.FindItemGrpMst(hpId, sinDate, 1, densiSanteiKaisuModels.Select(x => x.ItemGrpCd).ToList());
+                            }
+
+                            if (itemGrpMsts != null && itemGrpMsts.Any())
+                            {
+                                // 項目グループの設定がある場合
+                                itemCds.AddRange(itemGrpMsts.Select(x => x.ItemCd));
+                            }
+                            else
+                            {
+                                itemCds.Add(odrDetail.ItemCd);
+                            }
+
+                            count = _todayOdrRepository.SanteiCount(hpId, ptId, startDate, endDate, sinDate, raiinNo, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
+                        }
+                        if (densiSanteiKaisu.MaxCount <= count // 上限値を超えるかチェックする
+                        || densiSanteiKaisu.MaxCount < count + suryo) // 今回分を足すと超えてしまう場合は注意（MaxCount = count + konkaiSuryoはセーフ）
+                        {
+                            string errMsg = $"\"{itemName}\" {sTerm}{count + suryo}回算定({densiSanteiKaisu.MaxCount}回まで)";
+                            if (!checkSpecialItemList.Any(p => p.CheckingContent == errMsg))
+                            {
+                                CheckedSpecialItem checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
+                                checkSpecialItemList.Add(checkSpecialItem);
+                            }
+                        }
+                    }
+                }
                 checkedItem.Add(odrDetail.ItemCd);
             }
 

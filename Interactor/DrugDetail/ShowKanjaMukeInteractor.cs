@@ -20,7 +20,7 @@ public class ShowKanjaMukeInteractor : IShowKanjaMukeInputPort
             {
                 return new ShowKanjaMukeOutputData(string.Empty, ShowKanjaMukeStatus.InvalidLevel);
             }
-            string result = _getCommonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+            string result = _getCommonDrugInf.ShowKanjaMuke(inputData.HpId, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
             return new ShowKanjaMukeOutputData(result, ShowKanjaMukeStatus.Successed);
         }
         finally

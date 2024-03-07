@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Futan;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Receipt.Models;
+using CalculateService.Ika.Models;
+using CalculateService.Receipt.Models;
 
 namespace EmrCalculateApi.Responses
 {

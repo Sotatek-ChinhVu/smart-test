@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "PI_INF_DETAIL")]
+    [Table(name: "pi_inf_detail")]
     public class PiInfDetail : EmrCloneable<PiInfDetail>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 添付文書ID
         /// 
         /// </summary>
-        
-        [Column("PI_ID", Order = 1)]
+
+        [Column("pi_id", Order = 1)]
         [MaxLength(6)]
         public string PiId { get; set; } = string.Empty;
 
@@ -22,7 +25,7 @@ namespace Entity.Tenant
         /// 添付文書単位の情報の場合、「999」をセット"
         /// </summary>
         
-        [Column("BRANCH", Order = 2)]
+        [Column("branch", Order = 2)]
         [MaxLength(3)]
         public string Branch { get; set; } = string.Empty;
 
@@ -31,7 +34,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("JPN", Order = 3)]
+        [Column("jpn", Order = 3)]
         [MaxLength(6)]
         public string Jpn { get; set; } = string.Empty;
 
@@ -40,21 +43,21 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no", Order = 4)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 階層
         /// 
         /// </summary>
-        [Column("LEVEL")]
+        [Column("level")]
         public int Level { get; set; }
 
         /// <summary>
         /// 内容
         /// 
         /// </summary>
-        [Column("TEXT")]
+        [Column("text")]
         public string? Text { get; set; } = string.Empty;
     }
 }

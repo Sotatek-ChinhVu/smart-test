@@ -33,13 +33,13 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceCheckErrModel> GetReceCheckErrList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList);
 
-    List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm);
+    List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int hpId, int sinYm);
 
     bool CheckExisReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
 
     List<SokatuMstModel> GetSokatuMstModels(int hpId, int SeikyuYm);
 
-    bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
+    bool CheckExistSyoukiKbn(int hpId, int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
 
     bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
 
@@ -127,7 +127,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceInfForCheckErrSwapHokenModel> GetReceInforCheckErrForCalculateSwapHoken(int hpId, List<long> ptIds, int sinYM);
 
-    bool HasErrorCheck(int sinYm, long ptId, int hokenId);
+    bool HasErrorCheck(int hpId, int sinYm, long ptId, int hokenId);
 
     bool SaveReceStatusCalc(List<ReceStatusModel> newReceStatus, List<ReceStatusModel> updateList, int userId, int hpId);
 

@@ -4,10 +4,12 @@ namespace UseCase.MstItem.GetByomeiByCode
 {
     public sealed class GetByomeiByCodeInputData : IInputData<GetByomeiByCodeOutputData>
     {
-        public GetByomeiByCodeInputData(string byomeiCd)
+        public GetByomeiByCodeInputData(int hpId, string byomeiCd)
         {
+            HpId = hpId;
             ByomeiCd = byomeiCd;
         }
-        public string ByomeiCd {  get; private set; }
+        public int HpId { get; private set; }
+        public string ByomeiCd { get; private set; }
     }
 }

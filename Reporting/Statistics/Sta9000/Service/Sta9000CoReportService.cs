@@ -9,9 +9,7 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta9000.DB;
 using Reporting.Statistics.Sta9000.Mapper;
 using Reporting.Statistics.Sta9000.Models;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Text;
 
 namespace Reporting.Statistics.Sta9000.Service;
 
@@ -405,12 +403,10 @@ public class Sta9000CoReportService : ISta9000CoReportService
     private readonly List<Dictionary<string, CellModel>> _tableFieldData = new();
     private readonly ICoSta9000Finder _finder;
     private readonly IReadRseReportFileService _readRseReportFileService;
-    private readonly ICoSta9000Finder _coSta9000Finder;
-    public Sta9000CoReportService(ICoSta9000Finder finder, IReadRseReportFileService readRseReportFileService, ICoSta9000Finder coSta9000Finder)
+    public Sta9000CoReportService(ICoSta9000Finder finder, IReadRseReportFileService readRseReportFileService)
     {
         _finder = finder;
         _readRseReportFileService = readRseReportFileService;
-        _coSta9000Finder = coSta9000Finder;
     }
 
     private int reportType;
@@ -751,9 +747,6 @@ public class Sta9000CoReportService : ISta9000CoReportService
 
         void MakePrintData()
         {
-
-            var ptInfs = _coSta9000Finder.GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf, ptIds);
-
             printDatas = new List<CoSta9000PrintData>();
 
             //ソート順
@@ -1097,7 +1090,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
         if (reportType == 1)
         {
             drugOdrs = _finder.GetDrugOrders(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-            ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+            ptByomeis = _finder.GetPtByomeis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         }
         //患者来院歴一覧用データ取得
         else if (reportType == 3)
@@ -1111,7 +1104,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 ptHokens = _finder.GetPtHokens(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 2:
-                ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                ptByomeis = _finder.GetPtByomeis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 3:
                 raiinInfs = _finder.GetRaiinInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
@@ -1483,7 +1476,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
         if (reportType == 1)
         {
             drugOdrs = _finder.GetDrugOrders(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-            ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+            ptByomeis = _finder.GetPtByomeis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         }
         //患者来院歴一覧用データ取得
         else if (reportType == 3)
@@ -1497,7 +1490,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 ptHokens = _finder.GetPtHokens(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 2:
-                ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                ptByomeis = _finder.GetPtByomeis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 3:
                 raiinInfs = _finder.GetRaiinInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);

@@ -2,16 +2,35 @@
 using Domain.Models.VisitingListSetting;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 
 namespace Infrastructure.Repositories;
 
 public class VisitingListSettingRepository : RepositoryBase, IVisitingListSettingRepository
 {
-    public VisitingListSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly IDatabase _cache;
+    private readonly string getListSystemConfigKey;
+    private readonly IConfiguration _configuration;
+    public VisitingListSettingRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
+        getListSystemConfigKey = GetDomainKey() + CacheKeyConstant.GetListSystemConf;
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
 
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     public void ReleaseResource()
@@ -23,13 +42,19 @@ public class VisitingListSettingRepository : RepositoryBase, IVisitingListSettin
     {
         ModifySystemConfs(systemConfModels, hpId, userId);
         TrackingDataContext.SaveChanges();
+        var keySystemConfig = getListSystemConfigKey + "_" + hpId;
+        // Remove cache when save system setting
+        if (_cache.KeyExists(keySystemConfig))
+        {
+            _cache.KeyDelete(keySystemConfig);
+        }
     }
 
     private void ModifySystemConfs(List<SystemConfModel> confModels, int hpId, int userId)
     {
         var existingConfigs = TrackingDataContext.SystemConfs
-            .Where(s => s.GrpCd == SystemConfGroupCodes.ReceptionTimeColor
-                || s.GrpCd == SystemConfGroupCodes.ReceptionStatusColor).ToList();
+            .Where(s => s.HpId == hpId && (s.GrpCd == SystemConfGroupCodes.ReceptionTimeColor
+                || s.GrpCd == SystemConfGroupCodes.ReceptionStatusColor)).ToList();
         var configsToInsert = new List<SystemConf>();
 
         foreach (var model in confModels)

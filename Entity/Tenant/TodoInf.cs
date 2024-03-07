@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "TODO_INF")]
+    [Table(name: "todo_inf")]
     public class TodoInf : EmrCloneable<TodoInf>
     {
         /// <summary>
@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -19,77 +19,77 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("TODO_NO", Order = 2)]
+        [Column("todo_no", Order = 2)]
         public int TodoNo { get; set; }
 
         /// <summary>
         /// TODO枝番 
         /// </summary>
         
-        [Column("TODO_EDA_NO", Order = 3)]
+        [Column("todo_eda_no", Order = 3)]
         public int TodoEdaNo { get; set; }
 
         /// <summary>
         /// 患者ID 
         /// </summary>
         
-        [Column("PT_ID", Order = 4)]
+        [Column("pt_id", Order = 4)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日 
         /// </summary>
-        [Column("SIN_DATE")]
+        [Column("sin_date")]
         public int SinDate { get; set; }
 
         /// <summary>
         /// 予約番号 
         /// </summary>
-        [Column("RAIIN_NO")]
+        [Column("raiin_no")]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// TODO区分番号 
         /// </summary>
-        [Column("TODO_KBN_NO")]
+        [Column("todo_kbn_no")]
         public int TodoKbnNo { get; set; }
 
         /// <summary>
         /// TODO分類番号 
         /// </summary>
-        [Column("TODO_GRP_NO")]
+        [Column("todo_grp_no")]
         public int TodoGrpNo { get; set; }
 
         /// <summary>
         /// 担当 
         /// </summary>
-        [Column("TANTO")]
+        [Column("tanto")]
         [CustomAttribute.DefaultValue(0)]
         public int Tanto { get; set; }
 
         /// <summary>
         /// 期限 
         /// </summary>
-        [Column("TERM")]
+        [Column("term")]
         public int Term { get; set; }
 
         /// <summary>
         /// コメント１ 
         /// </summary>
-        [Column("CMT1")]
+        [Column("cmt1")]
         public string? Cmt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント２ 
         /// </summary>
-        [Column("CMT2")]
+        [Column("cmt2")]
         public string? Cmt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 済
         /// 1: 済み
         /// </summary>
-        [Column("IS_DONE")]
+        [Column("is_done")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDone { get; set; }
 
@@ -97,47 +97,47 @@ namespace Entity.Tenant
         /// 削除フラグ
         /// 1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

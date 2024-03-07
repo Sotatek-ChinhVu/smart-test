@@ -24,7 +24,7 @@ public class UpsertJsonSettingInteractor : IUpsertJsonSettingInputPort
         try
         {
             string jsonString = JsonSerializer.Serialize(input.Setting.Value);
-            var setting = new JsonSettingModel(input.Setting.UserId, input.Setting.Key, jsonString);
+            var setting = new JsonSettingModel(input.HpId, input.Setting.UserId, input.Setting.Key, jsonString);
             _jsonSettingRepository.Upsert(setting);
 
             return new UpsertJsonSettingOutputData(UpsertJsonSettingStatus.Success);

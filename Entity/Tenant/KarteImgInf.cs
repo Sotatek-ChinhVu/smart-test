@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "KARTE_IMG_INF")]
+    [Table(name: "karte_img_inf")]
     public class KarteImgInf : EmrCloneable<KarteImgInf>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ID", Order = 1)]
+        [Column("id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
@@ -20,28 +20,28 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 来院番号
         /// 
         /// </summary>
-        [Column("RAIIN_NO")]
+        [Column("raiin_no")]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// カルテ区分
         /// KARTE_KBN_MST.KARTE_KBN
         /// </summary>
-        [Column("KARTE_KBN")]
+        [Column("karte_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KarteKbn { get; set; }
 
@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Column("SEQ_NO")]
+        [Column("seq_no")]
         [CustomAttribute.DefaultValue(1)]
         public long SeqNo { get; set; }
 
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// 表示位置
         /// 
         /// </summary>
-        [Column("POSITION")]
+        [Column("position")]
         [CustomAttribute.DefaultValue(0)]
         public long Position { get; set; }
 
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// ファイル名
         /// 
         /// </summary>
-        [Column("FILE_NAME")]
+        [Column("file_name")]
         [MaxLength(100)]
         public string? FileName { get; set; } = string.Empty;
 
@@ -73,33 +73,33 @@ namespace Entity.Tenant
         /// メッセージ
         /// 
         /// </summary>
-        [Column("MESSAGE")]
+        [Column("message")]
         [MaxLength(2000)]
         public string? Message { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
     }

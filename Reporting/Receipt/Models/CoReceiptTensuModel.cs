@@ -1,5 +1,5 @@
-﻿using Reporting.Calculate.Constants;
-using Reporting.Calculate.Receipt.ViewModels;
+﻿using CalculateService.Constants;
+using CalculateService.Receipt.ViewModels;
 
 namespace Reporting.Receipt.Models
 {

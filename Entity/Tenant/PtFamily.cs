@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,8 +7,8 @@ namespace Entity.Tenant
     /// <summary>
     /// 家族情報
     /// </summary>
-    [Table(name: "PT_FAMILY")]
-    [Index(nameof(FamilyId), nameof(PtId), nameof(FamilyPtId), Name = "PT_FAMILY_IDX01")]
+    [Table(name: "pt_family")]
+    [Index(nameof(FamilyId), nameof(PtId), nameof(FamilyPtId), Name = "pt_family_idx01")]
     public class PtFamily : EmrCloneable<PtFamily>
     {
         /// <summary>
@@ -16,34 +16,34 @@ namespace Entity.Tenant
         ///     患者の家族を識別するための番号
         /// </summary>
         
-        [Column("FAMILY_ID", Order = 1)]
+        [Column("family_id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long FamilyId { get; set; }
 
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         ///     患者を識別するためのシステム固有の番号
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Column("SEQ_NO")]
+        [Column("seq_no")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
 
         /// <summary>
         /// 続柄コード
         /// </summary>
-        [Column("ZOKUGARA_CD")]
+        [Column("zokugara_cd")]
         [Required]
         [MaxLength(10)]
         public string? ZokugaraCd { get; set; } = string.Empty;
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 並び順
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SortNo { get; set; }
 
@@ -59,28 +59,28 @@ namespace Entity.Tenant
         /// 親ID
         ///     孫の親の家族ID
         /// </summary>
-        [Column("PARENT_ID")]
+        [Column("parent_id")]
         [CustomAttribute.DefaultValue(0)]
         public int ParentId { get; set; }
 
         /// <summary>
         /// 家族患者ID
         /// </summary>
-        [Column("FAMILY_PT_ID")]
+        [Column("family_pt_id")]
         [CustomAttribute.DefaultValue(0)]
         public long FamilyPtId { get; set; }
 
         /// <summary>
         /// カナ氏名
         /// </summary>
-        [Column("KANA_NAME")]
+        [Column("kana_name")]
         [MaxLength(100)]
         public string? KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 氏名
         /// </summary>
-        [Column("NAME")]
+        [Column("name")]
         [MaxLength(100)]
         public string? Name { get; set; } = string.Empty;
 
@@ -89,14 +89,14 @@ namespace Entity.Tenant
         ///     1:男
         ///     2:女
         /// </summary>
-        [Column("SEX")]
+        [Column("sex")]
         public int Sex { get; set; }
 
         /// <summary>
         /// 生年月日
         ///     yyyymmdd
         /// </summary>
-        [Column("BIRTHDAY")]
+        [Column("birthday")]
         public int Birthday { get; set; }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Entity.Tenant
         ///     1:死亡
         ///     2:消息不明
         /// </summary>
-        [Column("IS_DEAD")]
+        [Column("is_dead")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDead { get; set; }
 
@@ -113,14 +113,14 @@ namespace Entity.Tenant
         /// 別居フラグ
         ///     1:別居
         /// </summary>
-        [Column("IS_SEPARATED")]
+        [Column("is_separated")]
         [CustomAttribute.DefaultValue(0)]
         public int IsSeparated { get; set; }
 
         /// <summary>
         /// 備考
         /// </summary>
-        [Column("BIKO")]
+        [Column("biko")]
         [MaxLength(120)]
         public string? Biko { get; set; } = string.Empty;
 
@@ -128,7 +128,7 @@ namespace Entity.Tenant
         /// 削除区分
         ///     1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -136,14 +136,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -151,27 +151,27 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

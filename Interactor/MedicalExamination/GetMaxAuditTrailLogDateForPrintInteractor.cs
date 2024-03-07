@@ -16,6 +16,10 @@ namespace Interactor.MedicalExamination
         {
             try
             {
+                if (inputData.HpId < 0)
+                {
+                    return new GetMaxAuditTrailLogDateForPrintOutputData(new(), GetMaxAuditTrailLogDateForPrintStatus.InvalidHpId);
+                }
                 if (inputData.PtId < 0)
                 {
                     return new GetMaxAuditTrailLogDateForPrintOutputData(new(), GetMaxAuditTrailLogDateForPrintStatus.InvalidPtId);
@@ -28,7 +32,7 @@ namespace Interactor.MedicalExamination
                 {
                     return new GetMaxAuditTrailLogDateForPrintOutputData(new(), GetMaxAuditTrailLogDateForPrintStatus.InvalidSinDate);
                 }
-                var result = _medicalRepository.GetMaxAuditTrailLogDateForPrint(inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+                var result = _medicalRepository.GetMaxAuditTrailLogDateForPrint(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
 
                 return new GetMaxAuditTrailLogDateForPrintOutputData(result, GetMaxAuditTrailLogDateForPrintStatus.Successed);
             }

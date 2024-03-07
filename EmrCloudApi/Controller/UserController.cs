@@ -5,6 +5,7 @@ using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.User;
 using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
@@ -16,6 +17,7 @@ using UseCase.User.GetListJobMst;
 using UseCase.User.GetListUserByCurrentUser;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.SaveListUserMst;
+using UseCase.User.UpdateHashPassword;
 using UseCase.User.UpsertList;
 using UseCase.User.UserInfo;
 
@@ -46,7 +48,7 @@ public class UserController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetUserListResponse>> GetList([FromQuery] GetUserListRequest req)
     {
-        var input = new GetUserListInputData(req.SinDate, req.IsDoctorOnly, req.IsAll);
+        var input = new GetUserListInputData(HpId, req.SinDate, req.IsDoctorOnly, req.IsAll);
         var output = _bus.Handle(input);
 
         var presenter = new GetUserListPresenter();
@@ -59,7 +61,7 @@ public class UserController : AuthorizeControllerBase
     public ActionResult<Response<UpsertUserResponse>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
         var upsertUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u, HpId)).ToList();
-        var input = new UpsertUserListInputData(upsertUserList, UserId);
+        var input = new UpsertUserListInputData(HpId, upsertUserList, UserId);
         var output = _bus.Handle(input);
         var presenter = new UpsertUserListPresenter();
         presenter.Complete(output);
@@ -91,7 +93,7 @@ public class UserController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetListUserByCurrentUser)]
-    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser([FromQuery]GetListUserByCurrentUserRequest request)
+    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser([FromQuery] GetListUserByCurrentUserRequest request)
     {
         var input = new GetListUserByCurrentUserInputData(HpId, UserId, request.ManagerKbn);
         var output = _bus.Handle(input);
@@ -125,7 +127,7 @@ public class UserController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetListFunctionPermission)]
     public ActionResult<Response<GetListFunctionPermissionResponse>> GetListFunctionPermission()
     {
-        var input = new GetListFunctionPermissionInputData();
+        var input = new GetListFunctionPermissionInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetListFunctionPermissionPresenter();
         presenter.Complete(output);
@@ -201,6 +203,18 @@ public class UserController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetUserInfoResponse>>(presenter.Result);
+    }
+
+    [HttpGet("UpdateHashPassword")]
+    public ActionResult<Response<UpdateHashPasswordResponse>> UpdateHashPassword()
+    {
+        var input = new UpdateHashPasswordInputData();
+        var output = _bus.Handle(input);
+        var presenter = new UpdateHashPasswordPresenter();
+
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateHashPasswordResponse>>(presenter.Result);
     }
 
 }

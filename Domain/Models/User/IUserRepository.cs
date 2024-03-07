@@ -8,45 +8,37 @@ namespace Domain.Models.User
     {
         void Create(UserMstModel user);
 
-        UserMstModel Read(int userId);
+        IEnumerable<UserMstModel> GetDoctorsList(int hpId, int userId);
 
-        void Update(UserMstModel user);
+        IEnumerable<UserMstModel> GetDoctorsList(int hpId, List<int> userIds);
 
-        void Delete(int userId);
+        IEnumerable<UserMstModel> GetListAnyUser(int hpId, List<int> userIds);
 
-        IEnumerable<UserMstModel> GetDoctorsList(int userId);
+        List<UserMstModel> GetAll(int hpId, int sinDate, bool isDoctorOnly, bool isAll);
 
-        IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds);
+        int MaxUserId(int hpId);
 
-        IEnumerable<UserMstModel> GetListAnyUser(List<int> userIds);
+        UserMstModel GetByUserId(int hpId, int userId);
 
-        IEnumerable<UserMstModel> GetAll();
+        UserMstModel GetByUserId(int hpId, int userId, int sinDate);
 
-        List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll);
+        UserMstModel? GetByLoginId(string loginId, string password);
 
-        int MaxUserId();
+        bool CheckExistedId(int hpId, List<long> ids);
 
-        UserMstModel GetByUserId(int userId);
+        bool Upsert(int hpId, List<UserMstModel> upsertUserList, int userId);
 
-        UserMstModel GetByUserId(int userId, int sinDate);
+        bool CheckExistedUserId(int hpId, int userId);
 
-        UserMstModel? GetByLoginId(string loginId);
+        bool CheckExistedUserIdCreate(int hpId, List<int> userIds);
 
-        bool CheckExistedId(List<long> ids);
+        bool CheckExistedUserIdUpdate(int hpId, List<long> ids, List<int> userIds);
 
-        bool Upsert(List<UserMstModel> upsertUserList, int userId);
+        bool CheckExistedLoginIdCreate(int hpId, List<string> loginIds);
 
-        bool CheckExistedUserId(int userId);
+        bool CheckExistedJobCd(int hpId, List<int> jobCds);
 
-        bool CheckExistedUserIdCreate(List<int> userIds);
-
-        bool CheckExistedUserIdUpdate(List<long> ids, List<int> userIds);
-
-        bool CheckExistedLoginIdCreate(List<string> loginIds);
-
-        bool CheckExistedJobCd(List<int> jobCds);
-
-        bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds);
+        bool CheckExistedLoginIdUpdate(int hpId, List<long> ids, List<string> loginIds);
 
         bool CheckLoginInfo(string userName, string password);
 
@@ -64,9 +56,9 @@ namespace Domain.Models.User
 
         bool SaveListUserMst(int hpId, List<UserMstModel> users, int currentUser);
 
-        bool GetShowRenkeiCd1ColumnSetting();
+        bool GetShowRenkeiCd1ColumnSetting(int hpId);
 
-        bool UserIdIsExistInDb(int userId);
+        bool UserIdIsExistInDb(int hpId, int userId);
 
         List<int> ListDepartmentValid(int hpId);
 
@@ -74,10 +66,16 @@ namespace Domain.Models.User
 
         List<JobMstModel> GetListJob(int hpId);
 
-        List<FunctionMstModel> GetListFunctionPermission();
+        List<FunctionMstModel> GetListFunctionPermission(int hpId);
 
         UserMstModel GetUserInfo(int hpId, int userId);
 
         List<UserMstModel> GetUsersByPermission(int hpId, int managerKbn);
+
+        void UpdateHashPassword();
+
+        byte[] GenerateSalt();
+
+        byte[] CreateHash(byte[] password, byte[] salt);
     }
 }

@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RENKEI_REQ")]
+    [Table(name: "renkei_req")]
     public class RenkeiReq : EmrCloneable<RenkeiReq>
     {
         /// <summary>
@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("REQ_ID", Order = 1)]
+        [Column("req_id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ReqId { get; set; }
 
@@ -19,21 +19,21 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 来院番号
         /// 
         /// </summary>
-        [Column("RAIIN_NO")]
+        [Column("raiin_no")]
         [CustomAttribute.DefaultValue(0)]
         public long RaiinNo { get; set; }
 
@@ -41,14 +41,14 @@ namespace Entity.Tenant
         /// 要求種別
         /// 1:患者情報　2:来院情報　3:クリア　4:診察中　5:診察済み
         /// </summary>
-        [Column("REQ_SBT")]
+        [Column("req_sbt")]
         public int ReqSbt { get; set; }
 
         /// <summary>
         /// 更新タイプ
         /// I:追加　U:更新　D:削除
         /// </summary>
-        [Column("REQ_TYPE")]
+        [Column("req_type")]
         [MaxLength(2)]
         public string? ReqType { get; set; } = string.Empty;
 
@@ -56,7 +56,7 @@ namespace Entity.Tenant
         /// ステータス
         /// 0:未処理　1:処理中　8:エラー　9:正常終了
         /// </summary>
-        [Column("STATUS")]
+        [Column("status")]
         [CustomAttribute.DefaultValue(0)]
         public int Status { get; set; }
 
@@ -64,7 +64,7 @@ namespace Entity.Tenant
         /// エラーメッセージ
         /// 
         /// </summary>
-        [Column("ERR_MST")]
+        [Column("err_mst")]
         [MaxLength(120)]
         public string? ErrMst { get; set; } = string.Empty;
 
@@ -72,21 +72,21 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -94,21 +94,21 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

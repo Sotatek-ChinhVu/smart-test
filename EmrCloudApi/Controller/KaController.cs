@@ -27,7 +27,7 @@ public class KaController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList + "Mst")]
     public ActionResult<Response<GetKaMstListResponse>> GetListMst(int isDeleted)
     {
-        var input = new GetKaMstListInputData(isDeleted);
+        var input = new GetKaMstListInputData(HpId, isDeleted);
         var output = _bus.Handle(input);
         var presenter = new GetKaMstListPresenter();
         presenter.Complete(output);
@@ -37,7 +37,7 @@ public class KaController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetListKaCode)]
     public ActionResult<Response<GetKaCodeMstListResponse>> GetListKaCodeMst()
     {
-        var input = new GetKaCodeMstInputData();
+        var input = new GetKaCodeMstInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetKaCodeMstListPresenter();
         presenter.Complete(output);
@@ -57,7 +57,7 @@ public class KaController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetKaCodeMstYossi)]
     public ActionResult<Response<GetKaCodeMstListResponse>> GetKaCodeMstYossi()
     {
-        var input = new GetKacodeMstYossiInputData();
+        var input = new GetKacodeMstYossiInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetKaCodeMstYossiPresenter();
         presenter.Complete(output);
@@ -67,7 +67,7 @@ public class KaController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetKaCodeYousikiMst)]
     public ActionResult<Response<GetKaCodeYousikiMstResponse>> GetKaCodeYousikiMst()
     {
-        var input = new GetKaCodeYousikiMstInputData();
+        var input = new GetKaCodeYousikiMstInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetKaCodeYousikiMstPresenter();
         presenter.Complete(output);

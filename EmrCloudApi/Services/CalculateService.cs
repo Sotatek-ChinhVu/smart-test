@@ -63,7 +63,6 @@ namespace EmrCloudApi.Services
             try
             {
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
-
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
                 if (response.IsSuccessStatusCode)
                 {
@@ -118,6 +117,7 @@ namespace EmrCloudApi.Services
             try
             {
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
+                //_httpClient.Timeout = new TimeSpan(5, 0, 0);
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, cancellationToken);
                 if (response.IsSuccessStatusCode)
                 {
@@ -144,7 +144,7 @@ namespace EmrCloudApi.Services
 
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                     return new();
-
+                Console.WriteLine("Step-Debug" + task.Result.ResponseMessage + task.Result.ResponseStatus);
                 var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result ?? new();
             }

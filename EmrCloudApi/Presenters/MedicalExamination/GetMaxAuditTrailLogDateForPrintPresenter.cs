@@ -31,6 +31,9 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                 case GetMaxAuditTrailLogDateForPrintStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
                     break;
+                case GetMaxAuditTrailLogDateForPrintStatus.InvalidHpId:
+                    Result.Message = ResponseMessage.InvalidHpId;
+                    break;
             }
         }
     }

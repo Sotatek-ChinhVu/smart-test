@@ -31,15 +31,6 @@ namespace Infrastructure.Repositories
         private readonly string syosaisinKbn = "syosaisinkbn";
         private readonly string comment = "comment";
 
-        private string HolidayMstCacheKey
-        {
-            get => $"{key}-HolidayMstCacheKey";
-        }
-
-        private string RaiinListMstCacheKey
-        {
-            get => $"{key}-RaiinListMstCacheKey";
-        }
 
         private readonly TenantDataContext _tenantHistory;
         private readonly TenantDataContext _tenantNextOrder;
@@ -226,7 +217,7 @@ namespace Infrastructure.Repositories
 
         #region RaiinListMst
 
-        private List<RaiinListMstModel> ReloadRaiinListMstCache(int hpId)
+        private List<RaiinListMstModel> ReloadRaiinListMstCache(int hpId, string raiinListMstCacheKey)
         {
             var raiinListMst = NoTrackingDataContext.RaiinListMsts.Where(m => m.HpId == hpId && m.IsDeleted == DeleteTypes.None).ToList();
             var raiinListDetail = NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None).ToList();
@@ -240,30 +231,31 @@ namespace Infrastructure.Repositories
                 .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Mst.IsDeleted, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
                 .ToList();
             var json = JsonSerializer.Serialize(raiinListMstModelList);
-            _cache.StringSet(RaiinListMstCacheKey, json);
+            _cache.StringSet(raiinListMstCacheKey, json);
 
             return raiinListMstModelList;
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
         {
+            var raiinListMstCacheKey = $"{key}-RaiinListMstCacheKey" + "-" + hpId;
             var stopwatch = Stopwatch.StartNew();
             List<RaiinListMstModel> setKbnMstList;
-            if (!_cache.KeyExists(RaiinListMstCacheKey))
+            if (!_cache.KeyExists(raiinListMstCacheKey))
             {
-                setKbnMstList = ReloadRaiinListMstCache(hpId);
+                setKbnMstList = ReloadRaiinListMstCache(hpId, raiinListMstCacheKey);
             }
             else
             {
-                setKbnMstList = ReadCacheRaiinListMst();
+                setKbnMstList = ReadCacheRaiinListMst(raiinListMstCacheKey);
             }
             Console.WriteLine($"End RaiinListMst - {stopwatch.ElapsedMilliseconds}");
             return setKbnMstList!;
         }
 
-        private List<RaiinListMstModel> ReadCacheRaiinListMst()
+        private List<RaiinListMstModel> ReadCacheRaiinListMst(string raiinListMstCacheKey)
         {
-            var results = _cache.StringGet(RaiinListMstCacheKey);
+            var results = _cache.StringGet(raiinListMstCacheKey);
             var json = results.AsString();
             var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<RaiinListMstModel>>(json) : new();
             return datas ?? new();
@@ -272,20 +264,21 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region HolidayMst
-        private List<HolidayDto> ReloadHolidayCache(int hpId)
+        private List<HolidayDto> ReloadHolidayCache(int hpId, string key)
         {
             var holidayModelList = NoTrackingDataContext.HolidayMsts
                 .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
                 .Select(h => new HolidayDto(h.SeqNo, h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
                 .ToList();
             var json = JsonSerializer.Serialize(holidayModelList);
-            _cache.StringSet(HolidayMstCacheKey, json);
+            _cache.StringSet(key, json);
             return holidayModelList;
         }
 
-        private List<HolidayDto> ReadCacheHolidayMst()
+        private List<HolidayDto> ReadCacheHolidayMst(int hpId)
         {
-            var results = _cache.StringGet(HolidayMstCacheKey);
+            var holidayMstCacheKey = $"{key}-HolidayMstCacheKey" + hpId;
+            var results = _cache.StringGet(holidayMstCacheKey);
             var json = results.AsString();
             var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<HolidayDto>>(json) : new();
             return datas ?? new();
@@ -324,21 +317,23 @@ namespace Infrastructure.Repositories
             var result = TrackingDataContext.SaveChanges() > 0;
             if (result)
             {
-                ReloadHolidayCache(holiday.HpId);
+                var holidayMstCacheKey = $"{key}-HolidayMstCacheKey" + holiday.HpId;
+                ReloadHolidayCache(holiday.HpId, holidayMstCacheKey);
             }
             return result;
         }
 
         public List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
+            var holidayMstCacheKey = $"{key}-HolidayMstCacheKey" + hpId;
             List<HolidayDto> holidayMstList;
-            if (!_cache.KeyExists(HolidayMstCacheKey))
+            if (!_cache.KeyExists(holidayMstCacheKey))
             {
-                holidayMstList = ReloadHolidayCache(hpId);
+                holidayMstList = ReloadHolidayCache(hpId, holidayMstCacheKey);
             }
             else
             {
-                holidayMstList = ReadCacheHolidayMst();
+                holidayMstList = ReadCacheHolidayMst(hpId);
             }
             return holidayMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
         }
@@ -351,7 +346,7 @@ namespace Infrastructure.Repositories
             {
                 var raiinListTag = TrackingDataContext.RaiinListTags
                            .OrderByDescending(p => p.UpdateDate)
-                           .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
+                           .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo && p.HpId == hpId);
                 if (raiinListTag is null)
                 {
                     if (inputData.TagNo != -1)
@@ -388,7 +383,7 @@ namespace Infrastructure.Repositories
             {
                 var raiinListCmt = TrackingDataContext.RaiinListCmts
                                .OrderByDescending(p => p.UpdateDate)
-                               .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
+                               .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo && p.HpId == hpId);
 
                 if (raiinListCmt is null)
                 {

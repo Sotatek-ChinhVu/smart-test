@@ -27,16 +27,19 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
         return result != null ? result.SinDate : 0;
     }
 
-    public List<RaiinFilterMstModel> GetList()
+    public List<RaiinFilterMstModel> GetList(int hpId)
     {
         var query =
             from mst in NoTrackingDataContext.RaiinFilterMsts
-            where mst.IsDeleted == DeleteTypes.None
+            where mst.IsDeleted == DeleteTypes.None && mst.HpId == hpId
             select new
             {
                 mst,
                 sorts = NoTrackingDataContext.RaiinFilterSorts
-                    .Where(s => s.FilterId == mst.FilterId && s.IsDeleted == DeleteTypes.None)
+                    .Where(s => s.HpId == hpId && s.FilterId == mst.FilterId 
+                                               && s.IsDeleted == DeleteTypes.None
+                                               && !(s.KbnCd == 0 && s.ColumnName != null 
+                                               && s.ColumnName.Equals("保険")))
                     .ToList()
             };
 
@@ -56,12 +59,13 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                                                                     s.KbnCd,
                                                                     s.SortKbn))
                                                                     .OrderBy(s => s.Priority).ToList()
-                                    )).OrderBy( x => x.SortNo).ToList();
+                                    )).OrderBy(x => x.SortNo).ToList();
     }
 
-    public int GetTantoId(long ptId, int sinDate, long raiinNo)
+    public int GetTantoId(int hpId, long ptId, int sinDate, long raiinNo)
     {
         var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(p => p.PtId == ptId
+                                                                && p.HpId == hpId
                                                                 && p.IsDeleted == DeleteTypes.None
                                                                 && p.SinDate == sinDate
                                                                 && p.RaiinNo == raiinNo);
@@ -82,12 +86,12 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
 
             var query =
                 from mst in TrackingDataContext.RaiinFilterMsts.AsTracking()
-                where mst.IsDeleted == DeleteTypes.None
+                where mst.HpId == hpId && mst.IsDeleted == DeleteTypes.None
                 select new
                 {
                     mst,
                     sorts = TrackingDataContext.RaiinFilterSorts.AsTracking()
-                        .Where(s => s.FilterId == mst.FilterId && s.IsDeleted == DeleteTypes.None)
+                        .Where(s => s.HpId == hpId && s.FilterId == mst.FilterId && s.IsDeleted == DeleteTypes.None)
                         .ToList()
                 };
 

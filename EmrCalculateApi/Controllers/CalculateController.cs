@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Futan;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Requests;
+using CalculateService.Interface;
+using CalculateService.Requests;
 using EmrCalculateApi.Responses;
 using EmrCalculateApi.Constants;
 using EmrCalculateApi.Realtime;
@@ -59,6 +59,7 @@ namespace EmrCalculateApi.Controllers
         public ActionResult RunTrialCalculate([FromBody] RunTraialCalculateRequest calculateRequest)
         {
             var data = _ikaCalculate.RunTraialCalculate(
+                calculateRequest.HpId,
                 calculateRequest.OrderInfoList,
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);

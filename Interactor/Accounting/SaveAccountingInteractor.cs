@@ -116,11 +116,11 @@ namespace Interactor.Accounting
             {
                 return SaveAccountingStatus.InvalidHpId;
             }
-            else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
+            else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.HpId, inputData.UserId))
             {
                 return SaveAccountingStatus.InvalidUserId;
             }
-            else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
+            else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long> { inputData.PtId }))
             {
                 return SaveAccountingStatus.InvalidPtId;
             }

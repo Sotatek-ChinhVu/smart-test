@@ -105,7 +105,7 @@ namespace Infrastructure.CommonDB
             var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain.ToLower() == clientDomain.ToLower() && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
             if (tenant == null)
             {
-                tenantDb = _configuration["TenantDb"] ?? string.Empty;
+                tenantDb =  string.Empty;
             }
             else
             {
@@ -340,11 +340,7 @@ namespace Infrastructure.CommonDB
                 {
                     return string.Empty;
                 }
-                var jwtToken = new JwtSecurityToken(cookie.Token);
-                if (jwtToken.ValidFrom < DateTime.UtcNow && jwtToken.ValidTo > DateTime.UtcNow)
-                {
-                    return cookie.Domain;
-                }
+                return cookie.Domain;
             }
             return string.Empty;
         }

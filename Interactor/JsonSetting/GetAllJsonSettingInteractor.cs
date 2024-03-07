@@ -18,7 +18,7 @@ public class GetAllJsonSettingInteractor : IGetAllJsonSettingInputPort
     {
         try
         {
-            var jsons = _jsonSettingRepository.GetListFollowUserId(input.UserId);
+            var jsons = _jsonSettingRepository.GetListFollowUserId(input.HpId, input.UserId);
             if (jsons.Count == 0)
             {
                 return new GetAllJsonSettingOutputData(GetAllJsonSettingStatus.NotFound, new());

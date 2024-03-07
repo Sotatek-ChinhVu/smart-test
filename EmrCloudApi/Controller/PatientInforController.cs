@@ -209,7 +209,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("GetPatientGroupMst")]
         public ActionResult<Response<GetListPatientGroupMstResponse>> GetPatientGroupMst()
         {
-            var input = new GetListPatientGroupMstInputData();
+            var input = new GetListPatientGroupMstInputData(HpId);
             var output = _bus.Handle(input);
 
             var presenter = new GetListPatientGroupMstPresenter();
@@ -831,7 +831,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetKohiPriorityList)]
         public ActionResult<Response<GetKohiPriorityListResponse>> GetKohiPriorityList()
         {
-            var input = new GetKohiPriorityListInputData();
+            var input = new GetKohiPriorityListInputData(HpId);
             var output = _bus.Handle(input);
             var presenter = new GetKohiPriorityListPresenter();
             presenter.Complete(output);
@@ -959,7 +959,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetTokkiMstList)]
         public ActionResult<Response<GetTokkiMstListResponse>> GetTokkiMstList([FromQuery] GetTokkiMstListRequest request)
         {
-            var input = new GetTokkiMstListInputData(HpId, request.SeikyuYm);
+            var input = new GetTokkiMstListInputData(request.SeikyuYm);
             var output = _bus.Handle(input);
             var presenter = new GetTokkiMstListPresenter();
             presenter.Complete(output);
@@ -1003,7 +1003,7 @@ namespace EmrCloudApi.Controller
             try
             {
                 _messenger.Register<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
-                _messenger.Register<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
+                _messenger.Register<StopCalcStatus>(this, StopCalculationCaculaleSwapHoken);
                 HttpContext.Response.ContentType = "application/json";
 
                 var input = new CalculationSwapHokenInputData(HpId, UserId, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError, _messenger);
@@ -1017,7 +1017,7 @@ namespace EmrCloudApi.Controller
             finally
             {
                 _messenger.Deregister<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
-                _messenger.Deregister<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
+                _messenger.Deregister<StopCalcStatus>(this, StopCalculationCaculaleSwapHoken);
             }
         }
 
@@ -1133,7 +1133,7 @@ namespace EmrCloudApi.Controller
             return result;
         }
 
-        private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)
+        private void StopCalculationCaculaleSwapHoken(StopCalcStatus stopCalcStatus)
         {
             if (!_cancellationToken.HasValue)
             {
