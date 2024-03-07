@@ -36,7 +36,10 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
             {
                 mst,
                 sorts = NoTrackingDataContext.RaiinFilterSorts
-                    .Where(s => s.HpId == hpId && s.FilterId == mst.FilterId && s.IsDeleted == DeleteTypes.None)
+                    .Where(s => s.HpId == hpId && s.FilterId == mst.FilterId 
+                                               && s.IsDeleted == DeleteTypes.None
+                                               && !(s.KbnCd == 0 && s.ColumnName != null 
+                                               && s.ColumnName.Equals("保険")))
                     .ToList()
             };
 
