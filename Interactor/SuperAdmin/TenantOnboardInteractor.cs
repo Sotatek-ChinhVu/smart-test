@@ -182,7 +182,7 @@ namespace Interactor.SuperAdmin
 
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
-        }       
+        }
 
         private void AddData(int tenantId, string tenantUrl, TenantModel model, CancellationToken ct)
         {
@@ -257,12 +257,12 @@ namespace Interactor.SuperAdmin
                     {
                         command.Connection = connection;
                         byte[] salt = GenerateSalt();
-                        byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
+                        string hashPassword = CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
                         var sqlInsertUser = QueryConstant.SqlUser;
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlInsertUser + sqlInsertUserPermission;
                         command.Parameters.AddWithValue("hashPassword", hashPassword);
-                        command.Parameters.AddWithValue("salt", salt);
+                        command.Parameters.AddWithValue("salt", Convert.ToHexString(salt));
                         command.Parameters.AddWithValue("hpId", tenantId);
                         command.Parameters.AddWithValue("adminId", model.AdminId);
                         command.ExecuteNonQuery();
@@ -471,7 +471,8 @@ var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws
             rng.GetBytes(buffer);
             return buffer;
         }
-        public byte[] CreateHash(byte[] password, byte[] salt)
+
+        public string CreateHash(byte[] password, byte[] salt)
         {
             using var argon2 = new Argon2id(password);
             var preper = _configuration["Pepper"] ?? string.Empty;
@@ -480,7 +481,7 @@ var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws
             argon2.DegreeOfParallelism = 8;
             argon2.Iterations = 4;
             argon2.MemorySize = 1024 * 128;
-            return argon2.GetBytes(32);
+            return Convert.ToHexString(argon2.GetBytes(32));
         }
 
         #endregion

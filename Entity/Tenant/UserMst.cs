@@ -7,7 +7,7 @@ namespace Entity.Tenant
     /// ユーザーマスタ
     ///		ユーザー権限は別テーブルで管理予定						
     /// </summary>
-    [Table(name: "user_mst_new")]
+    [Table(name: "user_mst")]
     public class UserMst : EmrCloneable<UserMst>
     {
         /// <summary>
