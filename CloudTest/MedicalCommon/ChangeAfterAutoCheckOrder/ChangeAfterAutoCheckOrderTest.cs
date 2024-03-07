@@ -621,7 +621,7 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
                 tenant.SaveChanges();
 
                 var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
-                Assert.True(!result.Any());
+                Assert.True(result.Any());
             }
             finally
             {
@@ -696,7 +696,7 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             long ptId = 123456789;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 45, 1)
+                new OrdInfDetailModel("ItemCd1", 20, "",1, 1)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
@@ -704,6 +704,210 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
             targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 20), 1.5));
+
+
+            // TenMst
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            tenant.TenMsts.AddRange(tenMsts);
+
+            //IpnName
+            var ipnNameMsts = ChangeAfterAutoCheckOrderData.ReadIpnNameMst();
+            tenant.IpnNameMsts.AddRange(ipnNameMsts);
+
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockapprovalInf = new Mock<IApprovalInfRepository>();
+            TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
+
+            try
+            {
+                tenant.SaveChanges();
+
+                var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
+                Assert.True(!result.Any());
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                todayOdrRepository.ReleaseResource();
+                tenant.TenMsts.RemoveRange(tenMsts);
+                tenant.IpnNameMsts.RemoveRange(ipnNameMsts);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+        [Test]
+        public void ChangeAfterAutoCheckOrder_017()
+        {
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 1;
+            int userId = 1;
+            int sinDate = 20240203;
+            long raiinNo = 0;
+            long ptId = 123456789;
+            List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
+            {
+                new OrdInfDetailModel("ItemCd1", 20, "",2, 1)
+            };
+            List<OrdInfModel> odrInfs = new List<OrdInfModel>()
+            {
+                new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
+            };
+            List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 20), 1.5));
+
+
+            // TenMst
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            tenant.TenMsts.AddRange(tenMsts);
+
+            //IpnName
+            var ipnNameMsts = ChangeAfterAutoCheckOrderData.ReadIpnNameMst();
+            tenant.IpnNameMsts.AddRange(ipnNameMsts);
+
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockapprovalInf = new Mock<IApprovalInfRepository>();
+            TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
+
+            try
+            {
+                tenant.SaveChanges();
+
+                var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
+                Assert.True(!result.Any());
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                todayOdrRepository.ReleaseResource();
+                tenant.TenMsts.RemoveRange(tenMsts);
+                tenant.IpnNameMsts.RemoveRange(ipnNameMsts);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+        [Test]
+        public void ChangeAfterAutoCheckOrder_018()
+        {
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 1;
+            int userId = 1;
+            int sinDate = 20240203;
+            long raiinNo = 0;
+            long ptId = 123456789;
+            List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
+            {
+                new OrdInfDetailModel("ItemCd1", 20, "",2, 1,3)
+            };
+            List<OrdInfModel> odrInfs = new List<OrdInfModel>()
+            {
+                new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
+            };
+            List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 20), 1.5));
+
+
+            // TenMst
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            tenant.TenMsts.AddRange(tenMsts);
+
+            //IpnName
+            var ipnNameMsts = ChangeAfterAutoCheckOrderData.ReadIpnNameMst();
+            tenant.IpnNameMsts.AddRange(ipnNameMsts);
+
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockapprovalInf = new Mock<IApprovalInfRepository>();
+            TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
+
+            try
+            {
+                tenant.SaveChanges();
+
+                var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
+                Assert.True(!result.Any());
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                todayOdrRepository.ReleaseResource();
+                tenant.TenMsts.RemoveRange(tenMsts);
+                tenant.IpnNameMsts.RemoveRange(ipnNameMsts);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+        [Test]
+        public void ChangeAfterAutoCheckOrder_019()
+        {
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 1;
+            int userId = 1;
+            int sinDate = 20240203;
+            long raiinNo = 0;
+            long ptId = 123456789;
+            List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
+            {
+                new OrdInfDetailModel("ItemCd1", 20, "",2, 1,3)
+            };
+            List<OrdInfModel> odrInfs = new List<OrdInfModel>()
+            {
+                new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
+            };
+            List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 0), 1.5));
+
+
+            // TenMst
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            tenant.TenMsts.AddRange(tenMsts);
+
+            //IpnName
+            var ipnNameMsts = ChangeAfterAutoCheckOrderData.ReadIpnNameMst();
+            tenant.IpnNameMsts.AddRange(ipnNameMsts);
+
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockapprovalInf = new Mock<IApprovalInfRepository>();
+            TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
+
+            try
+            {
+                tenant.SaveChanges();
+
+                var result = todayOdrRepository.ChangeAfterAutoCheckOrder(hpId, sinDate, userId, raiinNo, ptId, odrInfs, targetItems);
+                Assert.True(result.Any());
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                todayOdrRepository.ReleaseResource();
+                tenant.TenMsts.RemoveRange(tenMsts);
+                tenant.IpnNameMsts.RemoveRange(ipnNameMsts);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+        [Test]
+        public void ChangeAfterAutoCheckOrder_020()
+        {
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 1;
+            int userId = 1;
+            int sinDate = 20240203;
+            long raiinNo = 0;
+            long ptId = 123456789;
+            List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
+            {
+                new OrdInfDetailModel("ItemCd1", 20, "",1, 1,3)
+            };
+            List<OrdInfModel> odrInfs = new List<OrdInfModel>()
+            {
+                new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
+            };
+            List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 0), 1.5));
 
 
             // TenMst
