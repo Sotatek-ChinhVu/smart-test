@@ -22,7 +22,7 @@ namespace Interactor.PatientInfor
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly IPtDiseaseRepository _ptDiseaseRepository;
         private readonly IAmazonS3Service _amazonS3Service;
-        private readonly ILoggingHandler _loggingHandler;
+        private readonly ILoggingHandler? _loggingHandler;
         private readonly ITenantProvider _tenantProvider;
         private const byte retryNumber = 50;
 
@@ -33,7 +33,11 @@ namespace Interactor.PatientInfor
             _amazonS3Service = amazonS3Service;
             _ptDiseaseRepository = ptDiseaseRepository;
             _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            var dbContextOptions = _tenantProvider.CreateNewTrackingAdminDbContextOption();
+            if (dbContextOptions != null)
+            {
+                _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+            }
         }
 
         [Obsolete]
@@ -134,7 +138,7 @@ namespace Interactor.PatientInfor
             }
         }
 
-        private bool CloneByomei(SavePatientInfoInputData inputData)
+        public bool CloneByomei(SavePatientInfoInputData inputData)
         {
             if (!inputData.ReactSave.ConfirmCloneByomei)
             {
@@ -159,7 +163,7 @@ namespace Interactor.PatientInfor
             return false;
         }
 
-        private IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
+        public IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
             bool isPatientTempotary = model.Patient.PtId == 0 && !model.Insurances.Any(x => x.IsDeleted == DeleteTypes.None);
@@ -502,7 +506,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private void SplitName(string name, out string firstName, out string lastName)
+        public void SplitName(string name, out string firstName, out string lastName)
         {
             firstName = "";
             lastName = "";
@@ -528,7 +532,7 @@ namespace Interactor.PatientInfor
             }
         }
 
-        private bool IsValidAgeCheckConfirm(int ageCheck, int confirmDate, int birthDay, int sinDay)
+        public bool IsValidAgeCheckConfirm(int ageCheck, int confirmDate, int birthDay, int sinDay)
         {
             // 但し、2日生まれ以降の場合は翌月１日を誕生日とする。
             if (CIUtil.Copy(birthDay.AsString(), 7, 2) != "01")
