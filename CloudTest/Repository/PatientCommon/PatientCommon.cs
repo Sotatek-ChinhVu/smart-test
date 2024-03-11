@@ -260,7 +260,7 @@ namespace CloudUnitTest.Repository.PatientCommon
             var ptInfs = ReadPatientCommon.ReadPtInf();
             tenant.PtInfs.AddRange(ptInfs);
 
-            // PtHokenCheck
+            // PtByomei
             var ptByomeis = ReadPatientCommon.ReadPtByomei();
             tenant.PtByomeis.AddRange(ptByomeis);
 
@@ -286,6 +286,44 @@ namespace CloudUnitTest.Repository.PatientCommon
                 receiptRepository.ReleaseResource();
                 patientInforRepository.ReleaseResource();
                 tenant.PtByomeis.RemoveRange(ptByomeis);
+                tenant.PtInfs.RemoveRange(ptInfs);
+                tenant.SaveChanges();
+                #endregion
+            }
+        } 
+        
+        [Test]
+        public void FindSamePatient_007()
+        {
+            #region Fetch data
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+
+            //PtInf
+            var ptInfs = ReadPatientCommon.ReadPtInf();
+            tenant.PtInfs.AddRange(ptInfs);
+
+            #endregion
+
+            // Arrange
+            ReceptionRepository receiptRepository = new ReceptionRepository(TenantProvider);
+
+            PatientInforRepository patientInforRepository = new PatientInforRepository(TenantProvider, receiptRepository);
+
+            // Assert
+            try
+            {
+                tenant.SaveChanges();
+               
+                var result = patientInforRepository.FindSamePatient(1, "quang anh", 1, 20020101);
+                var result1 = patientInforRepository.FindSamePatient(1, "quang anh 12345", 1, 20000101);
+
+                Assert.True(result.Any() && !result1.Any());
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                receiptRepository.ReleaseResource();
+                patientInforRepository.ReleaseResource();
                 tenant.PtInfs.RemoveRange(ptInfs);
                 tenant.SaveChanges();
                 #endregion
