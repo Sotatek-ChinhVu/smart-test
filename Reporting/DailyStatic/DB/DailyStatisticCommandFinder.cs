@@ -43,6 +43,8 @@ public class DailyStatisticCommandFinder : RepositoryBase, IDailyStatisticComman
                     return new ConfigStatisticModel(new ConfigStatistic3060Model(staMenu, listConfig));
                 case (int)StatisticReportType.Sta3061:
                     return new ConfigStatisticModel(new ConfigStatistic3061Model(staMenu, listConfig));
+                case (int)StatisticReportType.Sta3062:
+                    return new ConfigStatisticModel(new ConfigStatistic3062Model(staMenu, listConfig));
                 case (int)StatisticReportType.Sta3070:
                     return new ConfigStatisticModel(new ConfigStatistic3070Model(staMenu, listConfig));
                 case (int)StatisticReportType.Sta3071:

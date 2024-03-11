@@ -1,0 +1,336 @@
+﻿using Entity.Tenant;
+using Helper.Constants;
+using Helper.Extension;
+using static Reporting.Statistics.Sta3062.Models.CoSta3062PrintConf;
+
+namespace Reporting.DailyStatic.Model;
+
+public class ConfigStatistic3062Model : StatisticModelBase
+{
+    public ConfigStatistic3062Model(StaMenu staMenu, List<StaConf> listStaConf)
+    {
+        StaMenu = staMenu;
+        ListStaConf = listStaConf;
+
+        if (StaMenu == null)
+        {
+            StaMenu = new StaMenu();
+        }
+
+        if (ListStaConf == null)
+        {
+            ListStaConf = new List<StaConf>();
+        }
+
+        if (MenuId > 0)
+        {
+            ModelStatus = ModelStatus.None;
+        }
+        else
+        {
+            ModelStatus = ModelStatus.Added;
+        }
+    }
+
+    public ConfigStatistic3062Model(int groupId = 0, int reportId = 0, int sortNo = 0)
+    {
+        StaMenu = new StaMenu();
+        StaMenu.GrpId = groupId;
+        StaMenu.ReportId = reportId;
+        StaMenu.SortNo = sortNo;
+
+        ListStaConf = new List<StaConf>();
+        ModelStatus = ModelStatus.Added;
+    }
+
+    /// <summary>
+    /// Hospital ID
+    /// </summary>
+    public int HpId
+    {
+        get => StaMenu.HpId;
+    }
+
+    /// <summary>
+    /// メニューID
+    /// </summary>
+    public int MenuId
+    {
+        get => StaMenu.MenuId;
+    }
+
+    /// <summary>
+    /// グループID
+    /// </summary>
+    public int GrpId
+    {
+        get => StaMenu.GrpId;
+        set => StaMenu.GrpId = value;
+    }
+
+    /// <summary>
+    /// 帳票ID
+    /// </summary>
+    public int ReportId
+    {
+        get => StaMenu.ReportId;
+        set => StaMenu.ReportId = value;
+    }
+
+    /// <summary>
+    /// 並び順
+    /// </summary>
+    public int SortNo
+    {
+        get => StaMenu.SortNo;
+        set => StaMenu.SortNo = value;
+    }
+
+    /// <summary>
+    /// メニュー名称	
+    /// </summary>
+    public string MenuName
+    {
+        get => StaMenu.MenuName ?? string.Empty;
+        set
+        {
+            StaMenu.MenuName = value;
+            if (ModelStatus == ModelStatus.None)
+            {
+                ModelStatus = ModelStatus.Modified;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 帳票タイトル
+    /// </summary>
+    public string ReportName
+    {
+        get
+        {
+            return GetValueConf(HpId, 1);
+        }
+        set
+        {
+            SettingConfig(HpId, 1, value);
+        }
+    }
+
+    /// <summary>
+    /// フォームファイル
+    /// </summary>
+    public string FormReport
+    {
+        get
+        {
+            return GetValueConf(HpId, 2);
+        }
+        set
+        {
+            SettingConfig(HpId, 2, value);
+        }
+    }
+
+    /// <summary>
+    /// 改ページ１
+    /// </summary>
+    public int PageBreak1
+    {
+        get
+        {
+            return GetValueConf(HpId, 10).AsInteger();
+        }
+        set
+        {
+            SettingConfig(HpId, 10, value.AsString());
+        }
+    }
+
+    /// <summary>
+    /// 改ページ２
+    /// </summary>
+    public int PageBreak2
+    {
+        get
+        {
+            return GetValueConf(HpId, 11).AsInteger();
+        }
+        set
+        {
+            SettingConfig(HpId, 11, value.AsString());
+        }
+    }
+
+
+    /// <summary>
+    /// 条件
+    ///    テスト患者 0:false 1:true
+    /// </summary>
+    public int TestPatient
+    {
+        get
+        {
+            return GetValueConf(HpId, 30).AsInteger();
+        }
+        set
+        {
+            SettingConfig(HpId, 30, value.AsString());
+        }
+    }
+
+    /// <summary>
+    /// 条件
+    ///    診療科
+    /// </summary>
+    public string KaId
+    {
+        get
+        {
+            return GetValueConf(HpId, 31);
+        }
+        set
+        {
+            SettingConfig(HpId, 31, value);
+        }
+    }
+
+    /// <summary>
+    /// 診療科
+    /// </summary>
+    public List<int> ListKaId
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(KaId))
+            {
+                return new List<int>();
+            }
+
+            var arrTemp = KaId.Split(' ');
+            return arrTemp.Select(x => x.AsInteger()).ToList();
+        }
+    }
+
+    /// <summary>
+    /// 条件
+    ///    担当医
+    /// </summary>
+    public string TantoId
+    {
+        get
+        {
+            return GetValueConf(HpId, 32);
+        }
+        set
+        {
+            SettingConfig(HpId, 32, value);
+        }
+    }
+
+    /// <summary>
+    /// 担当医
+    /// </summary>
+    public List<int> ListTantoId
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(TantoId))
+            {
+                return new List<int>();
+            }
+
+            var arrTemp = TantoId.Split(' ');
+            return arrTemp.Select(x => x.AsInteger()).ToList();
+        }
+    }
+
+    /// <summary>
+    /// 保険種別
+    /// </summary>
+    public string HokenSbt
+    {
+        get
+        {
+            return GetValueConf(HpId, 33);
+        }
+        set
+        {
+            SettingConfig(HpId, 33, value);
+        }
+    }
+
+    /// <summary>
+    /// 担当医
+    /// </summary>
+    public List<int> ListHokenSbt
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(HokenSbt))
+            {
+                return new List<int>();
+            }
+
+            var arrTemp = HokenSbt.Split(' ');
+            return arrTemp.Select(x => x.AsInteger()).ToList();
+        }
+    }
+
+    /// <summary>
+    /// 条件
+    ///    グループ
+    /// </summary>
+    public string GroupIds
+    {
+        get
+        {
+            return GetValueConf(HpId, 34);
+        }
+        set
+        {
+            SettingConfig(HpId, 34, value);
+        }
+    }
+
+    public List<PtGrp> ListPtGrps
+    {
+        get
+        {
+            List<PtGrp> listPtGrps = new List<PtGrp>();
+            if (!string.IsNullOrEmpty(GroupIds))
+            {
+                PtGrp ptGrp = new PtGrp();
+                List<string> groupDatas = GroupIds.Split('/').ToList();
+                if (groupDatas.Count > 0)
+                {
+                    foreach (var group in groupDatas)
+                    {
+                        ptGrp.GrpId = group.Substring(0, group.IndexOf(' ')).AsInteger();
+                        ptGrp.GrpCode = group.Substring(group.IndexOf(' ') + 1);
+                        if (ptGrp.GrpId <= 0 || string.IsNullOrEmpty(ptGrp.GrpCode))
+                        {
+                            continue;
+                        }
+                        listPtGrps.Add(ptGrp);
+                    }
+                }
+            }
+            return listPtGrps;
+        }
+    }
+
+    public void CopyConfig(ConfigStatistic3062Model configSource)
+    {
+        MenuName = configSource.MenuName;
+        ReportName = configSource.ReportName;
+        FormReport = configSource.FormReport;
+        PageBreak1 = configSource.PageBreak1;
+        PageBreak2 = configSource.PageBreak2;
+        TestPatient = configSource.TestPatient;
+        KaId = configSource.KaId;
+        TantoId = configSource.TantoId;
+        HokenSbt = configSource.HokenSbt;
+        GroupIds = configSource.GroupIds;
+    }
+}
