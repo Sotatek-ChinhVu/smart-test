@@ -468,7 +468,6 @@ public static class ReadPatientCommon
         return ptHokenChecks;
     }
 
-
     public static List<PtByomei> ReadPtByomei()
     {
         var rootPath = Environment.CurrentDirectory;
