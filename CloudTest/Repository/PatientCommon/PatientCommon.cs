@@ -249,6 +249,48 @@ namespace CloudUnitTest.Repository.PatientCommon
                 #endregion
             }
         }
+        
+        [Test]
+        public void CloneByomeiWithNewHokenId_006()
+        {
+            #region Fetch data
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+
+            //PtInf
+            var ptInfs = ReadPatientCommon.ReadPtInf();
+            tenant.PtInfs.AddRange(ptInfs);
+
+            // PtHokenCheck
+            var ptByomeis = ReadPatientCommon.ReadPtByomei();
+            tenant.PtByomeis.AddRange(ptByomeis);
+
+            #endregion
+
+            // Arrange
+            ReceptionRepository receiptRepository = new ReceptionRepository(TenantProvider);
+
+            PatientInforRepository patientInforRepository = new PatientInforRepository(TenantProvider, receiptRepository);
+
+            // Assert
+            try
+            {
+                tenant.SaveChanges();
+               
+                var result = patientInforRepository.CloneByomeiWithNewHokenId(ptByomeis,2, 2);
+
+                Assert.True(result);
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                receiptRepository.ReleaseResource();
+                patientInforRepository.ReleaseResource();
+                tenant.PtByomeis.RemoveRange(ptByomeis);
+                tenant.PtInfs.RemoveRange(ptInfs);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
 
     }
 }
