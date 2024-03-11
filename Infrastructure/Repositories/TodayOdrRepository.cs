@@ -3305,7 +3305,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         string ipnName = string.Empty;
         if (!string.IsNullOrEmpty(sourceDetail.IpnCd))
         {
-            ipnName = ipnNameMsts.FirstOrDefault(i => i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
+            ipnName = ipnNameMsts.FirstOrDefault(i =>   i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
         }
         else
         {

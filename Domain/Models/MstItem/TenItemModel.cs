@@ -693,6 +693,10 @@ namespace Domain.Models.MstItem
             CreateDate = createDate;
         }
 
+        public TenItemModel(string itemCd)
+        {
+            ItemCd = itemCd;
+        }
         public int HpId { get; private set; }
 
         public string ReceName { get; private set; }
