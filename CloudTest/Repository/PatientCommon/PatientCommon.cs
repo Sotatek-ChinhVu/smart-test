@@ -1,12 +1,6 @@
 ﻿using CloudUnitTest.SampleData;
 using Domain.Models.Insurance;
-using Entity.Tenant;
 using Infrastructure.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CloudUnitTest.Repository.PatientCommon
 {
@@ -46,8 +40,8 @@ namespace CloudUnitTest.Repository.PatientCommon
             {
                 tenant.SaveChanges();
 
-             
-                var resultQuery = patientInforRepository.GetById(1, 999999999, 20250101, firstRaiin?.RaiinNo ?? 0, true, new ());
+
+                var resultQuery = patientInforRepository.GetById(1, 999999999, 20250101, firstRaiin?.RaiinNo ?? 0, true, new());
 
                 Assert.True(resultQuery.HpId == 0 && resultQuery.PtId == 0);
             }
@@ -103,7 +97,7 @@ namespace CloudUnitTest.Repository.PatientCommon
                 tenant.SaveChanges();
 
 
-                var resultQuery = patientInforRepository.GetById(1, 999999999, 20250101, (firstRaiin?.RaiinNo ?? 0) + 1, true, new() { 4, 5, 6, 7, 8, 9});
+                var resultQuery = patientInforRepository.GetById(1, 999999999, 20250101, (firstRaiin?.RaiinNo ?? 0) + 1, true, new() { 4, 5, 6, 7, 8, 9 });
 
                 Assert.True(resultQuery.HpId == 1 && resultQuery.PtId == 999999999);
             }
@@ -147,7 +141,7 @@ namespace CloudUnitTest.Repository.PatientCommon
             try
             {
                 tenant.SaveChanges();
-                var confirmDates = new List < ConfirmDateModel> { new ConfirmDateModel(999999999, 1, 1, DateTime.UtcNow, 1, "Luu Check", 0) };
+                var confirmDates = new List<ConfirmDateModel> { new ConfirmDateModel(999999999, 1, 1, DateTime.UtcNow, 1, "Luu Check", 0) };
                 patientInforRepository.UpdateHokenCheck(ptHokenChecks, confirmDates, 1, 999999999, 1, 1, true);
                 tenant.SaveChanges();
                 var hokenCheck = tenant.PtHokenChecks.FirstOrDefault(h => h.PtID == 999999999 && h.HpId == 1 && h.HokenGrp == 1 && h.HokenId == 1 && h.SeqNo == 3);
@@ -249,7 +243,7 @@ namespace CloudUnitTest.Repository.PatientCommon
                 #endregion
             }
         }
-        
+
         [Test]
         public void CloneByomeiWithNewHokenId_006()
         {
@@ -275,8 +269,8 @@ namespace CloudUnitTest.Repository.PatientCommon
             try
             {
                 tenant.SaveChanges();
-               
-                var result = patientInforRepository.CloneByomeiWithNewHokenId(ptByomeis,2, 2);
+
+                var result = patientInforRepository.CloneByomeiWithNewHokenId(ptByomeis, 2, 2);
 
                 Assert.True(result);
             }
@@ -290,8 +284,8 @@ namespace CloudUnitTest.Repository.PatientCommon
                 tenant.SaveChanges();
                 #endregion
             }
-        } 
-        
+        }
+
         [Test]
         public void FindSamePatient_007()
         {
@@ -313,7 +307,7 @@ namespace CloudUnitTest.Repository.PatientCommon
             try
             {
                 tenant.SaveChanges();
-               
+
                 var result = patientInforRepository.FindSamePatient(1, "quang anh", 1, 20020101);
                 var result1 = patientInforRepository.FindSamePatient(1, "quang anh 12345", 1, 20000101);
 
@@ -325,6 +319,99 @@ namespace CloudUnitTest.Repository.PatientCommon
                 receiptRepository.ReleaseResource();
                 patientInforRepository.ReleaseResource();
                 tenant.PtInfs.RemoveRange(ptInfs);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+        [Test]
+        public void GetPtByomeisByHokenId_ByomeiCd_008()
+        {
+            #region Fetch data
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+
+            //PtInf
+            var ptInfs = ReadPatientCommon.ReadPtInf();
+            tenant.PtInfs.AddRange(ptInfs);
+
+            // PtByomei
+            var byomeiMsts = ReadPatientCommon.ReadByomeiMst("Luu0008");
+            tenant.ByomeiMsts.AddRange(byomeiMsts);
+
+            // PtByomei
+            var ptByomeis = ReadPatientCommon.ReadPtByomei();
+            tenant.PtByomeis.AddRange(ptByomeis);
+
+            #endregion
+
+            // Arrange
+            DiseaseRepository diseaseRepository = new DiseaseRepository(TenantProvider);
+
+            // Assert
+            try
+            {
+                tenant.SaveChanges();
+
+                var result = diseaseRepository.GetPtByomeisByHokenId(1, 999999999, 1);
+
+                Assert.True(result.Any() && !string.IsNullOrEmpty(result.FirstOrDefault()?.Icd10) && !string.IsNullOrEmpty(result.FirstOrDefault()?.Icd1012013) && !string.IsNullOrEmpty(result.FirstOrDefault()?.Icd102013) && !string.IsNullOrEmpty(result.FirstOrDefault()?.Icd1022013));
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                diseaseRepository.ReleaseResource();
+                tenant.PtByomeis.RemoveRange(ptByomeis);
+                tenant.PtInfs.RemoveRange(ptInfs);
+                tenant.ByomeiMsts.RemoveRange(byomeiMsts);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+        [Test]
+        public void GetPtByomeisByHokenId_FreeComment_009()
+        {
+            #region Fetch data
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+
+            //PtInf
+            var ptInfs = ReadPatientCommon.ReadPtInf();
+            tenant.PtInfs.AddRange(ptInfs);
+
+            // PtByomei
+            var byomeiMsts = ReadPatientCommon.ReadByomeiMst("0000999");
+            var first = byomeiMsts.FirstOrDefault();
+            var check = tenant.ByomeiMsts.FirstOrDefault(b => (first != null && b.HpId == first.HpId) && b.ByomeiCd == "0000999");
+            if (check == null)
+            {
+                tenant.ByomeiMsts.AddRange(byomeiMsts);
+            }
+
+            // PtByomei
+            var ptByomeis = ReadPatientCommon.ReadPtByomei("0000999");
+            tenant.PtByomeis.AddRange(ptByomeis);
+
+            #endregion
+
+            // Arrange
+            DiseaseRepository diseaseRepository = new DiseaseRepository(TenantProvider);
+
+            // Assert
+            try
+            {
+                tenant.SaveChanges();
+
+                var result = diseaseRepository.GetPtByomeisByHokenId(1, 999999999, 1);
+
+                Assert.True(result.Any() && ptByomeis.FirstOrDefault()?.Byomei == result.FirstOrDefault()?.Byomei);
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                diseaseRepository.ReleaseResource();
+                tenant.PtByomeis.RemoveRange(ptByomeis);
+                tenant.PtInfs.RemoveRange(ptInfs);
+                if (check == null) tenant.ByomeiMsts.RemoveRange(byomeiMsts);
                 tenant.SaveChanges();
                 #endregion
             }
