@@ -1,11 +1,7 @@
-﻿using Domain.Models.Diseases;
-using Domain.Models.Insurance;
+﻿using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
-using Domain.Models.SystemConf;
-using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
-using Interactor.PatientInfor;
 using Moq;
 using System.Text;
 
@@ -18,12 +14,13 @@ namespace CloudUnitTest.Repository.PatientInfo
         {
             //Mock
             var mockReceptionRepos = new Mock<IReceptionRepository>();
-
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
             // Arrange
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
-                                            ptId: 123456,
+                                            ptId: 98422233,
                                             ptNum: 0,
                                             kanaName: "Sample Kana Name",
                                             name: "Sample Name",
@@ -32,7 +29,7 @@ namespace CloudUnitTest.Repository.PatientInfo
                                             isDead: 0,
                                             deathDate: 0,
                                             mail: "sample@mail.com",
-                                            homePost: "123-4567",
+                                            homePost: "123-456",
                                             homeAddress1: "Sample Home Address 1",
                                             homeAddress2: "Sample Home Address 2",
                                             tel1: "123-456-7890",
@@ -41,13 +38,13 @@ namespace CloudUnitTest.Repository.PatientInfo
                                             zokugara: "Sample Zokugara",
                                             job: "Sample Job",
                                             renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-6543",
+                                            renrakuPost: "987-654",
                                             renrakuAddress1: "Sample Renraku Address 1",
                                             renrakuAddress2: "Sample Renraku Address 2",
                                             renrakuTel: "555-1234",
                                             renrakuMemo: "Sample Renraku Memo",
                                             officeName: "Sample Office Name",
-                                            officePost: "543-2109",
+                                            officePost: "543-210",
                                             officeAddress1: "Sample Office Address 1",
                                             officeAddress2: "Sample Office Address 2",
                                             officeTel: "888-9999",
@@ -58,31 +55,25 @@ namespace CloudUnitTest.Repository.PatientInfo
                                             mainHokenPid: 3,
                                             referenceNo: 987654321,
                                             limitConsFlg: 1,
-                                            memo: "Sample Memo"
+                                            memo: ""
             );
 
-            IEnumerable<InsuranceScanModel> insuranceScans = new List<InsuranceScanModel>
-                                                            {
-                                                                new InsuranceScanModel
-                                                                (
-                                                                    hpId: 1,
-                                                                    ptId: 123456,
-                                                                    seqNo: 789012,
-                                                                    hokenGrp: 1,
-                                                                    hokenId: 2,
-                                                                    fileName: "SampleFile.pdf",
-                                                                    file: GetSampleFileStream(),
-                                                                    isDeleted: 0,
-                                                                    updateTime: "2024-01-10T12:34:56"
-                                                                )
-                                                            };
+            Func<int, long, long, IEnumerable<InsuranceScanModel>> insuranceScanModel = (param1, param2, param3) => Enumerable.Empty<InsuranceScanModel>();
 
             // Act
-            savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), new(), new(), new(), new(), new(), new(), insuranceScans, 9999);
+            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), new(), new(), new(), new(), new(), new(), insuranceScanModel, 9999);
 
-            // Assert
-            Assert.That(firstName, Is.EqualTo("太郎"));
-            Assert.That(lastName, Is.EqualTo("山田"));
+            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
+            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
+            Assert.That(ptInf.Sex, Is.EqualTo(1));
+            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
+
+            if (createPtInf.resultSave)
+            {
+                tenantTracking.PtInfs.Remove(ptInf);
+            }
         }
 
         private static Stream GetSampleFileStream()
