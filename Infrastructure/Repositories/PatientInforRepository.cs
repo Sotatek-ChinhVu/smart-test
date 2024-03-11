@@ -1962,7 +1962,7 @@ namespace Infrastructure.Repositories
             return systemConf != null ? systemConf.Val : defaultValue;
         }
 
-        private void UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
+        public void UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
         {
             int hokenGrp = 1;
             if (hokenKohi)

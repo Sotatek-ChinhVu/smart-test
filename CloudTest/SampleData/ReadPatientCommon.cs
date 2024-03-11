@@ -265,7 +265,6 @@ public static class ReadPatientCommon
         return raiinInfs;
     }
 
-
     public static List<PtCmtInf> ReadPtCMT()
     {
         var rootPath = Environment.CurrentDirectory;
@@ -325,7 +324,6 @@ public static class ReadPatientCommon
         }
         return ptCmts;
     }
-
 
     public static List<PtInf> ReadPtInf()
     {
@@ -399,6 +397,75 @@ public static class ReadPatientCommon
         }
 
         return ptInfs;
+    }
+
+    public static List<PtHokenCheck> ReadPtHokenCheck()
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "PatientCommonDataSample.xlsx");
+        var ptHokenChecks = new List<PtHokenCheck>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_HOKEN_CHECK").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var ptHokenCheck = new PtHokenCheck();
+                    ptHokenCheck.CreateId = 1;
+                    ptHokenCheck.CreateDate = DateTime.UtcNow;
+                    ptHokenCheck.UpdateId = 1;
+                    ptHokenCheck.UpdateDate = DateTime.UtcNow;
+                    ptHokenCheck.CheckId = 1;
+                    ptHokenCheck.CheckDate = DateTime.UtcNow;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                ptHokenCheck.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int ptId);
+                                ptHokenCheck.PtID = ptId;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int hokenGrp);
+                                ptHokenCheck.HokenGrp = hokenGrp;
+                                break;
+                            case "D":
+                                int.TryParse(text, out int hokenId);
+                                ptHokenCheck.HokenId = hokenId;
+                                break;
+                            case "E":
+                                int.TryParse(text, out int seqNo);
+                                ptHokenCheck.SeqNo = seqNo;
+                                break;
+                            case "I":
+                                ptHokenCheck.CheckCmt = text;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    ptHokenChecks.Add(ptHokenCheck);
+                }
+            }
+        }
+
+        return ptHokenChecks;
     }
 
     private static string GetColumnName(string text)

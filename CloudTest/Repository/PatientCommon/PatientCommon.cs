@@ -1,4 +1,6 @@
 ﻿using CloudUnitTest.SampleData;
+using Domain.Models.Insurance;
+using Entity.Tenant;
 using Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -114,6 +116,134 @@ namespace CloudUnitTest.Repository.PatientCommon
                 tenant.PtKyuseis.RemoveRange(ptKyuseis);
                 tenant.RaiinInfs.RemoveRange(raiinInfs);
                 tenant.PtCmtInfs.RemoveRange(ptCmts);
+                tenant.PtInfs.RemoveRange(ptInfs);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+        [Test]
+        public void UpdateHokenCheck_AddNew_003()
+        {
+            #region Fetch data
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+
+            //PtInf
+            var ptInfs = ReadPatientCommon.ReadPtInf();
+            tenant.PtInfs.AddRange(ptInfs);
+
+            // PtHokenCheck
+            var ptHokenChecks = ReadPatientCommon.ReadPtHokenCheck();
+            tenant.PtHokenChecks.AddRange(ptHokenChecks);
+
+            #endregion
+
+            // Arrange
+            ReceptionRepository receiptRepository = new ReceptionRepository(TenantProvider);
+
+            PatientInforRepository patientInforRepository = new PatientInforRepository(TenantProvider, receiptRepository);
+
+            // Assert
+            try
+            {
+                tenant.SaveChanges();
+                var confirmDates = new List < ConfirmDateModel> { new ConfirmDateModel(999999999, 1, 1, DateTime.UtcNow, 1, "Luu Check", 0) };
+                patientInforRepository.UpdateHokenCheck(ptHokenChecks, confirmDates, 1, 999999999, 1, 1, true);
+                tenant.SaveChanges();
+                var hokenCheck = tenant.PtHokenChecks.FirstOrDefault(h => h.PtID == 999999999 && h.HpId == 1 && h.HokenGrp == 1 && h.HokenId == 1 && h.SeqNo == 3);
+                Assert.True(hokenCheck != null);
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                receiptRepository.ReleaseResource();
+                patientInforRepository.ReleaseResource();
+                tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
+                tenant.PtInfs.RemoveRange(ptInfs);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+        [Test]
+        public void UpdateHokenCheck_Delete_004()
+        {
+            #region Fetch data
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+
+            //PtInf
+            var ptInfs = ReadPatientCommon.ReadPtInf();
+            tenant.PtInfs.AddRange(ptInfs);
+
+            // PtHokenCheck
+            var ptHokenChecks = ReadPatientCommon.ReadPtHokenCheck();
+            tenant.PtHokenChecks.AddRange(ptHokenChecks);
+
+            #endregion
+
+            // Arrange
+            ReceptionRepository receiptRepository = new ReceptionRepository(TenantProvider);
+
+            PatientInforRepository patientInforRepository = new PatientInforRepository(TenantProvider, receiptRepository);
+
+            // Assert
+            try
+            {
+                tenant.SaveChanges();
+                var confirmDates = new List<ConfirmDateModel> { new ConfirmDateModel(999999999, 1, 1, DateTime.UtcNow, 1, "Luu Check", 0) };
+                patientInforRepository.UpdateHokenCheck(ptHokenChecks, confirmDates, 1, 999999999, 1, 1, false);
+                tenant.SaveChanges();
+                Assert.True(ptHokenChecks.Any() && ptHokenChecks.FirstOrDefault()?.IsDeleted == 1);
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                receiptRepository.ReleaseResource();
+                patientInforRepository.ReleaseResource();
+                tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
+                tenant.PtInfs.RemoveRange(ptInfs);
+                tenant.SaveChanges();
+                #endregion
+            }
+        }
+
+
+        [Test]
+        public void UpdateHokenCheck_Update_005()
+        {
+            #region Fetch data
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+
+            //PtInf
+            var ptInfs = ReadPatientCommon.ReadPtInf();
+            tenant.PtInfs.AddRange(ptInfs);
+
+            // PtHokenCheck
+            var ptHokenChecks = ReadPatientCommon.ReadPtHokenCheck();
+            tenant.PtHokenChecks.AddRange(ptHokenChecks);
+
+            #endregion
+
+            // Arrange
+            ReceptionRepository receiptRepository = new ReceptionRepository(TenantProvider);
+
+            PatientInforRepository patientInforRepository = new PatientInforRepository(TenantProvider, receiptRepository);
+
+            // Assert
+            try
+            {
+                tenant.SaveChanges();
+                var confirmDates = new List<ConfirmDateModel> { new ConfirmDateModel(999999999, 1, 1, DateTime.UtcNow, 1, "Luu Check", 3) };
+                patientInforRepository.UpdateHokenCheck(ptHokenChecks, confirmDates, 1, 999999999, 1, 1, false);
+                tenant.SaveChanges();
+                Assert.True(ptHokenChecks.Any() && ptHokenChecks.FirstOrDefault()?.CheckCmt == "Luu Check");
+            }
+            finally
+            {
+                #region Remove Data Fetch
+                receiptRepository.ReleaseResource();
+                patientInforRepository.ReleaseResource();
+                tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
                 tenant.PtInfs.RemoveRange(ptInfs);
                 tenant.SaveChanges();
                 #endregion
