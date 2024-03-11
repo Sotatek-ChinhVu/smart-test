@@ -25,12 +25,12 @@ using UseCase.VisitingList.SaveSettings;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class VisitingController : AuthorizeControllerBase
+public class VisitingController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
     private readonly IWebSocketService _webSocketService;
 
-    public VisitingController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
+    public VisitingController(UseCaseBus bus, IWebSocketService webSocketService, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
         _webSocketService = webSocketService;

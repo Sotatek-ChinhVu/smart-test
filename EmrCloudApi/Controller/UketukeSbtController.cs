@@ -1,12 +1,9 @@
 ﻿using Domain.Models.UketukeSbtMst;
-using Domain.Models.User;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.UketukeSbt;
 using EmrCloudApi.Requests.UketukeSbt;
-using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.UketukeSbt;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -17,11 +14,11 @@ using UseCase.UketukeSbtMst.Upsert;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class UketukeSbtController : AuthorizeControllerBase
+public class UketukeSbtController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public UketukeSbtController(UseCaseBus bus, IUserService userService) : base(userService)
+    public UketukeSbtController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

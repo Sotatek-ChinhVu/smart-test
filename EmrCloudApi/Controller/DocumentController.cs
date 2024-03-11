@@ -5,7 +5,6 @@ using EmrCloudApi.Presenters.Document;
 using EmrCloudApi.Requests.Document;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
-using EmrCloudApi.Services;
 using Interactor.Document.CommonGetListParam;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -31,11 +30,11 @@ namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 
-public class DocumentController : AuthorizeControllerBase
+public class DocumentController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
     private readonly ICommonGetListParam _commonGetListParam;
-    public DocumentController(UseCaseBus bus, IUserService userService, ICommonGetListParam commonGetListParam) : base(userService)
+    public DocumentController(UseCaseBus bus, ICommonGetListParam commonGetListParam, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
         _commonGetListParam = commonGetListParam;

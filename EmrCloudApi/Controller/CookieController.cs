@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using Infrastructure.Common;
+﻿using Domain.Models.UserToken;
 using Helper.Constants;
-using Domain.Models.UserToken;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCloudApi.Controller;
 
@@ -11,6 +9,7 @@ public class CookieController : ControllerBase
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserTokenRepository _userTokenRepository;
+    private int _hpId;
 
     public int HpId { get; private set; }
 
@@ -25,21 +24,32 @@ public class CookieController : ControllerBase
     ///  Get HpId from cookie to report api
     /// </summary>
     /// <returns></returns>
+    //private int GetHpId()
+    //{
+    //    string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies[DomainCookie.CookieReportKey] ?? string.Empty;
+    //    if (!string.IsNullOrEmpty(cookieValue))
+    //    {
+    //        var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
+    //        if (cookie == null)
+    //        {
+    //            return -1;
+    //        }
+    //        // check RefreshToken is valid
+    //        if (_userTokenRepository.RefreshTokenIsValid(cookie.UserId, cookie.RefreshToken))
+    //        {
+    //            return cookie.HpId;
+    //        }
+    //    }
+    //    return -1;
+    //}
+
     private int GetHpId()
     {
-        string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies[DomainCookie.CookieReportKey] ?? string.Empty;
-        if (!string.IsNullOrEmpty(cookieValue))
+        string? hpIdValue = _httpContextAccessor.HttpContext?.Request?.Query[ParamConstant.HpId] ?? string.Empty;
+
+        if (!string.IsNullOrEmpty(hpIdValue))
         {
-            var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
-            if (cookie == null)
-            {
-                return -1;
-            }
-            // check RefreshToken is valid
-            if (_userTokenRepository.RefreshTokenIsValid(cookie.UserId, cookie.RefreshToken))
-            {
-                return cookie.HpId;
-            }
+            return int.TryParse(hpIdValue, out _hpId) ? _hpId : -1;
         }
         return -1;
     }

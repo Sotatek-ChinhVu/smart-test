@@ -15,11 +15,11 @@ using UseCase.Core.Sync;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class AccountDueController : AuthorizeControllerBase
+public class AccountDueController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
     private readonly IWebSocketService _webSocketService;
-    public AccountDueController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
+    public AccountDueController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor, IWebSocketService webSocketService) : base(httpContextAccessor)
     {
         _bus = bus;
         _webSocketService = webSocketService;

@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.SetKbnMst;
 using EmrCloudApi.Requests.SetKbnMst;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.SetKbnMst;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SetKbnMst.GetList;
@@ -13,10 +12,10 @@ using UseCase.SetKbnMst.Upsert;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class SetKbnController : AuthorizeControllerBase
+    public class SetKbnController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SetKbnController(UseCaseBus bus, IUserService userService) : base(userService)
+        public SetKbnController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

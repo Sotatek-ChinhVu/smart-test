@@ -6,7 +6,6 @@ using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Todo;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Todo;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Todo;
@@ -16,12 +15,12 @@ using UseCase.Todo.UpsertTodoInf;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    public class TodoInfController : AuthorizeControllerBase
+    public class TodoInfController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
 
-        public TodoInfController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
+        public TodoInfController(UseCaseBus bus, IWebSocketService webSocketService, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
             _webSocketService = webSocketService;

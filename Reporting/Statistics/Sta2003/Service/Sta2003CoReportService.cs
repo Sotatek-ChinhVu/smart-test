@@ -587,7 +587,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                 {
                     TotalCaption = title,
                     TotalCount = totalData.Count.ToString("#,0件"),
-                    TotalPtCount = totalData.PtCount.Count.ToString("(#,0人)"),
+                    TotalPtCount = totalData.PtCount?.Count.ToString("(#,0人)") ?? string.Empty,
                     RaiinCount = totalData.RaiinCount.ToString("#,0"),
                     RaiinDayCount = totalData.RaiinDayCount.ToString("#,0"),
                     NewTensu = totalData.NewTensu.ToString("#,0"),
@@ -603,7 +603,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                     MisyuGaku = totalData.MisyuGaku.ToString("#,0"),
                     PostNyukinGaku = totalData.PostNyukinGaku.ToString("#,0"),
                     PostAdjustFutan = totalData.PostAdjustFutan.ToString("#,0"),
-                    JihiSbtFutans = totalData.JihiSbtFutans.Select(j => j.ToString("#,0")).ToList()
+                    JihiSbtFutans = totalData.JihiSbtFutans?.Select(j => j.ToString("#,0")).ToList()
                 }
             );
             totalData.Clear();

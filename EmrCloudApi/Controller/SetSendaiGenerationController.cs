@@ -4,12 +4,10 @@ using EmrCloudApi.Requests.SetSendaiGeneration;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.GetSendaiGeneration;
 using EmrCloudApi.Responses.SetSendaiGeneration;
-using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
-using System.Threading;
 using UseCase.Core.Sync;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.SetSendaiGeneration.Delete;
@@ -19,12 +17,12 @@ using UseCase.SetSendaiGeneration.Restore;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class SetSendaiGenerationController : AuthorizeControllerBase
+    public class SetSendaiGenerationController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IMessenger _messenger;
         private CancellationToken? _cancellationToken;
-        public SetSendaiGenerationController(UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
+        public SetSendaiGenerationController(UseCaseBus bus, IMessenger messenger, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
             _messenger = messenger;
@@ -70,7 +68,7 @@ namespace EmrCloudApi.Controller
                 else
                 {
                     UpdateProcessSave(new ProcessSetSendaiGenerationStatus(string.Empty, 100, true, false));
-                }    
+                }
             }
             finally
             {

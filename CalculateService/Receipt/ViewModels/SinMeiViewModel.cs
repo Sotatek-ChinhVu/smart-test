@@ -2621,7 +2621,7 @@ namespace CalculateService.Receipt.ViewModels
                 }
                 if (_firstSinDate == 0)
                 {
-                    _lastSinDate = sinKouiCountModels.Min(p => p.SinDate);
+                    _lastSinDate = sinKouiCountModels.Select(p => p.SinDate).DefaultIfEmpty()?.Min() ?? 0;
                 }
 
                 _lastSinDate = 0;
@@ -2640,7 +2640,7 @@ namespace CalculateService.Receipt.ViewModels
                 }
                 if (_lastSinDate == 0)
                 {
-                    _lastSinDate = sinKouiCountModels.Max(p => p.SinDate);
+                    _lastSinDate = sinKouiCountModels.Any() ? sinKouiCountModels.Max(p => p.SinDate) : 0;
                 }
 
                 _emrLogger.WriteLogEnd(this, conFncName, "");

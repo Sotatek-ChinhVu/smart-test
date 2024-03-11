@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.Santei;
 using EmrCloudApi.Requests.Santei;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Santei;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Santei.GetListSanteiInf;
@@ -12,10 +11,10 @@ using UseCase.Santei.SaveListSanteiInf;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class SanteiController : AuthorizeControllerBase
+public class SanteiController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
-    public SanteiController(UseCaseBus bus, IUserService userService) : base(userService)
+    public SanteiController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

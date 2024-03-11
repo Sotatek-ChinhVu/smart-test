@@ -12,10 +12,10 @@ namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WeightedSetConfirmationController : AuthorizeControllerBase
+    public class WeightedSetConfirmationController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public WeightedSetConfirmationController(UseCaseBus bus, IUserService userService) : base(userService)
+        public WeightedSetConfirmationController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

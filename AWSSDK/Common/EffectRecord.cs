@@ -9,16 +9,16 @@ namespace AWSSDK.Common
     public static class EffectRecord
     {
 
-        const string TenMstTableName = "TenMst";
-        const string DensiHaiHanCustomTableName = "DENSI_HAIHAN_CUSTOM";
-        const string DensiHaihanDayTableName = "DENSI_HAIHAN_Day";
-        const string DensiHaihanKarteTableName = "DENSI_HAIHAN_KARTE";
-        const string DensiHaihanMonthTableName = "DENSI_HAIHAN_MONTH";
-        const string DensiHaihanWeekTableName = "DENSI_HAIHAN_WEEK";
-        const string DensiHojyoTableName = "DENSI_HOJYO";
-        const string DensiHoukatuTableName = "DENSI_HOUKATU";
-        const string DensiHoukatuGrpTableName = "DENSI_HOUKATU_GRP";
-        const string DensiSanteiKaisuTableName = "DENSI_SANTEI_KAISU";
+        const string TenMstTableName = "ten_mst";
+        const string DensiHaiHanCustomTableName = "densi_haihan_custom";
+        const string DensiHaihanDayTableName = "densi_haihan_day";
+        const string DensiHaihanKarteTableName = "densi_haihan_karte";
+        const string DensiHaihanMonthTableName = "densi_haihan_month";
+        const string DensiHaihanWeekTableName = "densi_haihan_week";
+        const string DensiHojyoTableName = "densi_hojyo";
+        const string DensiHoukatuTableName = "densi_houkatu";
+        const string DensiHoukatuGrpTableName = "densi_houkatu_grp";
+        const string DensiSanteiKaisuTableName = "densi_santei_kaisu";
 
         /// <summary>
         /// 
@@ -43,15 +43,15 @@ namespace AWSSDK.Common
                     {
                         TempGenerationMst tempTenMst = new TempGenerationMst
                         {
-                            Hp_Id = Convert.ToInt32(reader["Hp_Id"]),
-                            Houkatu_Grp_No = Convert.ToString(reader["Houkatu_Grp_No"]),
-                            Item_Cd = Convert.ToString(reader["Item_Cd"]),
-                            Item_Cd1 = Convert.ToString(reader["Item_Cd1"]),
-                            Item_Cd2 = Convert.ToString(reader["Item_Cd2"]),
-                            Unit_Cd = Convert.ToInt32(reader["Unit_Cd"]),
-                            User_Setting = Convert.ToInt32(reader["User_Setting"]),
-                            Start_Date = Convert.ToInt32(reader["Start_Date"]),
-                            End_Date = Convert.ToInt32(reader["End_Date"]),
+                            hp_id = Convert.ToInt32(reader["hp_id"]),
+                            houkatu_grp_no = Convert.ToString(reader["houkatu_grp_no"]),
+                            item_cd = Convert.ToString(reader["item_cd"]),
+                            item_cd1 = Convert.ToString(reader["item_cd1"]),
+                            item_cd2 = Convert.ToString(reader["item_cd2"]),
+                            unit_cd = Convert.ToInt32(reader["unit_cd"]),
+                            user_setting = Convert.ToInt32(reader["user_setting"]),
+                            start_date = Convert.ToInt32(reader["start_date"]),
+                            end_date = Convert.ToInt32(reader["end_date"]),
                         };
 
                         tempTenMsts.Add(tempTenMst);
@@ -171,23 +171,23 @@ namespace AWSSDK.Common
 
         private static TenMst GetLatestTenMst(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "ItemCd", "StartDate" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "itemcd", "startdate" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd, tempTenMst.start_date };
             string optionScript = " ORDER BY StartDate DESC";
             return GetEntityByCriteria<TenMst>(connection, TenMstTableName, columns, values, optionScript);
         }
 
         private static TenMst GetTenMst(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "ITEM_CD", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "item_cd", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd, tempTenMst.start_date };
 
             return GetEntityByCriteria<TenMst>(connection, TenMstTableName, columns, values);
         }
 
         private static TenMst GetTenMstMother(NpgsqlConnection connection, TenMst tenMst)
         {
-            string[] columns = { "HP_ID", "ITEM_CD", "START_DATE" };
+            string[] columns = { "hp_id", "item_cd", "start_date" };
             object[] values = { tenMst.HpId, tenMst.ItemCd, tenMst.StartDate };
 
             return GetEntityByCriteria<TenMst>(connection, TenMstTableName, columns, values);
@@ -197,7 +197,7 @@ namespace AWSSDK.Common
         {
             List<object[]> valuesList = new List<object[]>();
 
-            string[] columns = { "HP_ID", "ITEM_CD", "START_DATE" };
+            string[] columns = { "hp_id", "item_cd", "start_date" };
 
             foreach (TenMst tenMst in tenMsts)
             {
@@ -209,16 +209,16 @@ namespace AWSSDK.Common
 
         private static T GetDensiHaihan<T>(NpgsqlConnection connection, TempGenerationMst tempTenMst, string tableName) where T : new()
         {
-            string[] columns = { "HP_ID", "ITEM_CD1", "ITEM_CD2", "USER_SETTING", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd1, tempTenMst.Item_Cd2, tempTenMst.User_Setting, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "item_cd1", "item_cd2", "user_setting", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd1, tempTenMst.item_cd2, tempTenMst.user_setting, tempTenMst.start_date };
 
             return GetEntityByCriteria<T>(connection, tableName, columns, values);
         }
 
         private static T GetLatestDensiHaihan<T>(NpgsqlConnection connection, TempGenerationMst tempTenMst, string tableName) where T : new()
         {
-            string[] columns = { "HP_ID", "ITEM_CD1", "ITEM_CD2", "USER_SETTING", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd1, tempTenMst.Item_Cd2, tempTenMst.User_Setting, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "item_cd1", "item_cd2", "user_setting", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd1, tempTenMst.item_cd2, tempTenMst.user_setting, tempTenMst.start_date };
             string optionScript = " ORDER BY StartDate DESC";
             return GetEntityByCriteria<T>(connection, tableName, columns, values, optionScript);
         }
@@ -227,7 +227,7 @@ namespace AWSSDK.Common
         {
             List<object[]> valuesList = new List<object[]>();
 
-            var columns = new string[] { "ID", "HP_ID", "ITEM_CD1", "SEQ_NO", "USER_SETTING" };
+            var columns = new string[] { "id", "hp_id", "item_cd1", "seq_no", "user_setting" };
 
             foreach (var entity in entities)
             {
@@ -245,16 +245,16 @@ namespace AWSSDK.Common
 
         private static DensiHoukatu GetDensiHoukatu(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "ITEM_CD", "USER_SETTING", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd, tempTenMst.User_Setting, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "item_cd", "user_setting", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd, tempTenMst.user_setting, tempTenMst.start_date };
 
             return GetEntityByCriteria<DensiHoukatu>(connection, DensiHoukatuTableName, columns, values);
         }
 
         private static DensiHoukatu GetLatestDensiHoukatu(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "ITEM_CD", "USER_SETTING", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd, tempTenMst.User_Setting, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "item_cd", "user_setting", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd, tempTenMst.user_setting, tempTenMst.start_date };
             string optionScript = " ORDER BY StartDate DESC";
             return GetEntityByCriteria<DensiHoukatu>(connection, DensiHoukatuTableName, columns, values, optionScript);
         }
@@ -263,7 +263,7 @@ namespace AWSSDK.Common
         {
             List<object[]> valuesList = new List<object[]>();
 
-            string[] columns = { "HP_ID", "ITEM_CD", "START_DATE", "SEQ_NO", "USER_SETTING" };
+            string[] columns = { "hp_id", "item_cd", "start_date", "seq_no", "user_setting" };
 
             foreach (DensiHoukatu item in densiHoukatus)
             {
@@ -275,16 +275,16 @@ namespace AWSSDK.Common
 
         private static DensiHojyo GetLatestDensiHojyo(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "ItemCd", "StartDate" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "itemcd", "startdate" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd, tempTenMst.start_date };
             string optionScript = " ORDER BY StartDate DESC";
             return GetEntityByCriteria<DensiHojyo>(connection, DensiHojyoTableName, columns, values, optionScript);
         }
 
         private static DensiHojyo GetDensiHojyo(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "ITEM_CD", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "item_cd", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd, tempTenMst.start_date };
 
             return GetEntityByCriteria<DensiHojyo>(connection, DensiHojyoTableName, columns, values);
         }
@@ -293,7 +293,7 @@ namespace AWSSDK.Common
         {
             List<object[]> valuesList = new List<object[]>();
 
-            string[] columns = { "HP_ID", "ITEM_CD", "START_DATE" };
+            string[] columns = { "hp_id", "item_cd", "start_date" };
 
             foreach (DensiHojyo item in densiHojyos)
             {
@@ -305,16 +305,16 @@ namespace AWSSDK.Common
 
         private static DensiHoukatuGrp GetDensiHoukatuGrp(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "HOUKATU_GRP_NO", "ITEM_CD", "USER_SETTING", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Houkatu_Grp_No, tempTenMst.Item_Cd, tempTenMst.User_Setting, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "houkatu_grp_no", "item_cd", "user_setting", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.houkatu_grp_no, tempTenMst.item_cd, tempTenMst.user_setting, tempTenMst.start_date };
 
             return GetEntityByCriteria<DensiHoukatuGrp>(connection, DensiHoukatuGrpTableName, columns, values);
         }
 
         private static DensiHoukatuGrp GetLatestDensiHoukatuGrp(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "HOUKATU_GRP_NO", "ITEM_CD", "USER_SETTING", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Houkatu_Grp_No, tempTenMst.Item_Cd, tempTenMst.User_Setting, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "houkatu_grp_no", "item_cd", "user_setting", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.houkatu_grp_no, tempTenMst.item_cd, tempTenMst.user_setting, tempTenMst.start_date };
             string optionScript = " ORDER BY StartDate DESC";
             return GetEntityByCriteria<DensiHoukatuGrp>(connection, DensiHoukatuGrpTableName, columns, values, optionScript);
         }
@@ -323,7 +323,7 @@ namespace AWSSDK.Common
         {
             List<object[]> valuesList = new List<object[]>();
 
-            string[] columns = { "HP_ID", "HOUKATU_GRP_NO", "ITEM_CD", "START_DATE", "SEQ_NO", "USER_SETTING" };
+            string[] columns = { "hp_id", "houkatu_grp_no", "item_cd", "start_date", "seq_no", "user_setting" };
 
             foreach (DensiHoukatuGrp item in densiHoukatus)
             {
@@ -335,16 +335,16 @@ namespace AWSSDK.Common
 
         private static DensiSanteiKaisu GetDensiSanteiKaisu(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "ITEM_CD", "UNIT_CD", "USER_SETTING", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd, tempTenMst.Unit_Cd, tempTenMst.User_Setting, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "item_cd", "unit_cd", "user_setting", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd, tempTenMst.unit_cd, tempTenMst.user_setting, tempTenMst.start_date };
 
             return GetEntityByCriteria<DensiSanteiKaisu>(connection, DensiHoukatuGrpTableName, columns, values);
         }
 
         private static DensiSanteiKaisu GetLatestDensiSanteiKaisu(NpgsqlConnection connection, TempGenerationMst tempTenMst)
         {
-            string[] columns = { "HP_ID", "ITEM_CD", "UNIT_CD", "USER_SETTING", "START_DATE" };
-            object[] values = { tempTenMst.Hp_Id, tempTenMst.Item_Cd, tempTenMst.Unit_Cd, tempTenMst.User_Setting, tempTenMst.Start_Date };
+            string[] columns = { "hp_id", "item_cd", "unit_cd", "user_setting", "start_date" };
+            object[] values = { tempTenMst.hp_id, tempTenMst.item_cd, tempTenMst.unit_cd, tempTenMst.user_setting, tempTenMst.start_date };
             string optionScript = " ORDER BY StartDate DESC";
             return GetEntityByCriteria<DensiSanteiKaisu>(connection, DensiSanteiKaisuTableName, columns, values, optionScript);
         }
@@ -353,7 +353,7 @@ namespace AWSSDK.Common
         {
             List<object[]> valuesList = new List<object[]>();
 
-            string[] columns = { "HP_ID", "ITEM_CD", "SEQ_NO", "USER_SETTING", "ID" };
+            string[] columns = { "hp_id", "item_cd", "seq_no", "user_setting", "id" };
 
             foreach (DensiSanteiKaisu item in densiHoukatus)
             {
@@ -448,41 +448,41 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestTenMst.EndDate > tempTenMst.End_Date)
+                    else if (latestTenMst.EndDate > tempTenMst.end_date)
                     {
-                        if (tempTenMst.Start_Date <= latestTenMst.StartDate)
+                        if (tempTenMst.start_date <= latestTenMst.StartDate)
                         {
                             allowDelete = true;
                         }
                         else
                         {
-                            latestTenMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempTenMst.Start_Date).AddDays(-1));
+                            latestTenMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempTenMst.start_date).AddDays(-1));
                         }
                     }
-                    else if (latestTenMst.EndDate == tempTenMst.End_Date)
+                    else if (latestTenMst.EndDate == tempTenMst.end_date)
                     {
-                        if (latestTenMst.StartDate < tempTenMst.Start_Date)
+                        if (latestTenMst.StartDate < tempTenMst.start_date)
                         {
-                            latestTenMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempTenMst.Start_Date).AddDays(-1));
+                            latestTenMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempTenMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestTenMst.StartDate >= tempTenMst.Start_Date)
+                        else if (latestTenMst.StartDate >= tempTenMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestTenMst.EndDate < tempTenMst.End_Date)
+                    else if (latestTenMst.EndDate < tempTenMst.end_date)
                     {
-                        if (tempTenMst.Start_Date <= latestTenMst.StartDate)
+                        if (tempTenMst.start_date <= latestTenMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempTenMst.Start_Date <= latestTenMst.EndDate)
+                        else if (tempTenMst.start_date <= latestTenMst.EndDate)
                         {
-                            latestTenMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempTenMst.Start_Date).AddDays(-1));
+                            latestTenMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempTenMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempTenMst.Start_Date > latestTenMst.EndDate)
+                        else if (tempTenMst.start_date > latestTenMst.EndDate)
                         {
                             //1
                         }
@@ -534,34 +534,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }
@@ -613,34 +613,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }
@@ -691,34 +691,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }
@@ -770,34 +770,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }
@@ -850,34 +850,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }
@@ -923,34 +923,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }
@@ -1002,34 +1002,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }
@@ -1080,34 +1080,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }
@@ -1160,34 +1160,34 @@ namespace AWSSDK.Common
                     {
                         //1
                     }
-                    else if (latestMst.EndDate > tempMst.End_Date)
+                    else if (latestMst.EndDate > tempMst.end_date)
                     {
                         allowDelete = true;
                     }
-                    else if (latestMst.EndDate == tempMst.End_Date)
+                    else if (latestMst.EndDate == tempMst.end_date)
                     {
-                        if (latestMst.StartDate < tempMst.Start_Date)
+                        if (latestMst.StartDate < tempMst.start_date)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (latestMst.StartDate > tempMst.Start_Date)
+                        else if (latestMst.StartDate > tempMst.start_date)
                         {
                             allowDelete = true;
                         }
                     }
-                    else if (latestMst.EndDate < tempMst.End_Date)
+                    else if (latestMst.EndDate < tempMst.end_date)
                     {
-                        if (tempMst.Start_Date < latestMst.StartDate)
+                        if (tempMst.start_date < latestMst.StartDate)
                         {
                             allowDelete = true;
                         }
-                        else if (tempMst.Start_Date <= latestMst.EndDate)
+                        else if (tempMst.start_date <= latestMst.EndDate)
                         {
-                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.Start_Date).AddDays(-1));
+                            latestMst.EndDate = CIUtil.DateTimeToInt(CIUtil.IntToDate(tempMst.start_date).AddDays(-1));
                             //1
                         }
-                        else if (tempMst.Start_Date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
+                        else if (tempMst.start_date == CIUtil.DateTimeToInt(CIUtil.IntToDate(latestMst.EndDate).AddDays(1)))
                         {
                             //1
                         }

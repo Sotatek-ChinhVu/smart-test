@@ -1,24 +1,21 @@
-﻿using ClosedXML.Excel;
-using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportPDF;
-using EmrCloudApi.Services;
 using Helper.Enum;
 using Helper.Extension;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Mappers.Common;
 using Reporting.ReportServices;
 using System.Text;
-using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class ImportCSVController : AuthorizeControllerBase
+public class ImportCSVController : BaseParamControllerBase
 {
     private readonly IReportService _reportService;
 
-    public ImportCSVController(IUserService userService, IReportService reportService) : base(userService)
+    public ImportCSVController(IReportService reportService, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _reportService = reportService;
     }

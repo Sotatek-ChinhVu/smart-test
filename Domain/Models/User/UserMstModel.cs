@@ -5,7 +5,7 @@ namespace Domain.Models.User
 {
     public class UserMstModel
     {
-        public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId,
+        public UserMstModel(int hpId, int id, int userId, int jobCd, int managerKbn, int kaId,
             string kanaName, string name, string sname, string drName, string loginId,
             string loginPass, string mayakuLicenseNo, int startDate, int endDate,
             int sortNo, string renkeiCd1, int isDeleted)
@@ -35,7 +35,7 @@ namespace Domain.Models.User
 
 
 
-        public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId,
+        public UserMstModel(int hpId, int id, int userId, int jobCd, int managerKbn, int kaId,
             string kaSName, string kanaName, string name, string sname, string drName, string loginId,
             string loginPass, string mayakuLicenseNo, int startDate, int endDate,
             int sortNo, string renkeiCd1, int isDeleted)
@@ -62,6 +62,7 @@ namespace Domain.Models.User
             Permissions = new();
             FunctionMstModels = new();
         }
+
         public UserMstModel()
         {
             KanaName = string.Empty;
@@ -74,11 +75,12 @@ namespace Domain.Models.User
             RenkeiCd1 = string.Empty;
             DrName = string.Empty;
             KaSName = string.Empty;
+            Email = string.Empty;
             Permissions = new();
             FunctionMstModels = new();
         }
 
-        public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, List<UserPermissionModel> permissions)
+        public UserMstModel(int hpId, int id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, List<UserPermissionModel> permissions)
         {
             Id = id;
             UserId = userId;
@@ -103,7 +105,7 @@ namespace Domain.Models.User
             FunctionMstModels = new();
         }
 
-        public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, List<FunctionMstModel> functionMstModels)
+        public UserMstModel(int hpId, int id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, List<FunctionMstModel> functionMstModels)
         {
             Id = id;
             UserId = userId;
@@ -128,7 +130,7 @@ namespace Domain.Models.User
             FunctionMstModels = functionMstModels;
         }
 
-        public UserMstModel(int hpId, int userId, string sname, string kanaName, string name, int startDate, int endDate, int isDeleted, long id)
+        public UserMstModel(int hpId, int userId, string sname, string kanaName, string name, int startDate, int endDate, int isDeleted, int id)
         {
             HpId = hpId;
             UserId = userId;
@@ -149,7 +151,36 @@ namespace Domain.Models.User
             FunctionMstModels = new();
         }
 
-        public long Id { get; private set; }
+        public UserMstModel(int id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, int hpId, string email, int isInitPassword, int missLoginCount, int status, List<UserPermissionModel> permissions, List<FunctionMstModel> functionMstModels)
+        {
+            Id = id;
+            UserId = userId;
+            JobCd = jobCd;
+            ManagerKbn = managerKbn;
+            KaId = kaId;
+            KaSName = kaSName;
+            KanaName = kanaName;
+            Name = name;
+            Sname = sname;
+            LoginId = loginId;
+            LoginPass = loginPass;
+            MayakuLicenseNo = mayakuLicenseNo;
+            StartDate = startDate;
+            EndDate = endDate;
+            SortNo = sortNo;
+            IsDeleted = isDeleted;
+            RenkeiCd1 = renkeiCd1;
+            DrName = drName;
+            HpId = hpId;
+            Email = email;
+            IsInitPassword = isInitPassword;
+            MissLoginCount = missLoginCount;
+            Status = status;
+            Permissions = permissions;
+            FunctionMstModels = functionMstModels;
+        }
+
+        public int Id { get; private set; }
 
         public int UserId { get; private set; }
 
@@ -187,6 +218,18 @@ namespace Domain.Models.User
 
         public int HpId { get; private set; }
 
+        public string Email { get; set; }
+
+        public int IsInitPassword { get; set; }
+
+        public int MissLoginCount { get; set; }
+
+        public int Status { get; set; }
+
+        public List<UserPermissionModel> Permissions { get; private set; }
+
+        public List<FunctionMstModel> FunctionMstModels { get; private set; }
+
         public string SNameBinding
         {
             get
@@ -203,10 +246,6 @@ namespace Domain.Models.User
                 return "[" + sUserId + "] " + Sname;
             }
         }
-
-        public List<UserPermissionModel> Permissions { get; private set; }
-
-        public List<FunctionMstModel> FunctionMstModels { get; private set; }
 
         public ValidationStatus Validation()
         {
