@@ -2743,7 +2743,7 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        private void CloneByomeiWithNewHokenId(List<PtByomei> ptByomeis, int hokenId, int userId)
+        public bool CloneByomeiWithNewHokenId(List<PtByomei> ptByomeis, int hokenId, int userId)
         {
             List<PtByomei> newCloneByomeis = new();
             foreach (var ptByomei in ptByomeis)
@@ -2763,6 +2763,8 @@ namespace Infrastructure.Repositories
             {
                 newCloneByomei.SeqNo = newCloneByomei.Id;
             }
+
+            return true;
         }
 
         public List<VisitTimesManagementModel> GetVisitTimesManagementModels(int hpId, int sinYm, long ptId, int kohiId)

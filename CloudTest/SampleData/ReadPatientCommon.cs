@@ -468,6 +468,70 @@ public static class ReadPatientCommon
         return ptHokenChecks;
     }
 
+
+    public static List<PtByomei> ReadPtByomei()
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "PatientCommonDataSample.xlsx");
+        var ptByomeis = new List<PtByomei>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_BYOMEI").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var ptByomei = new PtByomei();
+                    ptByomei.CreateId = 1;
+                    ptByomei.CreateDate = DateTime.UtcNow;
+                    ptByomei.UpdateId = 1;
+                    ptByomei.UpdateDate = DateTime.UtcNow;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                ptByomei.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int ptId);
+                                ptByomei.PtId = ptId;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int seqNo);
+                                ptByomei.SeqNo = seqNo;
+                                break;
+                            case "D":
+                                ptByomei.ByomeiCd = text;
+                                break;
+                            case "AI":
+                                int.TryParse(text, out int hokenPID);
+                                ptByomei.HokenPid = hokenPID;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    ptByomeis.Add(ptByomei);
+                }
+            }
+        }
+
+        return ptByomeis;
+    }
+
     private static string GetColumnName(string text)
     {
         var check = int.TryParse(text.Skip(1).FirstOrDefault().ToString(), out int number);
