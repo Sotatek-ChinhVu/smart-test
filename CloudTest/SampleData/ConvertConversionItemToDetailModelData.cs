@@ -153,7 +153,15 @@ namespace CloudUnitTest.SampleData
                                     int.TryParse(text, out int kensaItemSeqNo);
                                     mst.KensaItemSeqNo = kensaItemSeqNo;
                                     break;
-                                
+                                case "T":
+                                    mst.CenterItemCd1 = text;
+                                    break;
+                                case "U":
+                                    mst.CenterItemCd2 = text;
+                                    break;
+                                default:
+                                    break;
+
                             }
                         }
                         kensaMsts.Add(mst);
