@@ -1374,7 +1374,7 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        private long GetAutoPtNum(int hpId)
+        public long GetAutoPtNum(int hpId)
         {
             long startPtNum = 1;
             long startPtNumSetting = (long)GetSettingValue(1014, hpId, 1);
