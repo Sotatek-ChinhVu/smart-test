@@ -2,12 +2,11 @@
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
+using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
-using Entity.Tenant;
 using Infrastructure.Repositories;
 using Moq;
-using System.Text;
 
 namespace CloudUnitTest.Repository.PatientInfo
 {
@@ -752,11 +751,78 @@ namespace CloudUnitTest.Repository.PatientInfo
 
             var hokenInfs = new List<HokenInfModel>()
             {
-                new HokenInfModel()
+                new HokenInfModel(
+                                  hpId: 1,
+                                  ptId: 123456,
+                                  hokenId: 789012,
+                                  seqNo: 1,
+                                  hokenNo: 456,
+                                  hokenEdaNo: 2,
+                                  hokenKbn: 3,
+                                  hokensyaNo: "ABC1234",
+                                  kigo: "K1234",
+                                  bango: "B5678",
+                                  edaNo: "E7890",
+                                  honkeKbn: 5,
+                                  startDate: 20220101,
+                                  endDate: 20221231,
+                                  sikakuDate: 20220115,
+                                  kofuDate: 20220201,
+                                  confirmDate: 20220215,
+                                  kogakuKbn: 1,
+                                  tasukaiYm: 202203,
+                                  tokureiYm1: 202204,
+                                  tokureiYm2: 202205,
+                                  genmenKbn: 1,
+                                  genmenRate: 80,
+                                  genmenGaku: 500000,
+                                  syokumuKbn: 2,
+                                  keizokuKbn: 1,
+                                  tokki1: "Tokki1",
+                                  tokki2: "Tokki2",
+                                  tokki3: "Tokki3",
+                                  tokki4: "Tokki4",
+                                  tokki5: "Tokki5",
+                                  rousaiKofuNo: "RousaiKofu123",
+                                  rousaiRoudouCd: "R123",
+                                  rousaiSaigaiKbn: 0,
+                                  rousaiKantokuCd: "K123",
+                                  rousaiSyobyoDate: 20221001,
+                                  ryoyoStartDate: 20221001,
+                                  ryoyoEndDate: 20221231,
+                                  rousaiSyobyoCd: "RSC123",
+                                  rousaiJigyosyoName: "RousaiJigyosyo",
+                                  rousaiPrefName: "Tokyo",
+                                  rousaiCityName: "Shinjuku",
+                                  rousaiReceCount: 3,
+                                  hokensyaName: "HokensyaName",
+                                  hokensyaAddress: "HokensyaAddress",
+                                  hokensyaTel: "123-456-7890",
+                                  sinDate: 20220101,
+                                  jibaiHokenName: "JibaiHokenName",
+                                  jibaiHokenTanto: "TantoName",
+                                  jibaiHokenTel: "987-654-3210",
+                                  jibaiJyusyouDate: 20220301,
+                                  houbetu: "Houbetu123",
+                                  confirmDateList: new List<ConfirmDateModel>()
+                                                      {
+                                                        new ConfirmDateModel(123456, 1, 50, DateTime.UtcNow, 1, "Check Comment"),
+                                                      },
+                                  listRousaiTenki: new List<RousaiTenkiModel>()
+                                                      {
+                                                        new RousaiTenkiModel(1, 1, 20240101, 1, 99999),
+                                                      },
+                                  isReceKisaiOrNoHoken: true,
+                                  isDeleted: 0,
+                                  hokenMst: new HokenMstModel(),
+                                  isAddNew: true,
+                                  isAddHokenCheck: true,
+                                  hokensyaMst: new HokensyaMstModel()
+                                  ),
             };
 
             // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, new(), new(), ptGrps, new(), insuranceScanModel, 9999);
+            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, new(), ptGrps, new(), insuranceScanModel, 9999);
 
             var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
             var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
@@ -764,6 +830,8 @@ namespace CloudUnitTest.Repository.PatientInfo
             var ptGrp = tenantTracking.PtGrpInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
             var ptKyusei = tenantTracking.PtKyuseis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
             var ptHokenPattern = tenantTracking.PtHokenPatterns.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+            var pthokenInf = tenantTracking.PtHokenInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+            var ptRousaiTenkis = tenantTracking.PtRousaiTenkis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
             Assert.That(createPtInf.resultSave, Is.EqualTo(true));
             Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
@@ -780,6 +848,9 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptKyusei.HpId, Is.EqualTo(1));
             Assert.That(ptHokenPattern.HpId, Is.EqualTo(1));
             Assert.That(ptHokenPattern.PtId, Is.EqualTo(createPtInf.ptId));
+            Assert.That(pthokenInf.PtId, Is.EqualTo(createPtInf.ptId));
+            Assert.That(pthokenInf.EndDate, Is.EqualTo(20221231));
+            Assert.That(pthokenInf.PtRousaiTenkis, Is.EqualTo(20221231));
 
             if (createPtInf.resultSave)
             {
