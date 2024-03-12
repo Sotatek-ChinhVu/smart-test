@@ -62,7 +62,7 @@ public class SaveMedicalRepositoryTest : BaseUT
         List<FlowSheetModel> flowSheetData = new();
         int seqNo = 999;
         MonshinInforModel monshin = new(hpId, ptId, raiinNo, sinDate, string.Empty, string.Empty, 0, 0, seqNo);
-        long rsvkrtNo = 999;
+        bool rsvkrtNo = true;
         List<long> byomeiIdList = new List<long>() { It.IsAny<long>(), It.IsAny<long>() };
 
         mockITodayOdrRepository.Setup(finder => finder.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId, status))
@@ -136,7 +136,7 @@ public class SaveMedicalRepositoryTest : BaseUT
         List<FlowSheetModel> flowSheetData = new();
         int seqNo = 999;
         MonshinInforModel monshin = new(hpId, ptId, raiinNo, sinDate, string.Empty, string.Empty, 0, 0, seqNo);
-        long rsvkrtNo = 999;
+        bool rsvkrtNo = true;
         List<long> byomeiIdList = new List<long>() { It.IsAny<long>(), It.IsAny<long>() };
 
         mockITodayOdrRepository.Setup(finder => finder.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId, status))
@@ -210,14 +210,14 @@ public class SaveMedicalRepositoryTest : BaseUT
         List<FlowSheetModel> flowSheetData = new();
         int seqNo = 999;
         MonshinInforModel monshin = new(hpId, ptId, raiinNo, sinDate, string.Empty, string.Empty, 0, 0, seqNo);
-        long rsvkrtNo = 999;
+        bool rsvkrtNo = true;
         List<long> byomeiIdList = new List<long>() { It.IsAny<long>(), It.IsAny<long>() };
 
         mockITodayOdrRepository.Setup(finder => finder.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId, status))
         .Returns((int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte modeSaveData) => true);
 
         mockINextOrderRepository.Setup(finder => finder.Upsert(userId, hpId, ptId, rsvkrtOrderInfModels))
-        .Returns((int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels) => 0);
+        .Returns((int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels) => false);
 
         mockISpecialNoteRepository.Setup(finder => finder.SaveSpecialNote(hpId, ptId, sinDate, summaryInfModel, importantNoteModel, patientInfoModel, userId))
         .Returns((int hpId, long ptId, int sinDate, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId) => true);
@@ -284,7 +284,7 @@ public class SaveMedicalRepositoryTest : BaseUT
         List<FlowSheetModel> flowSheetData = new();
         int seqNo = 999;
         MonshinInforModel monshin = new(hpId, ptId, raiinNo, sinDate, string.Empty, string.Empty, 0, 0, seqNo);
-        long rsvkrtNo = 999;
+        bool rsvkrtNo = true;
         List<long> byomeiIdList = new List<long>() { It.IsAny<long>(), It.IsAny<long>() };
 
         mockITodayOdrRepository.Setup(finder => finder.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId, status))
@@ -358,7 +358,7 @@ public class SaveMedicalRepositoryTest : BaseUT
         List<FlowSheetModel> flowSheetData = new();
         int seqNo = 999;
         MonshinInforModel monshin = new(hpId, ptId, raiinNo, sinDate, string.Empty, string.Empty, 0, 0, seqNo);
-        long rsvkrtNo = 999;
+        bool rsvkrtNo = true;
         List<long> byomeiIdList = new List<long>() { It.IsAny<long>(), It.IsAny<long>() };
 
         mockITodayOdrRepository.Setup(finder => finder.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId, status))
@@ -432,7 +432,7 @@ public class SaveMedicalRepositoryTest : BaseUT
         List<FlowSheetModel> flowSheetData = new();
         int seqNo = 999;
         MonshinInforModel monshin = new(hpId, ptId, raiinNo, sinDate, string.Empty, string.Empty, 0, 0, seqNo);
-        long rsvkrtNo = 999;
+        bool rsvkrtNo = true;
         List<long> byomeiIdList = new List<long>() { It.IsAny<long>(), It.IsAny<long>() };
 
         mockITodayOdrRepository.Setup(finder => finder.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId, status))
@@ -506,7 +506,7 @@ public class SaveMedicalRepositoryTest : BaseUT
         List<FlowSheetModel> flowSheetData = new();
         int seqNo = 999;
         MonshinInforModel monshin = new(hpId, ptId, raiinNo, sinDate, string.Empty, string.Empty, 0, 0, seqNo);
-        long rsvkrtNo = 999;
+        bool rsvkrtNo = true;
         List<long> byomeiIdList = new List<long>() { It.IsAny<long>(), It.IsAny<long>() };
 
         mockITodayOdrRepository.Setup(finder => finder.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId, status))

@@ -17,7 +17,7 @@ namespace Domain.Models.NextOrder
 
         List<NextOrderModel> GetList(int hpId, long ptId, bool isDeleted);
 
-        long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels);
+        bool Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels);
 
         List<RsvkrtOrderInfModel> GetCheckOrderInfs(int hpId, long ptId);
 
