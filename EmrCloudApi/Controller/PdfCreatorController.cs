@@ -859,8 +859,8 @@ public class PdfCreatorController : CookieController
         {
             return Content(NoDataMessage, "text/html");
         }
-
-        StringContent jsonContent = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        string stringData = JsonSerializer.Serialize(data);
+        StringContent jsonContent = new StringContent(stringData, Encoding.UTF8, "application/json");
 
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 

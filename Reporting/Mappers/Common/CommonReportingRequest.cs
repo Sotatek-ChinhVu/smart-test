@@ -16,7 +16,7 @@ public class CommonReportingRequest : ICommonReportingRequest
             ListTextData = GetListTextData(),
             SetFieldData = GetSetFieldData(),
             DrawTextData = GetDrawTextData(),
-            DrawBoxData= GetDrawBoxData(),
+            DrawBoxData = GetDrawBoxData(),
             DrawCircleData = GetDrawCircleData(),
             DrawLineData = GetDrawLineData(),
             ReportConfigPerPage = GetReportConfigModelPerPage(),
@@ -33,27 +33,27 @@ public class CommonReportingRequest : ICommonReportingRequest
 
     public virtual int GetReportType()
     {
-        throw new NotImplementedException();
+        return new();
     }
 
     public virtual string GetRowCountFieldName()
     {
-        throw new NotImplementedException();
+        return string.Empty;
     }
 
     public virtual Dictionary<string, string> GetSingleFieldData()
     {
-        throw new NotImplementedException();
+        return new();
     }
 
     public virtual List<Dictionary<string, CellModel>> GetTableFieldData()
     {
-        throw new NotImplementedException();
+        return new();
     }
 
     public virtual Dictionary<string, bool> GetVisibleFieldData()
     {
-        throw new NotImplementedException();
+        return new();
     }
 
     public virtual Dictionary<string, bool> GetVisibleAtPrint()
@@ -73,7 +73,7 @@ public class CommonReportingRequest : ICommonReportingRequest
 
     public virtual Dictionary<string, bool> GetWrapFieldData()
     {
-        throw new NotImplementedException();
+        return new();
     }
 
     public virtual Dictionary<string, string> GetExtralData()

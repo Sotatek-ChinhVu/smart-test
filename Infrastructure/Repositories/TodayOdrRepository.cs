@@ -1363,7 +1363,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             if (kensaCondition && inOutKbn == 1)
             {
                 int kensaSetting = kensaIrai;
-                if (kensaMst == null)
+                if (kensaMst == null || kensaMst.IsDelete == 1)
                 {
                     if (kensaSetting > 0)
                     {
@@ -1422,7 +1422,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             if (kensaCondition && inOutKbn == 1)
             {
                 int kensaSetting = kensaIrai;
-                if (kensaMst == null)
+                if (kensaMst == null || kensaMst.IsDelete == 1)
                 {
                     if (kensaSetting > 0)
                     {
@@ -3305,7 +3305,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         string ipnName = string.Empty;
         if (!string.IsNullOrEmpty(sourceDetail.IpnCd))
         {
-            ipnName = ipnNameMsts.FirstOrDefault(i => i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
+            ipnName = ipnNameMsts.FirstOrDefault(i =>   i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
         }
         else
         {

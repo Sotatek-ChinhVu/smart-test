@@ -670,6 +670,68 @@ public static class ReadPatientCommon
         return byomeiMsts;
     }
 
+    public static List<SystemConf> ReadSystemConf()
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "PatientCommonDataSample.xlsx");
+        var systemConfs = new List<SystemConf>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SYSTEM_CONF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var systemConf = new SystemConf();
+                    systemConf.CreateId = 1;
+                    systemConf.CreateDate = DateTime.UtcNow;
+                    systemConf.UpdateId = 1;
+                    systemConf.UpdateDate = DateTime.UtcNow;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                systemConf.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int grpCd);
+                                systemConf.GrpCd = grpCd;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int grpEdaNo);
+                                systemConf.GrpEdaNo = grpEdaNo;
+                                break;
+                            case "D":
+                                int.TryParse(text, out int val);
+                                systemConf.Val = val;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    systemConfs.Add(systemConf);
+                }
+            }
+        }
+
+        return systemConfs;
+    }
+
     private static string GetColumnName(string text)
     {
         var check = int.TryParse(text.Skip(1).FirstOrDefault().ToString(), out int number);
