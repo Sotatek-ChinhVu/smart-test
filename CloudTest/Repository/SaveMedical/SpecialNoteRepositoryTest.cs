@@ -4,8 +4,6 @@ using Infrastructure.Repositories.SpecialNote;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Domain.Models.SpecialNote.ImportantNote;
-using DocumentFormat.OpenXml.Wordprocessing;
-using ZstdSharp.Unsafe;
 
 namespace CloudUnitTest.Repository.SaveMedical;
 
@@ -1591,6 +1589,187 @@ public class SpecialNoteRepositoryTest : BaseUT
         }
     }
     #endregion SaveOtcDrugItems
+
+    #region SaveSuppleItems
+    [Test]
+    public void TC_020_SaveImportantNote_TestSaveSuppleItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+        var ptSuppleModel = new PtSuppleModel(hpId, ptId, 0, random.Next(999, 99999), "indexCdPtSupple", "indexWordPtSupple", 20220202, 20220202, "cmtPtSupple", 0);
+        PtSupple? ptSupple = null;
+        ImportantNoteModel importantNoteModel = new ImportantNoteModel(
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { ptSuppleModel });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, importantNoteModel, null, userId);
+
+            // Assert
+            ptSupple = tenant.PtSupples.FirstOrDefault(item => item.HpId == ptSuppleModel.HpId
+                                                               && item.PtId == ptSuppleModel.PtId
+                                                               && item.SortNo == ptSuppleModel.SortNo
+                                                               && item.IndexCd == ptSuppleModel.IndexCd
+                                                               && item.IndexWord == ptSuppleModel.IndexWord
+                                                               && item.StartDate == ptSuppleModel.StartDate
+                                                               && item.EndDate == ptSuppleModel.EndDate
+                                                               && item.Cmt == ptSuppleModel.Cmt
+                                                               && item.IsDeleted == 0);
+
+            result = result
+                     && ptSupple != null
+                     && ptSupple.HpId == ptSuppleModel.HpId
+                     && ptSupple.PtId == ptSuppleModel.PtId
+                     && ptSupple.SortNo == ptSuppleModel.SortNo
+                     && ptSupple.IndexCd == ptSuppleModel.IndexCd
+                     && ptSupple.IndexWord == ptSuppleModel.IndexWord
+                     && ptSupple.StartDate == ptSuppleModel.StartDate
+                     && ptSupple.EndDate == ptSuppleModel.EndDate
+                     && ptSupple.Cmt == ptSuppleModel.Cmt;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (ptSupple != null)
+            {
+                tenant.PtSupples.Remove(ptSupple);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void TC_021_SaveImportantNote_TestUpdateSuppleItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        var ptSuppleModel = new PtSuppleModel(hpId, ptId, random.Next(999, 99999), random.Next(999, 99999), "indexCdPtSupple", "indexWordPtSupple", 20220202, 20220202, "cmtPtSupple", 0);
+        PtSupple? ptSupple = new PtSupple()
+        {
+            HpId = ptSuppleModel.HpId,
+            PtId = ptSuppleModel.PtId,
+            SeqNo = ptSuppleModel.SeqNo
+        };
+        tenant.PtSupples.Add(ptSupple);
+
+        ImportantNoteModel importantNoteModel = new ImportantNoteModel(
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { },
+                                                    new() { ptSuppleModel });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, importantNoteModel, null, userId);
+
+            // Assert
+            var ptSuppleAfter = tenant.PtSupples.FirstOrDefault(item => item.HpId == ptSuppleModel.HpId
+                                                                         && item.PtId == ptSuppleModel.PtId
+                                                                         && item.SortNo == ptSuppleModel.SortNo
+                                                                         && item.SeqNo == ptSuppleModel.SeqNo
+                                                                         && item.IndexCd == ptSuppleModel.IndexCd
+                                                                         && item.IndexWord == ptSuppleModel.IndexWord
+                                                                         && item.StartDate == ptSuppleModel.StartDate
+                                                                         && item.EndDate == ptSuppleModel.EndDate
+                                                                         && item.Cmt == ptSuppleModel.Cmt
+                                                                         && item.IsDeleted == ptSuppleModel.IsDeleted);
+
+            result = result
+                     && ptSuppleAfter != null
+                     && ptSuppleAfter.HpId == ptSuppleModel.HpId
+                     && ptSuppleAfter.PtId == ptSuppleModel.PtId
+                     && ptSuppleAfter.SortNo == ptSuppleModel.SortNo
+                     && ptSuppleAfter.SeqNo == ptSuppleModel.SeqNo
+                     && ptSuppleAfter.IndexCd == ptSuppleModel.IndexCd
+                     && ptSuppleAfter.IndexWord == ptSuppleModel.IndexWord
+                     && ptSuppleAfter.StartDate == ptSuppleModel.StartDate
+                     && ptSuppleAfter.EndDate == ptSuppleModel.EndDate
+                     && ptSuppleAfter.Cmt == ptSuppleModel.Cmt;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (ptSupple != null)
+            {
+                tenant.PtSupples.Remove(ptSupple);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+    #endregion SaveSuppleItems
 
     #endregion SaveImportantNote
 
