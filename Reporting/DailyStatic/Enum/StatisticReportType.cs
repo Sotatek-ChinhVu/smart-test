@@ -21,6 +21,7 @@ public enum StatisticReportType
     Sta3050 = 3050,
     Sta3060 = 3060,
     Sta3061 = 3061,
+    Sta3062 = 3062,
     Sta3070 = 3070,
     Sta3071 = 3071,
     Sta3080 = 3080,
