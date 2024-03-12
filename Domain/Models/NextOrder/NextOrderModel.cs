@@ -19,6 +19,16 @@ namespace Domain.Models.NextOrder
             RsvkrtOrderInfs = rsvkrtOrderInfs;
             FileItem = fileItem;
         }
+
+        public NextOrderModel()
+        {
+            RsvName = string.Empty;
+            RsvkrtByomeis = new();
+            RsvkrtKarteInf = new();
+            RsvkrtOrderInfs = new();
+            FileItem = new();
+        }
+
         public NextOrderStatus Validation()
         {
             if (RsvkrtNo < 0)
