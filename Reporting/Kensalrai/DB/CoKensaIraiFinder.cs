@@ -296,6 +296,7 @@ namespace Reporting.Kensalrai.DB
                                                        new { tenMstEntity.HpId, tenMstEntity.KensaItemCd, tenMstEntity.KensaItemSeqNo } equals
                                                        new { kensaMstEntity.HpId, kensaMstEntity.KensaItemCd, kensaMstEntity.KensaItemSeqNo }
                                                        where tenMstEntity.StartDate <= odrInfEntity.SinDate && tenMstEntity.EndDate >= odrInfEntity.SinDate
+                                                       orderby new { odrInfDetailEntity.RpNo, odrInfDetailEntity.RpEdaNo, odrInfDetailEntity.RowNo }
                                                        select new
                                                        {
                                                            odrInfDetailEntity,
