@@ -143,6 +143,8 @@ using Reporting.SyojyoSyoki.DB;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.DB;
 using Reporting.Yakutai.Service;
+using Reporting.Statistics.Sta3062.Service;
+using Reporting.Statistics.Sta3062.DB;
 
 namespace Reporting.ReportServices;
 
@@ -342,6 +344,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<ISta3050CoReportService, Sta3050CoReportService>();
             serviceCollection.AddTransient<ISta3060CoReportService, Sta3060CoReportService>();
             serviceCollection.AddTransient<ISta3061CoReportService, Sta3061CoReportService>();
+            serviceCollection.AddTransient<ISta3062CoReportService, Sta3062CoReportService>();
             serviceCollection.AddTransient<ISta3070CoReportService, Sta3070CoReportService>();
 
 
@@ -367,6 +370,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<ICoSta3050Finder, CoSta3050Finder>();
             serviceCollection.AddTransient<ICoSta3060Finder, CoSta3060Finder>();
             serviceCollection.AddTransient<ICoSta3061Finder, CoSta3061Finder>();
+            serviceCollection.AddTransient<ICoSta3062Finder, CoSta3062Finder>();
             serviceCollection.AddTransient<ICoSta3070Finder, CoSta3070Finder>();
 
             // create service provider

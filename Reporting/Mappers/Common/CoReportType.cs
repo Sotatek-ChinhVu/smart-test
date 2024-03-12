@@ -64,5 +64,6 @@
         YoyakuList = 59,
         MemoMsg = 60,
         KensaHistory = 61,
+        Sta3062 = 62
     }
 }
