@@ -4919,6 +4919,10 @@ public class ConfigStatisticModel
         confCopy.ExcludingUnpaid = this.ExcludingUnpaid;
         confCopy.BreakPage1 = this.BreakPage1;
         confCopy.BreakPage2 = this.BreakPage2;
+        if (confCopy.ReportId == (int)StatisticReportType.Sta2001)
+        {
+            confCopy.PaymentKbn = this.PaymentKbn;
+        }
     }
 
     private void CopyReport1010(ConfigStatisticModel confCopy)

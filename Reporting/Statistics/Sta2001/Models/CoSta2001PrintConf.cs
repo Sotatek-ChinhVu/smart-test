@@ -68,4 +68,9 @@ public class CoSta2001PrintConf
     /// 担当医ID
     /// </summary>
     public List<int> TantoIds { get; set; }
+
+    /// <summary>
+    /// 支払区分コード
+    /// </summary>
+    public List<int> PaymentMethodCds { get; set; }
 }
