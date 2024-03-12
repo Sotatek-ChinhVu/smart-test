@@ -468,6 +468,270 @@ public static class ReadPatientCommon
         return ptHokenChecks;
     }
 
+    public static List<PtByomei> ReadPtByomei(string byomeiCd = "")
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "PatientCommonDataSample.xlsx");
+        var ptByomeis = new List<PtByomei>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_BYOMEI").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var ptByomei = new PtByomei();
+                    ptByomei.CreateId = 1;
+                    ptByomei.CreateDate = DateTime.UtcNow;
+                    ptByomei.UpdateId = 1;
+                    ptByomei.UpdateDate = DateTime.UtcNow;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                ptByomei.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int ptId);
+                                ptByomei.PtId = ptId;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int seqNo);
+                                ptByomei.SeqNo = seqNo;
+                                break;
+                            case "D":
+                                ptByomei.ByomeiCd = string.IsNullOrEmpty(byomeiCd) ? text : byomeiCd;
+                                break;
+                            case "AI":
+                                int.TryParse(text, out int hokenPID);
+                                ptByomei.HokenPid = hokenPID;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    ptByomeis.Add(ptByomei);
+                }
+            }
+        }
+
+        return ptByomeis;
+    }
+
+    public static List<ByomeiMst> ReadByomeiMst(string byomeiCd)
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "PatientCommonDataSample.xlsx");
+        var byomeiMsts = new List<ByomeiMst>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "BYOMEI_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var byomeiMst = new ByomeiMst();
+                    byomeiMst.CreateId = 1;
+                    byomeiMst.CreateDate = DateTime.UtcNow;
+                    byomeiMst.UpdateId = 1;
+                    byomeiMst.UpdateDate = DateTime.UtcNow;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                byomeiMst.HpId = hpId;
+                                break;
+                            case "B":
+                                byomeiMst.ByomeiCd = byomeiCd;
+                                break;
+                            case "C":
+                                byomeiMst.Byomei = text;
+                                break;
+                            case "D":
+                                byomeiMst.Sbyomei = text;
+                                break;
+                            case "E":
+                                byomeiMst.KanaName1 = text;
+                                break;
+                            case "F":
+                                byomeiMst.KanaName2 = text;
+                                break;
+                            case "G":
+                                byomeiMst.KanaName3 = text;
+                                break;
+                            case "H":
+                                byomeiMst.KanaName4 = text;
+                                break;
+                            case "I":
+                                byomeiMst.KanaName5 = text;
+                                break;
+                            case "J":
+                                byomeiMst.KanaName6 = text;
+                                break;
+                            case "K":
+                                byomeiMst.KanaName7 = text;
+                                break;
+                            case "L":
+                                byomeiMst.IkoCd = text;
+                                break;
+                            case "M":
+                                int.TryParse(text, out int sikkanCd);
+                                byomeiMst.SikkanCd = sikkanCd;
+                                break;
+                            case "N":
+                                int.TryParse(text, out int tandokuKinsi);
+                                byomeiMst.TandokuKinsi = tandokuKinsi;
+                                break;
+                            case "O":
+                                int.TryParse(text, out int hokenGai);
+                                byomeiMst.HokenGai = hokenGai;
+                                break;
+                            case "P":
+                                byomeiMst.ByomeiKanri = text;
+                                break;
+                            case "Q":
+                                byomeiMst.SaitakuKbn = text;
+                                break;
+                            case "R":
+                                byomeiMst.KoukanCd = text;
+                                break;
+                            case "S":
+                                int.TryParse(text, out int syusaiDate);
+                                byomeiMst.SyusaiDate = syusaiDate;
+                                break;
+                            case "T":
+                                int.TryParse(text, out int updDate);
+                                byomeiMst.UpdDate = updDate;
+                                break;
+                            case "U":
+                                int.TryParse(text, out int delDate);
+                                byomeiMst.DelDate = delDate;
+                                break;
+                            case "V":
+                                int.TryParse(text, out int nanbyoCd);
+                                byomeiMst.NanbyoCd = nanbyoCd;
+                                break;
+                            case "W":
+                                byomeiMst.Icd101 = text;
+                                break;
+                            case "X":
+                                byomeiMst.Icd102 = text;
+                                break;
+                            case "Y":
+                                byomeiMst.Icd1012013 = text;
+                                break;
+                            case "Z":
+                                byomeiMst.Icd1022013 = text;
+                                break;
+                            case "AA":
+                                int.TryParse(text, out int isAdopted);
+                                byomeiMst.IsAdopted = isAdopted;
+                                break;
+                            case "AB":
+                                byomeiMst.SyusyokuKbn = text;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    byomeiMsts.Add(byomeiMst);
+                }
+            }
+        }
+
+        return byomeiMsts;
+    }
+
+    public static List<SystemConf> ReadSystemConf()
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "PatientCommonDataSample.xlsx");
+        var systemConfs = new List<SystemConf>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SYSTEM_CONF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var systemConf = new SystemConf();
+                    systemConf.CreateId = 1;
+                    systemConf.CreateDate = DateTime.UtcNow;
+                    systemConf.UpdateId = 1;
+                    systemConf.UpdateDate = DateTime.UtcNow;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                systemConf.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int grpCd);
+                                systemConf.GrpCd = grpCd;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int grpEdaNo);
+                                systemConf.GrpEdaNo = grpEdaNo;
+                                break;
+                            case "D":
+                                int.TryParse(text, out int val);
+                                systemConf.Val = val;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    systemConfs.Add(systemConf);
+                }
+            }
+        }
+
+        return systemConfs;
+    }
+
     private static string GetColumnName(string text)
     {
         var check = int.TryParse(text.Skip(1).FirstOrDefault().ToString(), out int number);

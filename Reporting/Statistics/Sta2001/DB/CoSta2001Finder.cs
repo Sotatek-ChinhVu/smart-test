@@ -62,6 +62,7 @@ public class CoSta2001Finder : RepositoryBase, ICoSta2001Finder
                 EndNyukinDate = printConf.EndNyukinYm * 100 + 31,
                 KaIds = printConf.KaIds,
                 TantoIds = printConf.TantoIds,
+                PaymentMethodCds = printConf.PaymentMethodCds,
                 IsTester = printConf.IsTester,
                 IsExcludeUnpaid = printConf.IsExcludeUnpaid
             };
