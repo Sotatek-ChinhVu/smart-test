@@ -56,7 +56,11 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
 
                     if (rsvkrtOrderInfModels.Count > 0)
                     {
-                        _nextOrderRepository.Upsert(userId, hpId, ptId, rsvkrtOrderInfModels);
+                        if (_nextOrderRepository.Upsert(userId, hpId, ptId, rsvkrtOrderInfModels) == 0)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        };
                     }
 
                     var specialNote = _specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, summaryInfModel, importantNoteModel, patientInfoModel, userId);
