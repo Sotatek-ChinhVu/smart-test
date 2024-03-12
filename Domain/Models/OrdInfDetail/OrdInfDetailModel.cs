@@ -800,7 +800,7 @@ namespace Domain.Models.OrdInfDetails
             KensaMstModel = new();
         }
 
-        public OrdInfDetailModel(string itemCd, int sinKouiKbn, string ipnCd, int kohatuKbn = 0, int drugKbn = 0, int syohoKbn =0)
+        public OrdInfDetailModel(string itemCd, int sinKouiKbn, string ipnCd, int kohatuKbn = 0, int drugKbn = 0, int syohoKbn = 0)
         {
 
             ItemName = string.Empty;
