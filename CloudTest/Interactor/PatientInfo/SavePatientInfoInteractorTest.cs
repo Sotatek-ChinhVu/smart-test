@@ -9,6 +9,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Interactor.PatientInfor;
 using Moq;
+using NUnit.Framework;
 using System.Text;
 using UseCase.PatientInfor.Save;
 
@@ -10451,6 +10452,188 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
             // Assert
             Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TC_045_IsValidKanjiName_InvalidFirstNameKana_InvalidFirstNameKanji()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = string.Empty; 
+            var kanjiName = string.Empty;
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.First().Message, Is.EqualTo("カナを入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidFirstNameKana));
+            Assert.That(result.Last().Message, Is.EqualTo("氏名を入力してください。"));
+            Assert.That(result.Last().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidFirstNameKanji));
+        }
+
+        [Test]
+        public void TC_046_IsValidKanjiName_InvalidLastKanaName()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "Ariga";
+            var kanjiName = "救按 土";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("カナを入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanaName));
+        }
+
+        [Test]
+        public void TC_047_IsValidKanjiName_InvalidLastKanjiName()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "Ariga To";
+            var kanjiName = "救按";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("氏名を入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanjiName));
+        }
+
+        [Test]
+        public void TC_048_IsValidKanjiName_InvalidLastKanjiNameLength()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "Ariga To";
+            var kanjiName = "KanjiNameKanjiNameKanjiNameKanj Sample";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("患者姓は３０文字以下を入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanjiNameLength));
+        }
+
+        [Test]
+        public void TC_049_IsValidKanjiName_InvalidLastKanaNameLength()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "SampleKanaNameSampleS Sample";
+            var kanjiName = "KanjiNameKanjiNameKanjiNameKan Sample";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("患者姓（カナ）は２０文字以下を入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanaNameLength));
         }
     }
 }

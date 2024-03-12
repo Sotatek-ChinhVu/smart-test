@@ -60,6 +60,19 @@ namespace Domain.Models.Insurance
             ConfirmDate = int.Parse(confirmDate.ToString("yyyyMMdd"));
         }
 
+        public ConfirmDateModel(long ptId, int hokenGrp, int hokenId, DateTime confirmDate, int checkId, string checkComment, long seqNo)
+        {
+            PtId = ptId;
+            HokenGrp = hokenGrp;
+            HokenId = hokenId;
+            ConfirmDate = int.Parse(confirmDate.ToString("yyyyMMdd"));
+            CheckId = checkId;
+            CheckMachine = string.Empty;
+            CheckName = string.Empty;
+            CheckComment = checkComment;
+            SeqNo = seqNo;
+        }
+
         [JsonConstructor]
         public ConfirmDateModel(int hokenGrp, int hokenId, long seqNo, int checkId, string checkName, string checkComment, int confirmDate)
         {
