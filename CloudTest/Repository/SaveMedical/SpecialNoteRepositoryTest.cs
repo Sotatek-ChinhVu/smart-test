@@ -4,11 +4,30 @@ using Infrastructure.Repositories.SpecialNote;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Domain.Models.SpecialNote.ImportantNote;
+using Domain.Models.SpecialNote.PatientInfo;
+using Domain.Models.PtCmtInf;
+using Domain.Models.SpecialNote;
+using Helper.Constants;
+using Helper.Redis;
+using StackExchange.Redis;
 
 namespace CloudUnitTest.Repository.SaveMedical;
 
 public class SpecialNoteRepositoryTest : BaseUT
 {
+    private readonly IDatabase _cache;
+
+    public SpecialNoteRepositoryTest()
+    {
+        string connection = string.Concat("10.2.15.78", ":", "6379");
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+
     #region IsInvalidInputId
     [Test]
     public void TC_001_IsInvalidInputId_TestSuccess()
@@ -152,9 +171,110 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
     #endregion IsInvalidInputId
 
+    #region SaveSpecialNote
+    [Test]
+    public void TC_004_SaveSpecialNote_TestSuccess()
+    {
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+        var mockISpecialNoteRepository = new Mock<ISpecialNoteRepository>();
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, null, userId);
+
+            // Assert
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void TC_005_SaveSpecialNote_TestFalse()
+    {
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+        var mockISpecialNoteRepository = new Mock<ISpecialNoteRepository>();
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = specialNoteRepository.SaveSpecialNote(hpId, random.NextInt64(9999, 99999999), sinDate, null, null, null, userId);
+
+            // Assert
+
+            Assert.True(!result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+    #endregion
+
     #region SaveSummaryInf
     [Test]
-    public void TC_004_SaveSummaryInf_TestCreateSuccess()
+    public void TC_006_SaveSummaryInf_TestCreateSuccess()
     {
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
@@ -191,6 +311,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.SummaryInfGetList + "_" + summaryInfModel.HpId + "_" + summaryInfModel.PtId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -220,6 +342,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -234,7 +357,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_005_SaveSummaryInf_TestUpdateSuccess()
+    public void TC_007_SaveSummaryInf_TestUpdateSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -278,6 +401,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.SummaryInfGetList + "_" + summaryInfModel.HpId + "_" + summaryInfModel.PtId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
 
         try
@@ -305,6 +430,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -320,10 +446,9 @@ public class SpecialNoteRepositoryTest : BaseUT
     #endregion SaveSummaryInf
 
     #region SaveImportantNote
-
     #region SaveAlrgyFoodItems
     [Test]
-    public void TC_006_SaveImportantNote_TestSaveAlrgyFoodItemSuccess()
+    public void TC_008_SaveImportantNote_TestSaveAlrgyFoodItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -361,6 +486,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.AlrgyFoodGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -394,6 +521,10 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            if (_cache.KeyExists(finalKey))
+            {
+                _cache.KeyDelete(finalKey);
+            }
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -408,7 +539,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_007_SaveImportantNote_TestUpdateAlrgyFoodItemSuccess()
+    public void TC_009_SaveImportantNote_TestUpdateAlrgyFoodItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -452,6 +583,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.AlrgyFoodGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -487,6 +620,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -503,7 +637,7 @@ public class SpecialNoteRepositoryTest : BaseUT
 
     #region SaveElseItems
     [Test]
-    public void TC_008_SaveImportantNote_TestSaveElseItemSuccess()
+    public void TC_010_SaveImportantNote_TestSaveElseItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -541,6 +675,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.AlrgyElseGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -574,6 +710,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -588,7 +725,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_009_SaveImportantNote_TestUpdateElseItemSuccess()
+    public void TC_011_SaveImportantNote_TestUpdateElseItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -632,6 +769,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.AlrgyElseGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -667,6 +806,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -683,7 +823,7 @@ public class SpecialNoteRepositoryTest : BaseUT
 
     #region SaveDrugItems
     [Test]
-    public void TC_010_SaveImportantNote_TestSaveDrugItemSuccess()
+    public void TC_012_SaveImportantNote_TestSaveDrugItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -721,6 +861,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.PtAlrgyDrugGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -756,6 +898,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -770,7 +913,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_011_SaveImportantNote_TestUpdateDrugItemsSuccess()
+    public void TC_013_SaveImportantNote_TestUpdateDrugItemsSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -814,6 +957,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.PtAlrgyDrugGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -851,6 +996,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -867,7 +1013,7 @@ public class SpecialNoteRepositoryTest : BaseUT
 
     #region SaveKioRekiItems
     [Test]
-    public void TC_012_SaveImportantNote_TestSaveKioRekiItemSuccess()
+    public void TC_014_SaveImportantNote_TestSaveKioRekiItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -902,6 +1048,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.KioRekiGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -937,6 +1085,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -951,7 +1100,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_013_SaveImportantNote_TestUpdateKioRekiItemSuccess()
+    public void TC_015_SaveImportantNote_TestUpdateKioRekiItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -995,6 +1144,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.KioRekiGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1033,6 +1184,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1049,7 +1201,7 @@ public class SpecialNoteRepositoryTest : BaseUT
 
     #region SaveInfectionsItems
     [Test]
-    public void TC_014_SaveImportantNote_TestSaveInfectionsItemSuccess()
+    public void TC_016_SaveImportantNote_TestSaveInfectionsItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -1084,6 +1236,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.InfectionGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1119,6 +1273,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1133,7 +1288,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_015_SaveImportantNote_TestUpdateInfectionsItemSuccess()
+    public void TC_017_SaveImportantNote_TestUpdateInfectionsItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -1177,6 +1332,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.InfectionGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1214,6 +1371,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1230,7 +1388,7 @@ public class SpecialNoteRepositoryTest : BaseUT
 
     #region SaveOtherDrugItems
     [Test]
-    public void TC_016_SaveImportantNote_TestSaveOtherDrugItemSuccess()
+    public void TC_018_SaveImportantNote_TestSaveOtherDrugItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -1265,6 +1423,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.OtherDrugGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1300,6 +1460,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1314,7 +1475,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_017_SaveImportantNote_TestUpdateOtherDrugItemmSuccess()
+    public void TC_019_SaveImportantNote_TestUpdateOtherDrugItemmSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -1358,6 +1519,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.OtherDrugGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1395,6 +1558,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1411,7 +1575,7 @@ public class SpecialNoteRepositoryTest : BaseUT
 
     #region SaveOtcDrugItems
     [Test]
-    public void TC_018_SaveImportantNote_TestSaveOtcDrugItemSuccess()
+    public void TC_020_SaveImportantNote_TestSaveOtcDrugItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -1446,6 +1610,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.OtcDrugGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1481,6 +1647,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1495,7 +1662,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_019_SaveImportantNote_TestUpdateOtcDrugItemmSuccess()
+    public void TC_021_SaveImportantNote_TestUpdateOtcDrugItemmSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -1539,6 +1706,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.OtcDrugGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1576,6 +1745,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1592,7 +1762,7 @@ public class SpecialNoteRepositoryTest : BaseUT
 
     #region SaveSuppleItems
     [Test]
-    public void TC_020_SaveImportantNote_TestSaveSuppleItemSuccess()
+    public void TC_022_SaveImportantNote_TestSaveSuppleItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -1627,6 +1797,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.SuppleGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1662,6 +1834,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1676,7 +1849,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_021_SaveImportantNote_TestUpdateSuppleItemSuccess()
+    public void TC_023_SaveImportantNote_TestUpdateSuppleItemSuccess()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
@@ -1720,6 +1893,8 @@ public class SpecialNoteRepositoryTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.SuppleGetList + "_" + ptId + "_" + hpId;
+        _cache.StringAppend(finalKey, string.Empty);
         SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
         try
         {
@@ -1757,6 +1932,7 @@ public class SpecialNoteRepositoryTest : BaseUT
         finally
         {
             specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
 
             #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
@@ -1770,7 +1946,849 @@ public class SpecialNoteRepositoryTest : BaseUT
         }
     }
     #endregion SaveSuppleItems
-
     #endregion SaveImportantNote
 
+    #region SavePatientInfo
+    #region SavePregnancyItems
+    [Test]
+    public void TC_024_SaveImportantNote_TestSavePregnancyItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        PtPregnancyModel ptPregnancyModel = new PtPregnancyModel(0, hpId, ptId, random.Next(999, 99999), 20220202, 20220203, 20220204, 20220205, 20220206, 20220207, 0, DateTime.MinValue, userId, string.Empty, 20220210);
+        PtPregnancy? ptPregnancy = null;
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { ptPregnancyModel },
+                                                new() { },
+                                                new() { },
+                                                new() { });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.PtPregnancyGetList + "_" + hpId + "_" + ptId;
+        _cache.StringAppend(finalKey, string.Empty);
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            ptPregnancy = tenant.PtPregnancies.FirstOrDefault(item => item.HpId == ptPregnancyModel.HpId
+                                                                      && item.PtId == ptPregnancyModel.PtId
+                                                                      && item.SeqNo == ptPregnancyModel.SeqNo
+                                                                      && item.StartDate == ptPregnancyModel.StartDate
+                                                                      && item.EndDate == ptPregnancyModel.EndDate
+                                                                      && item.PeriodDate == ptPregnancyModel.PeriodDate
+                                                                      && item.PeriodDueDate == ptPregnancyModel.PeriodDueDate
+                                                                      && item.OvulationDate == ptPregnancyModel.OvulationDate
+                                                                      && item.OvulationDueDate == ptPregnancyModel.OvulationDueDate
+                                                                      && item.IsDeleted == 0);
+
+            result = result
+                     && ptPregnancy != null
+                     && ptPregnancy.HpId == ptPregnancyModel.HpId
+                     && ptPregnancy.PtId == ptPregnancyModel.PtId
+                     && ptPregnancy.SeqNo == ptPregnancyModel.SeqNo
+                     && ptPregnancy.StartDate == ptPregnancyModel.StartDate
+                     && ptPregnancy.EndDate == ptPregnancyModel.EndDate
+                     && ptPregnancy.PeriodDate == ptPregnancyModel.PeriodDate
+                     && ptPregnancy.PeriodDueDate == ptPregnancyModel.PeriodDueDate
+                     && ptPregnancy.OvulationDate == ptPregnancyModel.OvulationDate
+                     && ptPregnancy.OvulationDueDate == ptPregnancyModel.OvulationDueDate;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (ptPregnancy != null)
+            {
+                tenant.PtPregnancies.Remove(ptPregnancy);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void TC_025_SaveImportantNote_TestUpdatePregnancyItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        PtPregnancyModel ptPregnancyModel = new PtPregnancyModel(random.Next(999, 99999), hpId, ptId, random.Next(999, 99999), 20220202, 20220203, 20220204, 20220205, 20220206, 20220207, 0, DateTime.MinValue, userId, string.Empty, 20220210);
+        PtPregnancy? ptPregnancy = new PtPregnancy()
+        {
+            Id = ptPregnancyModel.Id,
+            HpId = ptPregnancyModel.HpId,
+            PtId = ptPregnancyModel.PtId,
+            SeqNo = ptPregnancyModel.SeqNo
+        };
+        tenant.PtPregnancies.Add(ptPregnancy);
+
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { ptPregnancyModel },
+                                                new() { },
+                                                new() { },
+                                                new() { });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.PtPregnancyGetList + "_" + hpId + "_" + ptId;
+        _cache.StringAppend(finalKey, string.Empty);
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            var ptPregnancyAfter = tenant.PtPregnancies.FirstOrDefault(item => item.HpId == ptPregnancyModel.HpId
+                                                                               && item.PtId == ptPregnancyModel.PtId
+                                                                               && item.Id == ptPregnancyModel.Id
+                                                                               && item.SeqNo == ptPregnancyModel.SeqNo
+                                                                               && item.StartDate == ptPregnancyModel.StartDate
+                                                                               && item.EndDate == ptPregnancyModel.EndDate
+                                                                               && item.PeriodDate == ptPregnancyModel.PeriodDate
+                                                                               && item.PeriodDueDate == ptPregnancyModel.PeriodDueDate
+                                                                               && item.OvulationDate == ptPregnancyModel.OvulationDate
+                                                                               && item.OvulationDueDate == ptPregnancyModel.OvulationDueDate
+                                                                               && item.IsDeleted == ptPregnancyModel.IsDeleted);
+
+            result = result
+                     && ptPregnancyAfter != null
+                     && ptPregnancyAfter.HpId == ptPregnancyModel.HpId
+                     && ptPregnancyAfter.PtId == ptPregnancyModel.PtId
+                     && ptPregnancyAfter.Id == ptPregnancyModel.Id
+                     && ptPregnancyAfter.SeqNo == ptPregnancyModel.SeqNo
+                     && ptPregnancyAfter.StartDate == ptPregnancyModel.StartDate
+                     && ptPregnancyAfter.EndDate == ptPregnancyModel.EndDate
+                     && ptPregnancyAfter.PeriodDate == ptPregnancyModel.PeriodDate
+                     && ptPregnancyAfter.PeriodDueDate == ptPregnancyModel.PeriodDueDate
+                     && ptPregnancyAfter.OvulationDate == ptPregnancyModel.OvulationDate
+                     && ptPregnancyAfter.OvulationDueDate == ptPregnancyModel.OvulationDueDate;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (ptPregnancy != null)
+            {
+                tenant.PtPregnancies.Remove(ptPregnancy);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+    #endregion SavePregnancyItems
+
+    #region SavePtCmtInfItems
+    [Test]
+    public void TC_026_SaveImportantNote_TestSavePtCmtInfItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        PtCmtInfModel ptCmtInfModel = new PtCmtInfModel(hpId, ptId, random.Next(999, 99999), "textPtCmtInf", 0, 0);
+        PtCmtInf? ptCmtInf = null;
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { },
+                                                ptCmtInfModel,
+                                                new() { },
+                                                new() { });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.PtCmtInfGetList + "_" + hpId + "_" + ptId;
+        _cache.StringAppend(finalKey, string.Empty);
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            ptCmtInf = tenant.PtCmtInfs.FirstOrDefault(item => item.HpId == ptCmtInfModel.HpId
+                                                               && item.PtId == ptCmtInfModel.PtId
+                                                               && item.SeqNo == ptCmtInfModel.SeqNo
+                                                               && item.Text == ptCmtInfModel.Text
+                                                               && item.IsDeleted == 0);
+
+            result = result
+                     && ptCmtInf != null
+                     && ptCmtInf.HpId == ptCmtInfModel.HpId
+                     && ptCmtInf.PtId == ptCmtInfModel.PtId
+                     && ptCmtInf.SeqNo == ptCmtInfModel.SeqNo
+                     && ptCmtInf.Text == ptCmtInfModel.Text;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (ptCmtInf != null)
+            {
+                tenant.PtCmtInfs.Remove(ptCmtInf);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void TC_027_SaveImportantNote_TestUpdatePtCmtInfItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        PtCmtInfModel ptCmtInfModel = new PtCmtInfModel(hpId, ptId, random.Next(999, 99999), "textPtCmtInf", 0, random.Next(999, 99999));
+        PtCmtInf? ptCmtInf = new()
+        {
+            Id = ptCmtInfModel.Id,
+            HpId = ptCmtInfModel.HpId,
+            PtId = ptCmtInfModel.PtId,
+            SeqNo = ptCmtInfModel.SeqNo
+        };
+        tenant.PtCmtInfs.Add(ptCmtInf);
+
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { },
+                                                ptCmtInfModel,
+                                                new() { },
+                                                new() { });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.PtCmtInfGetList + "_" + hpId + "_" + ptId;
+        _cache.StringAppend(finalKey, string.Empty);
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            var ptCmtInfAfter = tenant.PtCmtInfs.FirstOrDefault(item => item.HpId == ptCmtInfModel.HpId
+                                                               && item.PtId == ptCmtInfModel.PtId
+                                                               && item.Id == ptCmtInfModel.Id
+                                                               && item.SeqNo == ptCmtInfModel.SeqNo
+                                                               && item.Text == ptCmtInfModel.Text
+                                                               && item.IsDeleted == ptCmtInfModel.IsDeleted);
+
+            result = result
+                     && ptCmtInfAfter != null
+                     && ptCmtInfAfter.HpId == ptCmtInfModel.HpId
+                     && ptCmtInfAfter.PtId == ptCmtInfModel.PtId
+                     && ptCmtInfAfter.Id == ptCmtInfModel.Id
+                     && ptCmtInfAfter.SeqNo == ptCmtInfModel.SeqNo
+                     && ptCmtInfAfter.Text == ptCmtInfModel.Text;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (ptCmtInf != null)
+            {
+                tenant.PtCmtInfs.Remove(ptCmtInf);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+    #endregion SavePtCmtInfItems
+
+    #region SaveSeikatureInfItems
+    [Test]
+    public void TC_028_SaveImportantNote_TestSaveSeikatureInfItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        SeikaturekiInfModel seikaturekiInfModel = new SeikaturekiInfModel(0, hpId, ptId, random.Next(999, 99999), "textSeikaturekiInf");
+        SeikaturekiInf? seikaturekiInf = null;
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { },
+                                                new() { },
+                                                seikaturekiInfModel,
+                                                new() { });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.SeikaturekiInfGetList + "_" + hpId + "_" + ptId;
+        _cache.StringAppend(finalKey, string.Empty);
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            seikaturekiInf = tenant.SeikaturekiInfs.FirstOrDefault(item => item.HpId == seikaturekiInfModel.HpId
+                                                                           && item.PtId == seikaturekiInfModel.PtId
+                                                                           && item.SeqNo == seikaturekiInfModel.SeqNo
+                                                                           && item.Text == seikaturekiInfModel.Text);
+
+            result = result
+                     && seikaturekiInf != null
+                     && seikaturekiInf.HpId == seikaturekiInfModel.HpId
+                     && seikaturekiInf.PtId == seikaturekiInfModel.PtId
+                     && seikaturekiInf.SeqNo == seikaturekiInfModel.SeqNo
+                     && seikaturekiInf.Text == seikaturekiInfModel.Text;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (seikaturekiInf != null)
+            {
+                tenant.SeikaturekiInfs.Remove(seikaturekiInf);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void TC_029_SaveImportantNote_TestUpdatePtSeikatureInfItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        SeikaturekiInfModel seikaturekiInfModel = new SeikaturekiInfModel(random.Next(999, 99999), hpId, ptId, random.Next(999, 99999), "textSeikaturekiInf");
+        SeikaturekiInf? seikaturekiInf = new()
+        {
+            Id = seikaturekiInfModel.Id,
+            HpId = seikaturekiInfModel.HpId,
+            PtId = seikaturekiInfModel.PtId,
+            SeqNo = seikaturekiInfModel.SeqNo
+        };
+        tenant.SeikaturekiInfs.Add(seikaturekiInf);
+
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { },
+                                                new() { },
+                                                seikaturekiInfModel,
+                                                new() { });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var finalKey = "" + CacheKeyConstant.SeikaturekiInfGetList + "_" + hpId + "_" + ptId;
+        _cache.StringAppend(finalKey, string.Empty);
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            var ptSeikaturekiAfter = tenant.SeikaturekiInfs.FirstOrDefault(item => item.HpId == seikaturekiInfModel.HpId
+                                                                                   && item.PtId == seikaturekiInfModel.PtId
+                                                                                   && item.SeqNo == seikaturekiInfModel.SeqNo
+                                                                                   && item.Id == seikaturekiInfModel.Id
+                                                                                   && item.Text == seikaturekiInfModel.Text);
+
+            result = result
+                     && ptSeikaturekiAfter != null
+                     && ptSeikaturekiAfter.HpId == seikaturekiInfModel.HpId
+                     && ptSeikaturekiAfter.PtId == seikaturekiInfModel.PtId
+                     && ptSeikaturekiAfter.Id == seikaturekiInfModel.Id
+                     && ptSeikaturekiAfter.SeqNo == seikaturekiInfModel.SeqNo
+                     && ptSeikaturekiAfter.Text == seikaturekiInfModel.Text;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+            _cache.KeyDelete(finalKey);
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (seikaturekiInf != null)
+            {
+                tenant.SeikaturekiInfs.Remove(seikaturekiInf);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+    #endregion SaveSeikatureInfItems
+
+    #region SavePhysicalInfItems
+    [Test]
+    public void TC_030_SaveImportantNote_TestSavePhysicalInfItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        KensaInfDetailModel kensaInfDetailModel = new KensaInfDetailModel(hpId, ptId, random.Next(999, 999999), 0, 20220202, random.Next(999, 999999), "KensaCdUT", "ValUT", "1", "2", 0, "Cd1", "Cd2", DateTime.MinValue, string.Empty, string.Empty, 0, string.Empty);
+        PhysicalInfoModel physicalInfoModel = new PhysicalInfoModel(new() { kensaInfDetailModel });
+        KensaInf? kensaInf = null;
+        KensaInfDetail? kensaInfDetail = null;
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { },
+                                                new() { },
+                                                new() { },
+                                                new() { physicalInfoModel });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            kensaInf = tenant.KensaInfs.FirstOrDefault(item => item.HpId == hpId
+                                                               && item.PtId == ptId
+                                                               && item.RaiinNo == kensaInfDetailModel.RaiinNo
+                                                               && item.IraiDate == kensaInfDetailModel.IraiDate
+                                                               && item.Status == 2
+                                                               && item.InoutKbn == 0
+                                                               && item.IsDeleted == 0);
+
+            kensaInfDetail = tenant.KensaInfDetails.FirstOrDefault(item => item.HpId == kensaInfDetailModel.HpId
+                                                                           && item.PtId == kensaInfDetailModel.PtId
+                                                                           && item.IraiDate == kensaInfDetailModel.IraiDate
+                                                                           && item.RaiinNo == kensaInfDetailModel.RaiinNo
+                                                                           && item.IraiCd == kensaInfDetailModel.IraiCd
+                                                                           && item.KensaItemCd == kensaInfDetailModel.KensaItemCd
+                                                                           && item.ResultVal == kensaInfDetailModel.ResultVal
+                                                                           && item.ResultType == kensaInfDetailModel.ResultType
+                                                                           && item.AbnormalKbn == kensaInfDetailModel.AbnormalKbn
+                                                                           && item.CmtCd1 == kensaInfDetailModel.CmtCd1
+                                                                           && item.CmtCd2 == kensaInfDetailModel.CmtCd2
+                                                                           && item.IsDeleted == 0);
+
+            result = result
+                     && kensaInf != null
+                     && kensaInfDetail != null
+                     && kensaInf.HpId == kensaInfDetailModel.HpId
+                     && kensaInf.PtId == kensaInfDetailModel.PtId
+                     && kensaInf.RaiinNo == kensaInfDetailModel.RaiinNo
+                     && kensaInf.IraiDate == kensaInfDetailModel.IraiDate
+                     && kensaInf.Status == 2
+                     && kensaInf.InoutKbn == 0
+                     && kensaInfDetail.HpId == kensaInfDetailModel.HpId
+                     && kensaInfDetail.PtId == kensaInfDetailModel.PtId
+                     && kensaInfDetail.IraiDate == kensaInfDetailModel.IraiDate
+                     && kensaInfDetail.RaiinNo == kensaInfDetailModel.RaiinNo
+                     && kensaInfDetail.IraiCd == kensaInfDetailModel.IraiCd
+                     && kensaInfDetail.KensaItemCd == kensaInfDetailModel.KensaItemCd
+                     && kensaInfDetail.ResultVal == kensaInfDetailModel.ResultVal
+                     && kensaInfDetail.ResultType == kensaInfDetailModel.ResultType
+                     && kensaInfDetail.AbnormalKbn == kensaInfDetailModel.AbnormalKbn
+                     && kensaInfDetail.CmtCd1 == kensaInfDetailModel.CmtCd1
+                     && kensaInfDetail.CmtCd2 == kensaInfDetailModel.CmtCd2;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (kensaInf != null)
+            {
+                tenant.KensaInfs.Remove(kensaInf);
+            }
+            if (kensaInfDetail != null)
+            {
+                tenant.KensaInfDetails.Remove(kensaInfDetail);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void TC_031_SaveImportantNote_TestUpdatePtPhysicalInfItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        KensaInfDetailModel kensaInfDetailModel = new KensaInfDetailModel(hpId, ptId, random.Next(999, 999999), random.Next(999, 9999999), 20220202, random.Next(999, 999999), "KensaCdUT", "ValUT", "1", "2", 0, "Cd1", "Cd2", DateTime.MinValue, string.Empty, string.Empty, 0, string.Empty);
+        PhysicalInfoModel physicalInfoModel = new PhysicalInfoModel(new() { kensaInfDetailModel });
+        KensaInf? kensaInf = null;
+        KensaInfDetail? kensaInfDetail = new()
+        {
+            HpId = kensaInfDetailModel.HpId,
+            PtId = kensaInfDetailModel.PtId,
+            SeqNo = kensaInfDetailModel.SeqNo,
+            IraiCd = kensaInfDetailModel.IraiCd
+        };
+        tenant.KensaInfDetails.Add(kensaInfDetail);
+
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { },
+                                                new() { },
+                                                new() { },
+                                                new() { physicalInfoModel });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            kensaInf = tenant.KensaInfs.FirstOrDefault(item => item.HpId == hpId
+                                                               && item.PtId == ptId
+                                                               && item.RaiinNo == kensaInfDetailModel.RaiinNo
+                                                               && item.IraiDate == kensaInfDetailModel.IraiDate
+                                                               && item.Status == 2
+                                                               && item.InoutKbn == 0
+                                                               && item.IsDeleted == 0);
+
+            var kensaInfDetailAfter = tenant.KensaInfDetails.FirstOrDefault(item => item.HpId == kensaInfDetailModel.HpId
+                                                                            && item.PtId == kensaInfDetailModel.PtId
+                                                                            && item.IraiDate == kensaInfDetailModel.IraiDate
+                                                                            && item.RaiinNo == kensaInfDetailModel.RaiinNo
+                                                                            && item.IraiCd == kensaInfDetailModel.IraiCd
+                                                                            && item.SeqNo == kensaInfDetailModel.SeqNo
+                                                                            && item.KensaItemCd == kensaInfDetailModel.KensaItemCd
+                                                                            && item.ResultVal == kensaInfDetailModel.ResultVal
+                                                                            && item.ResultType == kensaInfDetailModel.ResultType
+                                                                            && item.AbnormalKbn == kensaInfDetailModel.AbnormalKbn
+                                                                            && item.CmtCd1 == kensaInfDetailModel.CmtCd1
+                                                                            && item.CmtCd2 == kensaInfDetailModel.CmtCd2
+                                                                            && item.IsDeleted == kensaInfDetailModel.IsDeleted);
+
+            result = result
+                     && kensaInf != null
+                     && kensaInfDetailAfter != null
+                     && kensaInf.HpId == kensaInfDetailModel.HpId
+                     && kensaInf.PtId == kensaInfDetailModel.PtId
+                     && kensaInf.RaiinNo == kensaInfDetailModel.RaiinNo
+                     && kensaInf.IraiDate == kensaInfDetailModel.IraiDate
+                     && kensaInf.Status == 2
+                     && kensaInf.InoutKbn == 0
+                     && kensaInfDetailAfter.HpId == kensaInfDetailModel.HpId
+                     && kensaInfDetailAfter.PtId == kensaInfDetailModel.PtId
+                     && kensaInfDetailAfter.IraiDate == kensaInfDetailModel.IraiDate
+                     && kensaInfDetailAfter.RaiinNo == kensaInfDetailModel.RaiinNo
+                     && kensaInfDetailAfter.IraiCd == kensaInfDetailModel.IraiCd
+                     && kensaInfDetailAfter.SeqNo == kensaInfDetailModel.SeqNo
+                     && kensaInfDetailAfter.KensaItemCd == kensaInfDetailModel.KensaItemCd
+                     && kensaInfDetailAfter.ResultVal == kensaInfDetailModel.ResultVal
+                     && kensaInfDetailAfter.ResultType == kensaInfDetailModel.ResultType
+                     && kensaInfDetailAfter.AbnormalKbn == kensaInfDetailModel.AbnormalKbn
+                     && kensaInfDetailAfter.CmtCd1 == kensaInfDetailModel.CmtCd1
+                     && kensaInfDetailAfter.CmtCd2 == kensaInfDetailModel.CmtCd2;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (kensaInf != null)
+            {
+                tenant.KensaInfs.Remove(kensaInf);
+            }
+            if (kensaInfDetail != null)
+            {
+                tenant.KensaInfDetails.Remove(kensaInfDetail);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void TC_032_SaveImportantNote_TestDeletedPtPhysicalInfItemSuccess()
+    {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        Random random = new();
+        int hpId = random.Next(999, 99999);
+        int userId = random.Next(999, 99999);
+        long ptId = random.NextInt64(99999, 999999999);
+        int sinDate = 20220202;
+
+        var hpInf = new HpInf()
+        {
+            HpId = hpId,
+        };
+        var ptInf = new PtInf()
+        {
+            HpId = hpId,
+            PtId = ptId
+        };
+
+        tenant.HpInfs.Add(hpInf);
+        tenant.PtInfs.Add(ptInf);
+
+        KensaInfDetailModel kensaInfDetailModel = new KensaInfDetailModel(hpId, ptId, random.Next(999, 999999), random.Next(999, 9999999), 20220202, random.Next(999, 999999), "KensaCdUT", "ValUT", "1", "2", 1, "Cd1", "Cd2", DateTime.MinValue, string.Empty, string.Empty, 0, string.Empty);
+        PhysicalInfoModel physicalInfoModel = new PhysicalInfoModel(new() { kensaInfDetailModel });
+        KensaInf? kensaInf = null;
+        KensaInfDetail? kensaInfDetailAfter = null;
+        KensaInfDetail? kensaInfDetail = new()
+        {
+            HpId = kensaInfDetailModel.HpId,
+            PtId = kensaInfDetailModel.PtId,
+            SeqNo = kensaInfDetailModel.SeqNo,
+            IraiCd = kensaInfDetailModel.IraiCd
+        };
+        tenant.KensaInfDetails.Add(kensaInfDetail);
+
+        PatientInfoModel patientInfoModel = new PatientInfoModel(
+                                                new() { },
+                                                new() { },
+                                                new() { },
+                                                new() { physicalInfoModel });
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SpecialNoteRepository specialNoteRepository = new SpecialNoteRepository(TenantProvider, mockConfiguration.Object);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, null, null, patientInfoModel, userId);
+
+            // Assert
+            kensaInf = tenant.KensaInfs.FirstOrDefault(item => item.HpId == hpId
+                                                               && item.PtId == ptId
+                                                               && item.RaiinNo == kensaInfDetailModel.RaiinNo
+                                                               && item.IraiDate == kensaInfDetailModel.IraiDate
+                                                               && item.Status == 2
+                                                               && item.InoutKbn == 0
+                                                               && item.IsDeleted == 0);
+
+            kensaInfDetailAfter = tenant.KensaInfDetails.FirstOrDefault(item => item.HpId == kensaInfDetailModel.HpId
+                                                                                    && item.PtId == kensaInfDetailModel.PtId
+                                                                                    && item.IraiCd == kensaInfDetailModel.IraiCd
+                                                                                    && item.SeqNo == kensaInfDetailModel.SeqNo);
+
+            result = result
+                     && kensaInf != null
+                     && kensaInfDetailAfter == null
+                     && kensaInf.HpId == kensaInfDetailModel.HpId
+                     && kensaInf.PtId == kensaInfDetailModel.PtId
+                     && kensaInf.RaiinNo == kensaInfDetailModel.RaiinNo
+                     && kensaInf.IraiDate == kensaInfDetailModel.IraiDate
+                     && kensaInf.Status == 2
+                     && kensaInf.InoutKbn == 0;
+
+            Assert.True(result);
+        }
+        finally
+        {
+            specialNoteRepository.ReleaseResource();
+
+            #region Remove Data Fetch
+            tenant.HpInfs.Remove(hpInf);
+            tenant.PtInfs.Remove(ptInf);
+            if (kensaInf != null)
+            {
+                tenant.KensaInfs.Remove(kensaInf);
+            }
+            if (kensaInfDetailAfter != null)
+            {
+                tenant.KensaInfDetails.Remove(kensaInfDetailAfter);
+            }
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    #endregion SavePhysicalInfItems
+    #endregion SavePatientInfo
 }
