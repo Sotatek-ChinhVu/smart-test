@@ -115,7 +115,7 @@ namespace Infrastructure.Repositories
             }
 
             //Get lastVisitDate
-            int lastVisitDate = _receptionRepository.GetLastVisit(hpId, ptId, sinDate)?.SinDate ?? 0;
+            int lastVisitDate = _receptionRepository.GetLastVisit(hpId, ptId, sinDate, true)?.SinDate ?? 0;
 
             //Get First Visit Date
             int firstDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
