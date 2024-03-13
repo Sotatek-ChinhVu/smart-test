@@ -127,9 +127,13 @@ public class ByomeiService : IByomeiService
             List<CoByomeiPrintDataModel> addData = new();
 
             addData.AddRange(_addList(ptByomei.ByomeiName, i));
-            addData.Last().StartDate = ptByomei.StartDate;
-            addData.Last().Tenki = ptByomei.DisplayTenki;
-            addData.Last().TenkiDate = ptByomei.TenkiDate;
+
+            if (addData.Any())
+            {
+                addData.Last().StartDate = ptByomei.StartDate;
+                addData.Last().Tenki = ptByomei.DisplayTenki;
+                addData.Last().TenkiDate = ptByomei.TenkiDate;
+            }
 
             printOutData.AddRange(addData);
             i++;

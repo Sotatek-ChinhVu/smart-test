@@ -4,14 +4,16 @@ using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using AWSSDK.Interfaces;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Domain.Models.User;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
+using Konscious.Security.Cryptography;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
+using System.Data.Common;
+using System.Security.Cryptography;
 using System.Text;
 using UseCase.SuperAdmin.TenantOnboard;
 
@@ -19,6 +21,9 @@ namespace Interactor.SuperAdmin
 {
     public class TenantOnboardInteractor : ITenantOnboardInputPort
     {
+        private readonly string _userNameDefault = ConfigConstant.PgUserDefault;
+        private readonly string _passwordDefault = ConfigConstant.PgPasswordDefault;
+        private readonly int _portDefault = ConfigConstant.PgPortDefault;
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantRepository _tenant2Repository;
@@ -26,7 +31,7 @@ namespace Interactor.SuperAdmin
         private readonly INotificationRepository _notificationRepository;
         private IWebSocketService _webSocketService;
         private readonly IMemoryCache _memoryCache;
-        private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _configuration;
         public TenantOnboardInteractor(
             IAwsSdkService awsSdkService,
             ITenantRepository tenantRepository,
@@ -35,7 +40,7 @@ namespace Interactor.SuperAdmin
             INotificationRepository notificationRepository,
             IWebSocketService webSocketService,
             IMemoryCache memoryCache,
-            IUserRepository userRepository
+            IConfiguration configuration
             )
         {
             _awsSdkService = awsSdkService;
@@ -45,7 +50,7 @@ namespace Interactor.SuperAdmin
             _tenant2Repository = tenant2Repository;
             _webSocketService = webSocketService;
             _memoryCache = memoryCache;
-            _userRepository = userRepository;
+            _configuration = configuration;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
@@ -53,7 +58,7 @@ namespace Interactor.SuperAdmin
             {
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
 
-                if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.SubDomain) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0 || inputData.Size <= 0 || inputData.TenantId < 0)
+                if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.SubDomain) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0 || inputData.TenantId < 0)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidRequest);
                 }
@@ -89,27 +94,14 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                else if (inputData.SizeType != ConfigConstant.SizeTypeGB)
-                {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSizeType);
-                }
-                else if (inputData.ClusterMode != ConfigConstant.TypeSharing && inputData.ClusterMode != ConfigConstant.TypeDedicate)
-                {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
-                }
-                if (inputData.ClusterMode == ConfigConstant.TypeSharing)
-                {
-                    if (inputData.Size < 15 || inputData.Size > 250)
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                }
-                else
-                {
-                    if (inputData.Size < 15 || inputData.Size > 1024)
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                }
-                var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
+#if DEBUG
+                var dbName = "smart_karte_new";
+#else
+                var dbName = "smartkarte_new";
+#endif
                 var tenantUrl = $"{inputData.SubDomain}.{ConfigConstant.Domain}";
-                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, tenantUrl, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
+                var rdsIdentifier = "develop-smartkarte-postgres";
+                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, string.Empty, tenantUrl, 0, rdsIdentifier);
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -135,10 +127,8 @@ namespace Interactor.SuperAdmin
 
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
-            string rString = CommonConstants.GenerateRandomString(6);
             var cancellationTokenSource = new CancellationTokenSource();
             CancellationToken ct = cancellationTokenSource.Token;
-
             // Set tenant info to cache memory
             _memoryCache.Set(model.SubDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
 
@@ -152,96 +142,15 @@ namespace Interactor.SuperAdmin
                     await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain);
                     await Route53Action.CreateTenantDomain(model.SubDomain);
                 }
-                // Checking Available RDS Cluster
                 if (model.SubDomain.Length > 0 && !ct.IsCancellationRequested)
                 {
-                    // Checking tenant tier, if dedicated, provision new RDS instance
-                    if (model.Type == ConfigConstant.TypeDedicate)
+                    id = _tenantRepository.CreateTenant(model);
+                    if (!ct.IsCancellationRequested)
                     {
-                        string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                        var rdsInfo = await RDSAction.GetRDSInformation();
-                        if (rdsInfo.ContainsKey(dbIdentifier))
+                        _ = Task.Run(() =>
                         {
-                            id = _tenantRepository.CreateTenant(model);
-                            if (!ct.IsCancellationRequested)
-                            {
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(() =>
-                                {
-                                    AddData(id, tenantUrl, model, ct);
-                                });
-                            }
-                        }
-                        else
-                        {
-                            id = _tenantRepository.CreateTenant(model);
-                            if (!ct.IsCancellationRequested)
-                            {
-                                await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(() =>
-                                {
-                                    AddData(id, tenantUrl, model, ct);
-                                });
-                            }
-                        }
-                    }
-                    else // In the rest cases, checking available RDS for new Tenant
-                    {
-                        var card = await CloudWatchAction.GetSummaryCardAsync();
-                        List<string> availableIdentifier = card.Keys.Where(ids => card[ids]["available"] == "yes").ToList();
-
-                        // If there's not any available RDS Cluster, provision new RDS cluster
-                        if (availableIdentifier.Count == 0)
-                        {
-                            string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                            id = _tenantRepository.CreateTenant(model);
-                            if (!ct.IsCancellationRequested)
-                            {
-                                await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(() =>
-                                {
-                                    AddData(id, tenantUrl, model, ct);
-                                });
-                            }
-                        }
-                        else // Else, returning the first available RDS Cluster in the list
-                        {
-                            bool checkAvailableIdentifier = false;
-                            foreach (var dbIdentifier in availableIdentifier)
-                            {
-                                var sumSubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(dbIdentifier);
-                                if (sumSubDomainToDbIdentifier <= 3)
-                                {
-                                    checkAvailableIdentifier = true;
-                                    if (!ct.IsCancellationRequested)
-                                    {
-                                        model.ChangeRdsIdentifier(dbIdentifier);
-                                        id = _tenantRepository.CreateTenant(model);
-                                        _ = Task.Run(() =>
-                                        {
-                                            AddData(id, tenantUrl, model, ct);
-                                        });
-                                    }
-                                    break;
-                                }
-                            }
-                            if (!checkAvailableIdentifier)
-                            {
-                                string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
-                                id = _tenantRepository.CreateTenant(model);
-                                if (!ct.IsCancellationRequested)
-                                {
-                                    await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.ChangeRdsIdentifier(dbIdentifierNew);
-                                    _ = Task.Run(() =>
-                                    {
-                                        AddData(id, tenantUrl, model, ct);
-                                    });
-                                }
-                            }
-                        }
+                            AddData(id, tenantUrl, model, ct);
+                        });
                     }
                 }
 
@@ -257,7 +166,7 @@ namespace Interactor.SuperAdmin
             {
                 if (!ct.IsCancellationRequested) // Check task run is not canceled
                 {
-                    var message = $"{model.SubDomain} is created failed. Error: {ex.Message}";
+                    var message = $"新しい医療機関 {model.SubDomain} の作成に失敗しました: {ex.Message}。";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                     var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
                     var updateStatus = _tenantRepository.UpdateInfTenantStatus(id, statusTenantFaild);
@@ -275,89 +184,15 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private string CheckingRDSStatusAsync(string dbIdentifier, int tenantId, string tenantUrl)
-        {
-            try
-            {
-                string host = string.Empty;
-                bool running = true;
-                string status = string.Empty;
-                DateTime startTime = DateTime.Now;
-
-                while (running)
-                {
-                    var rdsClient = new AmazonRDSClient();
-
-                    var response = rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
-                    {
-                        DBInstanceIdentifier = dbIdentifier
-                    }).Result;
-
-                    var dbInstances = response.DBInstances;
-
-                    if (dbInstances.Count != 1)
-                    {
-                        throw new Exception("More than one Database Instance returned; this should never happen");
-                    }
-
-                    var dbInstance = dbInstances[0];
-                    var checkStatus = dbInstance.DBInstanceStatus;
-                    if (status != checkStatus)
-                    {
-                        Console.WriteLine($"Last Database Shard status: {checkStatus}");
-                        status = checkStatus;
-                        var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
-                        if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
-                        {
-                            if (dbInstance.Endpoint != null && dbInstance.Endpoint.Address != null)
-                            {
-                                host = dbInstance.Endpoint.Address;
-                            }
-                            var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, statusTenant, tenantUrl, host, dbIdentifier);
-                        }
-                    }
-
-                    Thread.Sleep(5000);
-
-                    if (checkStatus == "available")
-                    {
-                        if (dbInstance.Endpoint != null && dbInstance.Endpoint.Address != null)
-                        {
-                            host = dbInstance.Endpoint.Address;
-                        }
-                        // update status available: 1
-                        var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, dbIdentifier);
-                        running = false;
-                        return host;
-                    }
-                    // Check if more than timeout
-                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
-                    {
-                        Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
-                        running = false;
-                        throw new Exception($"CheckingRDSStatus. Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
-                    }
-                }
-
-                return host;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw new Exception($"CheckingRDSStatus. {ex.Message}");
-            }
-        }
-
         private void AddData(int tenantId, string tenantUrl, TenantModel model, CancellationToken ct)
         {
             try
             {
-                string host = CheckingRDSStatusAsync(model.RdsIdentifier, tenantId, tenantUrl);
+                string host = ConfigConstant.EndPointSmartKarte;
+                var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, model.RdsIdentifier);
                 if (!string.IsNullOrEmpty(host))
                 {
-                    var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
-                    RDSAction.CreateDatabase(host, model.Db, model.PasswordConnect);
-                    CreateDatas(host, model.Db, dataMigration, tenantId, model);
+                    CreateDatas(host, model.Db, tenantId, model);
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
 
@@ -402,36 +237,35 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void CreateDatas(string host, string dbName, List<string> listMigration, int tenantId, TenantModel model)
+        private void CreateDatas(string host, string dbName, int tenantId, TenantModel model)
         {
             try
             {
-                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
+                string password = _passwordDefault;
+#if DEBUG
+                host = "10.2.15.78";
+                password = "Emr!23";
+#endif
 
+                AddPartitions(host, dbName, _userNameDefault, password, tenantId);
+                _CreatePartitionsAuditLog(tenantId, _userNameDefault, password, _portDefault);
+                var connectionString = $"Host={host};Database={dbName};Username={_userNameDefault};Password={password};Port={_portDefault}";
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        _CreateTable(command, listMigration, tenantId);
-                        var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
-                        command.CommandText = sqlGrant;
-                        command.ExecuteNonQuery();
-                        _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
-                        var sqlRenameTableName = QueryConstant.RenameTableNames;
-                        var sqlRenameFieldName = QueryConstant.RenameFieldNames;
-                        byte[] salt = _userRepository.GenerateSalt();
-                        byte[] hashPassword = _userRepository.CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
-                        var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId);
+                        byte[] salt = GenerateSalt();
+                        string hashPassword = CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
+                        var sqlInsertUser = QueryConstant.SqlUser;
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
-                        command.CommandText = sqlGrant + sqlRenameTableName + sqlRenameFieldName + sqlInsertUser + sqlInsertUserPermission;
+                        command.CommandText = sqlInsertUser + sqlInsertUserPermission;
                         command.Parameters.AddWithValue("hashPassword", hashPassword);
-                        command.Parameters.AddWithValue("salt", salt);
+                        command.Parameters.AddWithValue("salt", Convert.ToHexString(salt));
+                        command.Parameters.AddWithValue("hpId", tenantId);
+                        command.Parameters.AddWithValue("adminId", model.AdminId);
                         command.ExecuteNonQuery();
-                        _CreateFunction(command, listMigration, tenantId);
-                        _CreateTrigger(command, listMigration, tenantId);
-                        _CreateAuditLog(tenantId);
                     }
                 }
             }
@@ -441,64 +275,66 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void _CreateTable(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        private void AddPartitions(string host, string tennantDB, string username, string password, int hpId)
         {
             try
             {
-                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
-                string folderPath = Path.Combine(templatePath, "Table");
-                if (Directory.Exists(folderPath))
+                // Connection string format for SQL Server
+                string connectionString = $"Host={host}; Database ={tennantDB}; Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
+
+                string FormartNameZTable(string tableName)
                 {
-                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-
-                    if (sqlFiles.Length > 0)
-                    {
-                        // Get list file name in order ASC
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).OrderBy(x => x).ToList();
-                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
-
-                        // insert table
-                        if (uniqueFileNames.Any())
-                        {
-                            foreach (var fileName in uniqueFileNames)
-                            {
-                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                if (File.Exists(filePath))
-                                {
-                                    var sqlScript = File.ReadAllText(filePath);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
-                                    }
-                                }
-                            }
-                            Console.WriteLine("SQL scripts table executed successfully.");
-                        }
-                    }
+                    int indexOfZ = tableName.IndexOf('z');
+                    string modifiedString = tableName.Remove(indexOfZ, 2);
+                    return modifiedString;
                 }
-                else
+
+                // Create and open a connection
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
-                    Console.WriteLine($"Error create table: no files found");
-                    throw new Exception($"Error create table. No files found");
+                    connection.Open();
+                    // Delete database
+                    using (DbCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "BEGIN;\n";
+                        foreach (string table in ConfigConstant.listTableMaster)
+                        {
+                            // Add partition
+                            if (table.StartsWith("z")) // Add partition with z_table
+                            {
+                                command.CommandText += $"CREATE TABLE  z_p_{FormartNameZTable(table)}_{hpId} PARTITION OF public.{table} FOR VALUES IN ({hpId});\n";
+                            }
+                            else
+                            {
+                                command.CommandText += $"CREATE TABLE p_{table}_{hpId} PARTITION OF public.{table} FOR VALUES IN ({hpId});\n";
+                            }
+                        }
+                        command.CommandText += "COMMIT;";
+                        command.ExecuteNonQuery();
+                    }
+
+                    Console.WriteLine($"Add partitions successfully.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error create table: {ex.Message}");
-                throw new Exception($"Error create table.  {ex.Message}");
+                Console.WriteLine($"Error: add partitions. {ex.Message}");
+                throw new Exception($"Error: add partitions. {ex.Message}");
             }
         }
 
-        private void _CreateAuditLog(int tenantId)
+        private void _CreatePartitionsAuditLog(int tenantId, string userName, string password, int port)
         {
             try
             {
-                var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
+#if DEBUG
+                var host = "10.2.15.78";
+                var dbName = "smartkartelogging_stagging";
+#else
+var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
                 var dbName = "smartkartelogging";
-                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
-                string sqlCreateAuditLog = QueryConstant.CreateAuditLog;
+#endif
+                var connectionString = $"Host={host};Database={dbName};Username={userName};Password={password};Port={port}";
                 var addParttion = $"CREATE TABLE IF NOT EXISTS PARTITION_{tenantId} PARTITION OF public.\"AuditLogs\" FOR VALUES IN ({tenantId});";
 
                 using (var connection = new NpgsqlConnection(connectionString))
@@ -510,134 +346,67 @@ namespace Interactor.SuperAdmin
                         command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
                         var tableExists = command.ExecuteScalar();
                         string createCommandText = string.Empty;
-                        if (tableExists != null && !(bool)tableExists)
-                        {
-                            createCommandText = sqlCreateAuditLog + addParttion;
-                        }
-                        else
+                        if (tableExists != null && (bool)tableExists)
                         {
                             createCommandText = addParttion;
-                        }
-                        using (var createTableCommand = new NpgsqlCommand())
-                        {
-                            createTableCommand.Connection = connection;
-                            createTableCommand.CommandText = createCommandText;
-                            createTableCommand.ExecuteNonQuery();
-                            Console.WriteLine("SQL scripts AuditLog, Parttion executed successfully.");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error insert AuditLog/ Parttion: {ex.Message}");
-                throw new Exception($"Error insert AuditLog/ Parttion: {ex.Message}");
-            }
-        }
-
-        private void _CreateDataMaster(string host, string database, string user, string password)
-        {
-            try
-            {
-                string pathFile = "/app/data-master.sql";
-                PostgresSqlAction.PostgreSqlExcuteFileSQLDataMaster(pathFile, host, 5432, database, user, password).Wait();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error insert data master: {ex.Message}");
-                throw new Exception($"Error insert data master: {ex.Message}");
-            }
-        }
-
-        private void _CreateFunction(NpgsqlCommand command, List<string> listMigration, int tenantId)
-        {
-            try
-            {
-                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
-                string folderPath = Path.Combine(templatePath, "Function");
-                if (Directory.Exists(folderPath))
-                {
-                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-                    if (sqlFiles.Length > 0)
-                    {
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
-                        // insert function
-                        if (uniqueFileNames.Any())
-                        {
-                            foreach (var fileName in uniqueFileNames)
+                            using (var createTableCommand = new NpgsqlCommand())
                             {
-                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                if (File.Exists(filePath))
-                                {
-                                    var sqlScript = File.ReadAllText(filePath);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
-                                    }
-                                }
+                                createTableCommand.Connection = connection;
+                                createTableCommand.CommandText = createCommandText;
+                                createTableCommand.ExecuteNonQuery();
+                                Console.WriteLine("SQL scripts partition AuditLog executed successfully.");
                             }
-                            Console.WriteLine("SQL scripts function executed successfully.");
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Create function: no files found");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error create function: {ex.Message}");
-                throw new Exception($"Error create function.  {ex.Message}");
+                Console.WriteLine($"Error insert partition AuditLog: {ex.Message}");
+                throw new Exception($"Error insert partition AuditLog: {ex.Message}");
             }
         }
 
-        private void _CreateTrigger(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        private void _DeletePartitionsAuditLog(int tenantId, string userName, string password, int port)
         {
             try
             {
-                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
-                string folderPath = Path.Combine(templatePath, "Trigger");
-                if (Directory.Exists(folderPath))
+#if DEBUG
+                var host = "10.2.15.78";
+                var dbName = "smartkartelogging_stagging";
+                password = "Emr!23";
+#else
+var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
+                var dbName = "smartkartelogging";
+#endif
+                var connectionString = $"Host={host};Database={dbName};Username={userName};Password={password};Port={port}";
+                string deletePartitionsAuditLog = $"DROP TABLE IF EXISTS public.partition_{tenantId};";
+
+                using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-                    if (sqlFiles.Length > 0)
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
                     {
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
-                        // insert trigger
-                        if (uniqueFileNames.Any())
+                        command.Connection = connection;
+                        command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
+                        var tableExists = command.ExecuteScalar();
+                        if (tableExists != null && (bool)tableExists)
                         {
-                            foreach (var fileName in uniqueFileNames)
+                            using (var createTableCommand = new NpgsqlCommand())
                             {
-                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                if (File.Exists(filePath))
-                                {
-                                    var sqlScript = File.ReadAllText(filePath);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
-                                    }
-                                }
+                                createTableCommand.Connection = connection;
+                                createTableCommand.CommandText = deletePartitionsAuditLog;
+                                createTableCommand.ExecuteNonQuery();
+                                Console.WriteLine("SQL scripts delete partition AuditLog executed successfully.");
                             }
-                            Console.WriteLine("SQL scripts trigger executed successfully.");
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Create trigger: no files found");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error create trigger: {ex.Message}");
-                throw new Exception($"Error create trigger.  {ex.Message}");
+                Console.WriteLine($"Error delete partition AuditLog: {ex.Message}");
+                throw new Exception($"Error delete partition AuditLog: {ex.Message}");
             }
         }
 
@@ -645,7 +414,6 @@ namespace Interactor.SuperAdmin
         {
             try
             {
-                bool skipFinalSnapshot = false;
                 var statusTenant = ConfigConstant.StatusTenantDictionary()["terminating"];
                 var updateStatus = _tenantRepository.UpdateInfTenantStatus(tenantId, statusTenant);
 
@@ -654,34 +422,12 @@ namespace Interactor.SuperAdmin
                 bool deleteRDSAction = false;
                 bool deleteDNSAction = false;
                 bool deleteItemCnameAction = false;
-                var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb, tenant.UserConnect, tenant.PasswordConnect).Result;
-                // Connect RDS delete TenantDb
-                if (listTenantDb.Count > 1)
-                {
-                    if (listTenantDb.Contains(tenant.Db))
-                    {
-                        deleteRDSAction = _awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
-                    }
-                    else
-                    {
-                        deleteRDSAction = true;
-                    }
-                }
-                // Deleted RDS
-                else
-                {
-                    if (RDSAction.CheckRDSInstanceExists(tenant.RdsIdentifier).Result)
-                    {
-                        if (!string.IsNullOrEmpty(tenant.RdsIdentifier))
-                        {
-                            deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, skipFinalSnapshot).Result;
-                        }
-                    }
-                    else
-                    {
-                        deleteRDSAction = true;
-                    }
-                }
+
+                // datete data
+                deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, _userNameDefault, _passwordDefault, tenant.TenantId, tenant.Db);
+
+                // delete partition AuditLogs
+                _DeletePartitionsAuditLog(tenantId, _userNameDefault, _passwordDefault, _portDefault);
 
                 // Delete DNS
                 var checkExistsSubDomain = Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result;
@@ -700,7 +446,7 @@ namespace Interactor.SuperAdmin
                 if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)
                 {
                     // Check finshed terminate
-                    if (RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result)
+                    if (!Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result)
                     {
                         return true;
                     }
@@ -716,6 +462,26 @@ namespace Interactor.SuperAdmin
                 Console.WriteLine(ex.ToString());
                 return false;
             }
+        }
+
+        private byte[] GenerateSalt()
+        {
+            var buffer = new byte[32];
+            using var rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(buffer);
+            return buffer;
+        }
+
+        public string CreateHash(byte[] password, byte[] salt)
+        {
+            using var argon2 = new Argon2id(password);
+            var preper = _configuration["Pepper"] ?? string.Empty;
+            salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
+            argon2.Salt = salt;
+            argon2.DegreeOfParallelism = 8;
+            argon2.Iterations = 4;
+            argon2.MemorySize = 1024 * 128;
+            return Convert.ToHexString(argon2.GetBytes(32));
         }
 
         #endregion

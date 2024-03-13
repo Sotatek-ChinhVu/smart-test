@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.FlowSheet;
 using EmrCloudApi.Requests.FlowSheet;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.FlowSheet;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.FlowSheet.GetList;
@@ -13,10 +12,10 @@ using UseCase.FlowSheet.Upsert;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class FlowSheetController : AuthorizeControllerBase
+    public class FlowSheetController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public FlowSheetController(UseCaseBus bus, IUserService userService) : base(userService)
+        public FlowSheetController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

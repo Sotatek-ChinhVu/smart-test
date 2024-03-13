@@ -459,12 +459,12 @@ namespace Reporting.Statistics.Sta1001.Service
                         printData.SeikyuGaku = csvOmit ? "0" :
                             syunoInfs.First(s =>
                                 s.RaiinNo == syunoInf.RaiinNo &&
-                                s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Max(x => x.NyukinSortNo)
+                                s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Select(x => x.NyukinSortNo).DefaultIfEmpty()?.Max() 
                             ).SeikyuGaku.ToString("#,0");
                         printData.NewSeikyuGaku = csvOmit ? "0" :
                             syunoInfs.First(s =>
                                 s.RaiinNo == syunoInf.RaiinNo &&
-                                s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Max(x => x.NyukinSortNo)
+                                s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Select(x => x.NyukinSortNo).DefaultIfEmpty()?.Max()
                             ).NewSeikyuGaku.ToString("#,0");
                         if (!csvOmit)
                         {

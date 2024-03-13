@@ -7,7 +7,6 @@ using EmrCloudApi.Requests.InsuranceMst;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Insurance;
 using EmrCloudApi.Responses.InsuranceMst;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.FindHokenInfByPtId;
@@ -23,10 +22,10 @@ namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InsuranceMstController : AuthorizeControllerBase
+    public class InsuranceMstController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public InsuranceMstController(UseCaseBus bus, IUserService userService) : base(userService) => _bus = bus;
+        public InsuranceMstController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor) => _bus = bus;
 
         [HttpGet(ApiPath.GetList + "InsuranceMstDetail")]
         public ActionResult<Response<GetInsuranceMasterDetailResponse>> GetList([FromQuery] GetInsuranceMasterDetailRequest request)

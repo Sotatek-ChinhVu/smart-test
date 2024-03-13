@@ -5,7 +5,6 @@ using EmrCloudApi.Requests.DrugInfor;
 using EmrCloudApi.Requests.DrugInfor.SaveSinrekiFilterMstListRequestItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.DrugInfor;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.DrugInfor.GetContentDrugUsageHistory;
@@ -15,11 +14,11 @@ using UseCase.DrugInfor.SaveSinrekiFilterMstList;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class PrescriptionHistoryController : AuthorizeControllerBase
+public class PrescriptionHistoryController : BaseParamControllerBase
 {
 
     private readonly UseCaseBus _bus;
-    public PrescriptionHistoryController(UseCaseBus bus, IUserService userService) : base(userService)
+    public PrescriptionHistoryController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

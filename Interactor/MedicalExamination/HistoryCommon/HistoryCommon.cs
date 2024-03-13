@@ -236,7 +236,7 @@ public class HistoryCommon : IHistoryCommon
             List<SinKouiListModel> sinkouiList = new();
             if (historyList.historyOrderModelList != null)
             {
-                var raiinNoList = historyList.historyOrderModelList.Select(item => item.RaiinNo).Distinct().ToList();
+                var raiinNoList = inputData.RaiinNo > 0 ? new List<long>() { inputData.RaiinNo } : historyList.historyOrderModelList.Select(item => item.RaiinNo).Distinct().ToList();
                 var mainHokenPIdList = historyList.historyOrderModelList.Select(item => item.HokenPid).Distinct().ToList();
                 var sindateList = historyList.historyOrderModelList.Select(item => item.SinDate).Distinct().ToList();
                 sinkouiList = _historyOrderRepository.GetSinkouiList(inputData.HpId,
@@ -244,6 +244,11 @@ public class HistoryCommon : IHistoryCommon
                                                                      sindateList,
                                                                      raiinNoList,
                                                                      mainHokenPIdList);
+            }
+            if (inputData.RaiinNo > 0 && historyList.historyOrderModelList != null)
+            {
+                historyList.historyOrderModelList = historyList.historyOrderModelList.Where(item => item.RaiinNo == inputData.RaiinNo).ToList();
+                historyList.totalCount = historyList.historyOrderModelList.Count;
             }
             var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList, sinkouiList);
             List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList.OrderBy(r => r.SinDate).ThenBy(r => r.RaiinNo).ToList();

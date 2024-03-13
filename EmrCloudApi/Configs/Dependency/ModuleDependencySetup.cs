@@ -846,6 +846,8 @@ using UseCase.Yousiki.UpdateYosiki;
 using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
 using UseCase.ReceSeikyu.RecalculateInSeikyuPending;
+using Reporting.Statistics.Sta3062.DB;
+using Reporting.Statistics.Sta3062.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -973,6 +975,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta3060CoReportService, Sta3060CoReportService>();
             services.AddTransient<ICoSta3061Finder, CoSta3061Finder>();
             services.AddTransient<ISta3061CoReportService, Sta3061CoReportService>();
+            services.AddTransient<ICoSta3062Finder, CoSta3062Finder>();
+            services.AddTransient<ISta3062CoReportService, Sta3062CoReportService>();
             services.AddTransient<ICoSta3070Finder, CoSta3070Finder>();
             services.AddTransient<ISta3070CoReportService, Sta3070CoReportService>();
             services.AddTransient<ICoHokenMstFinder, CoHokenMstFinder>();

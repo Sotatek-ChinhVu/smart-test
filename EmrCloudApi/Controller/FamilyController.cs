@@ -17,10 +17,10 @@ using UseCase.Family.ValidateFamilyList;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class FamilyController : AuthorizeControllerBase
+public class FamilyController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
-    public FamilyController(UseCaseBus bus, IUserService userService) : base(userService)
+    public FamilyController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

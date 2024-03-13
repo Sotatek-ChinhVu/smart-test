@@ -302,7 +302,7 @@ namespace AWSSDK.Common
             try
             {
                 // Connection string format for PostgreSQL
-                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
                 var withOutDb = ConfigConstant.LISTSYSTEMDB;
                 string strWithoutDb = string.Join(", ", withOutDb);
                 strWithoutDb = "'" + strWithoutDb.Replace(", ", "', '") + "'";

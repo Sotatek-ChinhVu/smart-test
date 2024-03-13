@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckExistedId(int hpId, List<long> ids)
+        public bool CheckExistedId(int hpId, List<int> ids)
         {
             // get data from UserMstList
             var anyUsertMsts = _userInfoService.AllUserMstList(hpId).Count(u => ids.Contains(u.Id));
@@ -64,7 +64,7 @@ namespace Infrastructure.Repositories
             return anyUsertMsts;
         }
 
-        public bool CheckExistedUserIdUpdate(int hpId, List<long> ids, List<int> userIds)
+        public bool CheckExistedUserIdUpdate(int hpId, List<int> ids, List<int> userIds)
         {
             // get data from UserMstList
             var anyUsertMsts = _userInfoService.AllUserMstList(hpId).Any(u => userIds.Contains(u.UserId) && !ids.Contains(u.Id) && u.IsDeleted != 1);
@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories
             return anyUsertMsts;
         }
 
-        public bool CheckExistedLoginIdUpdate(int hpId, List<long> ids, List<string> loginIds)
+        public bool CheckExistedLoginIdUpdate(int hpId, List<int> ids, List<string> loginIds)
         {
             // get data from UserMstList
             var anyUsertMsts = _userInfoService.AllUserMstList(hpId).Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && !ids.Contains(u.Id) && u.IsDeleted != 1);
@@ -165,14 +165,13 @@ namespace Infrastructure.Repositories
         public UserMstModel? GetByLoginId(string loginId, string password)
         {
             var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
-
             var entity = NoTrackingDataContext.UserMsts
                 .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
             if (entity is null)
             {
                 return null;
             }
-            if (!VerifyHash(Encoding.UTF8.GetBytes(password), entity.Salt, entity.HashPassword))
+            if (!VerifyHash(Encoding.UTF8.GetBytes(password), StringToByteArray(entity.Salt ?? string.Empty), entity.HashPassword ?? string.Empty))
             {
                 return null;
             }
@@ -182,7 +181,7 @@ namespace Infrastructure.Repositories
         public int MaxUserId(int hpId)
         {
             // get data from UserMstList
-            return _userInfoService.AllUserMstList(hpId).Max(u => u.UserId);
+            return _userInfoService.AllUserMstList(hpId).Select(u => u.UserId).DefaultIfEmpty()?.Max() ?? 0;
         }
 
         public bool Upsert(int hpId, List<UserMstModel> upsertUserList, int userId)
@@ -222,14 +221,14 @@ namespace Infrastructure.Repositories
                             userMst.IsDeleted = inputData.IsDeleted;
                             userMst.UpdateId = userId;
                             userMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            userMst.HashPassword = hashPassword;
-                            userMst.Salt = salt;
+                            userMst.HashPassword = Convert.ToHexString(hashPassword);
+                            userMst.Salt = Convert.ToHexString(salt);
                         }
                         else
                         {
                             var user = ConvertUserList(inputData);
-                            user.HashPassword = hashPassword;
-                            user.Salt = salt;
+                            user.HashPassword = Convert.ToHexString(hashPassword);
+                            user.Salt = Convert.ToHexString(salt);
                             TrackingDataContext.UserMsts.Add(user);
                         }
                     }
@@ -335,8 +334,8 @@ namespace Infrastructure.Repositories
             foreach (UserMst userMst in userMsts)
             {
                 var bytePassword = Encoding.UTF8.GetBytes(password);
-                var hashPassword = CreateHash(bytePassword, userMst.Salt ?? new byte[0]);
-                if (hashPassword == userMst.HashPassword)
+                var hashPassword = CreateHash(bytePassword, StringToByteArray(userMst.Salt ?? string.Empty));
+                if (hashPassword == StringToByteArray(userMst.HashPassword ?? string.Empty))
                 {
                     result = true;
                     break;
@@ -587,7 +586,7 @@ namespace Infrastructure.Repositories
         /// <returns></returns>
         public bool SaveListUserMst(int hpId, List<UserMstModel> users, int currentUser)
         {
-            IEnumerable<long> idList = users.Select(x => x.Id);
+            IEnumerable<int> idList = users.Select(x => x.Id);
             var usersUpdate = TrackingDataContext.UserMsts.Where(x => x.HpId == hpId && idList.Contains(x.Id)).ToList();
             foreach (var item in users)
             {
@@ -622,8 +621,8 @@ namespace Infrastructure.Repositories
                             UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UserId = item.UserId,
                             UpdateId = currentUser,
-                            HashPassword = hashPassword,
-                            Salt = salt
+                            HashPassword = Convert.ToHexString(hashPassword),
+                            Salt = Convert.ToHexString(salt)
                         });
 
                         TrackingDataContext.UserPermissions.AddRange(item.Permissions.Select(x => new UserPermission()
@@ -660,8 +659,8 @@ namespace Infrastructure.Repositories
                         update.StartDate = item.StartDate;
                         update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         update.UpdateId = currentUser;
-                        update.HashPassword = hashPassword;
-                        update.Salt = salt;
+                        update.HashPassword = Convert.ToHexString(hashPassword);
+                        update.Salt = Convert.ToHexString(salt);
 
                         var permissionByUsers = TrackingDataContext.UserPermissions.Where(x => x.HpId == hpId && x.UserId == update.UserId);
                         foreach (var permission in item.Permissions)
@@ -863,10 +862,18 @@ namespace Infrastructure.Repositories
             return buffer;
         }
 
-        public bool VerifyHash(byte[] password, byte[] salt, byte[] hash)
+        public bool VerifyHash(byte[] password, byte[] salt, string hash)
         {
-            var inputHash = CreateHash(password, salt);
-            return Encoding.UTF8.GetString(inputHash) == Encoding.UTF8.GetString(hash);
+            var inputHash = Convert.ToHexString(CreateHash(password, salt));
+            return inputHash == hash;
+        }
+
+        public byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
         }
     }
 }

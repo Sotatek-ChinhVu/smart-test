@@ -14,9 +14,6 @@ public class TenantDto
         Password = model.Password;
         SubDomain = model.SubDomain;
         Db = model.Db;
-        Size = model.Size;
-        SizeType = model.SizeType;
-        Type = model.Type;
         EndPointDb = model.EndPointDb;
         EndSubDomain = model.EndSubDomain;
         Action = model.Action;
@@ -24,8 +21,6 @@ public class TenantDto
         ScheduleTime = model.ScheduleTime;
         CreateDate = model.CreateDate;
         RdsIdentifier = model.RdsIdentifier;
-        StorageUsed = model.StorageUsed;
-        StorageFull = model.StorageFull;
     }
 
     public int TenantId { get; private set; }
@@ -44,15 +39,6 @@ public class TenantDto
 
     public string Db { get; private set; }
 
-    public int Size { get; private set; }
-
-    /// <summary>
-    /// 1: MB; 2: GB
-    /// </summary>
-    public int SizeType { get; private set; }
-
-    public byte Type { get; private set; }
-
     public string EndPointDb { get; private set; }
 
     public string EndSubDomain { get; private set; }
@@ -66,8 +52,4 @@ public class TenantDto
     public DateTime CreateDate { get; private set; }
 
     public string RdsIdentifier { get; private set; }
-
-    public double StorageUsed { get; private set; }
-
-    public double StorageFull { get; private set; }
 }

@@ -47,7 +47,6 @@ using EmrCloudApi.Responses.PatientInfor.PtKyuseiInf;
 using EmrCloudApi.Responses.PatientInformaiton;
 using EmrCloudApi.Responses.PtGroupMst;
 using EmrCloudApi.Responses.SwapHoken;
-using EmrCloudApi.Services;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses.PatientInfor;
@@ -75,21 +74,30 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
-using UseCase.PatientInfor.CheckValidSamePatient;
+using UseCase.PatientInfor;
 using UseCase.PatientInfor.CheckAllowDeletePatientInfo;
+using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
 using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
+using UseCase.PatientInfor.GetPtInfByRefNo;
+using UseCase.PatientInfor.GetPtInfModelsByName;
+using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using UseCase.PatientInfor.GetTokiMstList;
+using UseCase.PatientInfor.GetVisitTimesManagementModels;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
 using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
+using UseCase.PatientInfor.SavePtKyusei;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
+using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
+using UseCase.PatientInfor.UpdateVisitTimesManagement;
+using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 using UseCase.PatientInformation.GetById;
 using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PtGroupMst.GetGroupNameMst;
@@ -98,28 +106,18 @@ using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Calculation;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
-using UseCase.PatientInfor.SavePtKyusei;
-using UseCase.PatientInfor;
-using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
-using UseCase.PatientInfor.GetPtInfByRefNo;
-using UseCase.PatientInfor.GetPtInfModelsByName;
-using UseCase.PatientInfor.GetPtInfModelsByRefNo;
-using System.Linq;
-using UseCase.PatientInfor.GetVisitTimesManagementModels;
-using UseCase.PatientInfor.UpdateVisitTimesManagement;
-using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class PatientInforController : AuthorizeControllerBase
+    public class PatientInforController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
         private readonly IMessenger _messenger;
         private CancellationToken? _cancellationToken;
 
-        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService, IMessenger messenger) : base(userService)
+        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IMessenger messenger, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
             _webSocketService = webSocketService;

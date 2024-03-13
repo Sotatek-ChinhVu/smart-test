@@ -190,7 +190,7 @@ namespace Infrastructure.Repositories
                 {
                     var approvingInfList = approveInfList.Where(x => x.IsDeleted == 1).ToList();
                     int seqNo = 0;
-                    if (!approvingInfList.Any())
+                    if (approvingInfList?.Any() != true)
                     {
                         seqNo = 1;
                     }

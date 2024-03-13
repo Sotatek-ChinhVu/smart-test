@@ -2,7 +2,7 @@
 {
     public class UserMstDto
     {
-        public UserMstDto(long id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, List<UserPermissionDto> permissions)
+        public UserMstDto(int id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, List<UserPermissionDto> permissions)
         {
             Id = id;
             UserId = userId;
@@ -25,7 +25,7 @@
             Permissions = permissions;
         }
 
-        public long Id { get; private set; }
+        public int Id { get; private set; }
 
         public int UserId { get; private set; }
 

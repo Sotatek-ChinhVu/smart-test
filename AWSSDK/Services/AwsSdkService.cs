@@ -64,12 +64,31 @@ namespace AWSSDK.Services
             return false;
         }
 
-        public bool DeleteTenantDb(string serverEndpoint, string tennantDB, string username, string password)
+        /// <summary>
+        ///  Delete data master tenant
+        /// </summary>
+        /// <param name="serverEndpoint"></param>
+        /// <param name="tennantDB"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public bool DeleteDataMasterTenant(string serverEndpoint, string tennantDB, string username, string password, int hpId, string db)
         {
             try
             {
+#if DEBUG
+                serverEndpoint = "10.2.15.78";
+                password = "Emr!23";
+#endif
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint}; Database ={db}; Port={ConfigConstant.PgPortDefault};Username={username};Password={password};";
+
+                string FormartNameZTable(string tableName)
+                {
+                    int indexOfZ = tableName.IndexOf('z');
+                    string modifiedString = tableName.Remove(indexOfZ, 2);
+                    return modifiedString;
+                }
 
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -77,41 +96,37 @@ namespace AWSSDK.Services
                     try
                     {
                         connection.Open();
-
                         // Delete database
                         using (DbCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = @$"
-                                                    DO $$ 
-                                                    DECLARE
-                                                        pid_list text;
-                                                        query_text text;
-                                                    BEGIN
-                                                        -- Get a comma-separated list of active process IDs (pids) for the specified database
-                                                        SELECT string_agg(pid::text, ',') INTO pid_list
-                                                        FROM pg_stat_activity
-                                                        WHERE datname = '{tennantDB}';
-
-                                                        -- Construct the query to terminate each connection
-                                                        query_text := 'SELECT pg_terminate_backend(' || pid_list || ')';
-
-                                                        -- Execute the query to terminate connections
-                                                        EXECUTE query_text;
-                                                    END $$;";
-                            command.CommandText += @$"DROP DATABASE {tennantDB};";
+                            command.CommandText = "BEGIN;\n";
+                            foreach (string table in ConfigConstant.listTableMaster)
+                            {
+                                // Delete data table
+                                //command.CommandText += $"DELETE FROM public.{table} WHERE hp_id = {hpId};\n";
+                                // Drop partition
+                                if (table.StartsWith("z")) // Drop partition with z_table
+                                {
+                                    command.CommandText += $"DROP TABLE IF EXISTS public.z_p_{FormartNameZTable(table)}_{hpId};\n";
+                                }
+                                else
+                                {
+                                    command.CommandText += $"DROP TABLE IF EXISTS public.p_{table}_{hpId};\n";
+                                }
+                            }
+                            command.CommandText += "COMMIT;";
                             command.ExecuteNonQuery();
                         }
 
-                        Console.WriteLine($"Database: {tennantDB} deleted successfully.");
+                        Console.WriteLine($"Data master: {tennantDB} deleted successfully.");
+                        return true;
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: Delete TenantDb {ex.Message}");
-                        throw new Exception($"Error: Delete TenantDb {ex.Message}");
+                        Console.WriteLine($"Error: Delete  data master {ex.Message}");
+                        throw new Exception($"Error: Delete  data master {ex.Message}");
                     }
                 }
-
-                return true;
             }
             catch (Exception ex)
             {

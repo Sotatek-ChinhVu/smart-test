@@ -56,7 +56,7 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
 
                     if (rsvkrtOrderInfModels.Count > 0)
                     {
-                        if (_nextOrderRepository.Upsert(userId, hpId, ptId, rsvkrtOrderInfModels) == 0)
+                        if (!_nextOrderRepository.Upsert(userId, hpId, ptId, rsvkrtOrderInfModels))
                         {
                             transaction.Rollback();
                             return false;

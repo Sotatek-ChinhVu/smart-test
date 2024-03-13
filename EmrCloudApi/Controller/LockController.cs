@@ -5,12 +5,8 @@ using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
-using EmrCloudApi.Services;
 using Helper.Constants;
-using Infrastructure.Common;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
@@ -25,14 +21,13 @@ namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LockController : AuthorizeControllerBase
+    public class LockController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
         private CancellationToken? _cancellationToken;
         private readonly IWebSocketService _webSocketService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public LockController(UseCaseBus bus, IUserService userService, IHttpContextAccessor httpContextAccessor, IWebSocketService webSocketService) : base(userService)
+        public LockController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor, IWebSocketService webSocketService) : base(httpContextAccessor)
         {
             _bus = bus;
             _webSocketService = webSocketService;

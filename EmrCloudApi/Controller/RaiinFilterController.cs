@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.RaiinFilter;
 using EmrCloudApi.Requests.RaiinFilter;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.RaiinFilter;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.RaiinFilterMst.GetList;
@@ -12,11 +11,11 @@ using UseCase.RaiinFilterMst.SaveList;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class RaiinFilterController : AuthorizeControllerBase
+public class RaiinFilterController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public RaiinFilterController(UseCaseBus bus, IUserService userService) : base(userService)
+    public RaiinFilterController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

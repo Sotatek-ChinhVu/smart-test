@@ -1629,7 +1629,7 @@ namespace Infrastructure.Repositories
             foreach (var eventCd in eventCds)
             {
                 var eventAuditTrailLogs = auditTrailLogs.Where(a => a.EventCd == eventCd).ToList();
-                var maxDate = eventAuditTrailLogs.Count == 0 ? DateTime.MinValue : eventAuditTrailLogs.Max(x => x.LogDate);
+                var maxDate = eventAuditTrailLogs?.Count == 0 ? DateTime.MinValue : eventAuditTrailLogs?.Max(x => x.LogDate) ?? DateTime.MinValue;
                 result.Add(eventCd, maxDate);
             }
             return result;
@@ -1781,7 +1781,7 @@ namespace Infrastructure.Repositories
             var groupKensaExistContainerCds = allItems.Where(x => x.ContainerCd != 0).GroupBy(x => new { x.ContainerCd });
             foreach (var group in groupKensaExistContainerCds)
             {
-                int maxKensaLabel = group.AsEnumerable().Max(x => x.KensaLabel);
+                int maxKensaLabel = group.AsEnumerable().Any() ? group.AsEnumerable().Max(x => x.KensaLabel) : 0;
                 var item = group.FirstOrDefault();
                 item?.ChangeKensaLabel(maxKensaLabel);
                 if (item != null)

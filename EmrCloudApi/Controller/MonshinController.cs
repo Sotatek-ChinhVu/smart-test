@@ -3,7 +3,6 @@ using EmrCloudApi.Presenters.MonshinInf;
 using EmrCloudApi.Requests.MonshinInfor;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MonshinInfor;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MonshinInfor.GetList;
@@ -12,10 +11,10 @@ using UseCase.MonshinInfor.Save;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class MonshinController : AuthorizeControllerBase
+    public class MonshinController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public MonshinController(UseCaseBus bus, IUserService userService) : base(userService)
+        public MonshinController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }
