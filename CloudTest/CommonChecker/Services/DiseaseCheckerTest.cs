@@ -169,7 +169,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //DiseaseLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 999 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 3;
         if (systemConf != null)
@@ -180,7 +180,7 @@ public class DiseaseCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = 999,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -227,7 +227,7 @@ public class DiseaseCheckerTest : BaseUT
         diseaseChecker.Sinday = 20230505;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(diseaseChecker.HpID, new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(999, new List<string>() { "936DIS003" }, 20230505, 1231);
         diseaseChecker.InitFinder(TenantProvider, cache);
 
         try

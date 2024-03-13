@@ -17,6 +17,7 @@ public class FoodAllergyCheckerTest : BaseUT
     [Test]
     public void FoodAllergyChecker_001_CheckError_With_ItemCd_Is_PtAlrydrug()
     {
+        int hpId = 1;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -36,12 +37,12 @@ public class FoodAllergyCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
         var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-        foodAllergyChecker.HpID = 1;
+        foodAllergyChecker.HpID = hpId;
         foodAllergyChecker.PtID = 111;
         foodAllergyChecker.Sinday = 20230101;
 
         //FoodAllergyLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 0);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 0);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -51,7 +52,7 @@ public class FoodAllergyCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 0,
                 CreateDate = DateTime.UtcNow,
@@ -65,7 +66,7 @@ public class FoodAllergyCheckerTest : BaseUT
 
         //Read data test
         var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-        var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+        var m12 = CommonCheckerData.ReadM12FoodAlrgy(hpId, "");
         tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
         tenantTracking.M12FoodAlrgy.AddRange(m12);
         tenantTracking.SaveChanges();
@@ -140,7 +141,7 @@ public class FoodAllergyCheckerTest : BaseUT
 
         //Read data test
         var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-        var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+        var m12 = CommonCheckerData.ReadM12FoodAlrgy(1, "");
         tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
         tenantTracking.M12FoodAlrgy.AddRange(m12);
         tenantTracking.SaveChanges();
@@ -241,7 +242,7 @@ public class FoodAllergyCheckerTest : BaseUT
 
         //Read data test
         var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-        var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+        var m12 = CommonCheckerData.ReadM12FoodAlrgy(1, "");
         tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
         tenantTracking.M12FoodAlrgy.AddRange(m12);
         tenantTracking.SaveChanges();
@@ -319,7 +320,7 @@ public class FoodAllergyCheckerTest : BaseUT
 
         //Read data test
         var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-        var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+        var m12 = CommonCheckerData.ReadM12FoodAlrgy(1, "");
         tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
         tenantTracking.M12FoodAlrgy.AddRange(m12);
         tenantTracking.SaveChanges();

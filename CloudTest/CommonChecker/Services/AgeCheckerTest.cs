@@ -43,7 +43,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_002_ReturnErrorList_WhenPatientInfoWasBorn1940()
     {
         //Setup
-        int hpId = 999;
+        int hpId = 1;
         long ptId = 123;
         int sinDay = 20230605;
         int level = 10;
@@ -80,7 +80,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_003_ReturnErrorList_WhenPatientInfoWasBorn2000()
     {
         //Setup
-        int hpId = 999;
+        int hpId = 1;
         long ptId = 6215;
         int sinDay = 20230605;
         int level = 10;
@@ -103,7 +103,7 @@ public class AgeCheckerTest : BaseUT
 
         // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620001936" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
         // Act
@@ -117,7 +117,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_004_ReturnErrorList_WhenPatientInfoWasBorn2020()
     {
         //Setup
-        int hpId = 999;
+        int hpId = 1;
         long ptId = 99999637;
         int sinDay = 20230605;
         int level = 10;
@@ -154,7 +154,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_005_TestAgeChecker_WhenAgeTypeCheckSettingValueIs0()
     {
         //Setup
-        int hpId = 999;
+        int hpId = 1;
         long ptId = 99999637;
         int sinDay = 20230605;
         int level = 10;
@@ -384,8 +384,8 @@ public class AgeCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        ageChecker.InitFinder(TenantProvider, cache);
         cache.InitCache(ageChecker.HpID, new List<string>() { "6220816AGE" }, 20230101, 111);
+        ageChecker.InitFinder(TenantProvider, cache);
         
         try
         {

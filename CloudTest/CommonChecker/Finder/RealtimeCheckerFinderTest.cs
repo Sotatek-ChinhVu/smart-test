@@ -29,7 +29,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-            var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+            var m12 = CommonCheckerData.ReadM12FoodAlrgy(1, "");
             tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
             tenantTracking.M12FoodAlrgy.AddRange(m12);
             tenantTracking.SaveChanges();
@@ -82,7 +82,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-            var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+            var m12 = CommonCheckerData.ReadM12FoodAlrgy(1, "");
             tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
             tenantTracking.M12FoodAlrgy.AddRange(m12);
             tenantTracking.SaveChanges();
@@ -236,7 +236,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-            var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+            var m12 = CommonCheckerData.ReadM12FoodAlrgy(1, "");
             var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
             var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
@@ -295,7 +295,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-            var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+            var m12 = CommonCheckerData.ReadM12FoodAlrgy(1, "");
             var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
             var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD(hpId);
             var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN(hpId);
@@ -358,7 +358,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-            var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+            var m12 = CommonCheckerData.ReadM12FoodAlrgy(1, "");
             var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS(hpId);
             var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD(hpId);
             var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN(hpId);
