@@ -22,10 +22,6 @@
 
         public CommonCheckerType ErrorType { get; set; } = CommonCheckerType.None;
 
-        public double Weight { get; set; } = 0;
-
-        public double Height { get; set; } = 0;
-
         public List<LevelInfoModel> ListLevelInfo { get; set; } = new List<LevelInfoModel>();
 
     }
