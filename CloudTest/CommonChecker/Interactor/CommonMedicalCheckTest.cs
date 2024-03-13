@@ -3989,7 +3989,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
             Assert.True(result.errors.Count == 2);
@@ -4049,7 +4049,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
             Assert.That(result.errors.Count, Is.EqualTo(2));
@@ -4101,7 +4101,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
             Assert.That(result.errors.Count, Is.EqualTo(2));
@@ -4163,7 +4163,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
             Assert.That(result.errors.Count, Is.EqualTo(2));

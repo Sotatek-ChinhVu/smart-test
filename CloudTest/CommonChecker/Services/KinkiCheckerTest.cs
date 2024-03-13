@@ -158,7 +158,7 @@ public class KinkiCheckerTest : BaseUT
     [Test]
     public void CheckKinkiChecker_003_CheckKinki_TestRemoveDuplicate()
     {
-        int hpId = 1;
+        int hpId = 999;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -232,7 +232,7 @@ public class KinkiCheckerTest : BaseUT
     [Test]
     public void CheckKinkiChecker_004_CheckKinki_TestDefault_Error()
     {
-        int hpId = 1;
+        int hpId = 999;
         //setup
         var currentOdrInfoDetailModels = new List<OrdInfoDetailModel>()
         {

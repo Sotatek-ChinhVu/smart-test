@@ -18,7 +18,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_001_ReturnsEmptyList_WhenPatientInfoIsNull()
     {
         //Setup
-        int hpId = 1;
+        int hpId = 999;
         long ptId = 0;
         int sinDay = 20230605;
         int level = 0;
@@ -43,7 +43,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_002_ReturnErrorList_WhenPatientInfoWasBorn1940()
     {
         //Setup
-        int hpId = 1;
+        int hpId = 999;
         long ptId = 123;
         int sinDay = 20230605;
         int level = 10;
@@ -80,7 +80,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_003_ReturnErrorList_WhenPatientInfoWasBorn2000()
     {
         //Setup
-        int hpId = 1;
+        int hpId = 999;
         long ptId = 6215;
         int sinDay = 20230605;
         int level = 10;
@@ -117,7 +117,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_004_ReturnErrorList_WhenPatientInfoWasBorn2020()
     {
         //Setup
-        int hpId = 1;
+        int hpId = 999;
         long ptId = 99999637;
         int sinDay = 20230605;
         int level = 10;
@@ -154,7 +154,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_005_TestAgeChecker_WhenAgeTypeCheckSettingValueIs0()
     {
         //Setup
-        int hpId = 1;
+        int hpId = 999;
         long ptId = 99999637;
         int sinDay = 20230605;
         int level = 10;
@@ -190,7 +190,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_006_TestAgeChecker_HandleCheckOrderList_TestSettingLevelIs0()
     {
-        int hpId = 1;
+        int hpId = 999;
         //Setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -259,7 +259,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_007_TestAgeChecker_HandleCheckOrderList_TestSettingLevelIsMoreThan10()
     {
-        int hpId = 1;
+        int hpId = 999;
         //Setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -328,7 +328,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_008_TestAgeChecker_HandleCheckOrderList_Test_CheckedResult_IsNotNull_And_CountMoreThan_0()
     {
-        int hpId = 1;
+        int hpId = 999;
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -384,10 +384,9 @@ public class AgeCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
         var cache = new MasterDataCacheService(TenantProvider);
-
-        cache.InitCache(ageChecker.HpID, new List<string>() { "6220816AGE" }, 20230101, 1231);
         ageChecker.InitFinder(TenantProvider, cache);
-
+        cache.InitCache(ageChecker.HpID, new List<string>() { "6220816AGE" }, 20230101, 111);
+        
         try
         {
             var result = ageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);

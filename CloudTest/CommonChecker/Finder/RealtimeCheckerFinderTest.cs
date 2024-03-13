@@ -228,7 +228,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         public void TC_005_CheckProDrug()
         {
             //Setup Param
-            int hpId = 1;
+            int hpId = 999;
             long ptId = 111;
             int sinDay = 20230101;
 
@@ -286,7 +286,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         public void TC_006_CheckProDrugForDuplication_Test_Equal_YohoCd()
         {
             //Setup Param
-            int hpId = 1;
+            int hpId = 999;
             long ptId = 111;
             int sinDay = 20230101;
             int setting = 0;
@@ -349,7 +349,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         public void TC_007_CheckProDrugForDuplication_Test_ZensinsayoFlg_Is_1()
         {
             //Setup Param
-            int hpId = 1;
+            int hpId = 999;
             long ptId = 111;
             int sinDay = 20230101;
             int setting = 0;
@@ -1256,7 +1256,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            int hpId = 1;
+            int hpId = 999;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 2;
@@ -1305,7 +1305,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            int hpId = 1;
+            int hpId = 999;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 3;
@@ -1354,7 +1354,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            int hpId = 1;
+            int hpId = 999;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
@@ -1403,7 +1403,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            int hpId = 1;
+            int hpId = 999;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
@@ -1451,7 +1451,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            int hpId = 1;
+            int hpId = 999;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
@@ -1588,7 +1588,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var hpId = 1;
+            var hpId = 999;
             var settingLevel = 4;
             var sinDay = 20230101;
 
@@ -1632,7 +1632,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var hpId = 1;
+            var hpId = 999;
             var settingLevel = 0;
             var sinDay = 20230101;
 
@@ -1676,7 +1676,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var hpId = 1;
+            var hpId = 999;
             var settingLevel = 4;
             var sinDay = 20230101;
             var isDataDb = false;
@@ -1725,7 +1725,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var hpId = 1;
+            var hpId = 999;
             var settingLevel = 4;
             var sinDay = 20230101;
             var isDataDb = false;
@@ -7411,7 +7411,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.SaveChanges();
 
-            var hpId = 1;
+            var hpId = 999;
             var sinday = 20231212;
             var ptId = 1231;
             var listItem = new List<ItemCodeModel>()

@@ -158,7 +158,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindTenMst(1, "UT2720", 20230101);
+                var result = realtimcheckerfinder.FindTenMst(999, "UT2720", 20230101);
 
                 // Assert
                 Assert.True(result.TenMst.ItemCd == "UT2720" && result.TenMst.YjCd == "UT271026");
