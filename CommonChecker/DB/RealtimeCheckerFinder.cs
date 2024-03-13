@@ -9,8 +9,8 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using Infrastructure.Services;
-using PostgreDataContext;
+using Infrastructure.Base;
+using Infrastructure.Interfaces;
 using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
 using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
@@ -20,13 +20,11 @@ using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleMo
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public class RealtimeCheckerFinder : IRealtimeCheckerFinder
+    public class RealtimeCheckerFinder : RepositoryBase, IRealtimeCheckerFinder
     {
-        public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
         private readonly IMasterDataCacheService _tenMstCacheService;
-        public RealtimeCheckerFinder(TenantNoTrackingDataContext noTrackingDataContext, IMasterDataCacheService tenMstCacheService)
+        public RealtimeCheckerFinder(ITenantProvider tenantProvider, IMasterDataCacheService tenMstCacheService) : base(tenantProvider)
         {
-            NoTrackingDataContext = noTrackingDataContext;
             _tenMstCacheService = tenMstCacheService;
         }
 
@@ -91,11 +89,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return listFilteredBySinData;
         }
 
-        public KensaInfDetail GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode)
+        public KensaInfDetail? GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode)
         {
             return NoTrackingDataContext.KensaInfDetails
                 .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == kensaItemCode && k.ResultVal != null && k.ResultVal != string.Empty)
-                .OrderByDescending(k => k.IraiDate).FirstOrDefault() ?? new KensaInfDetail();
+                .OrderByDescending(k => k.IraiDate).FirstOrDefault();
         }
 
         public PhysicalAverage GetCommonBodyInfo(int hpId, int birthDay, int sinday)
@@ -1826,7 +1824,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToList();
 
             List<KinkiResultModel> result = new();
-            
+
             foreach (var addedOrderItemCode in addedOrderItemCodeList)
             {
                 var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode.ItemCd);
@@ -1834,7 +1832,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     continue;
                 }
-                
+
                 foreach (var seibunInfo in listSeibunInfo)
                 {
                     string seibunCd = seibunInfo.SeibunCd;
@@ -2644,7 +2642,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             var listItemCodeByUserSetting = dayLimitInfoByUser.Select(d => d.ItemCd).Distinct().ToList();
             var listRestedItemCode = listAddedOrderCodes.Where(c => !listItemCodeByUserSetting.Contains(c.ItemCd)).ToList();
-            
+
             var listRestedItemCd = listRestedItemCode.Select(x => x.ItemCd).Distinct().ToList();
             var dayLimitInfo =
                 (
@@ -2785,7 +2783,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 //Get data in db
                 KensaInfDetail weightInfo = GetBodyInfo(hpId, ptId, sinday, IraiCodeConstant.WEIGHT_CODE);
 
-                if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
+                if (weightInfo != null && CIUtil.IsNumberic(weightInfo?.ResultVal ?? string.Empty))
                 {
                     return weightInfo?.ResultVal?.AsDouble() ?? 0;
                 }
@@ -2797,7 +2795,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                           .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == IraiCodeConstant.WEIGHT_CODE && !string.IsNullOrEmpty(k.ResultVal))
                           .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
-                if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
+                if (weightInfo != null && CIUtil.IsNumberic(weightInfo?.ResultVal ?? string.Empty))
                 {
                     return weightInfo?.ResultVal?.AsDouble() ?? 0;
                 }
@@ -2811,7 +2809,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var heightInfoModel = kensaInfDetailModels.Where(k => k.HpId == hpId && k.PtId == ptID && k.IraiDate <= sinday && k.KensaItemCd == "V0001" && !string.IsNullOrEmpty(k.ResultVal))
             .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
-            if (heightInfoModel != null && CIUtil.IsDigitsOnly(heightInfoModel.ResultVal ?? string.Empty))
+            if (heightInfoModel != null && CIUtil.IsNumberic(heightInfoModel.ResultVal ?? string.Empty))
             {
                 var value = heightInfoModel.ResultVal ?? string.Empty;
                 return value.AsDouble();
@@ -2857,6 +2855,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 // 切捨て（上限に対して使用)
                 return CIUtil.RoundDown(range * (1 / factor) * (1 / odrCnv), 4);
             }
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
         #endregion
     }
