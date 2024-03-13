@@ -819,6 +819,33 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using Infrastructure.Repositoriesp;
+using Domain.Models.ReleasenoteRead;
+using Interactor.ReleasenoteRead;
+using UseCase.Releasenote.LoadListVersion;
+using UseCase.Releasenote.UpdateListReleasenote;
+using Domain.Models.Cacche;
+using Interactor.Cache;
+using UseCase.Cache.RemoveAllCache;
+using UseCase.Cache.RemoveCache;
+using UseCase.User.UpdateHashPassword;
+using UseCase.Diseases.IsHokenInfInUsed;
+using Domain.Models.Yousiki;
+using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
+using Interactor.Yousiki;
+using UseCase.Yousiki.GetYousiki1InfDetails;
+using UseCase.Yousiki.GetVisitingInfs;
+using UseCase.Yousiki.AddYousiki;
+using UseCase.Yousiki.GetHistoryYousiki;
+using UseCase.Yousiki.DeleteYousikiInf;
+using UseCase.Yousiki.GetYousiki1InfModel;
+using UseCase.Yousiki.GetKacodeYousikiMstDict;
+using UseCase.Yousiki.GetByomeisInMonth;
+using UseCase.Yousiki.CreateYuIchiFile;
+using UseCase.Yousiki.UpdateYosiki;
+using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
+using UseCase.ReceSeikyu.GetRecedenHenJiyuuList;
+using UseCase.ReceSeikyu.RecalculateInSeikyuPending;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1766,7 +1793,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
             busBuilder.RegisterUseCase<ImportFileReceSeikyuInputData, ImportFileReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<CancelSeikyuInputData, CancelSeikyuInteractor>();
+            busBuilder.RegisterUseCase<RecalculateInSeikyuPendingInputData, RecalculateInSeikyuPendingInteractor>();
             busBuilder.RegisterUseCase<GetReceSeikyModelByPtNumInputData, GetReceSeikyModelByPtNumInteractor>();
+            busBuilder.RegisterUseCase<GetRecedenHenJiyuuListInputData, GetRecedenHenJiyuuListInteractor>();
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();

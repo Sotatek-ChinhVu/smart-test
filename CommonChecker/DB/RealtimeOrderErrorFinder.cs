@@ -1,4 +1,5 @@
-﻿using Domain.Models.PatientInfor;
+﻿using Helper.Constants;
+using Domain.Models.PatientInfor;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -166,7 +167,7 @@ namespace CommonChecker.DB
             return ippanInfo == null ? string.Empty : ippanInfo.IpnName ?? string.Empty;
         }
 
-        public string FindItemName(int hpId , string yjCd, int sinday)
+        public string FindItemName(int hpId, string yjCd, int sinday)
         {
             var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(d => d.HpId == hpId && d.StartDate <= sinday && sinday <= d.EndDate && d.YjCd == yjCd);
             return itemInfo != null ? itemInfo.Name ?? string.Empty : string.Empty;
@@ -176,6 +177,18 @@ namespace CommonChecker.DB
         {
             yjCdList = yjCdList.Distinct().ToList();
             var itemInfoList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.StartDate <= sinday && sinday <= item.EndDate && item.YjCd != null && yjCdList.Contains(item.YjCd)).ToList();
+            Dictionary<string, string> result = new();
+            foreach (var yjcd in yjCdList)
+            {
+                result.Add(yjcd, itemInfoList.FirstOrDefault(item => item.YjCd == yjcd)?.Name ?? string.Empty);
+            }
+            return result;
+        }
+
+        public Dictionary<string, string> FindLastItemNameByYjCdDic(int hpId, List<string> yjCdList, int sinday, bool dontCheckIsDeleted = true)
+        {
+            yjCdList = yjCdList.Distinct().ToList();
+            var itemInfoList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && item.StartDate <= sinday && item.YjCd != null && yjCdList.Contains(item.YjCd) && (dontCheckIsDeleted || !dontCheckIsDeleted && item.IsDeleted == DeleteTypes.None)).ToList();
             Dictionary<string, string> result = new();
             foreach (var yjcd in yjCdList)
             {

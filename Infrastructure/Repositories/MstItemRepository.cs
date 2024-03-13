@@ -6601,7 +6601,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         if (itemCds?.Count > 0)
         {
-            result = result || NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
+            bool existOdrInfDetail = NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
+            bool existSetOdrInfDetail = NoTrackingDataContext.SetOdrInfDetail.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
+            bool existListSetMst = NoTrackingDataContext.ListSetMsts.Where(p => p.HpId == hpId && p.IsDeleted == 0 && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
+            result = result || existOdrInfDetail || existSetOdrInfDetail || existListSetMst;
         }
         return result;
     }

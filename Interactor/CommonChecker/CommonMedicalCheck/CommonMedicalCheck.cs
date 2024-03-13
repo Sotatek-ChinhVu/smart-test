@@ -751,7 +751,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         usageDosageList = usageDosageList.Distinct().ToList();
         itemNameByItemCodeList = itemNameByItemCodeList.Distinct().ToList();
 
-        _itemNameDictionary = itemNameList.Any() ? _realtimeOrderErrorFinder.FindItemNameDic(hpId, itemNameList, _sinday) : new();
+        _itemNameDictionary = itemNameList.Any() ? _realtimeOrderErrorFinder.FindLastItemNameByYjCdDic(hpId, itemNameList, _sinday, false) : new();
         _componentNameDictionary = componentNameList.Any() ? _realtimeOrderErrorFinder.FindComponentNameDic(hpId, componentNameList) : new();
         _analogueNameDictionary = analogueNameList.Any() ? _realtimeOrderErrorFinder.FindAnalogueNameDic(hpId, analogueNameList) : new();
         _drvalrgyNameDictionary = drvalrgyNameList.Any() ? _realtimeOrderErrorFinder.FindDrvalrgyNameDic(hpId, drvalrgyNameList) : new();
@@ -764,7 +764,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _supplementComponentInfoDictionary = supplementComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetSupplementComponentInfoDic(hpId, supplementComponentInfoList) : new();
         _suppleItemNameDictionary = suppleItemNameList.Any() ? _realtimeOrderErrorFinder.FindSuppleItemNameDic(hpId, suppleItemNameList) : new();
         _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(hpId, usageDosageList) : new();
-        _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(hpId,itemNameByItemCodeList, _sinday) : new();
+        _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(hpId, itemNameByItemCodeList, _sinday) : new();
     }
 
     #endregion
@@ -1720,7 +1720,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 DateTime.MinValue,
                 string.Empty,
                 string.Empty,
-                0
+                0,
+                string.Empty
               )
           ).ToList();
 

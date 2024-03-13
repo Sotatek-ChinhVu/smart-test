@@ -99,6 +99,21 @@ namespace Domain.Models.InsuranceMst
             ExcepHokenSyas = new List<ExceptHokensyaModel>();
         }
 
+        public HokenMstModel(int hokenNo, int hokenEdaNo, int startDate, int prefNo, string houbetu, int futanRate)
+        {
+            HokenEdaNo = hokenEdaNo;
+            HokenNo = hokenNo;
+            StartDate = startDate;
+            PrefNo = prefNo;
+            Houbetu = houbetu;
+            FutanRate = futanRate;
+            HokenSName = string.Empty;
+            HokenName = string.Empty;
+            HokenNameCd = string.Empty;
+            PrefactureName = string.Empty;
+            ExcepHokenSyas = new List<ExceptHokensyaModel>();
+        }
+
         public HokenMstModel ChangePropertiesNoAutoMap(string hokenSName)
         {
             HokenSName = hokenSName;

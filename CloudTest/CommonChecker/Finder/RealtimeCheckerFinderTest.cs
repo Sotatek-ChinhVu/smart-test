@@ -1792,7 +1792,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var kensaInfDetailModels = new List<KensaInfDetailModel>
             {
-                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230101, 0, "V0002", "50", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0),
+                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230101, 0, "V0002", "50", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0, string.Empty),
             };
             bool isDataOfDb = false;
             // Arrange
@@ -1831,7 +1831,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var kensaInfDetailModels = new List<KensaInfDetailModel>
             {
-                new KensaInfDetailModel(hpId, ptId, 0, 0, -1, 0, "V0002", "-1", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0),
+                new KensaInfDetailModel(hpId, ptId, 0, 0, -1, 0, "V0002", "-1", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0, string.Empty),
             };
             bool isDataOfDb = false;
             // Arrange
@@ -8690,7 +8690,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var kensaInfDetailModels = new List<KensaInfDetailModel>()
             {
-                new KensaInfDetailModel(hpId, ptId, 1234, 0, 20230101, 99999, kensaItemCd, "4", "","", 0 , "","", DateTime.UtcNow, "","",1),
+                new KensaInfDetailModel(hpId, ptId, 1234, 0, 20230101, 99999, kensaItemCd, "4", "","", 0 , "","", DateTime.UtcNow, "","",1, string.Empty),
             };
 
             var isDataDb = false;
@@ -8792,8 +8792,8 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var kensaInfDetailModels = new List<KensaInfDetailModel>
             {
-                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230101, 0, "V0001", "50", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0),
-                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230103, 0, "V0002", "60", "","",0,"cmtCd2","cmtCd3", DateTime.UtcNow, "", "UT KensaName2", 1),
+                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230101, 0, "V0001", "50", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0, string.Empty),
+                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230103, 0, "V0002", "60", "","",0,"cmtCd2","cmtCd3", DateTime.UtcNow, "", "UT KensaName2", 1, string.Empty),
             };
 
             var cache = new MasterDataCacheService(TenantProvider);

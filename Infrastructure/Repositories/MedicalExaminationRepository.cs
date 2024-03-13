@@ -134,8 +134,6 @@ namespace Infrastructure.Repositories
         public List<CheckedOrderModel> IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail)
         {
             var result = new List<CheckedOrderModel>();
-            var igakuTokusituItems = checkedOrders.Where(detail => detail.ItemCd == ItemCdConst.IgakuTokusitu || detail.ItemCd == ItemCdConst.IgakuTokusitu1);
-            var igakuTokusituItemOthers = checkedOrders.Where(detail => detail.ItemCd != ItemCdConst.IgakuTokusitu || detail.ItemCd != ItemCdConst.IgakuTokusitu1);
             if (syosaisinKbn == SyosaiConst.None)
             {
                 bool containCdKbn = false;
@@ -143,7 +141,7 @@ namespace Infrastructure.Repositories
                 {
                     var tenMstModel = FindTenMst(hpId, detail.ItemCd, sinDate);
                     if (tenMstModel == null) continue;
-                    if ((tenMstModel.CdKbn == "C" && tenMstModel.CdKbnno == 1 && tenMstModel.Kokuji2 == "1") || tenMstModel.ItemCd.Contains("@Z"))
+                    if ((tenMstModel.CdKbn == "C" && tenMstModel.CdKbnno == 1 && tenMstModel.Kokuji2 == "1") || tenMstModel.ItemCd == "@Z")
                     {
                         var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 4001 && p.GrpEdaNo == 0)?.Val ?? 0;
                         if (santeiKanren == 0)
@@ -156,17 +154,17 @@ namespace Infrastructure.Repositories
                         }
                     }
                 }
-                if (igakuTokusituItems != null && igakuTokusituItems.Any())
+                foreach (var igaku in checkedOrders)
                 {
-                    var igaku = igakuTokusituItems.FirstOrDefault();
-                    if (igaku != null)
+                    if (igaku.ItemCd == ItemCdConst.IgakuTokusitu || igaku.ItemCd == ItemCdConst.IgakuTokusitu1)
                     {
-                        result.Add(igaku.ChangeSantei(containCdKbn));
+                        igaku.ChangeSantei(containCdKbn);
+                        break;
                     }
                 }
             }
 
-            result.AddRange(igakuTokusituItemOthers);
+            result.AddRange(checkedOrders);
 
             return result;
         }

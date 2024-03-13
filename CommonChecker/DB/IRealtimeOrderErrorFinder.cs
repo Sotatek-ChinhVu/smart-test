@@ -11,6 +11,8 @@ namespace CommonChecker.DB
 
         Dictionary<string, string> FindItemNameDic(int hpId, List<string> yjCdList, int sinday);
 
+        Dictionary<string, string> FindLastItemNameByYjCdDic(int hpId, List<string> yjCdList, int sinday, bool dontCheckIsDeleted = true);
+
         string FindComponentName(int hpId, string conponentCode);
 
         Dictionary<string, string> FindComponentNameDic(int hpId, List<string> conponentCodeList);

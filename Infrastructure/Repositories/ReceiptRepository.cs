@@ -955,7 +955,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         Output = receStatus != null ? receStatus.Output : 0,
                         FusenKbn = receStatus != null ? receStatus.FusenKbn : 0,
                         StatusKbn = receStatus != null ? receStatus.StatusKbn : 0,
-                        ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? receCheckErr?.Message1 ?? string.Empty + receCheckErr?.Message2 ?? string.Empty : string.Empty),
+                        ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? (receCheckErr?.Message1 ?? string.Empty) + (receCheckErr?.Message2 ?? string.Empty) : string.Empty),
                         IsPending = receCheckCmt != null ? receCheckCmt.IsPending : -1,
                         PtNum = ptInf != null ? ptInf.PtNum : 0,
                         Name = ptKyusei != null ? ptKyusei.Name : ptInf.Name,
@@ -1590,29 +1590,62 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     public List<ReceReasonModel> GetReceReasonList(int hpId, int seikyuYm, int sinDate, long ptId, int hokenId)
     {
         int sinYm = sinDate / 100;
-        var receInfList = NoTrackingDataContext.ReceInfs.Where(item => item.HpId == hpId
+
+        var listReceInf = NoTrackingDataContext.ReceInfs.Where(item => item.HpId == hpId
                                                                        && item.SinYm == sinYm
                                                                        && item.SeikyuYm == seikyuYm
-                                                                       && item.PtId == ptId
-                                                                       && item.HokenId == hokenId);
+                                                                       && (ptId == -1 || item.PtId == ptId)
+                                                                       && (hokenId == -1 || item.HokenId == hokenId));
 
-        var renJiyuuList = NoTrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == hpId
+        var listReceSeikyu = NoTrackingDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                             && item.SeikyuYm == seikyuYm
+                                                                             && item.SinYm == sinYm
+                                                                             && (ptId == -1 || item.PtId == ptId)
+                                                                             && (hokenId == -1 || item.HokenId == hokenId)
+                                                                             && item.IsDeleted == 0);
+
+        var joinReceInfWithReceSeikyu = from receInf in listReceInf
+                                        join receSeikyu in listReceSeikyu
+                                        on new { receInf.HpId, receInf.PtId, receInf.HokenId, receInf.SinYm }
+                                        equals new { receSeikyu.HpId, receSeikyu.PtId, receSeikyu.HokenId, receSeikyu.SinYm }
+                                        select new
+                                        {
+                                            ReceSeikyu = receSeikyu,
+                                        };
+
+        var listHenJiyuu = NoTrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == hpId
                                                                                 && item.SinYm == sinYm
-                                                                                && item.PtId == ptId
-                                                                                && item.HokenId == hokenId
+                                                                                && (ptId == -1 || item.PtId == ptId)
                                                                                 && item.IsDeleted == 0);
 
-        var query = from receItem in receInfList
-                    join henJiyuuItem in renJiyuuList
-                    on new { receItem.HpId, receItem.PtId } equals new { henJiyuuItem.HpId, henJiyuuItem.PtId }
-                    select new ReceReasonModel(
-                                                    hokenId,
-                                                    sinYm,
-                                                    henJiyuuItem.HenreiJiyuuCd ?? string.Empty,
-                                                    henJiyuuItem.HenreiJiyuu ?? string.Empty,
-                                                    henJiyuuItem.Hosoku ?? string.Empty
-                                               );
-        return query.ToList();
+        var queryJoinHokenId = from receSeikyu in joinReceInfWithReceSeikyu
+                               join henJiyuuItem in listHenJiyuu
+                               on new { receSeikyu.ReceSeikyu.HpId, receSeikyu.ReceSeikyu.PtId, receSeikyu.ReceSeikyu.HokenId, receSeikyu.ReceSeikyu.SinYm }
+                               equals new { henJiyuuItem.HpId, henJiyuuItem.PtId, henJiyuuItem.HokenId, henJiyuuItem.SinYm }
+                               select new
+                               {
+                                   ReceHenJiyuu = henJiyuuItem,
+                               };
+
+        var queryJoinPreHokenId = from receSeikyu in joinReceInfWithReceSeikyu
+                                  join henJiyuuItem in listHenJiyuu
+                                  on new { receSeikyu.ReceSeikyu.HpId, receSeikyu.ReceSeikyu.PtId, HokenId = receSeikyu.ReceSeikyu.PreHokenId, receSeikyu.ReceSeikyu.SinYm }
+                                  equals new { henJiyuuItem.HpId, henJiyuuItem.PtId, henJiyuuItem.HokenId, henJiyuuItem.SinYm }
+                                  select new
+                                  {
+                                      ReceHenJiyuu = henJiyuuItem,
+                                  };
+
+        var result = queryJoinHokenId.Union(queryJoinPreHokenId)
+                                     .AsEnumerable()
+                                     .Select(item => new ReceReasonModel(
+                                                         item.ReceHenJiyuu.HokenId,
+                                                         item.ReceHenJiyuu.SinYm,
+                                                         item.ReceHenJiyuu.HenreiJiyuuCd ?? string.Empty,
+                                                         item.ReceHenJiyuu.HenreiJiyuu ?? string.Empty,
+                                                         item.ReceHenJiyuu.Hosoku ?? string.Empty))
+                                     .ToList();
+        return result;
     }
 
     public List<ReceCheckCmtModel> GetReceCheckCmtList(int hpId, int sinYm, long ptId, int hokenId)
