@@ -60,7 +60,7 @@ namespace Domain.Models.Reception
 
         List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
 
-        ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
+        ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate,bool isGetSysosaisin = false);
 
         List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
 
