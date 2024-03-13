@@ -632,7 +632,7 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
                 tenant.AddRange(kensaMsts);
                 tenant.AddRange(ipnNameMsts);
                 tenant.SaveChanges();
-                bool isTrue = true;
+                bool isTrue = false;
                 var result = todayOdrRepository.ConvertConversionItemToOrderInfModel(hpId, raiiNo, ptId, sinDate, odrInfItems, expiredItems);
                 foreach (var item in result)
                 {
