@@ -10635,5 +10635,149 @@ namespace CloudUnitTest.Interactor.PatientInfo
             Assert.That(result.First().Message, Is.EqualTo("患者姓（カナ）は２０文字以下を入力してください。"));
             Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanaNameLength));
         }
+
+        [Test]
+        public void TC_050_IsValidKanjiName_FKanNmChkJIS_SBUF_1()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "SampleS â!ă";
+            var kanjiName = "Kanjin â!ă";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("漢字名に 'ă' の文字が入力されています。\n\r登録しますか？"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidJiscodeCheck));
+        }
+
+        [Test]
+        public void TC_051_IsValidKanjiName_FKanNmChkJIS_SBUF_2()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "SampleS â!ă";
+            var kanjiName = "Kanjin â!ă";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 2);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("漢字名に 'ă' の文字は入力できません。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidChineseCharacterName));
+        }
+
+        [Test]
+        public void TC_052_IsValidKanjiName_FKanNmChkJIS_SBUF_FullName_1()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "â!ă 123";
+            var kanjiName = "â!ă 123";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("漢字姓に 'ă' の文字が入力されています。\n\r登録しますか？"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidJiscodeCheck));
+        }
+
+        [Test]
+        public void TC_053_IsValidKanjiName_FKanNmChkJIS_SBUF_FullName_2()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "â!ă 123";
+            var kanjiName = "â!ă 123";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 2);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("漢字姓に 'ă' の文字は入力できません。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidChineseCharacterName));
+        }
     }
 }
