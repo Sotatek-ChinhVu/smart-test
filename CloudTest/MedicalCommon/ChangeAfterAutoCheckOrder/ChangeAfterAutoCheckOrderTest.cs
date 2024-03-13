@@ -86,9 +86,11 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "003";
+            var itemCd = "ItemCd" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel(hpId,"ItemCdTest", sinDate)
+                new OrdInfDetailModel(hpId,itemCd, sinDate)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
@@ -99,7 +101,7 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
@@ -131,9 +133,11 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "004";
+            var itemCd = "ItemCd" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCdTest", 85)
+                new OrdInfDetailModel(itemCd, 85)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
@@ -144,7 +148,7 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
@@ -167,8 +171,6 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             }
         }
 
-
-
         [Test]
         public void ChangeAfterAutoCheckOrder_005()
         {
@@ -178,9 +180,11 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "005";
+            var itemCd = "ItemCd" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCdTest", 70)
+                new OrdInfDetailModel(itemCd, 70)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
@@ -191,7 +195,7 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
@@ -223,9 +227,11 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "006";
+            var itemCd = "ItemCd" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCdTest", 70)
+                new OrdInfDetailModel(itemCd, 70)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
@@ -236,7 +242,7 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
@@ -267,9 +273,11 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "007";
+            var itemCd = "ItemCd" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCdTest", 85)
+                new OrdInfDetailModel(itemCd, 85)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
@@ -280,7 +288,7 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
@@ -312,20 +320,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "008";
+            var itemCd = "ItemCd" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCdTest", 70)
+                new OrdInfDetailModel(itemCd, 70)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCdTest"), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
@@ -357,20 +367,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "009";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 70)
+                new OrdInfDetailModel(itemCd, 70)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1"), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
             var mockSystemConf = new Mock<ISystemConfRepository>();
             var mockapprovalInf = new Mock<IApprovalInfRepository>();
@@ -402,20 +414,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "010";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 70, "ipnTest")
+                new OrdInfDetailModel(itemCd, 70, "ipnTest")
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1"), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, itemCd, 0, 0, new TenItemModel(itemCd), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -453,20 +467,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "011";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 85, "ipnTest")
+                new OrdInfDetailModel(itemCd, 85, "ipnTest")
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "Test", ""), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "Test", ""), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -504,20 +520,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "012";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 85, "ipnTest")
+                new OrdInfDetailModel(itemCd, 85, "ipnTest")
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "Test"), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "", "Test"), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -555,20 +573,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "013";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20, 1)
+                new OrdInfDetailModel(itemCd, 20, 1)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 20), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "", "", 20), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -606,20 +626,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "014";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20, 1)
+                new OrdInfDetailModel(itemCd, 20, 1)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "Test", "", 0), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "Test", "", 0), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -657,20 +679,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "015";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20, 1)
+                new OrdInfDetailModel(itemCd, 20, 1)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "Test", 0), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "", "Test", 0), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -708,20 +732,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "016";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20, "",1, 1)
+                new OrdInfDetailModel(itemCd, 20, "",1, 1)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 20), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "", "", 20), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -759,20 +785,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "017";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20, "",2, 1)
+                new OrdInfDetailModel(itemCd, 20, "",2, 1)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 20), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "", "", 20), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -810,20 +838,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "018";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20, "",2, 1,3)
+                new OrdInfDetailModel(itemCd, 20, "",2, 1,3)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 20), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "", "", 20), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -861,20 +891,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "019";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20, "",2, 1,3)
+                new OrdInfDetailModel(itemCd, 20, "",2, 1,3)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 0), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "", "", 0), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName
@@ -912,20 +944,22 @@ namespace CloudUnitTest.MedicalCommon.ChangeAfterAutoCheckOrder
             int sinDate = 20240203;
             long raiinNo = 0;
             long ptId = 123456789;
+            var sufix = "020";
+            var itemCd = "ItemCd1" + sufix;
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20, "",1, 1,3)
+                new OrdInfDetailModel(itemCd, 20, "",1, 1,3)
             };
             List<OrdInfModel> odrInfs = new List<OrdInfModel>()
             {
                 new OrdInfModel(-1, hpId, ptId, sinDate, raiinNo, ordInfDetailModels)
             };
             List<Tuple<int, string, int, int, TenItemModel, double>> targetItems = new List<Tuple<int, string, int, int, TenItemModel, double>>();
-            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel("ItemCd1", "", "", 0), 1.5));
+            targetItems.Add(new Tuple<int, string, int, int, TenItemModel, double>(1, "Item 1", 0, 0, new TenItemModel(itemCd, "", "", 0), 1.5));
 
 
             // TenMst
-            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst();
+            var tenMsts = ChangeAfterAutoCheckOrderData.ReadTenMst(sufix);
             tenant.TenMsts.AddRange(tenMsts);
 
             //IpnName

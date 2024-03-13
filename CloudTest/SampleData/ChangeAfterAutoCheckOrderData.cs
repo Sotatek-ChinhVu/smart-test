@@ -10,7 +10,7 @@ namespace CloudUnitTest.SampleData
         //Create COM Objects. Create a COM object for everything that is referenced
 
         //Create COM Objects. Create a COM object for everything that is referenced
-        public static List<TenMst> ReadTenMst()
+        public static List<TenMst> ReadTenMst(string sufix)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -47,7 +47,7 @@ namespace CloudUnitTest.SampleData
                                     tenMst.HpId = hpId;
                                     break;
                                 case "B":
-                                    tenMst.ItemCd = text;
+                                    tenMst.ItemCd = text + sufix;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int startDate);
