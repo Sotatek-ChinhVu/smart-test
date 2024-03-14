@@ -798,7 +798,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var yjCd = "UT271026";
-            int hpId = 1;
+            int hpId = 999;
 
             var tenMsts = CommonCheckerData.ReadTenMst(string.Empty, string.Empty);
 
@@ -857,7 +857,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_017_TEST_FindItemNameByItemCode()
         {
-            int hpId = 1;
+            int hpId = 999;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 

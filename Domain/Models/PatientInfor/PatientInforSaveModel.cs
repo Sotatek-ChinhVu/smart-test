@@ -1,7 +1,10 @@
-﻿namespace Domain.Models.PatientInfor
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.PatientInfor
 {
     public class PatientInforSaveModel
     {
+        [JsonConstructor]
         public PatientInforSaveModel(int hpId, long ptId, long ptNum, string kanaName, string name, int sex, int birthday, int isDead, int deathDate, string mail, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, long referenceNo, int limitConsFlg, string memo)
         {
             HpId = hpId;
@@ -41,6 +44,34 @@
             ReferenceNo = referenceNo;
             LimitConsFlg = limitConsFlg;
             Memo = memo;
+        }
+
+        public PatientInforSaveModel()
+        {
+            KanaName = string.Empty;
+            Name = string.Empty;
+            Mail = string.Empty;
+            HomePost = string.Empty;
+            HomeAddress1 = string.Empty;
+            HomeAddress2 = string.Empty;
+            Tel1 = string.Empty;
+            Tel2 = string.Empty;
+            Setanusi = string.Empty;
+            Zokugara = string.Empty;
+            Job = string.Empty;
+            RenrakuName = string.Empty;
+            RenrakuPost = string.Empty;
+            RenrakuAddress1 = string.Empty;
+            RenrakuAddress2 = string.Empty;
+            RenrakuTel = string.Empty;
+            RenrakuMemo = string.Empty;
+            OfficeName = string.Empty;
+            OfficePost = string.Empty;
+            OfficeAddress1 = string.Empty;
+            OfficeAddress2 = string.Empty;
+            OfficeTel = string.Empty;
+            OfficeMemo = string.Empty;
+            Memo = string.Empty;
         }
 
         public int HpId { get; private set; }

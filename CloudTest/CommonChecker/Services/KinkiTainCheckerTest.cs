@@ -55,7 +55,7 @@ public class KinkiTainCheckerTest : BaseUT
 
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
         try
         {
@@ -97,7 +97,7 @@ public class KinkiTainCheckerTest : BaseUT
 
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
         try
         {
@@ -220,7 +220,7 @@ public class KinkiTainCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "6220816T3" }, 20230505, ptId);
-        kinkiTainChecker.InitFinder(tenantNoTracking, cache);
+        kinkiTainChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -374,7 +374,7 @@ public class KinkiTainCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
-        kinkiTainChecker.InitFinder(tenantNoTracking, cache);
+        kinkiTainChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -506,7 +506,7 @@ public class KinkiTainCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
-        kinkiTainChecker.InitFinder(tenantNoTracking, cache);
+        kinkiTainChecker.InitFinder(TenantProvider, cache);
 
         try
         {

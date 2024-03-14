@@ -41,7 +41,7 @@ public class KinkiOTCCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(kinkiOTCChecker.HpID, new List<string>() { "936DIS003" }, 20230505, 1231);
-        kinkiOTCChecker.InitFinder(tenantNoTracking, cache);
+        kinkiOTCChecker.InitFinder(TenantProvider, cache);
 
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
@@ -137,7 +137,7 @@ public class KinkiOTCCheckerTest : BaseUT
         kinkiOTCChecker.HpID = hpId;
         kinkiOTCChecker.PtID = 1231;
         kinkiOTCChecker.Sinday = 20230404;
-        kinkiOTCChecker.InitFinder(tenantNoTracking, cache);
+        kinkiOTCChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -240,7 +240,7 @@ public class KinkiOTCCheckerTest : BaseUT
         kinkiOTCChecker.HpID = 999;
         kinkiOTCChecker.PtID = 1231;
         kinkiOTCChecker.Sinday = 20230404;
-        kinkiOTCChecker.InitFinder(tenantNoTracking, cache);
+        kinkiOTCChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -321,7 +321,7 @@ public class KinkiOTCCheckerTest : BaseUT
         kinkiOTCChecker.HpID = 999;
         kinkiOTCChecker.PtID = 1231;
         kinkiOTCChecker.Sinday = 20230404;
-        kinkiOTCChecker.InitFinder(tenantNoTracking, cache);
+        kinkiOTCChecker.InitFinder(TenantProvider, cache);
 
         try
         {
