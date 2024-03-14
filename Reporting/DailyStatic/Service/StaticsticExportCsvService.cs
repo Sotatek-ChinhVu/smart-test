@@ -180,7 +180,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta3061(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
             }
-            
+
             return result;
         }
 
@@ -455,6 +455,7 @@ namespace Reporting.DailyStatic.Service
             printConf.IsExcludeUnpaid = configDaily.ExcludingUnpaid == 1;
             printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
             printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+            printConf.PaymentMethodCds = configDaily.PaymentKbn.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
             return printConf;
         }
 

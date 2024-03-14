@@ -35,6 +35,8 @@ public class ConfigStatisticModel
                     return ConfigStatistic3060.StaMenu;
                 case (int)StatisticReportType.Sta3061:
                     return ConfigStatistic3061.StaMenu;
+                case (int)StatisticReportType.Sta3062:
+                    return ConfigStatistic3062.StaMenu;
                 case (int)StatisticReportType.Sta3070:
                     return ConfigStatistic3070.StaMenu;
                 case (int)StatisticReportType.Sta3071:
@@ -74,6 +76,8 @@ public class ConfigStatisticModel
                     return ConfigStatistic3060.ListStaConf;
                 case (int)StatisticReportType.Sta3061:
                     return ConfigStatistic3061.ListStaConf;
+                case (int)StatisticReportType.Sta3062:
+                    return ConfigStatistic3062.ListStaConf;
                 case (int)StatisticReportType.Sta3070:
                     return ConfigStatistic3070.ListStaConf;
                 case (int)StatisticReportType.Sta3071:
@@ -97,6 +101,7 @@ public class ConfigStatisticModel
     public ConfigStatistic3050Model ConfigStatistic3050 { get; set; }
     public ConfigStatistic3060Model ConfigStatistic3060 { get; set; }
     public ConfigStatistic3061Model ConfigStatistic3061 { get; set; }
+    public ConfigStatistic3062Model ConfigStatistic3062 { get; set; }
     public ConfigStatistic3070Model ConfigStatistic3070 { get; set; }
     public ConfigStatistic3071Model ConfigStatistic3071 { get; set; }
     public ConfigStatistic3080Model ConfigStatistic3080 { get; set; }
@@ -131,6 +136,12 @@ public class ConfigStatisticModel
     {
         _reportId = configStatistic3061.ReportId;
         ConfigStatistic3061 = configStatistic3061;
+    }
+
+    public ConfigStatisticModel(ConfigStatistic3062Model configStatistic3062)
+    {
+        _reportId = configStatistic3062.ReportId;
+        ConfigStatistic3062 = configStatistic3062;
     }
 
     public ConfigStatisticModel(ConfigStatistic2021Model configStatistic2021)
@@ -4919,6 +4930,10 @@ public class ConfigStatisticModel
         confCopy.ExcludingUnpaid = this.ExcludingUnpaid;
         confCopy.BreakPage1 = this.BreakPage1;
         confCopy.BreakPage2 = this.BreakPage2;
+        if (confCopy.ReportId == (int)StatisticReportType.Sta2001)
+        {
+            confCopy.PaymentKbn = this.PaymentKbn;
+        }
     }
 
     private void CopyReport1010(ConfigStatisticModel confCopy)

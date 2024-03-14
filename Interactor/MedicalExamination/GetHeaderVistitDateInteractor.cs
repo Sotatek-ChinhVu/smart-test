@@ -22,7 +22,7 @@ public class GetHeaderVistitDateInteractor : IGetHeaderVistitDateInputPort
         {
             var dateTimeFormart = GetVisitingDateFormartSetting(inputData.HpId, inputData.UserId);
             int firstTimeDate = _receptionRepository.GetFirstVisitWithSyosin(inputData.HpId, inputData.PtId, inputData.SinDate);
-            int lastTimeDate = _receptionRepository.GetLastVisit(inputData.HpId, inputData.PtId, inputData.SinDate)?.SinDate ?? 0;
+            int lastTimeDate = _receptionRepository.GetLastVisit(inputData.HpId, inputData.PtId, inputData.SinDate, true)?.SinDate ?? 0;
             return new GetHeaderVistitDateOutputData(dateTimeFormart, firstTimeDate, lastTimeDate, GetHeaderVistitDateStatus.Successed);
         }
         finally

@@ -720,13 +720,14 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
-        public ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate)
+        public ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate, bool isGetSysosaisin = false)
         {
             var result = NoTrackingDataContext.RaiinInfs
                             .Where(p => p.HpId == hpId &&
                                         p.PtId == ptId &&
                                         p.IsDeleted == DeleteTypes.None &&
                                         p.Status >= RaiinState.TempSave &&
+                                        (!isGetSysosaisin || p.SanteiKbn != 2) &&
                                         (sinDate <= 0 || p.SinDate < sinDate))
                             .OrderByDescending(p => p.SinDate)
                             .ThenByDescending(p => p.RaiinNo)
@@ -843,6 +844,7 @@ namespace Infrastructure.Repositories
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(item => item.Status >= 3);
             }
+
             // 3. Perform the join operation
             var raiinQuery =
                 from raiinInf in filteredRaiinInfs

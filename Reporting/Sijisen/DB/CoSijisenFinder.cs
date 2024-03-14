@@ -449,7 +449,9 @@ namespace Reporting.Sijisen.DB
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t =>
                 t.HpId == hpId &&
                 t.StartDate <= sinDate &&
-                (t.EndDate >= sinDate || t.EndDate == 12341234));
+                (t.EndDate >= sinDate || t.EndDate == 12341234) &&
+                t.ItemCd != null &&
+                t.ItemCd.Length > 0);
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(k =>
                     k.HpId == hpId &&
                     k.IsDelete == DeleteStatus.None

@@ -67,7 +67,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -155,8 +155,6 @@ public class KinkiSuppleCheckerTest : BaseUT
             tenantTracking.SystemConfs.Add(systemConf);
         }
 
-        var cache = new MasterDataCacheService(TenantProvider);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
         //Setup Data test
         var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
         var m41IndexDef = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
@@ -167,6 +165,10 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.M41SuppleIndexcodes.AddRange(m41IndexCode);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
         tenantTracking.SaveChanges();
+
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(hpId, new List<string>() { "611170008" }, 20230101, 13934);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -253,7 +255,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -348,7 +350,7 @@ public class KinkiSuppleCheckerTest : BaseUT
 
 
         var cache = new MasterDataCacheService(TenantProvider);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -432,7 +434,7 @@ public class KinkiSuppleCheckerTest : BaseUT
 
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(kinkiSuppleChecker.HpID, new List<string>() { "936DIS003" }, 20230505, 1231);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
+        kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {

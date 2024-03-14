@@ -145,7 +145,7 @@ public class SanteiInfModel
         get
         {
             var santeiInfDetail = SanteiInfDetailList.OrderByDescending(u => u.KisanDate).FirstOrDefault();
-            if (santeiInfDetail != null)
+            if (santeiInfDetail != null && santeiInfDetail.KisanSbt != 1)
             {
                 return GetKisanName(santeiInfDetail.KisanSbt);
             }
