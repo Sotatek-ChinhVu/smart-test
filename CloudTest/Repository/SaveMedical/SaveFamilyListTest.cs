@@ -214,7 +214,9 @@ public class SaveFamilyListTest : BaseUT
             #endregion
         }
     }
+    #endregion SaveFamilyList
 
+    #region SaveFamilyRekiList
     [Test]
     public void TC_005_SaveFamilyList_TestSaveFamilyRekiListSuccess()
     {
@@ -535,7 +537,9 @@ public class SaveFamilyListTest : BaseUT
             #endregion
         }
     }
+    #endregion SaveFamilyRekiList
 
+    #region UpdatePtInf
     [Test]
     public void TC_009_SaveFamilyList_TestUpdatePtInfSuccess()
     {
@@ -612,5 +616,5 @@ public class SaveFamilyListTest : BaseUT
             #endregion
         }
     }
-    #endregion SavePregnancyItems
+    #endregion UpdatePtInf
 }

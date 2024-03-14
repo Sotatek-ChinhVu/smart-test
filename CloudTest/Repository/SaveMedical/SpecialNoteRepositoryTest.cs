@@ -383,7 +383,7 @@ public class SpecialNoteRepositoryTest : BaseUT
                                               random.Next(999, 99999),
                                               hpId,
                                               ptId,
-                                              random.Next(999, 99999),
+                                              random.Next(999999, 99999999),
                                               "textSumaryInf",
                                               "rTextSumaryInf",
                                               DateTime.UtcNow,
