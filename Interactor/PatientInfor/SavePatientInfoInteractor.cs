@@ -656,7 +656,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private bool NeedCheckMainHoken(List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, int ptInfMainHokenPid)
+        public bool NeedCheckMainHoken(List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, int ptInfMainHokenPid)
         {
             var selectedHokenPattern = insurances.FirstOrDefault(x => x.HokenPatternSelected);
             var selectedInf = hokenInfs.FirstOrDefault(x => x.HokenId == selectedHokenPattern?.HokenId);

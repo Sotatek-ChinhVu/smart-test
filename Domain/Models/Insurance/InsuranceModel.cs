@@ -148,6 +148,30 @@ namespace Domain.Models.InsuranceInfor
             IsAddNew = isAddNew;
             HokenPatternSelected = hokenPatternSelected;
         }
+        public InsuranceModel(bool isAddNew, bool hokenPatternSelected)
+        {
+            IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
+            HokenMemo = string.Empty;
+            HokenInf = new();
+            Kohi1 = new();
+            Kohi2 = new();
+            Kohi3 = new();
+            Kohi4 = new();
+        }
+
+        public InsuranceModel(bool isAddNew, bool hokenPatternSelected, HokenInfModel hokenInf, int hokenId)
+        {
+            IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
+            HokenMemo = string.Empty;
+            HokenInf = hokenInf;
+            Kohi1 = new();
+            Kohi2 = new();
+            Kohi3 = new();
+            Kohi4 = new();
+            HokenId = hokenId;
+        }
 
         public int HpId { get; private set; }
 

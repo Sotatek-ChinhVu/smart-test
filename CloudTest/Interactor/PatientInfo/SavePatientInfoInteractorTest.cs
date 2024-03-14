@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.Diseases;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
 using System.Text.Json;
+using Reporting.CommonMasters.Constants;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text;
 using UseCase.PatientInfor.Save;
 using DocumentFormat.OpenXml.Office.CustomUI;
@@ -10937,6 +10940,268 @@ namespace CloudUnitTest.Interactor.PatientInfo
                     tenantTracking.SaveChanges();
                 }
             }
+        }
+
+
+        [Test]
+        public void TC_058_NeedCheckMainHoken_SelectedHokenPattern_Null()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new();
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 0;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(!result);
+        }
+
+
+        [Test]
+        public void TC_059_NeedCheckMainHoken_Not_IsAddNew()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(false, true) };
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 0;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(!result);
+        }
+
+
+        [Test]
+        public void TC_060_NeedCheckMainHoken_IsEmpty()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(true, false) };
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 0;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(!result);
+        }
+
+
+        [Test]
+        public void TC_061_NeedCheckMainHoken_IsExpirated()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(true, true, new HokenInfModel(1, 20100101, 20130101), 0) };
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 0;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(!result);
+        }
+
+        [Test]
+        public void TC_062_NeedCheckMainHoken_HokenMain_Equal_SelectedHoken()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(true, true, new HokenInfModel(1, 0, 99999999), 0) };
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 0;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(!result);
+        }
+
+        [Test]
+        public void TC_063_NeedCheckMainHoken_Jihi()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(true, true, new HokenInfModel(1, 0, 99999999), 1) };
+            List<HokenInfModel> hokenInfs = new List<HokenInfModel> {new HokenInfModel(0, 1, 0, string.Empty, 0, 0, 99999999, "108") };
+            int ptInfMainHokenPid = 2;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(!result);
+        }
+
+        [Test]
+        public void TC_064_NeedCheckMainHoken_MainHokenPattern_IsNull()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(true, true, new HokenInfModel(1, 0, 99999999), 0) };
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 2;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TC_065_NeedCheckMainHoken_Main_IsExpirated()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(true, true, new HokenInfModel(1, 0, 99999999), 1) };
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 1;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+
+        [Test]
+        public void TC_066_NeedCheckMainHoken_Main_HokenKbn()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(1, 1, 20230101, 1, 123, 1, 1, string.Empty, 20230101, 0, 99999999, 1, 0, 0, 0, 0, true, 0, true), new InsuranceModel(1, 1, 20230101, 1, 123, 2, 2, string.Empty, 20230101, 0, 99999999, 1, 0, 0, 0, 0, true, 0, false) };
+
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 2;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TC_067_NeedCheckMainHoken_Main_HokenKbn()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(1, 1, 20230101, 1, 123, 1, 1, string.Empty, 20230101, 0, 99999999, 1, 0, 0, 0, 0, true, 0, true), new InsuranceModel(1, 1, 20230101, 1, 123, 2, 1, string.Empty, 20230101, 0, 99999999, 0, 0, 0, 0, 0, true, 0, false) };
+
+            List<HokenInfModel> hokenInfs = new List<HokenInfModel> { new HokenInfModel(1, 0, 1, 1, "0", 0, 99999999, 2024/03/11, new(), new()) };
+            int ptInfMainHokenPid = 2;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+
+        [Test]
+        public void TC_068_NeedCheckMainHoken_Main_Last()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            List<InsuranceModel> insurances = new List<InsuranceModel> { new InsuranceModel(1, 1, 20230101, 1, 123, 1, 1, string.Empty, 20230101, 0, 99999999, 1, 0, 0, 0, 0, true, 0, true), new InsuranceModel(1, 1, 20230101, 1, 123, 2, 1, string.Empty, 20230101, 0, 99999999, 1, 0, 0, 0, 0, true, 0, false) };
+
+            List<HokenInfModel> hokenInfs = new();
+            int ptInfMainHokenPid = 2;
+
+            // Act
+            var result = savePatientInfo.NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid);
+
+            // Assert
+            Assert.IsTrue(!result);
         }
     }
 }
