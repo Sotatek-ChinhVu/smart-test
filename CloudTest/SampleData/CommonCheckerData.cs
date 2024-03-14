@@ -952,7 +952,7 @@ namespace CloudUnitTest.SampleData
             return ptAlrgyDrugs;
         }
 
-        public static List<KinkiMst> ReadKinkiMst(string key, int hpId = 1)
+        public static List<KinkiMst> ReadKinkiMst(string key, int hpId = 999)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1216,7 +1216,7 @@ namespace CloudUnitTest.SampleData
         ///    return ptOtherDrugs;
         ///}
 
-        public static List<M12FoodAlrgy> ReadM12FoodAlrgy(string key)
+        public static List<M12FoodAlrgy> ReadM12FoodAlrgy(int hpId, string key)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1233,7 +1233,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m12FoodAlrgy = new M12FoodAlrgy();
-                        m12FoodAlrgy.HpId = 1;
+                        m12FoodAlrgy.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -1786,7 +1786,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m14 = new M14AgeCheck();
-                        m14.HpId = 1;
+                        m14.HpId = 999;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;

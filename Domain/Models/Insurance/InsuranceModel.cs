@@ -3,11 +3,13 @@ using Domain.Models.InsuranceMst;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
+        [JsonConstructor]
         public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int isDeleted, int startDate, int endDate, bool isAddNew)
         {
             HpId = hpId;
@@ -145,6 +147,30 @@ namespace Domain.Models.InsuranceInfor
             Kohi4Id = kohi4.HokenId;
             IsAddNew = isAddNew;
             HokenPatternSelected = hokenPatternSelected;
+        }
+        public InsuranceModel(bool isAddNew, bool hokenPatternSelected)
+        {
+            IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
+            HokenMemo = string.Empty;
+            HokenInf = new();
+            Kohi1 = new();
+            Kohi2 = new();
+            Kohi3 = new();
+            Kohi4 = new();
+        }
+
+        public InsuranceModel(bool isAddNew, bool hokenPatternSelected, HokenInfModel hokenInf, int hokenId)
+        {
+            IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
+            HokenMemo = string.Empty;
+            HokenInf = hokenInf;
+            Kohi1 = new();
+            Kohi2 = new();
+            Kohi3 = new();
+            Kohi4 = new();
+            HokenId = hokenId;
         }
 
         public int HpId { get; private set; }
