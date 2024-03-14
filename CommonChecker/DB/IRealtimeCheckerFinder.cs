@@ -1,5 +1,6 @@
 ﻿using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Common;
 using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
@@ -14,7 +15,7 @@ using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleMo
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public interface IRealtimeCheckerFinder
+    public interface IRealtimeCheckerFinder : IRepositoryBase
     {
         Dictionary<string, string> GetYjCdListByItemCdList(int hpId, List<ItemCodeModel> itemCdList, int sinDate);
 
@@ -22,7 +23,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         List<PtAlrgyDrugModel> GetDrugAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyDrugModelStandard> ptAlrgyDrugModels, bool isDataOfDb);
 
-        KensaInfDetail GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode);
+        KensaInfDetail? GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode);
 
         List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<ItemCodeModel> itemCodeModelList, int level, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels, bool isDataOfDb);
 
@@ -65,5 +66,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         List<DayLimitResultModel> CheckDayLimit(int hpID, int sinday, List<ItemCodeModel> listAddedOrderCodes, double usingDay);
 
         (double weight, double height) GetPtBodyInfo(int hpId, long ptId, int sinday, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb);
+
+        double GetCommonWeight(int hpId, int birdthDay, int sinday, int sex);
+
+        double GetCommonHeight(int hpId, int birdthDay, int sinday, int sex);
     }
 }

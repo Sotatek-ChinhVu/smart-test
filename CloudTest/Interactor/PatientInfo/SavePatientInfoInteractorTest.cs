@@ -8,12 +8,18 @@ using Domain.Models.SystemConf;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
+using Infrastructure.Repositories;
 using Interactor.PatientInfor;
+using Microsoft.Extensions.Configuration;
 using Moq;
+using NUnit.Framework;
+using System.Text.Json;
 using Reporting.CommonMasters.Constants;
 using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text;
 using UseCase.PatientInfor.Save;
+using DocumentFormat.OpenXml.Office.CustomUI;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace CloudUnitTest.Interactor.PatientInfo
 {
@@ -10456,9 +10462,489 @@ namespace CloudUnitTest.Interactor.PatientInfo
             Assert.IsTrue(result);
         }
 
+        [Test]
+        public void TC_045_IsValidKanjiName_InvalidFirstNameKana_InvalidFirstNameKanji()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = string.Empty; 
+            var kanjiName = string.Empty;
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.First().Message, Is.EqualTo("カナを入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidFirstNameKana));
+            Assert.That(result.Last().Message, Is.EqualTo("氏名を入力してください。"));
+            Assert.That(result.Last().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidFirstNameKanji));
+        }
 
         [Test]
-        public void TC_001_NeedCheckMainHoken_SelectedHokenPattern_Null()
+        public void TC_046_IsValidKanjiName_InvalidLastKanaName()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "Ariga";
+            var kanjiName = "救按 土";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("カナを入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanaName));
+        }
+
+        [Test]
+        public void TC_047_IsValidKanjiName_InvalidLastKanjiName()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "Ariga To";
+            var kanjiName = "救按";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("氏名を入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanjiName));
+        }
+
+        [Test]
+        public void TC_048_IsValidKanjiName_InvalidLastKanjiNameLength()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "Ariga To";
+            var kanjiName = "KanjiNameKanjiNameKanjiNameKanj Sample";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("患者姓は３０文字以下を入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanjiNameLength));
+        }
+
+        [Test]
+        public void TC_049_IsValidKanjiName_InvalidLastKanaNameLength()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "SampleKanaNameSampleS Sample";
+            var kanjiName = "KanjiNameKanjiNameKanjiNameKan Sample";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("患者姓（カナ）は２０文字以下を入力してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidLastKanaNameLength));
+        }
+
+        [Test]
+        public void TC_050_IsValidKanjiName_FKanNmChkJIS_SBUF_1()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "SampleS â!ă";
+            var kanjiName = "Kanjin â!ă";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("漢字名に 'ă' の文字が入力されています。\n\r登録しますか？"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidJiscodeCheck));
+        }
+
+        [Test]
+        public void TC_051_IsValidKanjiName_FKanNmChkJIS_SBUF_2()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "SampleS â!ă";
+            var kanjiName = "Kanjin â!ă";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 2);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("漢字名に 'ă' の文字は入力できません。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidChineseCharacterName));
+        }
+
+        [Test]
+        public void TC_052_IsValidKanjiName_FKanNmChkJIS_SBUF_FullName_1()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "â!ă 123";
+            var kanjiName = "â!ă 123";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("漢字姓に 'ă' の文字が入力されています。\n\r登録しますか？"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidJiscodeCheck));
+        }
+
+        [Test]
+        public void TC_053_IsValidKanjiName_FKanNmChkJIS_SBUF_FullName_2()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var hpId = 1;
+            var kanaName = "â!ă 123";
+            var kanjiName = "â!ă 123";
+
+            var react = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1017, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 0);
+
+            mockSystemConf.Setup(x => x.GetSettingValue(1003, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 2);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidKanjiName(kanaName, kanjiName, hpId, react);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("漢字姓に 'ă' の文字は入力できません。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.InvalidChineseCharacterName));
+        }
+
+
+        [Test]
+        public void TC_054_Handle_IsInValid()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+            var input = new SavePatientInfoInputData();
+            input.ReactSave.ConfirmSamePatientInf = true;
+            // Act
+            var result = savePatientInfo.Handle(input);
+
+            // Assert
+            Assert.IsTrue(result.Status == SavePatientInfoStatus.Failed);
+        }
+
+
+        [Test]
+        public void TC_055_Handle_InsertPatientInf()
+        {
+            long ptId = 0;
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            try
+            {
+                ReceptionRepository receptionRepository = new ReceptionRepository(TenantProvider);
+                PatientInforRepository patientInforRepository = new PatientInforRepository(TenantProvider, receptionRepository);
+                var mockConfiguration = new Mock<IConfiguration>();
+                mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+                mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+                SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+                DiseaseRepository ptDiseaseRepository = new DiseaseRepository(TenantProvider);
+                //Mock
+                var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+                var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, patientInforRepository, systemConfRepository, mockAmazonS3.Object, ptDiseaseRepository);
+                var inputstr = @"{ ""Patient"":{ ""HpId"":1,""PtId"":0,""PtNum"":0,""KanaName"":""Luu Nguyen"",""Name"":""Luu Nguyen"",""Sex"":1,""Birthday"":20240101,""IsDead"":0,""DeathDate"":0,""Mail"":"""",""HomePost"":"""",""HomeAddress1"":"""",""HomeAddress2"":"""",""Tel1"":"""",""Tel2"":"""",""Setanusi"":"""",""Zokugara"":"""",""Job"":"""",""RenrakuName"":"""",""RenrakuPost"":"""",""RenrakuAddress1"":"""",""RenrakuAddress2"":"""",""RenrakuTel"":"""",""RenrakuMemo"":"""",""OfficeName"":"""",""OfficePost"":"""",""OfficeAddress1"":"""",""OfficeAddress2"":"""",""OfficeTel"":"""",""OfficeMemo"":"""",""IsRyosyoDetail"":0,""PrimaryDoctor"":0,""IsTester"":0,""MainHokenPid"":0,""ReferenceNo"":0,""LimitConsFlg"":0,""Memo"":""""},""PtKyuseis"":[],""PtSanteis"":[],""Insurances"":[],""PtGrps"":[],""HokenInfs"":[],""HokenKohis"":[],""MaxMoneys"":[],""ReactSave"":{ ""ConfirmHaveanExpiredHokenOnMain"":false,""ConfirmRegisteredInsuranceCombination"":false,""ConfirmAgeCheck"":false,""ConfirmInsuranceElderlyLaterNotYetCovered"":false,""ConfirmLaterInsuranceRegisteredPatientsElderInsurance"":false,""ConfirmInsuranceSameInsuranceNumber"":false,""ConfirmMultipleHokenSignedUpSameTime"":false,""ConfirmFundsWithSamePayerCode"":false,""ConfirmInvalidJiscodeCheck"":false,""ConfirmHokenPatternSelectedIsInfMainHokenPid"":false,""ConfirmSamePatientInf"":false,""ConfirmCloneByomei"":false},""InsuranceScans"":[],""HokenIdList"":[],""UserId"":2,""HpId"":1}
+            ";
+
+                var input = JsonSerializer.Deserialize<SavePatientInfoInputData>(inputstr);
+
+                //// Act
+                var result = savePatientInfo.Handle(input ?? new());
+
+                //// Assert
+                Assert.IsTrue(result.Status == SavePatientInfoStatus.Successful && result.PtID > 0);
+                ptId = result.PtID;
+            }
+            finally
+            {
+                if (ptId > 0)
+                {
+                    var ptInf = tenantTracking.PtInfs.FirstOrDefault(pt => pt.PtId == ptId);
+                    tenantTracking.PtInfs.Remove(ptInf ?? new());
+                    tenantTracking.SaveChanges();
+                }
+            }
+        }
+
+
+        [Test]
+        public void TC_056_Handle_UpdatePatientInf()
+        {
+            long ptId = 0;
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            try
+            {
+                ReceptionRepository receptionRepository = new ReceptionRepository(TenantProvider);
+                PatientInforRepository patientInforRepository = new PatientInforRepository(TenantProvider, receptionRepository);
+                var mockConfiguration = new Mock<IConfiguration>();
+                mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+                mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+                SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+                DiseaseRepository ptDiseaseRepository = new DiseaseRepository(TenantProvider);
+                //Mock
+                var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+                var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, patientInforRepository, systemConfRepository, mockAmazonS3.Object, ptDiseaseRepository);
+                var inputStrInsert = @"{ ""Patient"":{ ""HpId"":1,""PtId"":0,""PtNum"":0,""KanaName"":""Luu Nguyen"",""Name"":""Luu Nguyen"",""Sex"":1,""Birthday"":20240101,""IsDead"":0,""DeathDate"":0,""Mail"":"""",""HomePost"":"""",""HomeAddress1"":"""",""HomeAddress2"":"""",""Tel1"":"""",""Tel2"":"""",""Setanusi"":"""",""Zokugara"":"""",""Job"":"""",""RenrakuName"":"""",""RenrakuPost"":"""",""RenrakuAddress1"":"""",""RenrakuAddress2"":"""",""RenrakuTel"":"""",""RenrakuMemo"":"""",""OfficeName"":"""",""OfficePost"":"""",""OfficeAddress1"":"""",""OfficeAddress2"":"""",""OfficeTel"":"""",""OfficeMemo"":"""",""IsRyosyoDetail"":0,""PrimaryDoctor"":0,""IsTester"":0,""MainHokenPid"":0,""ReferenceNo"":0,""LimitConsFlg"":0,""Memo"":""""},""PtKyuseis"":[],""PtSanteis"":[],""Insurances"":[],""PtGrps"":[],""HokenInfs"":[],""HokenKohis"":[],""MaxMoneys"":[],""ReactSave"":{ ""ConfirmHaveanExpiredHokenOnMain"":false,""ConfirmRegisteredInsuranceCombination"":false,""ConfirmAgeCheck"":false,""ConfirmInsuranceElderlyLaterNotYetCovered"":false,""ConfirmLaterInsuranceRegisteredPatientsElderInsurance"":false,""ConfirmInsuranceSameInsuranceNumber"":false,""ConfirmMultipleHokenSignedUpSameTime"":false,""ConfirmFundsWithSamePayerCode"":false,""ConfirmInvalidJiscodeCheck"":false,""ConfirmHokenPatternSelectedIsInfMainHokenPid"":false,""ConfirmSamePatientInf"":false,""ConfirmCloneByomei"":false},""InsuranceScans"":[],""HokenIdList"":[],""UserId"":2,""HpId"":1}
+            ";
+
+                var input = JsonSerializer.Deserialize<SavePatientInfoInputData>(inputStrInsert);
+
+                //// Act
+                var resultInsert = savePatientInfo.Handle(input);
+                ptId = resultInsert.PtID;
+
+                var inputstrUpdate = @"{ ""Patient"":{ ""HpId"":1,""PtId"":" + resultInsert.PtID + @",""PtNum"":" + resultInsert.PatientInforModel.PtNum + @",""KanaName"":""Luu Nguyen 1"",""Name"":""Luu Nguyen 1"",""Sex"":1,""Birthday"":19930309,""IsDead"":0,""DeathDate"":0,""Mail"":"""",""HomePost"":"""",""HomeAddress1"":"""",""HomeAddress2"":"""",""Tel1"":"""",""Tel2"":"""",""Setanusi"":"""",""Zokugara"":"""",""Job"":"""",""RenrakuName"":"""",""RenrakuPost"":"""",""RenrakuAddress1"":"""",""RenrakuAddress2"":"""",""RenrakuTel"":"""",""RenrakuMemo"":"""",""OfficeName"":"""",""OfficePost"":"""",""OfficeAddress1"":"""",""OfficeAddress2"":"""",""OfficeTel"":"""",""OfficeMemo"":"""",""IsRyosyoDetail"":0,""PrimaryDoctor"":0,""IsTester"":0,""MainHokenPid"":0,""ReferenceNo"":0,""LimitConsFlg"":0,""Memo"":""""},""PtKyuseis"":[],""PtSanteis"":[],""Insurances"":[],""PtGrps"":[],""HokenInfs"":[],""HokenKohis"":[],""MaxMoneys"":[],""ReactSave"":{ ""ConfirmHaveanExpiredHokenOnMain"":false,""ConfirmRegisteredInsuranceCombination"":false,""ConfirmAgeCheck"":false,""ConfirmInsuranceElderlyLaterNotYetCovered"":false,""ConfirmLaterInsuranceRegisteredPatientsElderInsurance"":false,""ConfirmInsuranceSameInsuranceNumber"":false,""ConfirmMultipleHokenSignedUpSameTime"":false,""ConfirmFundsWithSamePayerCode"":false,""ConfirmInvalidJiscodeCheck"":false,""ConfirmHokenPatternSelectedIsInfMainHokenPid"":false,""ConfirmSamePatientInf"":false,""ConfirmCloneByomei"":false},""InsuranceScans"":[],""HokenIdList"":[],""UserId"":2,""HpId"":1}
+            ";
+
+                var inputUpdate = JsonSerializer.Deserialize<SavePatientInfoInputData>(inputstrUpdate);
+
+                var resultUpdate = savePatientInfo.Handle(inputUpdate);
+                //// Assert
+                Assert.IsTrue(resultUpdate.Status == SavePatientInfoStatus.Successful && resultUpdate.PatientInforModel.KanaName == "Luu Nguyen 1" && resultUpdate.PatientInforModel.Name == "Luu Nguyen 1" && resultUpdate.PatientInforModel.Birthday == 19930309);
+            }
+            finally
+            {
+                if (ptId > 0)
+                {
+                    var ptInf = tenantTracking.PtInfs.FirstOrDefault(pt => pt.PtId == ptId);
+                    tenantTracking.PtInfs.Remove(ptInf ?? new());
+                    tenantTracking.SaveChanges();
+                }
+            }
+        }
+
+        [Test]
+        public void TC_057_Handle_InsertOrUpdateFailed()
+        {
+            long ptId = 0;
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            try
+            {
+                ReceptionRepository receptionRepository = new ReceptionRepository(TenantProvider);
+                PatientInforRepository patientInforRepository = new PatientInforRepository(TenantProvider, receptionRepository);
+                var mockConfiguration = new Mock<IConfiguration>();
+                mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+                mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+                SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+                DiseaseRepository ptDiseaseRepository = new DiseaseRepository(TenantProvider);
+                //Mock
+                var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+                var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, patientInforRepository, systemConfRepository, mockAmazonS3.Object, ptDiseaseRepository);
+
+                //// Act
+
+                var inputstrUpdate = @"{ ""Patient"":{ ""HpId"":1,""PtId"": 0,""PtNum"":1,""KanaName"":""Luu Nguyen"",""Name"":""Luu Nguyen"",""Sex"":1,""Birthday"":20240101,""IsDead"":0,""DeathDate"":0,""Mail"":"""",""HomePost"":"""",""HomeAddress1"":"""",""HomeAddress2"":"""",""Tel1"":"""",""Tel2"":"""",""Setanusi"":"""",""Zokugara"":"""",""Job"":"""",""RenrakuName"":"""",""RenrakuPost"":"""",""RenrakuAddress1"":"""",""RenrakuAddress2"":"""",""RenrakuTel"":"""",""RenrakuMemo"":"""",""OfficeName"":"""",""OfficePost"":"""",""OfficeAddress1"":"""",""OfficeAddress2"":"""",""OfficeTel"":"""",""OfficeMemo"":"""",""IsRyosyoDetail"":0,""PrimaryDoctor"":0,""IsTester"":0,""MainHokenPid"":0,""ReferenceNo"":0,""LimitConsFlg"":0,""Memo"":""""},""PtKyuseis"":[],""PtSanteis"":[],""Insurances"":[],""PtGrps"":[],""HokenInfs"":[],""HokenKohis"":[],""MaxMoneys"":[],""ReactSave"":{ ""ConfirmHaveanExpiredHokenOnMain"":false,""ConfirmRegisteredInsuranceCombination"":false,""ConfirmAgeCheck"":false,""ConfirmInsuranceElderlyLaterNotYetCovered"":false,""ConfirmLaterInsuranceRegisteredPatientsElderInsurance"":false,""ConfirmInsuranceSameInsuranceNumber"":false,""ConfirmMultipleHokenSignedUpSameTime"":false,""ConfirmFundsWithSamePayerCode"":false,""ConfirmInvalidJiscodeCheck"":false,""ConfirmHokenPatternSelectedIsInfMainHokenPid"":false,""ConfirmSamePatientInf"":false,""ConfirmCloneByomei"":false},""InsuranceScans"":[],""HokenIdList"":[],""UserId"":2,""HpId"":1}
+            ";
+
+                var inputUpdate = JsonSerializer.Deserialize<SavePatientInfoInputData>(inputstrUpdate);
+
+                var resultUpdate = savePatientInfo.Handle(inputUpdate);
+                ptId = resultUpdate.PtID;
+                //// Assert
+                Assert.IsTrue(resultUpdate.Status == SavePatientInfoStatus.Failed && resultUpdate.PatientInforModel.PtId == 0);
+            }
+            finally
+            {
+                if (ptId > 0)
+                {
+                    var ptInf = tenantTracking.PtInfs.FirstOrDefault(pt => pt.PtId == ptId);
+                    tenantTracking.PtInfs.Remove(ptInf ?? new());
+                    tenantTracking.SaveChanges();
+                }
+            }
+        }
+
+
+        [Test]
+        public void TC_058_NeedCheckMainHoken_SelectedHokenPattern_Null()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10482,7 +10968,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
 
         [Test]
-        public void TC_002_NeedCheckMainHoken_Not_IsAddNew()
+        public void TC_059_NeedCheckMainHoken_Not_IsAddNew()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10506,7 +10992,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
 
         [Test]
-        public void TC_003_NeedCheckMainHoken_IsEmpty()
+        public void TC_060_NeedCheckMainHoken_IsEmpty()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10530,7 +11016,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
 
         [Test]
-        public void TC_004_NeedCheckMainHoken_IsExpirated()
+        public void TC_061_NeedCheckMainHoken_IsExpirated()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10553,7 +11039,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
         }
 
         [Test]
-        public void TC_005_NeedCheckMainHoken_HokenMain_Equal_SelectedHoken()
+        public void TC_062_NeedCheckMainHoken_HokenMain_Equal_SelectedHoken()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10576,7 +11062,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
         }
 
         [Test]
-        public void TC_006_NeedCheckMainHoken_Jihi()
+        public void TC_063_NeedCheckMainHoken_Jihi()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10599,7 +11085,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
         }
 
         [Test]
-        public void TC_007_NeedCheckMainHoken_MainHokenPattern_IsNull()
+        public void TC_064_NeedCheckMainHoken_MainHokenPattern_IsNull()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10622,7 +11108,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
         }
 
         [Test]
-        public void TC_008_NeedCheckMainHoken_Main_IsExpirated()
+        public void TC_065_NeedCheckMainHoken_Main_IsExpirated()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10646,7 +11132,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
 
         [Test]
-        public void TC_009_NeedCheckMainHoken_Main_HokenKbn()
+        public void TC_066_NeedCheckMainHoken_Main_HokenKbn()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10670,7 +11156,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
         }
 
         [Test]
-        public void TC_010_NeedCheckMainHoken_Main_HokenKbn()
+        public void TC_067_NeedCheckMainHoken_Main_HokenKbn()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10695,7 +11181,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
 
         [Test]
-        public void TC_011_NeedCheckMainHoken_Main_Last()
+        public void TC_068_NeedCheckMainHoken_Main_Last()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();

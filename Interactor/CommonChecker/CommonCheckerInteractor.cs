@@ -1,5 +1,4 @@
-﻿using Infrastructure.CommonDB;
-using Infrastructure.Interfaces;
+﻿using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using UseCase.CommonChecker;
@@ -25,12 +24,12 @@ namespace Interactor.CommonChecker
 
                 if (checkedResult == null || checkedResult.Count == 0)
                 {
-                    return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);
+                    return new GetOrderCheckerOutputData(new(), string.Empty, string.Empty, string.Empty, string.Empty, GetOrderCheckerStatus.Successed);
                 }
                 else
                 {
-                    var result = _commonMedicalCheck.GetErrorDetails(inputData.HpId, inputData.PtId, inputData.SinDay, checkedResult);
-                    return new GetOrderCheckerOutputData(result ?? new(), GetOrderCheckerStatus.Error);
+                    var result = _commonMedicalCheck.GetErrorDetails(inputData.HpId, inputData.PtId, inputData.SinDay, checkedResult, inputData.SpecialNoteItem);
+                    return new GetOrderCheckerOutputData(result.errors ?? new(), result.weightInfo, result.weightDateInfo, result.heightInfo, result.heightDateInfo, GetOrderCheckerStatus.Error);
                 }
             }
             catch (Exception ex)

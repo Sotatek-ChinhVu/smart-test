@@ -8,6 +8,8 @@ using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services.Interface;
 using Domain.Models.Diseases;
 using Domain.Models.Family;
+using Infrastructure.CommonDB;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 using SpecialNoteFull = Domain.Models.SpecialNote.SpecialNoteModel;
 
@@ -31,10 +33,10 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public ISystemConfig? SystemConfig { get; private set; }
 
-        public void InitFinder(TenantNoTrackingDataContext _dataContext, IMasterDataCacheService _tenMstCacheService)
+        public void InitFinder(ITenantProvider tenantProvider, IMasterDataCacheService _tenMstCacheService)
         {
-            Finder = new RealtimeCheckerFinder(_dataContext, _tenMstCacheService);
-            MasterFinder = new MasterFinder(_dataContext);
+            Finder = new RealtimeCheckerFinder(tenantProvider, _tenMstCacheService);
+            MasterFinder = new MasterFinder(tenantProvider);
             SystemConfig = _tenMstCacheService.GetSystemConfig();
         }
 

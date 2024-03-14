@@ -4,6 +4,7 @@ using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
@@ -11,6 +12,7 @@ using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
@@ -30,6 +32,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     public int _hpID;
     public long _ptID;
     public int _sinday;
+
+    public string _weightInfo = string.Empty;
+    public string _weightDateInfo = string.Empty;
+    public string _heightInfo = string.Empty;
+    public string _heightDateInfo = string.Empty;
+
     public Dictionary<string, string> _itemNameDictionary;
     public Dictionary<string, string> _componentNameDictionary;
     public Dictionary<string, string> _analogueNameDictionary;
@@ -45,6 +53,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     public Dictionary<string, string> _usageDosageDictionary;
     public Dictionary<string, string> _itemNameByItemCodeDictionary;
     public readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
+    public readonly IRealtimeCheckerFinder _realtimeCheckerFinder;
 
     private readonly double _currentHeight = 0;
     private readonly double _currentWeight = 0;
@@ -52,11 +61,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     private readonly ITenantProvider _tenantProvider;
     private readonly IMasterDataCacheService _masterDataCacheService;
 
-    public CommonMedicalCheck(ITenantProvider tenantProvider, IRealtimeOrderErrorFinder realtimeOrderErrorFinder)
+    public CommonMedicalCheck(ITenantProvider tenantProvider, IRealtimeOrderErrorFinder realtimeOrderErrorFinder, IRealtimeCheckerFinder realtimeCheckerFinder)
     {
         _masterDataCacheService = new MasterDataCacheService(tenantProvider);
         _tenantProvider = tenantProvider;
         _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
+        _realtimeCheckerFinder = realtimeCheckerFinder;
         _itemNameDictionary = new();
         _componentNameDictionary = new();
         _analogueNameDictionary = new();
@@ -78,7 +88,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         unitChecker.HpID = _hpID;
         unitChecker.PtID = _ptID;
         unitChecker.Sinday = _sinday;
-        unitChecker.InitFinder(_tenantProvider.GetNoTrackingDataContext(), _masterDataCacheService);
+        unitChecker.InitFinder(_tenantProvider, _masterDataCacheService);
     }
 
     private void InitTenMstCache(int hpId, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
@@ -533,7 +543,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region Get Error Details
-    public List<ErrorInfoModel> GetErrorDetails(int hpId, long ptId, int sinday, List<UnitCheckInfoModel> listErrorInfo)
+    public (List<ErrorInfoModel> errors, string weightInfo, string weightDateInfo, string heightInfo, string heightDateInfo) GetErrorDetails(int hpId, long ptId, int sinday, List<UnitCheckInfoModel> listErrorInfo, SpecialNoteItem specialNoteItem)
     {
         _hpID = hpId;
         _ptID = ptId;
@@ -615,7 +625,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             }
         });
 
-        return listErrorInfoModel;
+        SetBodyInfo(hpId, ptId, sinday, specialNoteItem);
+
+        return (listErrorInfoModel, _weightInfo, _weightDateInfo, _heightInfo, _heightDateInfo);
     }
 
     public void GetItemCdError(int hpId, List<UnitCheckInfoModel> listErrorInfo)
@@ -755,6 +767,106 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(hpId, itemNameByItemCodeList, _sinday) : new();
     }
 
+    #endregion
+
+    #region Get Body Info
+    private void SetBodyInfo(int hpId, long ptId, int sindate, SpecialNoteItem specialNoteItem)
+    {
+        var currentHeightInfo = specialNoteItem.PatientInfoTab.KensaInfDetailItems.Where(u => u.KensaItemCd == IraiCodeConstant.WEIGHT_CODE
+                                                                                               && u.IraiDate <= _sinday
+                                                                                               && u.IsDeleted == 0
+                                                                                               && !string.IsNullOrEmpty(u.ResultVal))
+                                                                                  .OrderByDescending(u => u.IraiDate)
+                                                                                  .FirstOrDefault(); //&& u.Status != 2
+
+        var currentWeightInfo = specialNoteItem.PatientInfoTab.KensaInfDetailItems.Where(u => u.KensaItemCd == IraiCodeConstant.HEIGHT_CODE
+                                                                                               && u.IraiDate <= _sinday
+                                                                                               && u.IsDeleted == 0
+                                                                                               && !string.IsNullOrEmpty(u.ResultVal))
+                                                                                  .OrderByDescending(u => u.IraiDate)
+                                                                                  .FirstOrDefault(); //&& u.Status != 2
+
+        var patientInfo = _realtimeOrderErrorFinder.FindPatientByPtId(hpId, ptId);
+        if (patientInfo == null)
+        {
+            return;
+        }
+        double currentHeight = currentHeightInfo?.ResultVal.AsDouble() ?? -1;
+        double currentWeight = currentWeightInfo?.ResultVal.AsDouble() ?? -1;
+        int sex = patientInfo.Sex;
+
+        string weightStr = "体重: ";
+        string heightStr = "身長: ";
+        string weightDateStr = "";
+        string heightDateStr = "";
+
+        double weight;
+        if (currentWeight <= -1)
+        {
+            // Get new data from SpecialNote but have no WeightInfo
+            weight = _realtimeCheckerFinder.GetCommonWeight(hpId, patientInfo.Birthday, _sinday, sex);
+            weightStr += Math.Round(weight, 2) + "kg";
+            weightDateStr = "（平均）";
+        }
+        else if (currentWeight == 0)
+        {
+            // Can't get newData from SpecialNote
+            var weightInfo = _realtimeCheckerFinder.GetBodyInfo(hpId, ptId, _sinday, "V0002");
+            if (weightInfo != null)
+            {
+                weightStr += Math.Round(weightInfo?.ResultVal?.AsDouble() ?? -1, 2) + "kg";
+                weightDateStr = "（測定日:" + CIUtil.SDateToShowSDate(weightInfo?.IraiDate ?? 0) + "）";
+            }
+            else
+            {
+                weight = _realtimeCheckerFinder.GetCommonWeight(hpId, patientInfo.Birthday, sindate, sex);
+                weightStr += Math.Round(weight, 2) + "kg";
+                weightDateStr = "（平均）";
+            }
+        }
+        else
+        {
+            weight = currentWeight;
+            weightStr += Math.Round(weight, 2) + "kg";
+            weightDateStr = "（測定日:" + CIUtil.SDateToShowSDate(currentWeightInfo?.IraiDate ?? 0) + "）";
+        }
+
+        double height;
+        if (currentHeight <= -1)
+        {
+            // Get new data from SpecialNote but have no HeightInfo
+            height = _realtimeCheckerFinder.GetCommonHeight(hpId, patientInfo.Birthday, sindate, sex);
+            heightStr += Math.Round(height, 2) + "cm";
+            heightDateStr = "（平均）";
+        }
+        else if (currentHeight == 0)
+        {
+            // Can't get newData from SpecialNote
+            var heightInfo = _realtimeCheckerFinder.GetBodyInfo(hpId, ptId, sindate, "V0001");
+            if (heightInfo != null)
+            {
+                heightStr += Math.Round(heightInfo.ResultVal?.AsDouble() ?? -1, 2) + "cm";
+                heightDateStr = "（測定日:" + CIUtil.SDateToShowSDate(heightInfo.IraiDate) + "）";
+            }
+            else
+            {
+                height = _realtimeCheckerFinder.GetCommonHeight(hpId, patientInfo.Birthday, sindate, sex);
+                heightStr += Math.Round(height, 2) + "cm";
+                heightDateStr = "（平均）";
+            }
+        }
+        else
+        {
+            height = currentHeight;
+            heightStr += Math.Round(height, 2) + "cm";
+            heightDateStr = "（測定日:" + CIUtil.SDateToShowSDate(currentHeightInfo?.IraiDate ?? 0) + "）";
+        }
+
+        _weightInfo = weightStr;
+        _weightDateInfo = weightDateStr;
+        _heightInfo = heightStr;
+        _heightDateInfo = heightDateStr;
+    }
     #endregion
 
     #region ProcessDataForDrugAllergy

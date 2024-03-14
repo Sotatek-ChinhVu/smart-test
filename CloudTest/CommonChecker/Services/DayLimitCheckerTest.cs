@@ -50,7 +50,7 @@ public class DayLimitCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        dayLimitChecker.InitFinder(tenantNoTracking, cache);
+        dayLimitChecker.InitFinder(TenantProvider, cache);
 
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.DrugDayLimits.AddRange(drugDayLimits);
@@ -103,7 +103,7 @@ public class DayLimitCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        dayLimitChecker.InitFinder(tenantNoTracking, cache);
+        dayLimitChecker.InitFinder(TenantProvider, cache);
         // Act
         var result = dayLimitChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
         // Assert
@@ -140,7 +140,7 @@ public class DayLimitCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        dayLimitChecker.InitFinder(tenantNoTracking, cache);
+        dayLimitChecker.InitFinder(TenantProvider, cache);
 
         // Act
         var result = dayLimitChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
@@ -157,6 +157,7 @@ public class DayLimitCheckerTest : BaseUT
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var mock = new Mock<IRealtimeOrderErrorFinder>();
+        var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
         var tenMsts = CommonCheckerData.ReadTenMst("day004", "day004");
         var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day004");
         var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day004");
@@ -185,7 +186,7 @@ public class DayLimitCheckerTest : BaseUT
             new OrdInfoModel(21, 0, ordInfDetails),
         };
 
-        var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+        var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
         try
         {
@@ -213,6 +214,7 @@ public class DayLimitCheckerTest : BaseUT
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var mock = new Mock<IRealtimeOrderErrorFinder>();
+        var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
         var tenMsts = CommonCheckerData.ReadTenMst("day005", "day005");
         var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day005");
 
@@ -252,12 +254,12 @@ public class DayLimitCheckerTest : BaseUT
 
         try
         {
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
             var listErrorInfo = commonMedicalCheck.CheckListOrder(hpId, ptId, sinDay, currentListOdr, checkingListOdr, new(), new(), new(), true, realtimeCheckerCondition);
-            var errorDetails = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var errorDetails = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.True(!errorDetails.Any());
+            Assert.True(!errorDetails.errors.Any());
         }
         finally
         {
@@ -306,7 +308,7 @@ public class DayLimitCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        dayLimitChecker.InitFinder(tenantNoTracking, cache);
+        dayLimitChecker.InitFinder(TenantProvider, cache);
         try
         {
             // Act
@@ -359,7 +361,7 @@ public class DayLimitCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        dayLimitChecker.InitFinder(tenantNoTracking, cache);
+        dayLimitChecker.InitFinder(TenantProvider, cache);
 
         try
         {
@@ -403,7 +405,7 @@ public class DayLimitCheckerTest : BaseUT
         long ptId = 0;
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-        var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+        var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
         try
         {
             var daylimit = realtimeCheckerFinder.CheckDayLimit(hpId, sinDay, listAddedOrderCodes, usingDay);
@@ -445,7 +447,7 @@ public class DayLimitCheckerTest : BaseUT
         long ptId = 0;
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-        var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+        var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
         try
         {
             var daylimit = realtimeCheckerFinder.CheckDayLimit(hpId, sinDay, listAddedOrderCodes, usingDay);
@@ -479,7 +481,7 @@ public class DayLimitCheckerTest : BaseUT
         long ptId = 0;
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
-        var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+        var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
         var tenMsts = CommonCheckerData.ReadTenMst("day010", "day010");
         var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day010");
@@ -593,7 +595,7 @@ public class DayLimitCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        dayLimitChecker.InitFinder(tenantNoTracking, cache);
+        dayLimitChecker.InitFinder(TenantProvider, cache);
 
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.DrugDayLimits.AddRange(drugDayLimits);
@@ -671,7 +673,7 @@ public class DayLimitCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        dayLimitChecker.InitFinder(tenantNoTracking, cache);
+        dayLimitChecker.InitFinder(TenantProvider, cache);
 
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.DrugDayLimits.AddRange(drugDayLimits);
