@@ -4,12 +4,14 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
+using System.Text.Json.Serialization;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.PatientInfor.Save
 {
     public class SavePatientInfoInputData : IInputData<SavePatientInfoOutputData>
     {
+        [JsonConstructor]
         public SavePatientInfoInputData(PatientInforSaveModel patient, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, ReactSavePatientInfo reactSave, List<LimitListModel> maxMoneys, IEnumerable<InsuranceScanModel> insuranceScans,List<int> hokenIdList, int userId, int hpId)
         {
             Patient = patient;
@@ -25,6 +27,22 @@ namespace UseCase.PatientInfor.Save
             HokenIdList = hokenIdList;
             UserId = userId;
             HpId = hpId;
+        }
+
+        public SavePatientInfoInputData()
+        {
+            Patient = new();
+            PtKyuseis = new();
+            PtSanteis = new();
+            Insurances = new();
+            MaxMoneys = new();
+            InsuranceScans = Enumerable.Empty<InsuranceScanModel>(); ;
+            PtGrps = new();
+            HokenInfs = new();
+            HokenKohis = new();
+            ReactSave = new();
+            MaxMoneys = new();
+            HokenIdList = new();
         }
 
         public PatientInforSaveModel Patient { get; private set; }
@@ -49,8 +67,8 @@ namespace UseCase.PatientInfor.Save
 
         public List<int> HokenIdList { get; private set; }
 
-        public int UserId { get; private set; }
+        public int UserId { get; set; }
 
-        public int HpId { get; private set; }
+        public int HpId { get; set; }
     }
 }
