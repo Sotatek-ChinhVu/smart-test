@@ -28,6 +28,10 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
 
+    public IDatabase GetCache()
+    {
+        return _cache;
+    }
     public void GetRedis()
     {
         string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
