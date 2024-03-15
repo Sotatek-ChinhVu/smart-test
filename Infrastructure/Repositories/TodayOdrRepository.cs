@@ -958,7 +958,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             o.PtId == ptId &&
             o.SinYm >= startYm &&
             o.SinYm <= endYm &&
-            o.IsDeleted == DeleteTypes.Deleted &&
+            o.IsDeleted == DeleteTypes.None &&
             checkHokenKbn.Contains(o.HokenKbn) &&
             checkSanteiKbn.Contains(o.SanteiKbn)
         ).AsQueryable();
