@@ -146,7 +146,8 @@ namespace Infrastructure.Repositories
 
             monshinInf.GetKbn = 1;
 
-            return TrackingDataContext.SaveChanges() > 0;
+            TrackingDataContext.SaveChanges();
+            return true;
         }
     }
 }
