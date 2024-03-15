@@ -1,6 +1,4 @@
 ﻿using CloudUnitTest.SampleData.TodayOdrRepository;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Infrastructure.Interfaces;
@@ -445,10 +443,98 @@ namespace CloudUnitTest.MedicalCommon.FromHistory
             }
         }
 
+        [Test]
+        public void FromHistoryTest_012()
+        {
+            SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 22;
+            int sinDate = 20240314;
+            long raiinNo = 0;
+            int sainteiKbn = 0;
+            int userId = 1;
+            long ptId = 0;
+            List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
+            {
+                new OrdInfDetailModel("ItemCdTest",20,"", 2,1)
+            };
+            List<OrdInfModel> historyOdrInfModels = new List<OrdInfModel>()
+            {
+                new OrdInfModel(hpId,ptId, sinDate, raiinNo, ordInfDetailModels)
+            };
+            var tenMsts = FromHistoryData.ReadTenMst();
+            var kensaMsts = FromHistoryData.ReadKensaMst();
+            var ipnNameMsts = FromHistoryData.ReadIpnNameMst();
+            var yohoSetMsts = FromHistoryData.ReadYohoSetMst();
+            try
+            {
+                tenant.AddRange(tenMsts);
+                tenant.AddRange(kensaMsts);
+                tenant.AddRange(ipnNameMsts);
+                tenant.AddRange(yohoSetMsts);
+                tenant.SaveChanges();
+                var result = todayOdrRepository.FromHistory(hpId, sinDate, raiinNo, sainteiKbn, userId, ptId, historyOdrInfModels);
+                 Assert.True(result.Any());
+            }
+            finally
+            {
+                tenant.RemoveRange(tenMsts);
+                tenant.RemoveRange(kensaMsts);
+                tenant.RemoveRange(ipnNameMsts);
+                tenant.RemoveRange(yohoSetMsts);
+                tenant.SaveChanges();
+                CleanupResources(systemConfRepository, userRepository, approvalinfRepository, todayOdrRepository);
+            }
+        }
+
+        [Test]
+        public void FromHistoryTest_013()
+        {
+            SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 1;
+            int sinDate = 20240314;
+            long raiinNo = 0;
+            int sainteiKbn = 0;
+            int userId = 1;
+            long ptId = 0;
+            List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
+            {
+                new OrdInfDetailModel("ItemCd3",20,"", 3,1,3)
+            };
+            List<OrdInfModel> historyOdrInfModels = new List<OrdInfModel>()
+            {
+                new OrdInfModel(hpId,ptId, sinDate, raiinNo, ordInfDetailModels)
+            };
+            var tenMsts = FromHistoryData.ReadTenMst();
+            var kensaMsts = FromHistoryData.ReadKensaMst();
+            var ipnNameMsts = FromHistoryData.ReadIpnNameMst();
+            var yohoSetMsts = FromHistoryData.ReadYohoSetMst();
+            try
+            {
+                tenant.AddRange(tenMsts);
+                tenant.AddRange(kensaMsts);
+                tenant.AddRange(ipnNameMsts);
+                tenant.AddRange(yohoSetMsts);
+                tenant.SaveChanges();
+                var result = todayOdrRepository.FromHistory(hpId, sinDate, raiinNo, sainteiKbn, userId, ptId, historyOdrInfModels);
+                Assert.True(result.Any());
+            }
+            finally
+            {
+                tenant.RemoveRange(tenMsts);
+                tenant.RemoveRange(kensaMsts);
+                tenant.RemoveRange(ipnNameMsts);
+                tenant.RemoveRange(yohoSetMsts);
+                tenant.SaveChanges();
+                CleanupResources(systemConfRepository, userRepository, approvalinfRepository, todayOdrRepository);
+            }
+        }
+
         #region [test CheckIsGetYakkaPrice]
 
         [Test]
-        public void FromHistoryTest_012()
+        public void FromHistoryTest_014()
         {
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -509,7 +595,7 @@ namespace CloudUnitTest.MedicalCommon.FromHistory
         }
 
         [Test]
-        public void FromHistoryTest_013()
+        public void FromHistoryTest_015()
         {
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
