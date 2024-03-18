@@ -134,7 +134,7 @@ namespace Interactor.SwapHoken
                 if (seiKyuPendingYms.Count > 0)
                 {
                     if (!_swapHokenRepository.ExistRaiinInfUsedOldHokenId(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenPidBefore))
-                        _swapHokenRepository.UpdateReceSeikyu(inputData.HpId, inputData.PtId, seiKyuPendingYms, inputData.HokenIdBefore, inputData.HokenIdAfter, inputData.UserId);
+                        _swapHokenRepository.UpdateReceSeikyu(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenIdBefore, inputData.HokenIdAfter, inputData.UserId);
                 }
 
                 return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Successful, string.Empty, TypeMessage.TypeMessageSuccess, seikyuYms);

@@ -101,9 +101,9 @@ namespace Infrastructure.Repositories
                                                          p.IsDeleted == DeleteTypes.None);
         }
 
-        public bool UpdateReceSeikyu(int hpId, long ptId, List<int> seiKyuYms, int oldHokenId, int newHokenId, int userId)
+        public bool UpdateReceSeikyu(int hpId, long ptId, List<int> sinYms, int oldHokenId, int newHokenId, int userId)
         {
-            var receSeiKyus = TrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && seiKyuYms.Contains(p.SeikyuYm)).ToList();
+            var receSeiKyus = TrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && sinYms.Contains(p.SinYm)).ToList();
             if (!receSeiKyus.Any())
                 return true;
             foreach (var receSeiKyu in receSeiKyus)
