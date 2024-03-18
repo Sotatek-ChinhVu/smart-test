@@ -165,7 +165,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         }
     }
 
-    private (int status, string sinStartTime, string sinEndTime, string uketukeTime) GetModeSaveDate(byte modeSaveData, int status, string sinEndTime, string sinStartTime, string uketukeTime)
+    public (int status, string sinStartTime, string sinEndTime, string uketukeTime) GetModeSaveDate(byte modeSaveData, int status, string sinEndTime, string sinStartTime, string uketukeTime)
     {
         string sinStartTimeReCalculate = string.Empty, sinEndTimeReCalculate = string.Empty, uketukeTimeReCalculate = string.Empty;
         int statusRecalculate = 0;
@@ -789,6 +789,8 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             if (karteMst != null)
             {
                 karteMst.IsDeleted = DeleteTypes.Deleted;
+                karteMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                karteMst.UpdateId = userId;
             }
         }
         else
