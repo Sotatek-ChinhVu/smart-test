@@ -72,4 +72,10 @@ public class CoSta9000ByomeiConf
     ///     0:or 1:and
     /// </summary>
     public int WordOpt { get; set; }
+
+    /// <summary>
+    /// 主病名
+    ///     0: すべて、1:主病名のみ、2:主病名以外
+    /// </summary>
+    public int Syubyo { get; set; } = 0;
 }

@@ -11,7 +11,6 @@ using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
-using System;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories;
@@ -558,6 +557,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.LastVisitDateFrom, patientManagementModel.LastVisitDateFrom.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.LastVisitDateTo, patientManagementModel.LastVisitDateTo.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.NanbyoCds, patientManagementModel.NanbyoCdsStr.AsString()));
+        addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.Syubyo, patientManagementModel.Syubyo.AsString()));
         if (!string.IsNullOrEmpty(patientManagementModel.StatuseStr.AsString()))
         {
             addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.Status, patientManagementModel.StatuseStr.AsString()));
@@ -701,6 +701,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         string sikkanKbnStr = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.SikkanKbn && x.MenuId == menuId)?.Val ?? string.Empty;
         string nanbyoCdStr = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.NanbyoCds && x.MenuId == menuId)?.Val ?? string.Empty;
         string isDoubt = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.IsDoubt && x.MenuId == menuId)?.Val ?? string.Empty;
+        string syubyo = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.Syubyo && x.MenuId == menuId)?.Val ?? string.Empty;
         string searchWord = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.SearchWord && x.MenuId == menuId)?.Val ?? string.Empty;
         string searchWordMode = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.SearchWordMode && x.MenuId == menuId)?.Val ?? string.Empty;
         string byomeiCdStr = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.ByomeiCd && x.MenuId == menuId)?.Val ?? string.Empty;
@@ -786,6 +787,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                               tenkiDateFrom.AsInteger(),
                                               tenkiDateTo.AsInteger(),
                                               isDoubt.AsInteger(),
+                                              syubyo.AsInteger(),
                                               searchWord,
                                               searchWordMode.AsInteger(),
                                               byomeiCdOpt.AsInteger(),

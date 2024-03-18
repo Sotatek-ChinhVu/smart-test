@@ -129,6 +129,7 @@ namespace EmrCloudApi.Controller
                                               ptManagement.TenkiDateFrom,
                                               ptManagement.TenkiDateTo,
                                               ptManagement.IsDoubt,
+                                              ptManagement.Syubyo,
                                               ptManagement.SearchWord,
                                               ptManagement.SearchWordMode,
                                               ptManagement.ByomeiCdOpt,
