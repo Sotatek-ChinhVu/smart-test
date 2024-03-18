@@ -35,6 +35,11 @@ namespace Domain.Models.NextOrder
             CreateMachine = createMachine;
             UpdateMachine = updateMachine;
         }
+
+        public RsvkrtOrderInfModel(List<RsvKrtOrderInfDetailModel> ordInfDetails)
+        {
+            OrdInfDetails = ordInfDetails;
+        }
         public KeyValuePair<string, OrdInfValidationStatus> Validation(int flag)
         {
 

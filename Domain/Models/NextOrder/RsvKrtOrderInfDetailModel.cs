@@ -61,6 +61,14 @@ namespace Domain.Models.NextOrder
             IsKensaMstEmpty = isKensaMstEmpty;
         }
 
+        public RsvKrtOrderInfDetailModel(int hpId, string itemCd, string ipnCd, int sinKouiKbn)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            IpnCd = ipnCd;
+            SinKouiKbn = sinKouiKbn;
+        }
+
         public OrdInfValidationStatus Validation(int flag)
         {
             #region Validate common
