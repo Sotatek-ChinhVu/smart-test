@@ -490,7 +490,7 @@ namespace EmrCloudApi.Controller
                                                                            x.HokenEdaNo,
                                                                            x.HokenKbn,
                                                                            x.HokensyaNo,
-                                                                           x.Kigo,
+                                                                           (!string.IsNullOrEmpty(x.Kigo) && string.IsNullOrEmpty(x.Kigo.Replace(" ", "").Replace("　", ""))) ? string.Empty : x.Kigo,
                                                                            x.Bango,
                                                                            x.EdaNo,
                                                                            x.HonkeKbn,
