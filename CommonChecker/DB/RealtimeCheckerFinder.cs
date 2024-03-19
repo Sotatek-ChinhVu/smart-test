@@ -953,7 +953,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             if (isDataOfDb)
             {
                 var weightInfo = GetBodyInfo(hpID, ptID, sinday, "V0002");
-                if (!(weightInfo.HpId == 0 && weightInfo.PtId == 0 && weightInfo.SeqNo == 0 && weightInfo.IraiCd == 0))
+                if (weightInfo != null && !( weightInfo.HpId == 0 && weightInfo.PtId == 0 && weightInfo.SeqNo == 0 && weightInfo.IraiCd == 0))
                 {
                     weight = weightInfo.ResultVal?.AsDouble() ?? 0;
                 }
