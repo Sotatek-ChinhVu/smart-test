@@ -540,7 +540,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 var santeiItemListWithItemCd = tenMstSanteis.GroupBy(item => new { item.ItemCd, SanteiItemCd = item.SanteiItemCd ?? string.Empty })
                                                             .Select(item => new { item.Key.ItemCd, item.Key.SanteiItemCd }).ToList();
 
-                List<ItemSumModel> enumOdrDetailItemSum = new();
+                IEnumerable<ItemSumModel> enumOdrDetailItemSum = Enumerable.Empty<ItemSumModel>();
                 List<ItemSumModel> santeiItemSum = new();
                 #endregion
 
@@ -625,7 +625,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                 HokenId = hokenPatternLeft?.HokenId ?? 0
                                             })
                                         .GroupBy(item => new { item.PtId, item.ItemCd, item.ItemName, item.SinYm, item.HokenId })
-                                        .Select(item => new ItemSumModel(item.Key.PtId, item.Key.ItemCd, item.Key.ItemName, item.Sum(x => x.Suryo), item.Key.SinYm, item.Key.HokenId)).ToList();
+                                        .Select(item => new ItemSumModel(item.Key.PtId, item.Key.ItemCd, item.Key.ItemName, item.Sum(x => x.Suryo), item.Key.SinYm, item.Key.HokenId));
 
                     var ptIds = sinYmPtIdList.Select(r => r.PtId).Distinct().ToList();
                     var sinYms = sinYmPtIdList.Select(r => r.SinYm).Distinct().ToList();
@@ -665,35 +665,34 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                           && listSinYm.Contains(item.SinYm))
                                                                            .Select(item => new { item.HpId, item.PtId, item.SinYm, item.SeqNo, item.RpNo, item.Count });
 
-                    santeiItemSum = (from detail in sinkouiDetails.AsEnumerable()
-                                     join sinkoui in sinKouis on new { detail.HpId, detail.PtId, detail.SinYm, detail.SeqNo, detail.RpNo }
-                                                             equals new { sinkoui.HpId, sinkoui.PtId, sinkoui.SinYm, sinkoui.SeqNo, sinkoui.RpNo }
-                                     join rece in receInfs on new { sinkoui.PtId, sinkoui.SinYm, sinkoui.HokenId } equals new { rece.PtId, rece.SinYm, rece.HokenId }
-                                     join count in sinkouiCounts on new { detail.HpId, detail.PtId, detail.SinYm, detail.SeqNo, detail.RpNo }
-                                                                 equals new { count.HpId, count.PtId, count.SinYm, count.SeqNo, count.RpNo }
-                                     join tenMst in tenMstSanteis on new { detail.ItemCd } equals new { ItemCd = tenMst.SanteiItemCd } into tenMstLeft
-                                     from tenMst in tenMstLeft.Where(item => item.StartDate / 100 <= detail.SinYm && item.EndDate / 100 >= detail.SinYm).DefaultIfEmpty()
-                                     where detail.SinYm <= maxSinYm
-                                         && detail.SinYm >= minSinYm
-                                         && ((sinkoui.InoutKbn != 1 && tenMst != null) || detail.ItemCd == ItemCdConst.CommentFree)
-                                     select new
-                                     {
-                                         detail.HpId,
-                                         detail.SinYm,
-                                         detail.PtId,
-                                         sinkoui.HokenId,
-                                         ItemCd = tenMst != null ? tenMst.ItemCd : detail.ItemCd,
-                                         Count = count.Count > 0 ? count.Count : 1,
-                                         detail.ItemName,
-                                     })
+                    var santeiItemSumQuery = (from detail in sinkouiDetails.AsEnumerable()
+                                              join rece in receInfs on new { detail.PtId, detail.SinYm } equals new { rece.PtId, rece.SinYm }
+                                              join sinkoui in sinKouis on new { detail.HpId, detail.PtId, detail.SinYm, detail.SeqNo, detail.RpNo }
+                                                                      equals new { sinkoui.HpId, sinkoui.PtId, sinkoui.SinYm, sinkoui.SeqNo, sinkoui.RpNo }
+                                              join count in sinkouiCounts on new { detail.HpId, detail.PtId, detail.SinYm, detail.SeqNo, detail.RpNo }
+                                                                          equals new { count.HpId, count.PtId, count.SinYm, count.SeqNo, count.RpNo }
+                                              join tenMst in tenMstSanteis on new { detail.ItemCd } equals new { ItemCd = tenMst.SanteiItemCd } into tenMstLeft
+                                              from tenMst in tenMstLeft.Where(item => item.StartDate / 100 <= detail.SinYm && item.EndDate / 100 >= detail.SinYm).DefaultIfEmpty()
+                                              where detail.SinYm <= maxSinYm
+                                                  && detail.SinYm >= minSinYm
+                                                  && ((sinkoui.InoutKbn != 1 && tenMst != null) || detail.ItemCd == ItemCdConst.CommentFree)
+                                              select new
+                                              {
+                                                  detail.HpId,
+                                                  detail.SinYm,
+                                                  detail.PtId,
+                                                  sinkoui.HokenId,
+                                                  ItemCd = tenMst != null ? tenMst.ItemCd : detail.ItemCd,
+                                                  Count = count.Count > 0 ? count.Count : 1,
+                                                  detail.ItemName,
+                                              })
                                     .GroupBy(item => new { item.HpId, item.ItemCd, item.ItemName, item.PtId, item.SinYm, item.HokenId })
                                     .Select(item => new { item.Key.SinYm, item.Key.PtId, item.Key.HokenId, item.Key.ItemCd, item.Key.ItemName, Sum = item.Sum(c => c.Count) })
-                                    .Select(item => new ItemSumModel(item.PtId, item.ItemCd, item.ItemName, item.Sum, item.SinYm, item.HokenId))
-                                    .ToList();
+                                    .Select(item => new ItemSumModel(item.PtId, item.ItemCd, item.ItemName, item.Sum, item.SinYm, item.HokenId));
 
                     var ptIds = sinYmPtIdList.Select(r => r.PtId).Distinct().ToList();
                     var sinYms = sinYmPtIdList.Select(r => r.SinYm).Distinct().ToList();
-                    santeiItemSum = santeiItemSum.Where(item => sinYmPtIdList != null && sinYmPtIdList.Any(r => r.PtId == item.PtId && r.SinYm == item.SinYm && r.HokenId == item.HokenId)).ToList();
+                    santeiItemSum = santeiItemSumQuery.Where(item => sinYmPtIdList != null && sinYmPtIdList.Any(r => ptIds.Contains(r.PtId) && sinYms.Contains(r.SinYm))).ToList();
                     #endregion
                 }
 
@@ -704,7 +703,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 {
                     var itemCd = model.ItemCd;
                     var itemName = model.InputName;
-                    List<ItemSumModel> itemSumList;
+                    IEnumerable<ItemSumModel> itemSumList;
 
                     // Search by santei item
                     if (model.OrderStatus == 0)
