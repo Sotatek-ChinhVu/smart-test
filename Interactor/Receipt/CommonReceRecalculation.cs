@@ -1641,7 +1641,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                             if (startDate >= 0)
                             {
                                 santeiCount = _todayOdrRepository.SanteiCount(hpId, recalculationModel.PtId, startDate, sinDate,
-                                                               sinDate, 0, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
+                                                               sinDate, 0, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp, densiSanteiKaisu.TargetKbn);
                             }
 
                             if (santeiCount > densiSanteiKaisu.MaxCount)

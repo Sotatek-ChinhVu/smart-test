@@ -809,7 +809,7 @@ namespace Interactor.MedicalExamination
                                 itemCds.Add(odrDetail.ItemCd);
                             }
 
-                            count = _todayOdrRepository.SanteiCount(hpId, ptId, startDate, endDate, sinDate, raiinNo, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
+                            count = _todayOdrRepository.SanteiCount(hpId, ptId, startDate, endDate, sinDate, raiinNo, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp, 0);
                         }
                         if (densiSanteiKaisu.MaxCount <= count // 上限値を超えるかチェックする
                         || densiSanteiKaisu.MaxCount < count + suryo) // 今回分を足すと超えてしまう場合は注意（MaxCount = count + konkaiSuryoはセーフ）
@@ -1029,7 +1029,7 @@ namespace Interactor.MedicalExamination
                             itemCds.Add(odrDetail.ItemCd);
                         }
 
-                        count = _todayOdrRepository.SanteiCount(hpId, ptId, startDate, endDate, sinDate, raiinNo, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
+                        count = _todayOdrRepository.SanteiCount(hpId, ptId, startDate, endDate, sinDate, raiinNo, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp, 0);
                     }
                     if (densiSanteiKaisu.MaxCount <= count // 上限値を超えるかチェックする
                     || densiSanteiKaisu.MaxCount < count + suryo) // 今回分を足すと超えてしまう場合は注意（MaxCount = count + konkaiSuryoはセーフ）

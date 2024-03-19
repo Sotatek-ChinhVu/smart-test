@@ -934,11 +934,10 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
     /// <param name="itemCds">カウントする項目のリスト</param>
     /// <param name="santeiKbn">算定区分</param>
     /// <returns>算定回数</returns>
-    public double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns)
+    public double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns, int targetKbn)
     {
         int startYm = startDate / 100;
         int endYm = endDate / 100;
-
         List<int> checkHokenKbn = new List<int>();
 
         if (hokenKbns != null)
@@ -976,6 +975,13 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             itemCds.Contains(p.ItemCd ?? string.Empty) &&
             p.FmtKbn != 10  // 在がん医総のダミー項目を除く
             );
+
+        var rpNos = sinKouiDetails.Select(x => x.RpNo).Min();
+
+        if (targetKbn == 1)
+        {
+            sinKouiDetails = sinKouiDetails.Where(x => x.RpNo == rpNos);
+        }
 
         if (raiinNo == 0)
         {

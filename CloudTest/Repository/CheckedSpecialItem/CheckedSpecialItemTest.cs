@@ -199,7 +199,7 @@ public class CheckedSpecialItemTest : BaseUT
         try
         {
             // Act
-            var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> { 1 }, new List<int> { 10 });
+            var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> { 1 }, new List<int> { 10 }, 0);
             // Assert
             Assert.True(santeiCount == 1);
         }
