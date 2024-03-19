@@ -76,7 +76,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-            drugAllergy.InitFinder(tenantNoTracking, cache);
+            drugAllergy.InitFinder(TenantProvider, cache);
 
             try
             {
@@ -155,7 +155,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-            drugAllergy.InitFinder(tenantNoTracking, cache);
+            drugAllergy.InitFinder(TenantProvider, cache);
 
             try
             {
@@ -191,7 +191,7 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider, cache);
 
             try
             {
@@ -311,7 +311,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-            drugAllergy.InitFinder(tenantNoTracking, cache);
+            drugAllergy.InitFinder(TenantProvider, cache);
 
             try
             {
@@ -427,7 +427,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-            drugAllergy.InitFinder(tenantNoTracking, cache);
+            drugAllergy.InitFinder(TenantProvider, cache);
             try
             {
                 // Act
@@ -565,7 +565,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-            drugAllergy.InitFinder(tenantNoTracking, cache);
+            drugAllergy.InitFinder(TenantProvider, cache);
             try
             {
                 // Act
@@ -693,7 +693,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-            drugAllergy.InitFinder(tenantNoTracking, cache);
+            drugAllergy.InitFinder(TenantProvider, cache);
             try
             {
                 // Act

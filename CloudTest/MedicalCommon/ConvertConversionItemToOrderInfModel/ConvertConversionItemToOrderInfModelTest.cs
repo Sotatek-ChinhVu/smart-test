@@ -151,19 +151,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "004";
+            var itemCd = "ItemCd" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCdTest", 0,"ipnNameTest")
+                new OrdInfDetailModel(itemCd, 0,"ipnNameTest")
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCdTest", new TenItemModel("ItemCdTest"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             try
             {
                 tenant.AddRange(ipnMinYakkaMsts);
@@ -200,19 +202,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "005";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 0,"ipnNameTest")
+                new OrdInfDetailModel(itemCd, 0,"ipnNameTest")
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             try
             {
                 tenant.AddRange(ipnMinYakkaMsts);
@@ -250,19 +254,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "006";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 0,"")
+                new OrdInfDetailModel(itemCd, 0,"")
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             try
             {
                 tenant.AddRange(ipnMinYakkaMsts);
@@ -300,19 +306,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "007";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20,"", 0, 1)
+                new OrdInfDetailModel(itemCd, 20,"", 0, 1)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             try
             {
                 tenant.AddRange(ipnMinYakkaMsts);
@@ -350,19 +358,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "008";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20,"", 1, 1)
+                new OrdInfDetailModel(itemCd, 20,"", 1, 1)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             try
             {
                 tenant.AddRange(ipnMinYakkaMsts);
@@ -400,19 +410,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "009";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20,"", 2, 1)
+                new OrdInfDetailModel(itemCd, 20,"", 2, 1)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             try
             {
                 tenant.AddRange(ipnMinYakkaMsts);
@@ -450,19 +462,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "010";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 20,"", 2, 1,3)
+                new OrdInfDetailModel(itemCd, 20,"", 2, 1,3)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             try
             {
                 tenant.AddRange(ipnMinYakkaMsts);
@@ -500,19 +514,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "011";
+            var itemCd = "ItemCd" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCdTest", 61,"", 2, 1,3)
+                new OrdInfDetailModel(itemCd, 61,"", 2, 1,3)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCdTest", new TenItemModel("ItemCdTest"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             try
             {
@@ -552,19 +568,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "012";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 61,"ipnNameTest", 2, 1,3)
+                new OrdInfDetailModel(itemCd, 61,"ipnNameTest", 2, 1,3)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             var ipnNameMsts = ConvertConversionItemToDetailModelData.ReadIpnNameMst();
             try
@@ -610,6 +628,8 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "013";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
@@ -620,9 +640,9 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("", new TenItemModel("ItemCd1"));
+            expiredItems.Add("", new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             var ipnNameMsts = ConvertConversionItemToDetailModelData.ReadIpnNameMst();
             try
@@ -632,7 +652,7 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
                 tenant.AddRange(kensaMsts);
                 tenant.AddRange(ipnNameMsts);
                 tenant.SaveChanges();
-                bool isTrue = true;
+                bool isTrue = false;
                 var result = todayOdrRepository.ConvertConversionItemToOrderInfModel(hpId, raiiNo, ptId, sinDate, odrInfItems, expiredItems);
                 foreach (var item in result)
                 {
@@ -682,19 +702,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "014";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 61,"ipnNameTest", 2, 1,3)
+                new OrdInfDetailModel(itemCd, 61,"ipnNameTest", 2, 1,3)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             var ipnNameMsts = ConvertConversionItemToDetailModelData.ReadIpnNameMst();
             try
@@ -754,19 +776,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "015";
+            var itemCd = "ItemCd2" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd2", 61,"ipnNameTest", 2, 1,3, 1)
+                new OrdInfDetailModel(itemCd, 61,"ipnNameTest", 2, 1,3, 1)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd2", new TenItemModel("ItemCd2"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             var ipnNameMsts = ConvertConversionItemToDetailModelData.ReadIpnNameMst();
             try
@@ -815,7 +839,7 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             var tenant = TenantProvider.GetNoTrackingDataContext();
             var mockConfiguration = new Mock<IConfiguration>();
             mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
-            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379"); 
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
             var mockUserService = new Mock<IUserInfoService>();
             SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
             UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object, mockUserService.Object);
@@ -826,19 +850,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "016";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 61,"ipnNameTest", 2, 1,3, 1)
+                new OrdInfDetailModel(itemCd, 61,"ipnNameTest", 2, 1,3, 1)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             //var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             var ipnNameMsts = ConvertConversionItemToDetailModelData.ReadIpnNameMst();
             try
@@ -898,19 +924,21 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "017";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
-                new OrdInfDetailModel("ItemCd1", 60,"ipnNameTest", 2, 1,3, 1)
+                new OrdInfDetailModel(itemCd, 60,"ipnNameTest", 2, 1,3, 1)
             };
             List<OrdInfModel> odrInfItems = new List<OrdInfModel>()
             {
                 new OrdInfModel(0,0, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("ItemCd1", new TenItemModel("ItemCd1"));
+            expiredItems.Add(itemCd, new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             //var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             var ipnNameMsts = ConvertConversionItemToDetailModelData.ReadIpnNameMst();
             try
@@ -970,6 +998,8 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "018";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
@@ -980,9 +1010,9 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
                 new OrdInfModel(0,28, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("", new TenItemModel("ItemCd1"));
+            expiredItems.Add("", new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             //var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             var ipnNameMsts = ConvertConversionItemToDetailModelData.ReadIpnNameMst();
             try
@@ -1042,6 +1072,8 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
             long raiiNo = 0;
             long ptId = 0;
             int sinDate = 20240202;
+            var sufix = "019";
+            var itemCd = "ItemCd1" + sufix;
 
             List<OrdInfDetailModel> ordInfDetailModels = new List<OrdInfDetailModel>()
             {
@@ -1052,9 +1084,9 @@ namespace CloudUnitTest.MedicalCommon.ConvertConversionItemToOrderInfModel
                 new OrdInfModel(0,27, ordInfDetailModels)
             };
             Dictionary<string, TenItemModel> expiredItems = new Dictionary<string, TenItemModel>();
-            expiredItems.Add("", new TenItemModel("ItemCd1"));
+            expiredItems.Add("", new TenItemModel(itemCd));
             var ipnMinYakkaMsts = ConvertConversionItemToOrderInfModelData.ReadIpnMinYakkaMst();
-            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst();
+            var tenMsts = ConvertConversionItemToDetailModelData.ReadTenMst(sufix);
             //var kensaMsts = ConvertConversionItemToDetailModelData.ReadKensaMst();
             var ipnNameMsts = ConvertConversionItemToDetailModelData.ReadIpnNameMst();
             try

@@ -317,7 +317,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var cache = new MasterDataCacheService(TenantProvider);
 
             cache.InitCache(systemGenerationConf.HpId, new List<string>() { "620160501" }, 20230101, 1231);
-            invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
+            invalidDataOrderChecker.InitFinder(TenantProvider, cache);
 
             try
             {
@@ -396,7 +396,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var cache = new MasterDataCacheService(TenantProvider);
 
             cache.InitCache(systemGenerationConf.HpId, new List<string>() { "620160501" }, 20230101, 1231);
-            invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
+            invalidDataOrderChecker.InitFinder(TenantProvider, cache);
 
             try
             {
@@ -476,7 +476,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var cache = new MasterDataCacheService(TenantProvider);
 
             cache.InitCache(systemGenerationConf.HpId, new List<string>() { "620160501" }, 20230101, 1231);
-            invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
+            invalidDataOrderChecker.InitFinder(TenantProvider, cache);
 
             try
             {

@@ -1349,6 +1349,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.ColumnSetting", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
@@ -1382,7 +1386,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("width");
 
-                    b.HasKey("UserId", "TableName", "ColumnName");
+                    b.HasKey("HpId", "UserId", "TableName", "ColumnName");
 
                     b.ToTable("column_setting");
                 });
@@ -5323,12 +5327,16 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("key");
 
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("value");
 
-                    b.HasKey("UserId", "Key");
+                    b.HasKey("UserId", "Key", "HpId");
 
                     b.ToTable("json_setting");
                 });
@@ -7996,8 +8004,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("function_cd")
                         .HasColumnOrder(3);
 
-                    b.Property<long>("SinDate")
-                        .HasColumnType("bigint")
+                    b.Property<int>("SinDate")
+                        .HasColumnType("integer")
                         .HasColumnName("sin_date")
                         .HasColumnOrder(4);
 
@@ -26365,13 +26373,13 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.UserMst", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("integer")
                         .HasColumnName("id")
                         .HasColumnOrder(2);
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
@@ -26396,12 +26404,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("dr_name");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("email");
+
                     b.Property<int>("EndDate")
                         .HasColumnType("integer")
                         .HasColumnName("end_date");
 
-                    b.Property<byte[]>("HashPassword")
-                        .HasColumnType("bytea")
+                    b.Property<string>("HashPassword")
+                        .HasColumnType("text")
                         .HasColumnName("hash_password");
 
                     b.Property<string>("HpkiIssuerDn")
@@ -26418,6 +26431,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("is_deleted");
 
+                    b.Property<int>("IsInitPassword")
+                        .HasColumnType("integer")
+                        .HasColumnName("is_init_password");
+
                     b.Property<int>("JobCd")
                         .HasColumnType("integer")
                         .HasColumnName("job_cd");
@@ -26433,8 +26450,8 @@ namespace TenantMigration.Migrations
 
                     b.Property<string>("LoginId")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
                         .HasColumnName("login_id");
 
                     b.Property<int>("LoginType")
@@ -26450,6 +26467,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("mayaku_license_no");
 
+                    b.Property<int>("MissLoginCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("miss_login_count");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(40)
@@ -26461,9 +26482,9 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(14)")
                         .HasColumnName("renkei_cd1");
 
-                    b.Property<byte[]>("Salt")
+                    b.Property<string>("Salt")
                         .HasMaxLength(14)
-                        .HasColumnType("bytea")
+                        .HasColumnType("character varying(14)")
                         .HasColumnName("salt");
 
                     b.Property<string>("Sname")
@@ -26479,6 +26500,10 @@ namespace TenantMigration.Migrations
                     b.Property<int>("StartDate")
                         .HasColumnType("integer")
                         .HasColumnName("start_date");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")

@@ -37,7 +37,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             // Arrange
-            var realtimcheckerfinder = new MasterFinder(TenantProvider.GetNoTrackingDataContext());
+            var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
@@ -81,7 +81,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimcheckerfinder = new MasterFinder(TenantProvider.GetNoTrackingDataContext());
+            var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
@@ -122,7 +122,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
-            var realtimcheckerfinder = new MasterFinder(TenantProvider.GetNoTrackingDataContext());
+            var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
@@ -153,12 +153,12 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.SaveChanges();
 
             // Arrange
-            var realtimcheckerfinder = new MasterFinder(TenantProvider.GetNoTrackingDataContext());
+            var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindTenMst(1, "UT2720", 20230101);
+                var result = realtimcheckerfinder.FindTenMst(999, "UT2720", 20230101);
 
                 // Assert
                 Assert.True(result.TenMst.ItemCd == "UT2720" && result.TenMst.YjCd == "UT271026");
