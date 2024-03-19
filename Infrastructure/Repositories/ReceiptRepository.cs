@@ -625,7 +625,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                 HokenId = hokenPatternLeft?.HokenId ?? 0
                                             })
                                         .GroupBy(item => new { item.PtId, item.ItemCd, item.ItemName, item.SinYm, item.HokenId })
-                                        .Select(item => new ItemSumModel(item.Key.PtId, item.Key.ItemCd, item.Key.ItemName, item.Sum(x => x.Suryo), item.Key.SinYm, item.Key.HokenId)).ToList();
+                                        .Select(item => new ItemSumModel(item.Key.PtId, item.Key.ItemCd, item.Key.ItemName, item.Sum(x => x.Suryo), item.Key.SinYm, item.Key.HokenId)
+                                        ).ToList();
 
                     var ptIds = sinYmPtIdList.Select(r => r.PtId).Distinct().ToList();
                     var sinYms = sinYmPtIdList.Select(r => r.SinYm).Distinct().ToList();
