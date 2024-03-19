@@ -3281,10 +3281,11 @@ namespace Helper.Common
         {
             int result = kouiCode / 10 * 10;
 
-            if (11 <= kouiCode && kouiCode <= 13)
+            if (kouiCode == 13)
             {
                 // NuiTran recommend handle this case
-                result = 11;
+                // 医学管理
+                result = kouiCode;
             }
             else if (kouiCode == 14)
             {
