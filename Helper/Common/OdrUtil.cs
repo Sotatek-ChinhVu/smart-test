@@ -29,7 +29,7 @@ namespace Helper.Common
                     {
                         Result = "在宅";
                     }
-                    else if (kouiCode == 10)
+                    else if (kouiCode == 10 || kouiCode == 11 || kouiCode == 12)
                     {
                         Result = "初再診";
                     }
@@ -235,10 +235,11 @@ namespace Helper.Common
         {
             var result = odrKouiKbn / 10 * 10;
 
-            if (11 <= odrKouiKbn && odrKouiKbn <= 13)
+            if (odrKouiKbn == 13)
             {
                 // NuiTran recommend handle this case
-                result = 11;
+                // 医学管理
+                result = odrKouiKbn;
             }
             else if (odrKouiKbn == 14)
             {

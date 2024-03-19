@@ -800,7 +800,7 @@ namespace Domain.Models.OrdInfDetails
             KensaMstModel = new();
         }
 
-        public OrdInfDetailModel(string itemCd, int sinKouiKbn, string ipnCd, int kohatuKbn = 0, int drugKbn = 0, int syohoKbn = 0, int inOutKbn = 0, string itemName = "", int isNodspRece = 0)
+        public OrdInfDetailModel(string itemCd, int sinKouiKbn, string ipnCd, int kohatuKbn = 0, int drugKbn = 0, int syohoKbn = 0, int inOutKbn = 0, string itemName = "", int isNodspRece = 0, string ipnName = "")
         {
 
             ItemName = string.Empty;
@@ -837,6 +837,7 @@ namespace Domain.Models.OrdInfDetails
             SyohoKbn = syohoKbn;
             InOutKbn = inOutKbn;
             IsNodspRece = isNodspRece;
+            IpnName = ipnName;
         }
 
         public bool IsSpecialItem
