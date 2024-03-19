@@ -474,9 +474,17 @@ var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws
 
         public string CreateHash(byte[] password, byte[] salt)
         {
+            if (!password.Any())
+            {
+                return string.Empty;
+            }
             using var argon2 = new Argon2id(password);
             var preper = _configuration["Pepper"] ?? string.Empty;
             salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
+            if (!salt.Any())
+            {
+                return string.Empty;
+            }
             argon2.Salt = salt;
             argon2.DegreeOfParallelism = 8;
             argon2.Iterations = 4;
