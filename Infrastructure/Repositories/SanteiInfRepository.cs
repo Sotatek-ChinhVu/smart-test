@@ -90,19 +90,31 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                                                 });
 
 
-        var odrInfLastOdrQuery = from odrInfDetail in odrInfDetailQuery
-                                 join odrInf in odrInfQuery on new { odrInfDetail.HpId, odrInfDetail.SinDate, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpEdaNo, odrInfDetail.RpNo }
-                                                            equals new { odrInf.HpId, odrInf.SinDate, odrInf.PtId, odrInf.RaiinNo, odrInf.RpEdaNo, odrInf.RpNo }
-                                 join tenMst in tenMstList on new { odrInfDetail.ItemCd }
-                                                           equals new { tenMst.ItemCd }
-                                 group odrInfDetail by tenMst.SanteCd into g
-                                 select new
-                                 {
-                                     ItemCd = g.Key,
-                                     SinDate = g.Where(o => o.SinDate < sinDate).Select(x => x.SinDate).OrderByDescending(x => x).FirstOrDefault()
-                                 };
+        var odrInfLastOdrRawDataList = (from odrInfDetail in odrInfDetailQuery
+                                        join odrInf in odrInfQuery on new { odrInfDetail.HpId, odrInfDetail.SinDate, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpEdaNo, odrInfDetail.RpNo }
+                                                                   equals new { odrInf.HpId, odrInf.SinDate, odrInf.PtId, odrInf.RaiinNo, odrInf.RpEdaNo, odrInf.RpNo }
+                                        join tenMst in tenMstList on new { odrInfDetail.ItemCd }
+                                                                  equals new { tenMst.ItemCd }
+                                        select new
+                                        {
+                                            odrInfDetail,
+                                            odrInf,
+                                            tenMst
+                                        }
+                                 ).ToList();
+
+
+
+        var odrInfLastList = (from item in odrInfLastOdrRawDataList
+                              group item.odrInfDetail by item.tenMst.SanteCd into g
+                              select new
+                              {
+                                  ItemCd = g.Key,
+                                  SinDate = g.Where(o => o.SinDate < sinDate).Select(x => x.SinDate).OrderByDescending(x => x).FirstOrDefault()
+                              }).ToList();
+
         Dictionary<string, int> dicLastOrderDate = new();
-        foreach (var lastOdr in odrInfLastOdrQuery.ToList())
+        foreach (var lastOdr in odrInfLastList)
         {
             dicLastOrderDate.Add(lastOdr.ItemCd, lastOdr.SinDate);
         }
@@ -330,15 +342,14 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
         var result = santeiQuery.Select(u => new SanteiInfModel(u.SanteiInf.Id,
              u.SanteiInf.PtId, u.SanteiInf.ItemCd ?? string.Empty, u.SanteiInf.SeqNo, u.SanteiInf.AlertDays, u.SanteiInf.AlertTerm, u.TenMst.Name ?? string.Empty, LastOdrDate(u.SnteiInfDetail, listOrdDetailInfomation.FirstOrDefault(o => o.SanteiCd == u.SanteiInf.ItemCd
-                                                                                                                                                                                                                                             && o.OdrInfDetail.SinDate < sinDate)?.OdrInfDetail ?? new()), u.SnteiInfDetail?.KisanSbt ?? 0, 0, 0, 0, sinDate, new List<SanteiInfDetailModel> { })).OrderBy(t => t.ItemCd).ToList();
+                                                                                                                                                                                                                                             && o.OdrInfDetail.SinDate < sinDate)?.OdrInfDetail), u.SnteiInfDetail?.KisanSbt ?? 0, 0, 0, 0, sinDate, new() { new SanteiInfDetailModel(u.SnteiInfDetail?.Id ?? 0, u.SnteiInfDetail?.ItemCd ?? string.Empty, u.SnteiInfDetail?.KisanSbt ?? 0, u.SnteiInfDetail?.KisanDate ?? 0, u.SnteiInfDetail?.EndDate ?? 0) })).OrderBy(t => t.ItemCd).ToList();
 
         return result;
     }
 
-    private int LastOdrDate(SanteiInfDetail santeiInfDetail, OdrInfDetail odrInfDetail)
+    private int LastOdrDate(SanteiInfDetail santeiInfDetail, OdrInfDetail? odrInfDetail)
     {
-
-        if (santeiInfDetail != null)
+        if (santeiInfDetail != null && santeiInfDetail.KisanSbt != 1)
         {
             return santeiInfDetail.KisanDate;
         }

@@ -43,6 +43,18 @@ public class SanteiInfDetailModel
         Comment = string.Empty;
     }
 
+    public SanteiInfDetailModel(long id, string itemCd, int kisanSbt, int kisanDate, int endDate)
+    {
+        Id = id;
+        ItemCd = itemCd;
+        EndDate = endDate;
+        KisanDate = kisanDate;
+        KisanSbt = kisanSbt;
+        Byomei = string.Empty;
+        HosokuComment = string.Empty;
+        Comment = string.Empty;
+    }
+
     public SanteiInfDetailModel(long id, long ptId, string itemCd, int startDate, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment, bool isDeleted, ModelStatus autoSanteiMstModelStatus)
     {
         Id = id;
@@ -57,6 +69,15 @@ public class SanteiInfDetailModel
         Comment = comment;
         IsDeleted = isDeleted;
         AutoSanteiMstModelStatus = autoSanteiMstModelStatus;
+    }
+
+    public SanteiInfDetailModel SetKisanDate(long id, string itemCd, int kisanSbt, int kisanDate)
+    {
+        Id = id;
+        ItemCd = itemCd;
+        KisanDate = kisanDate;
+        KisanSbt = kisanSbt;
+        return this;
     }
 
     public long Id { get; private set; }
