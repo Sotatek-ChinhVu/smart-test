@@ -2,9 +2,9 @@
 {
     public class GroupInfModel
     {
-        public GroupInfModel(int hpPt, long ptId, int groupId, string groupCode, string groupName, string groupCodeName)
+        public GroupInfModel(int hpId, long ptId, int groupId, string groupCode, string groupName, string groupCodeName)
         {
-            HpPt = hpPt;
+            HpId = hpId;
             PtId = ptId;
             GroupId = groupId;
             GroupCode = groupCode;
@@ -12,9 +12,9 @@
             GroupCodeName = groupCodeName;
         }
         
-        public GroupInfModel(int hpPt, long ptId, int groupId, string groupCode, string groupName)
+        public GroupInfModel(int hpId, long ptId, int groupId, string groupCode, string groupName)
         {
-            HpPt = hpPt;
+            HpId = hpId;
             PtId = ptId;
             GroupId = groupId;
             GroupCode = groupCode;
@@ -22,7 +22,7 @@
             GroupCodeName = string.Empty;
         }
 
-        public int HpPt { get; private set; }
+        public int HpId { get; private set; }
 
         public long PtId { get; private set; }
 

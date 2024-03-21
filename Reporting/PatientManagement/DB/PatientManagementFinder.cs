@@ -161,6 +161,8 @@ public class PatientManagementFinder : RepositoryBase, IPatientManagementFinder
         result.NanbyoCds = string.IsNullOrEmpty(nanbyoCdStr) ? new List<int>() : nanbyoCdStr.Split(',').Select(x => x.AsInteger()).ToList();
         string isDoubt = staConfList.FirstOrDefault(x => x.ConfId == StaConfId.IsDoubt)?.Val ?? string.Empty;
         result.IsDoubt = isDoubt.AsInteger();
+        string syubyo = staConfList.FirstOrDefault(x => x.ConfId == StaConfId.Syubyo && x.MenuId == menuId)?.Val ?? string.Empty;
+        result.Syubyo = syubyo.AsInteger();
         string searchWord = staConfList.FirstOrDefault(x => x.ConfId == StaConfId.SearchWord)?.Val ?? string.Empty;
         result.SearchWord = searchWord.AsString();
         string searchWordMode = staConfList.FirstOrDefault(x => x.ConfId == StaConfId.SearchWordMode)?.Val ?? string.Empty;

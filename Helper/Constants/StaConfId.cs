@@ -293,6 +293,11 @@
         /// 難病外来
         /// </summary>
         public const int NanbyoCds = 212;
+
+        /// <summary>
+        /// 主病名
+        /// </summary>
+        public const int Syubyo = 213;
         #endregion
 
         #region 来院情報

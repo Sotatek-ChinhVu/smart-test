@@ -60,7 +60,7 @@ public class GetLastRaiinInfsInteractor : IGetLastRaiinInfsInputPort
             }
             else
             {
-                result = _receptionRepository.GetLastRaiinInfs(inputData.HpId, inputData.PtId, inputData.SinDate);
+                result = _receptionRepository.GetLastRaiinInfs(inputData.HpId, inputData.PtId, inputData.SinDate, true);
             }
             return new GetLastRaiinInfsOutputData(GetLastRaiinInfsStatus.Successed, result);
         }

@@ -683,13 +683,13 @@ namespace Infrastructure.Repositories
                    );
         }
 
-        public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
+        public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate, bool isGetSysosaisin = false)
         {
             var result = NoTrackingDataContext.RaiinInfs.Where(p =>
                                                                         p.HpId == hpId
                                                                         && p.PtId == ptId
                                                                         && p.IsDeleted == DeleteTypes.None
-                                                                        && p.SinDate < sinDate && p.Status >= RaiinState.TempSave)
+                                                                        && p.SinDate < sinDate && p.Status >= RaiinState.TempSave && (!isGetSysosaisin || p.SanteiKbn != 2))
                                                         .OrderByDescending(p => p.SinDate)
                                                         .ThenByDescending(p => p.RaiinNo);
             return result.Select(r => new ReceptionModel(
@@ -732,6 +732,7 @@ namespace Infrastructure.Repositories
                             .OrderByDescending(p => p.SinDate)
                             .ThenByDescending(p => p.RaiinNo)
                             .FirstOrDefault();
+
             if (result == null)
                 return new();
 

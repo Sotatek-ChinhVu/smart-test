@@ -316,6 +316,13 @@ public class PatientManagementModel
         get => string.Join(",", SikkanKbns.ToArray());
     }
     public int IsDoubt { get; set; }
+
+    /// <summary>
+    /// 主病名
+    ///     0: すべて、1:主病名のみ、2:主病名以外
+    /// </summary>
+    public int Syubyo { get; set; }
+
     public string SearchWord { get; set; } = string.Empty;
     public int SearchWordMode { get; set; }
     public List<string> ByomeiCds
@@ -362,6 +369,7 @@ public class PatientManagementModel
             TenkiKbns = TenkiKbns,
             SikkanKbns = SikkanKbns,
             IsDoubt = IsDoubt,
+            Syubyo = Syubyo,
             SearchWord = SearchWord.AsString(),
             WordOpt = SearchWordMode,
             ByomeiCdOpt = ByomeiCdOpt,
@@ -377,8 +385,9 @@ public class PatientManagementModel
         bool isDefaultSikkan = SikkanKbns.Count == 0;
         bool isDefaultFreeByomei = FreeByomeis.Count == 0;
         bool isDefaultNanbyoCds = NanbyoCds.Count == 0;
+        bool isMainByomei = Syubyo == 0;
         return StartDateFrom == 0 && StartDateTo == 0 && TenkiDateFrom == 0 && isDefaultTenkiKbn && isDefaultSikkan &&
-            TenkiDateTo == 0 && IsDoubt == 0 && string.IsNullOrEmpty(SearchWord) && ByomeiCds.Count == 0 && isDefaultFreeByomei && isDefaultNanbyoCds;
+            TenkiDateTo == 0 && IsDoubt == 0 && string.IsNullOrEmpty(SearchWord) && ByomeiCds.Count == 0 && isDefaultFreeByomei && isDefaultNanbyoCds && isMainByomei;
     }
 
     public bool IsDefaultByomeiConfInView()

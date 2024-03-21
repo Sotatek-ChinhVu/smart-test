@@ -841,9 +841,17 @@ namespace Infrastructure.Repositories
 
         public byte[] CreateHash(byte[] password, byte[] salt)
         {
+            if (!password.Any())
+            {
+                return new byte[0];
+            }
             using var argon2 = new Argon2id(password);
             var preper = _configuration["Pepper"] ?? string.Empty;
             salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
+            if (!salt.Any())
+            {
+                return new byte[0];
+            }
             argon2.Salt = salt;
             argon2.DegreeOfParallelism = 8;
             argon2.Iterations = 4;

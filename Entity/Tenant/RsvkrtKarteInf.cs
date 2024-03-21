@@ -68,7 +68,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("rich_text")]
-        public byte[] RichText { get; set; } = default!;
+        public byte[]? RichText { get; set; } = default!;
 
         /// <summary>
         /// 削除区分
