@@ -226,7 +226,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             }
         }
 
-        return new(statusRecalculate, sinEndTimeReCalculate, sinStartTimeReCalculate, uketukeTimeReCalculate);
+        return new(statusRecalculate, sinStartTimeReCalculate, sinEndTimeReCalculate, uketukeTimeReCalculate);
     }
 
     private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int userId)
@@ -459,7 +459,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     {
                         continue;
                     }
-                    var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui) ?? new KouiKbnMst();
+                    var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui);
                     if (kouiMst == null) continue;
 
                     // Get List RaiinListKoui contains koui 
@@ -1010,7 +1010,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     sinKouiDetail.SinYm <= endYm &&
                     itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
                     joinSinkouiCount.SinKouiCount.SinDate >= startDate &&
-                    joinSinkouiCount.SinKouiCount.SinDate <= endDate 
+                    joinSinkouiCount.SinKouiCount.SinDate <= endDate
                 group new { sinKouiDetail, joinSinkouiCount } by new { joinSinkouiCount.SinKouiCount.HpId } into A
                 select new { sum = A.Sum(a => (double)a.joinSinkouiCount.SinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
             );
@@ -3307,7 +3307,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         string ipnName = string.Empty;
         if (!string.IsNullOrEmpty(sourceDetail.IpnCd))
         {
-            ipnName = ipnNameMsts.FirstOrDefault(i =>   i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
+            ipnName = ipnNameMsts.FirstOrDefault(i => i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
         }
         else
         {
