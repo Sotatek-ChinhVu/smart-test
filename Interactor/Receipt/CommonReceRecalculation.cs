@@ -1,6 +1,8 @@
 ﻿using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Domain.CalculationInf;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
@@ -112,6 +114,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(hpId, kantokuCdValidList);
         }
         int successCount = 0;
+        var checkCount = 0;
         foreach (var recalculationItem in receRecalculationList)
         {
             if (isCheckErrorCheckBox)
@@ -125,6 +128,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             }
 
             var sinKouiCountList = _receiptRepository.GetSinKouiCountList(hpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
+            List<string> itemCdChecks = new();
 
             if (isCheckErrorCheckBox)
             {
@@ -138,7 +142,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 var tenMstByItemCdList = _mstItemRepository.GetTenMstList(hpId, itemCdList);
                 newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
                 newReceCheckErrList = CheckByomeiError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
-                newReceCheckErrList = CheckOrderError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
+                newReceCheckErrList = CheckOrderError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList, checkCount == 0, ref itemCdChecks);
                 newReceCheckErrList = CheckRosaiError(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
                 newReceCheckErrList = CheckAftercare(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             }
@@ -159,6 +163,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             {
                 SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, string.Empty, string.Empty));
             }
+            checkCount++;
         }
         errorText.Append(errorTextRosai);
         errorText.Append(errorTextSinKouiCount);
@@ -1255,7 +1260,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckOrderError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<ReceSinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstModelList, List<SystemConfModel> systemConfList, List<string> itemCdList)
+    private List<ReceCheckErrModel> CheckOrderError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<ReceSinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstModelList, List<SystemConfModel> systemConfList, List<string> itemCdList, bool isFirst, ref List<string> itemCdChecks)
     {
         bool isCheckExceedDosage = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExceededDosageOdrErrCd);
         bool isCheckDuplicateOdr = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateOdrErrCd);
@@ -1365,9 +1370,12 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             {
                 int sinDate = sinKouiCount.SinDate;
                 var hokenInf = sinKouiCount.PtHokenPatterns.FirstOrDefault(p => p.HokenId == recalculationModel.HokenId);
+                bool flag = false;
                 foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
                 {
                     string itemCd = sinKouiDetailModel.ItemCd;
+                    if (flag) flag = false;
+
                     if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull)
                     {
                         #region Sub function
@@ -1479,10 +1487,15 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                                     || (hokenInf.HokenKbn == 14 && GetSettingValue(systemConfList, 3001) == 1)))
                         {
                             densiSanteiKaisuModels = densiSanteiKaisuModels.FindAll(p => p.TargetKbn == 2 || p.TargetKbn == 0);
+                            if (isFirst) itemCdChecks.Add(itemCd);
                         }
                         else
                         {
                             densiSanteiKaisuModels = densiSanteiKaisuModels.FindAll(p => p.TargetKbn == 1 || p.TargetKbn == 0);
+                            if (!isFirst && itemCdChecks.Contains(itemCd))
+                            {
+                                flag = true;
+                            }
                         }
 
                         foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
@@ -1496,6 +1509,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                             if (densiSanteiKaisu.TargetKbn == 1)
                             {
                                 // 健保のみ対象の場合はすべて対象
+                                checkHokenKbnTmp.RemoveAll(p => !new int[] { 0 }.Contains(p));
                             }
                             else if (densiSanteiKaisu.TargetKbn == 2)
                             {
@@ -1644,7 +1658,12 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                                                                sinDate, 0, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
                             }
 
-                            if (santeiCount > densiSanteiKaisu.MaxCount)
+                            if (flag)
+                            {
+                                string msg2 = string.Format("({0}: {1}回)", sinKouiDetailModel.ItemName, santeiCount);
+                                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
+                            }
+                            else if (santeiCount > densiSanteiKaisu.MaxCount)
                             {
                                 string msg2 = string.Format("({0}: {1}回 [{2}回/{3}])", sinKouiDetailModel.ItemName, santeiCount, densiSanteiKaisu.MaxCount, sTerm);
                                 AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
