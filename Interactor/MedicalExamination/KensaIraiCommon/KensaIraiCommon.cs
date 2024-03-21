@@ -7,6 +7,7 @@ using Domain.Models.Reception;
 using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Reporting.Kensalrai.DB;
@@ -37,7 +38,11 @@ public class KensaIraiCommon : IKensaIraiCommon
         _kensaIraiCoReportService = kensaIraiCoReportService;
         _groupInfRepository = groupInfRepository;
         _coKensaIraiFinder = coKensaIraiFinder;
-        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        var dbContextOptions = tenantProvider.CreateNewTrackingAdminDbContextOption();
+        if (dbContextOptions != null)
+        {
+            _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+        }
         kensaCenterMst = new();
         odrInfModels = new();
         odrInfDetailModels = new();
@@ -102,7 +107,10 @@ public class KensaIraiCommon : IKensaIraiCommon
         }
         catch (Exception ex)
         {
-            _loggingHandler.WriteLogExceptionAsync(ex);
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+            }
             throw;
         }
         finally
@@ -113,7 +121,10 @@ public class KensaIraiCommon : IKensaIraiCommon
             _receptionRepository.ReleaseResource();
             _ordInfRepository.ReleaseResource();
             _groupInfRepository.ReleaseResource();
-            _loggingHandler.Dispose();
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.Dispose();
+            }
             _coKensaIraiFinder.ReleaseResource();
         }
     }
