@@ -188,6 +188,11 @@ public static class FunctionCode
     public const string Sta3061 = "97361000";
 
     /// <summary>
+    /// 行為別診療費内訳表[日別]			
+    /// </summary>
+    public const string Sta3062 = "97362000";
+
+    /// <summary>
     /// 来院状況実績表
     /// </summary>
     public const string Sta3070 = "97370000";
@@ -213,4 +218,18 @@ public static class FunctionCode
     public const string LockInf = "99999000";
     public const string CheckDrugInfo = "99013000";
     public const string CheckSpecificHealth = "99014000";
+
+    /// <summary>
+    /// オンライン資格確認（薬剤情報）
+    /// </summary>
+    public const string OQDrugInformation = "99013000";
+
+    /// <summary>
+    /// オンライン資格確認（特定健診）
+    /// </summary>
+    public const string OQSpecificMedical = "99014000";
+
+    public const string EditYousiki = "99016000";
+
+    public const string ReceiptConfirmation = "05000000";
 }
