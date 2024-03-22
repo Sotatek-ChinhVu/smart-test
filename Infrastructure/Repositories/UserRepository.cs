@@ -806,11 +806,13 @@ namespace Infrastructure.Repositories
                 case FunctionCode.Sta3050:
                 case FunctionCode.Sta3060:
                 case FunctionCode.Sta3061:
+                case FunctionCode.Sta3062:
                 case FunctionCode.Sta3070:
                 case FunctionCode.Sta3071:
                 case FunctionCode.Sta3080:
                 case FunctionCode.PatientManagement:
                 case FunctionCode.LockInf:
+                case FunctionCode.ReceiptConfirmation:
                     return PermissionType.Unlimited;
                 default:
                     throw new NotSupportedException("Not supported for code : " + permissionCode);
