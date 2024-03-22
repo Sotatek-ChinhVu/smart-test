@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
         public List<RaiinKubunMstModel> GetList(int hpId, bool isDeleted)
         {
             List<RaiinKbnMst> raiinKubunMstList = NoTrackingDataContext.RaiinKbnMsts
-                .Where(r => r.HpId == hpId && isDeleted || r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && (isDeleted || r.IsDeleted == 0))
                 .OrderBy(r => r.SortNo)
                 .ToList();
 
@@ -794,7 +794,7 @@ namespace Infrastructure.Repositories
 
         public int GetMaxGrpId(int hpId)
         {
-            return NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId)?.Max(item => item.GrpCd) ?? 0;
+            return NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId).Select(item => item.GrpCd).DefaultIfEmpty()?.Max() ?? 0;
         }
 
         private int GetMaxKbnCd(int hpId, int grpId)

@@ -62,7 +62,7 @@ namespace Interactor.MedicalExamination
                     }
 
                     var tenMstByItemCdList = tenMstItemList.Where(t => t.ItemCd == detail.ItemCd).ToList();
-                    if (tenMstByItemCdList.Count == 0)
+                    if (tenMstByItemCdList == null || tenMstByItemCdList.Count == 0)
                     {
                         continue;
                     }

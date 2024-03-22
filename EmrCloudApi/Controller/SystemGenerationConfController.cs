@@ -13,10 +13,10 @@ using UseCase.SystemGenerationConf.GetList;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class SystemGenerationConfController : AuthorizeControllerBase
+    public class SystemGenerationConfController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SystemGenerationConfController(UseCaseBus bus, IUserService userService) : base(userService)
+        public SystemGenerationConfController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

@@ -116,7 +116,7 @@ namespace Infrastructure.Repositories
             return oderInfModels;
         }
 
-        public long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
+        public bool Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
         {
             #region get common data by hpId and ptId
             // get all data RsvkrtMst
@@ -231,7 +231,7 @@ namespace Infrastructure.Repositories
             {
                 _cache.KeyDelete(finalKey);
             }
-            return rsvkrtNo;
+            return true;
         }
 
         public void SaveNextOrderRaiinListInf(int userId, List<RsvkrtOrderInfModel> nextOrderModels, List<KouiKbnMst> kouiKbnMst, List<RaiinListKoui> raiinListKouis, List<RaiinListItem> raiinListItems)
@@ -811,7 +811,7 @@ namespace Infrastructure.Repositories
                 if (kensaCondition && inOutKbn == 1)
                 {
                     int kensaSetting = kensaIrai;
-                    if (kensaMst == null)
+                    if (kensaMst == null || kensaMst.IsDelete == 1)
                     {
                         if (kensaSetting > 0)
                         {

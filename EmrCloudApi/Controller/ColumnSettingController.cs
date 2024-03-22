@@ -14,11 +14,11 @@ using UseCase.Core.Sync;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class ColumnSettingController : AuthorizeControllerBase
+public class ColumnSettingController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
 
-    public ColumnSettingController(UseCaseBus bus, IUserService userService) : base(userService)
+    public ColumnSettingController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

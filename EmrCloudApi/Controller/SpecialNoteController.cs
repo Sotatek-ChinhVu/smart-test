@@ -15,10 +15,10 @@ using UseCase.SpecialNote.Save;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class SpecialNoteController : AuthorizeControllerBase
+    public class SpecialNoteController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SpecialNoteController(UseCaseBus bus, IUserService userService) : base(userService)
+        public SpecialNoteController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

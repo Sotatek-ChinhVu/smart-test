@@ -14,11 +14,11 @@ namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TimeZoneConfController : AuthorizeControllerBase
+    public class TimeZoneConfController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
 
-        public TimeZoneConfController(UseCaseBus bus, IUserService userService) : base(userService)
+        public TimeZoneConfController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

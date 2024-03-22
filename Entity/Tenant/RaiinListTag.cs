@@ -16,20 +16,6 @@ namespace Entity.Tenant
         public int HpId { get; set; }
 
         /// <summary>
-        /// 患者ID
-        /// 患者を識別するためのシステム固有の番号
-        /// </summary>
-        [Column("pt_id")]
-        public long PtId { get; set; }
-
-        /// <summary>
-        /// 診療日
-        /// yyyymmdd
-        /// </summary>
-        [Column("sin_date")]
-        public int SinDate { get; set; }
-
-        /// <summary>
         /// 来院番号
         /// 
         /// </summary>
@@ -45,6 +31,20 @@ namespace Entity.Tenant
         [Column("seq_no", Order = 3)]
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
+
+        /// <summary>
+        /// 患者ID
+        /// 患者を識別するためのシステム固有の番号
+        /// </summary>
+        [Column("pt_id")]
+        public long PtId { get; set; }
+
+        /// <summary>
+        /// 診療日
+        /// yyyymmdd
+        /// </summary>
+        [Column("sin_date")]
+        public int SinDate { get; set; }
 
         /// <summary>
         /// タグNo

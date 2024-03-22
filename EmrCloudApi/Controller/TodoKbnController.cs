@@ -1,10 +1,8 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Controller;
 using EmrCloudApi.Presenters.Todo;
-using EmrCloudApi.Requests.Todo;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Todo;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Todo.GetListTodoKbn;
@@ -12,10 +10,10 @@ using UseCase.Todo.GetListTodoKbn;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    public class TodoKbnController : AuthorizeControllerBase
+    public class TodoKbnController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
-        public TodoKbnController(UseCaseBus bus, IUserService userService) : base(userService)
+        public TodoKbnController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
         }

@@ -22,7 +22,7 @@ namespace Domain.Models.Reception
 
         ReceptionModel GetReceptionVisiting(int hpId, long raiinNo);
 
-        List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate);
+        List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate, bool isGetSysosaisin = false);
 
         bool UpdateStatus(int hpId, long raiinNo, int status, int userId);
 
@@ -60,7 +60,7 @@ namespace Domain.Models.Reception
 
         List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
 
-        ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
+        ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate,bool isGetSysosaisin = false);
 
         List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
 

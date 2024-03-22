@@ -11,7 +11,6 @@ using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
-using System;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories;
@@ -130,7 +129,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             {
                 foreach (var raiinKbn in _raiinKbnMsts)
                 {
-                    staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
+                    staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, i, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
                 }
             }
 
@@ -144,8 +143,8 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
 
             foreach (var ptGrpName in _ptGrpNameMsts)
             {
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, i, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, i, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
             }
 
             result.Add(new StaCsvMstModel(
@@ -172,22 +171,22 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             {
                 foreach (var raiinKbn in _raiinKbnMsts)
                 {
-                    staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
+                    staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, group.Key.DataSbt, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
                 }
             }
 
             if (group.Key.DataSbt != 1)
             {
                 List<StaCsvModel> staCsvSubTemplateModels = StaCsvConfigTemplate.PtInfSubConfig.Select(
-                    (x, idx) => new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(u => u.SortKbn) + 1, 9000, group.Key.DataSbt, x.SaveName, x.IsSelected, x.OutputColumnName)
+                    (x, idx) => new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, (staCsvTemplateModels.DefaultIfEmpty()?.Max(u => u?.SortKbn) ?? 0) + 1, 9000, group.Key.DataSbt, x.SaveName, x.IsSelected, x.OutputColumnName)
                 ).ToList();
                 staCsvTemplateModels.AddRange(staCsvSubTemplateModels);
             }
 
             foreach (var ptGrpName in _ptGrpNameMsts)
             {
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false,
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, (staCsvTemplateModels.DefaultIfEmpty()?.Max(x => x?.SortKbn) ?? 0) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false,
                  string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
             }
 
@@ -558,6 +557,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.LastVisitDateFrom, patientManagementModel.LastVisitDateFrom.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.LastVisitDateTo, patientManagementModel.LastVisitDateTo.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.NanbyoCds, patientManagementModel.NanbyoCdsStr.AsString()));
+        addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.Syubyo, patientManagementModel.Syubyo.AsString()));
         if (!string.IsNullOrEmpty(patientManagementModel.StatuseStr.AsString()))
         {
             addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.Status, patientManagementModel.StatuseStr.AsString()));
@@ -701,6 +701,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         string sikkanKbnStr = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.SikkanKbn && x.MenuId == menuId)?.Val ?? string.Empty;
         string nanbyoCdStr = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.NanbyoCds && x.MenuId == menuId)?.Val ?? string.Empty;
         string isDoubt = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.IsDoubt && x.MenuId == menuId)?.Val ?? string.Empty;
+        string syubyo = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.Syubyo && x.MenuId == menuId)?.Val ?? string.Empty;
         string searchWord = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.SearchWord && x.MenuId == menuId)?.Val ?? string.Empty;
         string searchWordMode = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.SearchWordMode && x.MenuId == menuId)?.Val ?? string.Empty;
         string byomeiCdStr = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.ByomeiCd && x.MenuId == menuId)?.Val ?? string.Empty;
@@ -786,6 +787,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                               tenkiDateFrom.AsInteger(),
                                               tenkiDateTo.AsInteger(),
                                               isDoubt.AsInteger(),
+                                              syubyo.AsInteger(),
                                               searchWord,
                                               searchWordMode.AsInteger(),
                                               byomeiCdOpt.AsInteger(),

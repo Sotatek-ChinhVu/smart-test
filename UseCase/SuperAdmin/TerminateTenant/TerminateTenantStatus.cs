@@ -8,7 +8,6 @@
         TenantDoesNotExist = 4,
         TenantDbDoesNotExistInRDS = 5,
         PathFileDumpRestoreNotAvailable = 6,
-        TenantIsTerminating = 7,
-        TenantIsNotAvailableToSortTerminate = 8
+        TenantIsTerminating = 7
     }
 }

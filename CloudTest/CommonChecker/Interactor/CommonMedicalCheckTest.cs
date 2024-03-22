@@ -3,10 +3,10 @@ using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.Models.Family;
-using Entity.Tenant;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using Moq;
 using UseCase.Family;
@@ -49,8 +49,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindComponentNameDic(It.IsAny<int>(), It.IsAny<List<string>>()))
             .Returns((int inputHpId, List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -102,8 +103,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             // Act
             commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
@@ -150,8 +152,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -188,8 +191,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -232,8 +236,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindLastItemNameByYjCdDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>(), false))
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
@@ -267,8 +272,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -308,8 +314,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -347,8 +354,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -395,8 +403,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -455,8 +464,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -523,8 +533,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -583,8 +594,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -651,8 +663,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -710,9 +723,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mock = new Mock<IRealtimeOrderErrorFinder>(); var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -778,9 +791,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mock = new Mock<IRealtimeOrderErrorFinder>(); var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -839,8 +852,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -904,8 +918,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -940,8 +955,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -980,8 +996,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -1015,8 +1032,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -1054,8 +1072,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -1093,8 +1112,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -1137,8 +1157,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameByItemCodeDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -1169,8 +1190,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameByItemCodeDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
@@ -1187,9 +1209,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_025_ProcessDataForDrugAllergyWithNoMasterData()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<DrugAllergyResultModel>
             {
@@ -1226,9 +1249,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_026_ProcessDataForKinkiUser()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiResults = new List<KinkiResultModel>
             {
@@ -1267,9 +1291,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         {
             int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiResults = new List<DayLimitResultModel>
             {
@@ -1314,10 +1339,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_028_ProcessDataForDrugAllergy_Level_1()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<DrugAllergyResultModel>
             {
@@ -1367,9 +1393,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         {
             int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<DrugAllergyResultModel>
             {
@@ -1421,10 +1448,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_030_ProcessDataForDrugAllergy_Level_3()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<DrugAllergyResultModel>
             {
@@ -1480,10 +1508,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_031_ProcessDataForDrugAllergy_Level_4()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<DrugAllergyResultModel>
             {
@@ -1550,10 +1579,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_032_ProcessDataForDrugAllergy_YjCd_Equal_AllergyYjCd()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<DrugAllergyResultModel>
             {
@@ -1597,10 +1627,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_033_ProcessDataForDrugAllergy_Level_OutOfRange_0_To_4()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<DrugAllergyResultModel>
             {
@@ -1652,10 +1683,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_034_ProcessDataForDrugAllergy_IsNoMasterData_IsTrue()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<DrugAllergyResultModel>
             {
@@ -1700,10 +1732,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_035_ProcessDataForFoodAllergy_Test_AllergyInfo_IsEmpty_List()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<FoodAllergyResultModel>();
 
@@ -1730,9 +1763,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_036_ProcessDataForFoodAllergy()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<FoodAllergyResultModel>
             {
@@ -1787,9 +1821,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_037_ProcessDataForFoodAllergy()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var allergyInfo = new List<FoodAllergyResultModel>
             {
@@ -1840,9 +1875,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         {
             int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var ages = new List<AgeResultModel>
             {
@@ -1881,9 +1917,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         {
             int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var ages = new List<AgeResultModel>
             {
@@ -1933,9 +1970,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         {
             int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var diseaseInfo = new List<DiseaseResultModel>
             {
@@ -2006,9 +2044,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_041_ProcessDataForDosage_LabelChecking_OneMin()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDosageError = new List<DosageResultModel>
             {
@@ -2053,9 +2092,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_042_ProcessDataForDosage_LabelChecking_OneMax()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDosageError = new List<DosageResultModel>
             {
@@ -2101,9 +2141,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_043_ProcessDataForDosage_LabelChecking_OneLimit()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDosageError = new List<DosageResultModel>
             {
@@ -2149,9 +2190,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_044_ProcessDataForDosage_LabelChecking_DayMin()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDosageError = new List<DosageResultModel>
             {
@@ -2197,9 +2239,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_045_ProcessDataForDosage_LabelChecking_DayMax()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDosageError = new List<DosageResultModel>
             {
@@ -2245,9 +2288,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_046_ProcessDataForDosage_LabelChecking_DayMax()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDosageError = new List<DosageResultModel>
             {
@@ -2293,9 +2337,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_047_ProcessDataForDosage_LabelChecking_DayLimit()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDosageError = new List<DosageResultModel>
             {
@@ -2341,9 +2386,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_048_ProcessDataForDosage_LabelChecking_TermLimit()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDosageError = new List<DosageResultModel>
             {
@@ -2389,10 +2435,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_049_ProcessDataForDuplication_IsIppanCdDuplicated_IsFalse_IsComponentDuplicated_IsFalse()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDuplicationError = new List<DuplicationResultModel>
             {
@@ -2439,10 +2486,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_050_ProcessDataForDuplication_IsComponentDuplicated_IsFalse_IsIppanCdDuplicated_IsTrue()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDuplicationError = new List<DuplicationResultModel>
             {
@@ -2492,10 +2540,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_051_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_0()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDuplicationError = new List<DuplicationResultModel>
             {
@@ -2547,10 +2596,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_052_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_1()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDuplicationError = new List<DuplicationResultModel>
             {
@@ -2605,10 +2655,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_053_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_2()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDuplicationError = new List<DuplicationResultModel>
             {
@@ -2669,10 +2720,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_054_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_3()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDuplicationError = new List<DuplicationResultModel>
             {
@@ -2740,10 +2792,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_055_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_3()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var listDuplicationError = new List<DuplicationResultModel>
             {
@@ -2811,9 +2864,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_056_RemoveDuplicatedErrorInfo()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var originList = new List<KinkiResultModel>
             {
@@ -2942,10 +2996,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_057_ProcessDataForKinki_KinkiSupplement()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiErrorInfo = new List<KinkiResultModel>
             {
@@ -3010,9 +3065,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_058_ProcessDataForKinki_KinkiOTC()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiErrorInfo = new List<KinkiResultModel>
             {
@@ -3084,10 +3140,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_059_ProcessDataForKinki_KinkiOTC()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiErrorInfo = new List<KinkiResultModel>
             {
@@ -3178,10 +3235,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_060_ProcessDataForKinki_CheckingType_Default()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiErrorInfo = new List<KinkiResultModel>
             {
@@ -3269,10 +3327,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_061_ProcessDataForKinki_CheckingType_IndexWord_Equal_SeibunName()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiErrorInfo = new List<KinkiResultModel>
             {
@@ -3365,10 +3424,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_062_ProcessDataForKinki_CheckingType_IsNeedToReplace_True()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiErrorInfo = new List<KinkiResultModel>
             {
@@ -3465,10 +3525,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_063_ProcessDataForKinki_CheckingType_IsNeedToReplace_Test_CommentContent()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 1;
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiErrorInfo = new List<KinkiResultModel>
             {
@@ -3587,9 +3648,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_064_ProcessDataForKinki_CheckingType_Test_SayokijyoContent()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var kinkiErrorInfo = new List<KinkiResultModel>
             {
@@ -3700,9 +3762,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_065_ConvertToFamilyModel()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             //Setup
             var familyRekis = new List<FamilyRekiItem>()
@@ -3768,9 +3831,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_066_ConvertToSpecialNoteModel()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
 
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             var specialNoteItem = new SpecialNoteItem(
                 new SummaryInfItem(id: 2, 99, 1234, 5, "Summary Text", "R Summary Text"),
@@ -3819,6 +3883,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             var tenMsts = CommonCheckerData.ReadTenMst("day004", "day004");
             var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day004");
             var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day004");
@@ -3854,12 +3919,12 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             try
             {
-                var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+                var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
                 var listErrorInfo = commonMedicalCheck.CheckListOrder(hpId, ptId, sinDay, checkingListOdr, realtimeCheckerCondition, new(), new(), new(), true);
-                var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+                var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
                 // Assert
-                Assert.True(result.Any());
+                Assert.True(result.errors.Any());
             }
             finally
             {
@@ -3876,6 +3941,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_068_GetErrorDetails_DrugAllergy()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -3905,7 +3971,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => new Dictionary<string, string> {
@@ -3923,16 +3989,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.True(result.Count == 2);
+            Assert.True(result.errors.Count == 2);
         }
 
         [Test]
         public void TC_069_GetErrorDetails_FoodAllergy()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -3964,7 +4031,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => new Dictionary<string, string> {
@@ -3982,16 +4049,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.errors.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void TC_070_GetErrorDetails_Age()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -4021,7 +4089,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => new Dictionary<string, string> {
@@ -4033,16 +4101,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.errors.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void TC_071_GetErrorDetails_Disease()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -4076,7 +4145,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> inputList, int sinday) => new Dictionary<string, string> {
@@ -4094,16 +4163,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((int hpId, List<string> inputList, int sinday, bool dontCheckIsDeleted) =>
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.errors.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void TC_072_GetErrorDetails_Kinki()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -4138,7 +4208,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
                                                                                             { "S1234", "SeibunName_Mocked_Test_1" },
@@ -4188,16 +4258,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             // Act
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.errors.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void TC_073_GetErrorDetails_KinkiUser()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -4236,7 +4307,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> input, int input2) => new Dictionary<string, string>
@@ -4253,16 +4324,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             // Act
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.errors.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void TC_074_GetErrorDetails_Days()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -4288,7 +4360,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemName(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
             .Returns((int hpId, string stringInput, int sinday) => "Item Name Mock");
@@ -4299,16 +4371,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             // Act
 
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.errors.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void TC_075_GetErrorDetails_Dosage()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -4336,7 +4409,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(hpId, It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> input, int input2) => new Dictionary<string, string> {
@@ -4355,16 +4428,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.errors.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void TC_076_GetErrorDetails_Duplication()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
             int hpId = 999;
             long ptId = 1212;
             int sinDay = 20230101;
@@ -4390,7 +4464,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     },
                 };
 
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object, mockRealtimeCheckerFinder.Object);
 
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<int>(), It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((int hpId, List<string> input, int input2) => new Dictionary<string, string> {
@@ -4407,10 +4481,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo, new());
 
             // Assert
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.errors.Count, Is.EqualTo(2));
         }
     }
 }

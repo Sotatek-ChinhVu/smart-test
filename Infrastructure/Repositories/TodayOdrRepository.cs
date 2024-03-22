@@ -1363,7 +1363,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             if (kensaCondition && inOutKbn == 1)
             {
                 int kensaSetting = kensaIrai;
-                if (kensaMst == null)
+                if (kensaMst == null || kensaMst.IsDelete == 1)
                 {
                     if (kensaSetting > 0)
                     {
@@ -1422,7 +1422,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             if (kensaCondition && inOutKbn == 1)
             {
                 int kensaSetting = kensaIrai;
-                if (kensaMst == null)
+                if (kensaMst == null || kensaMst.IsDelete == 1)
                 {
                     if (kensaSetting > 0)
                     {
@@ -3305,7 +3305,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         string ipnName = string.Empty;
         if (!string.IsNullOrEmpty(sourceDetail.IpnCd))
         {
-            ipnName = ipnNameMsts.FirstOrDefault(i => i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
+            ipnName = ipnNameMsts.FirstOrDefault(i =>   i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
         }
         else
         {
@@ -3521,7 +3521,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         if (OdrDateInfList.Count != 0)
         {
-            grpIdMax = NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).Max(x => x.GrpId) + 1;
+            grpIdMax = (NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).Select(x => x.GrpId).DefaultIfEmpty()?.Max() ?? 0) + 1;
         }
         else
         {
@@ -3530,7 +3530,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         if (OdrDateDetailList.Count != 0)
         {
-            seqNoMax = NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).Max(x => x.SeqNo) + 1;
+            seqNoMax = (NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0) + 1;
         }
         else
         {

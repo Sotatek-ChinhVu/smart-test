@@ -24,7 +24,7 @@ namespace Domain.Models.User
 
         UserMstModel? GetByLoginId(string loginId, string password);
 
-        bool CheckExistedId(int hpId, List<long> ids);
+        bool CheckExistedId(int hpId, List<int> ids);
 
         bool Upsert(int hpId, List<UserMstModel> upsertUserList, int userId);
 
@@ -32,13 +32,13 @@ namespace Domain.Models.User
 
         bool CheckExistedUserIdCreate(int hpId, List<int> userIds);
 
-        bool CheckExistedUserIdUpdate(int hpId, List<long> ids, List<int> userIds);
+        bool CheckExistedUserIdUpdate(int hpId, List<int> ids, List<int> userIds);
 
         bool CheckExistedLoginIdCreate(int hpId, List<string> loginIds);
 
         bool CheckExistedJobCd(int hpId, List<int> jobCds);
 
-        bool CheckExistedLoginIdUpdate(int hpId, List<long> ids, List<string> loginIds);
+        bool CheckExistedLoginIdUpdate(int hpId, List<int> ids, List<string> loginIds);
 
         bool CheckLoginInfo(string userName, string password);
 

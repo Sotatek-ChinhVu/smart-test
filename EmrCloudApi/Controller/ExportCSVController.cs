@@ -1,7 +1,5 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportCsv;
-using EmrCloudApi.Services;
-using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
@@ -11,11 +9,11 @@ using System.Text;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class ExportCSVController : AuthorizeControllerBase
+public class ExportCSVController : BaseParamControllerBase
 {
     private readonly IReportService _reportService;
 
-    public ExportCSVController(IUserService userService, IReportService reportService, ITenantProvider tenantProvider) : base(userService)
+    public ExportCSVController(IReportService reportService, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _reportService = reportService;
     }
@@ -41,7 +39,7 @@ public class ExportCSVController : AuthorizeControllerBase
     public IActionResult GenerateExportStatics([FromQuery] ExportCsvStaticsRequest request)
     {
         _reportService.Instance(32);
-        var data = _reportService.ExportCsv(HpId, request.MenuName, request.MenuId, request.TimeFrom, request.TimeTo, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, 
+        var data = _reportService.ExportCsv(HpId, request.MenuName, request.MenuId, request.TimeFrom, request.TimeTo, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo,
                                             request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo, request.IsPutColName, request.CoFileType);
         if (!data.Data.Any())
         {

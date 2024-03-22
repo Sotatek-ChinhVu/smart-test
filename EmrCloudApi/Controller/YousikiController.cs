@@ -4,7 +4,6 @@ using EmrCloudApi.Presenters.Yousiki;
 using EmrCloudApi.Requests.Yousiki;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Yousiki;
-using EmrCloudApi.Services;
 using Helper.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -27,11 +26,11 @@ namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class YousikiController : AuthorizeControllerBase
+public class YousikiController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
     private readonly IMessenger _messenger;
-    public YousikiController(UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
+    public YousikiController(UseCaseBus bus, IMessenger messenger, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
         _messenger = messenger;
@@ -2114,7 +2113,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.FirstVisit.RowNo,
                    yousiki1InfDetailRequest.FirstVisit.Payload,
                    yousiki1InfDetailRequest.FirstVisit.Value,
-                   yousiki1InfDetailRequest.FirstVisit.IsDeleted 
+                   yousiki1InfDetailRequest.FirstVisit.IsDeleted
                    ));
             }
 
@@ -2129,7 +2128,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Referral.RowNo,
                    yousiki1InfDetailRequest.Referral.Payload,
                    yousiki1InfDetailRequest.Referral.Value,
-                   yousiki1InfDetailRequest.Referral.IsDeleted 
+                   yousiki1InfDetailRequest.Referral.IsDeleted
                    ));
             }
 

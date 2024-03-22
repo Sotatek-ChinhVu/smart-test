@@ -86,6 +86,7 @@ namespace EmrCloudApi.Requests.PatientManagement
         public int TenkiDateFrom { get; set; }
         public int TenkiDateTo { get; set; }
         public int IsDoubt { get; set; }
+        public int Syubyo { get; set; }
         public string SearchWord { get; set; } = string.Empty;
         public int SearchWordMode { get; set; }
         public int ByomeiCdOpt { get; set; }

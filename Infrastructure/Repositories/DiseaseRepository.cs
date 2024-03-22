@@ -404,7 +404,7 @@ namespace Infrastructure.Repositories
             return byomeis.Select(b => b.Id).ToList();
         }
 
-        private bool IsModified(PtByomei byomei, PtDiseaseModel model)
+        public bool IsModified(PtByomei byomei, PtDiseaseModel model)
         {
             if (byomei.ByomeiCd != model.ByomeiCd
                 || byomei.SyusyokuCd1 != (model.PrefixSuffixList.Count > 0 ? model.PrefixSuffixList[0].Code : string.Empty)
@@ -437,7 +437,7 @@ namespace Infrastructure.Repositories
                 || byomei.NanByoCd != model.NanbyoCd
                 || byomei.HosokuCmt != model.HosokuCmt
                 || byomei.HokenPid != model.HokenPid
-                || byomei.TogetuByomei != model.TenkiKbn
+                || byomei.TogetuByomei != model.TogetuByomei
                 || byomei.IsNodspRece != model.IsNodspRece
                 || byomei.IsNodspKarte != model.IsNodspKarte
                 || byomei.SeqNo != model.SeqNo
@@ -448,7 +448,7 @@ namespace Infrastructure.Repositories
             return false;
         }
 
-        private PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model, int hpId, int userId)
+        public PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model, int hpId, int userId)
         {
             var preSuffixList = model.PrefixSuffixList;
             return new PtByomei

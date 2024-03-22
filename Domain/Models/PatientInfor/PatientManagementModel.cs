@@ -53,7 +53,7 @@
             KensaItemCds = new();
         }
 
-        public PatientManagementModel(int outputOrder, int outputOrder2, int outputOrder3, int reportType, long ptNumFrom, long ptNumTo, string kanaName, string name, int birthDayFrom, int birthDayTo, string ageFrom, string ageTo, string ageRefDate, int sex, string homePost, string zipCD1, string zipCD2, string address, string phoneNumber, int includeTestPt, List<long> listPtNums, int registrationDateFrom, int registrationDateTo, string groupSelected, string hokensyaNoFrom, string hokensyaNoTo, string kigo, string bango, string edaNo, int hokenKbn, string kohiFutansyaNoFrom, string kohiFutansyaNoTo, string kohiTokusyuNoFrom, string kohiTokusyuNoTo, int expireDateFrom, int expireDateTo, List<int> hokenSbt, string houbetu1, string houbetu2, string houbetu3, string houbetu4, string houbetu5, string kogaku, int kohiHokenNoFrom, int kohiHokenEdaNoFrom, int kohiHokenNoTo, int kohiHokenEdaNoTo, int validOrExpired, int startDateFrom, int startDateTo, int tenkiDateFrom, int tenkiDateTo, int isDoubt, string searchWord, int searchWordMode, int byomeiCdOpt, int sindateFrom, int sindateTo, int lastVisitDateFrom, int lastVisitDateTo, int isSinkan, string raiinAgeFrom, string raiinAgeTo, int dataKind, int itemCdOpt, string medicalSearchWord, int wordOpt, int karteWordOpt, int startIraiDate, int endIraiDate, int kensaItemCdOpt, List<int> tenkiKbns, List<int> sikkanKbns, List<string> byomeiCds, List<string> freeByomeis, List<int> nanbyoCds, List<int> statuses, List<int> uketukeSbtId, List<string> itemCds, List<int> kaMstId, List<int> userMstId, List<int> jikanKbns, List<string> itemCmts, List<int> karteKbns, List<string> karteSearchWords, List<string> kensaItemCds)
+        public PatientManagementModel(int outputOrder, int outputOrder2, int outputOrder3, int reportType, long ptNumFrom, long ptNumTo, string kanaName, string name, int birthDayFrom, int birthDayTo, string ageFrom, string ageTo, string ageRefDate, int sex, string homePost, string zipCD1, string zipCD2, string address, string phoneNumber, int includeTestPt, List<long> listPtNums, int registrationDateFrom, int registrationDateTo, string groupSelected, string hokensyaNoFrom, string hokensyaNoTo, string kigo, string bango, string edaNo, int hokenKbn, string kohiFutansyaNoFrom, string kohiFutansyaNoTo, string kohiTokusyuNoFrom, string kohiTokusyuNoTo, int expireDateFrom, int expireDateTo, List<int> hokenSbt, string houbetu1, string houbetu2, string houbetu3, string houbetu4, string houbetu5, string kogaku, int kohiHokenNoFrom, int kohiHokenEdaNoFrom, int kohiHokenNoTo, int kohiHokenEdaNoTo, int validOrExpired, int startDateFrom, int startDateTo, int tenkiDateFrom, int tenkiDateTo, int isDoubt, int syubyo, string searchWord, int searchWordMode, int byomeiCdOpt, int sindateFrom, int sindateTo, int lastVisitDateFrom, int lastVisitDateTo, int isSinkan, string raiinAgeFrom, string raiinAgeTo, int dataKind, int itemCdOpt, string medicalSearchWord, int wordOpt, int karteWordOpt, int startIraiDate, int endIraiDate, int kensaItemCdOpt, List<int> tenkiKbns, List<int> sikkanKbns, List<string> byomeiCds, List<string> freeByomeis, List<int> nanbyoCds, List<int> statuses, List<int> uketukeSbtId, List<string> itemCds, List<int> kaMstId, List<int> userMstId, List<int> jikanKbns, List<string> itemCmts, List<int> karteKbns, List<string> karteSearchWords, List<string> kensaItemCds)
         {
             OutputOrder = outputOrder;
             OutputOrder2 = outputOrder2;
@@ -108,6 +108,7 @@
             TenkiDateFrom = tenkiDateFrom;
             TenkiDateTo = tenkiDateTo;
             IsDoubt = isDoubt;
+            Syubyo = syubyo;
             SearchWord = searchWord;
             SearchWordMode = searchWordMode;
             ByomeiCdOpt = byomeiCdOpt;
@@ -200,6 +201,7 @@
         public int TenkiDateFrom { get; private set; }
         public int TenkiDateTo { get; private set; }
         public int IsDoubt { get; private set; }
+        public int Syubyo { get; private set; }
         public string SearchWord { get; private set; }
         public int SearchWordMode { get; private set; }
         public int ByomeiCdOpt { get; private set; }

@@ -28,7 +28,7 @@ public class GetLastRaiinInfsInteractor : IGetLastRaiinInfsInputPort
             var result = new List<ReceptionModel>();
             if (inputData.IsLastVisit)
             {
-                var lastVisit = _receptionRepository.GetLastVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
+                var lastVisit = _receptionRepository.GetLastVisit(inputData.HpId, inputData.PtId, inputData.SinDate, true);
                 if (lastVisit.HpId != 0 && lastVisit.PtId != 0 && lastVisit.RaiinNo != 0 && lastVisit.SinDate != 0)
                 {
                     result.Add(new ReceptionModel(lastVisit.HpId,
@@ -60,7 +60,7 @@ public class GetLastRaiinInfsInteractor : IGetLastRaiinInfsInputPort
             }
             else
             {
-                result = _receptionRepository.GetLastRaiinInfs(inputData.HpId, inputData.PtId, inputData.SinDate);
+                result = _receptionRepository.GetLastRaiinInfs(inputData.HpId, inputData.PtId, inputData.SinDate, true);
             }
             return new GetLastRaiinInfsOutputData(GetLastRaiinInfsStatus.Successed, result);
         }

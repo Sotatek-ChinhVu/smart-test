@@ -7,11 +7,12 @@ namespace UseCase.MedicalExamination.GetDataPrintKarte2;
 public class GetDataPrintKarte2InputData : IInputData<GetMedicalExaminationHistoryOutputData>
 {
     [JsonConstructor]
-    public GetDataPrintKarte2InputData(long ptId, int hpId, int sinDate, int startDate, int endDate, bool isCheckedHoken, bool isCheckedJihi, bool isCheckedHokenJihi, bool isCheckedJihiRece, bool isCheckedHokenRousai, bool isCheckedHokenJibai, bool isCheckedDoctor, bool isCheckedStartTime, bool isCheckedVisitingTime, bool isCheckedEndTime, bool isUketsukeNameChecked, bool isCheckedSyosai, bool isIncludeTempSave, bool isCheckedApproved, bool isCheckedInputDate, bool isCheckedSetName, int deletedOdrVisibilitySetting, bool isIppanNameChecked, bool isCheckedHideOrder, bool emptyMode)
+    public GetDataPrintKarte2InputData(long ptId, int hpId, int sinDate, long raiinNo, int startDate, int endDate, bool isCheckedHoken, bool isCheckedJihi, bool isCheckedHokenJihi, bool isCheckedJihiRece, bool isCheckedHokenRousai, bool isCheckedHokenJibai, bool isCheckedDoctor, bool isCheckedStartTime, bool isCheckedVisitingTime, bool isCheckedEndTime, bool isUketsukeNameChecked, bool isCheckedSyosai, bool isIncludeTempSave, bool isCheckedApproved, bool isCheckedInputDate, bool isCheckedSetName, int deletedOdrVisibilitySetting, bool isIppanNameChecked, bool isCheckedHideOrder, bool emptyMode)
     {
         PtId = ptId;
         HpId = hpId;
         SinDate = sinDate;
+        RaiinNo = raiinNo;
         StartDate = startDate;
         EndDate = endDate;
         IsCheckedHoken = isCheckedHoken;
@@ -48,6 +49,9 @@ public class GetDataPrintKarte2InputData : IInputData<GetMedicalExaminationHisto
 
     [JsonPropertyName("sinDate")]
     public int SinDate { get; private set; }
+
+    [JsonPropertyName("raiinNo")]
+    public long RaiinNo { get; private set; }
 
     //KanInfo
     [JsonPropertyName("startDate")]

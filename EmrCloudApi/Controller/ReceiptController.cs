@@ -10,7 +10,6 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Receipt;
 using EmrCloudApi.Responses.Reception;
 using EmrCloudApi.Responses.SinKoui;
-using EmrCloudApi.Services;
 using Helper.Extension;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -58,10 +57,10 @@ using UseCase.SinKoui.GetSinKoui;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class ReceiptController : AuthorizeControllerBase
+public class ReceiptController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
-    public ReceiptController(UseCaseBus bus, IUserService userService) : base(userService)
+    public ReceiptController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
     }

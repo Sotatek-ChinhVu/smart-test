@@ -1,5 +1,4 @@
-﻿using Domain.Models.Reception;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.MaxMoney;
 using EmrCloudApi.Presenters.RaiinKubun;
@@ -18,7 +17,6 @@ using EmrCloudApi.Responses.RaiinKubun;
 using EmrCloudApi.Responses.Reception;
 using EmrCloudApi.Responses.ReceptionInsurance;
 using EmrCloudApi.Responses.ReceptionSameVisit;
-using EmrCloudApi.Services;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Responses.Reception;
@@ -52,11 +50,11 @@ using UseCase.ReceptionSameVisit.Get;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class ReceptionController : AuthorizeControllerBase
+    public class ReceptionController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
-        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
+        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _bus = bus;
             _webSocketService = webSocketService;

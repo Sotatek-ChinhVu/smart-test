@@ -40,7 +40,6 @@ namespace Interactor.PatientInfor
             }
         }
 
-        [Obsolete]
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
             try
@@ -124,7 +123,10 @@ namespace Interactor.PatientInfor
             }
             catch (Exception ex)
             {
-                _loggingHandler.WriteLogExceptionAsync(ex);
+                if (_loggingHandler != null)
+                {
+                    _loggingHandler.WriteLogExceptionAsync(ex);
+                }
                 throw;
             }
             finally
@@ -134,7 +136,10 @@ namespace Interactor.PatientInfor
                 _ptDiseaseRepository.ReleaseResource();
                 _tenantProvider.DisposeDataContext();
                 _amazonS3Service.Dispose();
-                _loggingHandler.Dispose();
+                if (_loggingHandler != null)
+                {
+                    _loggingHandler.Dispose();
+                }
             }
         }
 
@@ -651,7 +656,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private bool NeedCheckMainHoken(List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, int ptInfMainHokenPid)
+        public bool NeedCheckMainHoken(List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, int ptInfMainHokenPid)
         {
             var selectedHokenPattern = insurances.FirstOrDefault(x => x.HokenPatternSelected);
             var selectedInf = hokenInfs.FirstOrDefault(x => x.HokenId == selectedHokenPattern?.HokenId);

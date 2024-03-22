@@ -174,6 +174,40 @@ namespace Domain.Models.OrdInfs
             UpdateMachine = string.Empty;
         }
 
+        public OrdInfModel(int id, int hpId, long ptId, int sinDate, long raiinNo, List<OrdInfDetailModel> ordInfDetailModels)
+        {
+            Id = id;
+            HpId = hpId;
+            RaiinNo = raiinNo;
+            PtId = ptId;
+            SinDate = sinDate;
+            RpName = string.Empty;
+            GroupKoui = GroupKoui.From(0);
+            OrdInfDetails = ordInfDetailModels;
+            CreateDate = DateTime.MinValue;
+            CreateName = string.Empty;
+            UpdateDate = DateTime.MinValue;
+            UpdateName = string.Empty;
+            CreateMachine = string.Empty;
+            UpdateMachine = string.Empty;
+        }
+
+        public OrdInfModel(int hpId, long ptId, int sinDate, long raiinNo, List<OrdInfDetailModel> ordInfDetailModels)
+        {
+            HpId = hpId;
+            RaiinNo = raiinNo;
+            PtId = ptId;
+            SinDate = sinDate;
+            RpName = string.Empty;
+            GroupKoui = GroupKoui.From(0);
+            OrdInfDetails = ordInfDetailModels;
+            CreateDate = DateTime.MinValue;
+            CreateName = string.Empty;
+            UpdateDate = DateTime.MinValue;
+            UpdateName = string.Empty;
+            CreateMachine = string.Empty;
+            UpdateMachine = string.Empty;
+        }
 
 
         // 処方 - Drug

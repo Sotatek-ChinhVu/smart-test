@@ -2118,6 +2118,15 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             ptByomeis = byomeiConf?.SikkanKbns?.Count > 0 ? ptByomeis.Where(p => byomeiConf.SikkanKbns.Contains(p.SikkanKbn)) : ptByomeis;
             //難病外来コード
             ptByomeis = byomeiConf?.NanbyoCds?.Count > 0 ? ptByomeis.Where(p => byomeiConf.NanbyoCds.Contains(p.NanByoCd)) : ptByomeis;
+            //主病名
+            if (byomeiConf?.Syubyo == 1)
+            {
+                ptByomeis = ptByomeis.Where(p => p.SyubyoKbn == 1);
+            }
+            else if (byomeiConf?.Syubyo == 2)
+            {
+                ptByomeis = ptByomeis.Where(p => p.SyubyoKbn == 0);
+            }
             //疑い病名
             const string doubtCd = "8002";
             if (byomeiConf.IsDoubt == 1)

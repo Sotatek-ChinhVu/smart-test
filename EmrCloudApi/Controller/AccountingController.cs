@@ -5,7 +5,6 @@ using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Accounting;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Accounting;
-using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.CheckAccountingStatus;
 using UseCase.Accounting.CheckOpenAccounting;
@@ -26,12 +25,12 @@ using UseCase.Core.Sync;
 namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
-    public class AccountingController : AuthorizeControllerBase
+    public class AccountingController : BaseParamControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
 
-        public AccountingController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
+        public AccountingController(UseCaseBus bus, IHttpContextAccessor httpContextAccessor, IWebSocketService webSocketService) : base(httpContextAccessor)
         {
             _bus = bus;
             _webSocketService = webSocketService;

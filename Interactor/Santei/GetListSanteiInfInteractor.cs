@@ -89,11 +89,6 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
                     kisanDate = item.KisanDate;
                 }
             }
-            //Type 初回算定 =>  If 前回日 already exists, 起算日 will not be displayed
-            if (santeiInf.LastOdrDate > 0 && kisanSbt == 1)
-            {
-                kisanDate = 0;
-            }
             // dayCount
             int targetDateInt = kisanDate != 0 ? kisanDate : santeiInf.LastOdrDate;
             dayCount = CIUtil.GetSanteInfDayCount(sinDate, targetDateInt, santeiInf.AlertTerm);

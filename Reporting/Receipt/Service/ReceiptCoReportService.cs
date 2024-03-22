@@ -321,9 +321,12 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                 GrpId = Sort % 100;
             }
 
-            if (printNoFrom > 0 && printNoTo > 0 && printNoFrom <= printNoTo)
+            if (printNoFrom >= 0 && printNoTo > 0)
             {
                 PrintNoFrom = printNoFrom;
+            }
+            if (printNoFrom <= printNoTo && printNoTo > 0)
+            {
                 PrintNoTo = printNoTo;
             }
 
@@ -795,9 +798,12 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
             GrpId = Sort % 100;
         }
 
-        if (printNoFrom > 0 && printNoTo > 0 && printNoFrom <= printNoTo)
+        if (printNoFrom >= 0 && printNoTo > 0)
         {
             PrintNoFrom = printNoFrom;
+        }
+        if (printNoFrom <= printNoTo && printNoTo > 0)
+        {
             PrintNoTo = printNoTo;
         }
     }
