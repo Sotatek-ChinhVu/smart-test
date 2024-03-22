@@ -112,7 +112,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var seqNo = approvedInfo.SeqNo + 1 ;
+                    var seqNo = approvedInfo.SeqNo + 1;
 
                     TrackingDataContext.ApprovalInfs.Add(new ApprovalInf()
                     {
@@ -176,13 +176,13 @@ namespace Infrastructure.Repositories
 
             if (authorized)
             {
-                approveInfList = approveInfList.Where(item => item.IsDeleted == 0).ToList();
-                if (approveInfList.Any())
+                var approveInfActiveList = approveInfList.Where(item => item.IsDeleted == 0).ToList();
+                if (approveInfActiveList.Any())
                 {
                     // Approved
-                    foreach (var approvedInf in approveInfList)
+                    foreach (var approvedInf in approveInfActiveList)
                     {
-                        approvedInf.UpdateId = hpId;
+                        approvedInf.UpdateId = userId;
                         approvedInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                 }
