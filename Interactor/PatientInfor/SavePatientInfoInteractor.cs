@@ -555,7 +555,7 @@ namespace Interactor.PatientInfor
             return true;
         }
 
-        private IEnumerable<SavePatientInfoValidationResult> IsValidAgeCheck(
+        public IEnumerable<SavePatientInfoValidationResult> IsValidAgeCheck(
             List<InsuranceModel> insurances,
             int birthDay,
             int sinDay,
@@ -616,7 +616,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private IEnumerable<SavePatientInfoValidationResult> HasElderHoken(
+        public IEnumerable<SavePatientInfoValidationResult> HasElderHoken(
             List<InsuranceModel> insurances,
             List<HokenInfModel> hokenInfs,
             int birthDay,

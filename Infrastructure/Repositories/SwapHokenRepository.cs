@@ -103,7 +103,7 @@ namespace Infrastructure.Repositories
 
         public bool UpdateReceSeikyu(int hpId, long ptId, List<int> sinYms, int oldHokenId, int newHokenId, int userId)
         {
-            var receSeiKyus = TrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && sinYms.Contains(p.SinYm)).ToList();
+            var receSeiKyus = TrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && p.SeikyuYm != 99999999 && sinYms.Contains(p.SinYm)).ToList();
             if (!receSeiKyus.Any())
                 return true;
             foreach (var receSeiKyu in receSeiKyus)

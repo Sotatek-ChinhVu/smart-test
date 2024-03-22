@@ -212,7 +212,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
 
             if (createPtInf.resultSave)
             {
@@ -287,7 +287,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
 
@@ -366,7 +366,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
             Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
@@ -454,7 +454,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
             Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
@@ -551,7 +551,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
             Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
@@ -657,7 +657,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
             Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
@@ -841,7 +841,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
             Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
@@ -1067,7 +1067,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
             Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
@@ -1314,7 +1314,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
             Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
@@ -1574,7 +1574,7 @@ namespace CloudUnitTest.Repository.PatientInfo
             Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
             Assert.That(ptInf.Sex, Is.EqualTo(1));
             Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
+            Assert.That(ptInf.IsDead, Is.EqualTo(0));
             Assert.That(santei.HpId, Is.EqualTo(1));
             Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
             Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));

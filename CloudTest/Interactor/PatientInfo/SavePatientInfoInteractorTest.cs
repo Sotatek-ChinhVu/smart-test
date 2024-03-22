@@ -10475,7 +10475,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
             // Arrange
             var hpId = 1;
-            var kanaName = string.Empty; 
+            var kanaName = string.Empty;
             var kanjiName = string.Empty;
 
             var react = new ReactSavePatientInfo();
@@ -11202,6 +11202,556 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
             // Assert
             Assert.IsTrue(!result);
+        }
+
+        [Test]
+        public void TC_069_IsValidAgeCheck_ValidPattern_Null()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var insurances = new List<InsuranceModel>()
+            {
+                new InsuranceModel
+                (
+                    hpId : 1,
+                    ptId: 1,
+                    ptBirthday: 19901212,
+                    seqNo: 999,
+                    hokenSbtCd: 45677,
+                    hokenPid: 30,
+                    hokenKbn: 1,
+                    hokenMemo: "",
+                    sinDate: 20240101,
+                    startDate: 2030101,
+                    endDate: 20240101,
+                    hokenId: 40,
+                    kohi1Id: 30,
+                    kohi2Id: 20,
+                    kohi3Id: 10,
+                    kohi4Id : 50,
+                    isAddNew: false,
+                    isDeleted: 0,
+                    hokenPatternSelected: true
+                ),
+            };
+
+            int birthDay = 20000101;
+            int sinDay = 20240101;
+            int hpId = 1;
+            var reactFromUI = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1005, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidAgeCheck(insurances, birthDay, sinDay, hpId, reactFromUI);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void TC_070_IsValidAgeCheck_ValidPattern_Null()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            var hokenInf = new HokenInfModel(
+                                    hpId: 1,
+                                    ptId: 99999,
+                                    hokenId:1,
+                                    hokenKbn: 30,
+                                    houbetu: string.Empty,
+                                    startDate: 20230101,
+                                    endDate: 20231212,
+                                    sinDate: 20230505,
+                                    hokenMst: new HokenMstModel(),
+                                    confirmDateModels: new List<ConfirmDateModel>()
+                               );
+
+            // Arrange
+            var insurances = new List<InsuranceModel>()
+            {
+                new InsuranceModel
+                (
+                    hpId : 1,
+                    ptId: 1,
+                    ptBirthday: 19901212,
+                    seqNo: 999,
+                    hokenSbtCd: 45677,
+                    hokenPid: 30,
+                    hokenKbn: 1,
+                    hokenMemo: "",
+                    sinDate: 20240101,
+                    startDate: 2030101,
+                    endDate: 20240101,
+                    hokenId: 40,
+                    kohi1Id: 30,
+                    kohi2Id: 20,
+                    kohi3Id: 10,
+                    kohi4Id : 50,
+                    isAddNew: false,
+                    isDeleted: 0,
+                    hokenPatternSelected: true
+                ),
+            };
+
+            int birthDay = 20000101;
+            int sinDay = 20240101;
+            int hpId = 1;
+            var reactFromUI = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1005, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            mockSystemConf.Setup(x => x.GetSettingParams(1005, 0, hpId, string.Empty))
+            .Returns((int input1, int input2, int input3, string input4) => "0");
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidAgeCheck(insurances, birthDay, sinDay, hpId, reactFromUI);
+
+            var result = resultIEnum.ToList();
+             
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(0));
+        }
+
+
+        [Test]
+        public void TC_071_HasElderHoken_SinDay_Is_Less_Than_20080401()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            var hokenInf = new HokenInfModel(
+                                    hpId: 1,
+                                    ptId: 99999,
+                                    hokenId: 789012,
+                                    hokenKbn: 30,
+                                    houbetu: string.Empty,
+                                    startDate: 20230101,
+                                    endDate: 20230103,
+                                    sinDate: 20230102,
+                                    hokenMst: new HokenMstModel(),
+                                    confirmDateModels: new List<ConfirmDateModel>()
+                               );
+
+            // Arrange
+            var insurances = new List<InsuranceModel>()
+            {
+                new InsuranceModel
+                (
+                    hpId : 1,
+                    ptId: 1,
+                    ptBirthday: 19901212,
+                    seqNo: 999,
+                    hokenSbtCd: 45677,
+                    hokenPid: 30,
+                    hokenKbn: 1,
+                    hokenMemo: "",
+                    sinDate: 20240101,
+                    startDate: 2030101,
+                    endDate: 20240101,
+                    hokenId: 40,
+                    kohi1Id: 30,
+                    kohi2Id: 20,
+                    kohi3Id: 10,
+                    kohi4Id : 50,
+                    isAddNew: false,
+                    isDeleted: 0,
+                    hokenPatternSelected: true
+                ),
+            };
+
+            var hokenInfs = new List<HokenInfModel>()
+            {
+                new HokenInfModel(
+                                  hpId: 1,
+                                  ptId: 123456,
+                                  hokenId: 789012,
+                                  seqNo: 1,
+                                  hokenNo: 456,
+                                  hokenEdaNo: 2,
+                                  hokenKbn: 3,
+                                  hokensyaNo: "39345678",
+                                  kigo: "K123",
+                                  bango: "B567",
+                                  edaNo: "E789",
+                                  honkeKbn: 4,
+                                  startDate: 20080330,
+                                  endDate: 20080401,
+                                  sikakuDate: 20220115,
+                                  kofuDate: 20220201,
+                                  confirmDate: 20220215,
+                                  kogakuKbn: 1,
+                                  tasukaiYm: 202203,
+                                  tokureiYm1: 202204,
+                                  tokureiYm2: 202205,
+                                  genmenKbn: 1,
+                                  genmenRate: 80,
+                                  genmenGaku: 500000,
+                                  syokumuKbn: 2,
+                                  keizokuKbn: 1,
+                                  tokki1: "Tokki1",
+                                  tokki2: "Tokki2",
+                                  tokki3: "Tokki3",
+                                  tokki4: "Tokki4",
+                                  tokki5: "Tokki5",
+                                  rousaiKofuNo: "RousaiKofu123",
+                                  rousaiRoudouCd: "R123",
+                                  rousaiSaigaiKbn: 0,
+                                  rousaiKantokuCd: "K123",
+                                  rousaiSyobyoDate: 20221001,
+                                  ryoyoStartDate: 20221001,
+                                  ryoyoEndDate: 20221231,
+                                  rousaiSyobyoCd: "RSC123",
+                                  rousaiJigyosyoName: "RousaiJigyosyo",
+                                  rousaiPrefName: "Tokyo",
+                                  rousaiCityName: "Shinjuku",
+                                  rousaiReceCount: 3,
+                                  hokensyaName: "HokensyaName",
+                                  hokensyaAddress: "HokensyaAddress",
+                                  hokensyaTel: "123-456-7890",
+                                  sinDate: 20220101,
+                                  jibaiHokenName: "JibaiHokenName",
+                                  jibaiHokenTanto: "TantoName",
+                                  jibaiHokenTel: "987-654-3210",
+                                  jibaiJyusyouDate: 20220301,
+                                  houbetu: "Houbetu123",
+                                  confirmDateList: new List<ConfirmDateModel>(),
+                                  listRousaiTenki: new List<RousaiTenkiModel>(),
+                                  isReceKisaiOrNoHoken: true,
+                                  isDeleted: 0,
+                                  hokenMst: new HokenMstModel(),
+                                  isAddNew: true,
+                                  isAddHokenCheck: true,
+                                  hokensyaMst: new HokensyaMstModel()
+                                  ),
+            };
+
+            int birthDay = 19480102;
+            int sinDay = 20080331;
+            int hpId = 1;
+            var reactFromUI = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1005, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            mockSystemConf.Setup(x => x.GetSettingParams(1005, 0, hpId, string.Empty))
+            .Returns((int input1, int input2, int input3, string input4) => "0");
+
+            // Act
+            var resultIEnum = savePatientInfo.HasElderHoken(insurances, hokenInfs, birthDay, sinDay, reactFromUI);
+
+            var result = resultIEnum.ToList();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void TC_072_HasElderHoken_WarningInsuranceElderlyLaterNotYetCovered()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            var hokenInf = new HokenInfModel(
+                                    hpId: 1,
+                                    ptId: 99999,
+                                    hokenId: 789012,
+                                    hokenKbn: 30,
+                                    houbetu: string.Empty,
+                                    startDate: 20230101,
+                                    endDate: 20230103,
+                                    sinDate: 20230102,
+                                    hokenMst: new HokenMstModel(),
+                                    confirmDateModels: new List<ConfirmDateModel>()
+                               );
+
+            // Arrange
+            var insurances = new List<InsuranceModel>()
+            {
+                new InsuranceModel
+                (
+                    hpId : 1,
+                    ptId: 1,
+                    ptBirthday: 19901212,
+                    seqNo: 999,
+                    hokenSbtCd: 45677,
+                    hokenPid: 30,
+                    hokenKbn: 1,
+                    hokenMemo: "",
+                    sinDate: 20240101,
+                    startDate: 2030101,
+                    endDate: 20240101,
+                    hokenId: 40,
+                    kohi1Id: 30,
+                    kohi2Id: 20,
+                    kohi3Id: 10,
+                    kohi4Id : 50,
+                    isAddNew: false,
+                    isDeleted: 0,
+                    hokenPatternSelected: true
+                ),
+            };
+
+            var hokenInfs = new List<HokenInfModel>()
+            {
+                new HokenInfModel(
+                                  hpId: 1,
+                                  ptId: 123456,
+                                  hokenId: 789012,
+                                  seqNo: 1,
+                                  hokenNo: 456,
+                                  hokenEdaNo: 2,
+                                  hokenKbn: 3,
+                                  hokensyaNo: "39345678",
+                                  kigo: "K123",
+                                  bango: "B567",
+                                  edaNo: "E789",
+                                  honkeKbn: 4,
+                                  startDate: 20220101,
+                                  endDate: 20221231,
+                                  sikakuDate: 20220115,
+                                  kofuDate: 20220201,
+                                  confirmDate: 20220215,
+                                  kogakuKbn: 1,
+                                  tasukaiYm: 202203,
+                                  tokureiYm1: 202204,
+                                  tokureiYm2: 202205,
+                                  genmenKbn: 1,
+                                  genmenRate: 80,
+                                  genmenGaku: 500000,
+                                  syokumuKbn: 2,
+                                  keizokuKbn: 1,
+                                  tokki1: "Tokki1",
+                                  tokki2: "Tokki2",
+                                  tokki3: "Tokki3",
+                                  tokki4: "Tokki4",
+                                  tokki5: "Tokki5",
+                                  rousaiKofuNo: "RousaiKofu123",
+                                  rousaiRoudouCd: "R123",
+                                  rousaiSaigaiKbn: 0,
+                                  rousaiKantokuCd: "K123",
+                                  rousaiSyobyoDate: 20221001,
+                                  ryoyoStartDate: 20221001,
+                                  ryoyoEndDate: 20221231,
+                                  rousaiSyobyoCd: "RSC123",
+                                  rousaiJigyosyoName: "RousaiJigyosyo",
+                                  rousaiPrefName: "Tokyo",
+                                  rousaiCityName: "Shinjuku",
+                                  rousaiReceCount: 3,
+                                  hokensyaName: "HokensyaName",
+                                  hokensyaAddress: "HokensyaAddress",
+                                  hokensyaTel: "123-456-7890",
+                                  sinDate: 20220101,
+                                  jibaiHokenName: "JibaiHokenName",
+                                  jibaiHokenTanto: "TantoName",
+                                  jibaiHokenTel: "987-654-3210",
+                                  jibaiJyusyouDate: 20220301,
+                                  houbetu: "Houbetu123",
+                                  confirmDateList: new List<ConfirmDateModel>(),
+                                  listRousaiTenki: new List<RousaiTenkiModel>(),
+                                  isReceKisaiOrNoHoken: true,
+                                  isDeleted: 0,
+                                  hokenMst: new HokenMstModel(),
+                                  isAddNew: true,
+                                  isAddHokenCheck: true,
+                                  hokensyaMst: new HokensyaMstModel()
+                                  ),
+            };
+
+            int birthDay = 19480102;
+            int sinDay = 20230102;
+            int hpId = 1;
+            var reactFromUI = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1005, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            mockSystemConf.Setup(x => x.GetSettingParams(1005, 0, hpId, string.Empty))
+            .Returns((int input1, int input2, int input3, string input4) => "0");
+
+            // Act
+            var resultIEnum = savePatientInfo.HasElderHoken(insurances, hokenInfs, birthDay, sinDay, reactFromUI);
+
+            var result = resultIEnum.ToList();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("後期高齢者保険が入力されていません。\r\n保険者証を確認してください。"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.WarningInsuranceElderlyLaterNotYetCovered));
+        }
+
+        public void TC_073_HasElderHoken_WarningInsuranceElderlyLaterNotYetCovered()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            var hokenInf = new HokenInfModel(
+                                    hpId: 1,
+                                    ptId: 99999,
+                                    hokenId: 789012,
+                                    hokenKbn: 30,
+                                    houbetu: string.Empty,
+                                    startDate: 20230101,
+                                    endDate: 20230103,
+                                    sinDate: 20230102,
+                                    hokenMst: new HokenMstModel(),
+                                    confirmDateModels: new List<ConfirmDateModel>()
+                               );
+
+            // Arrange
+            var insurances = new List<InsuranceModel>()
+            {
+                new InsuranceModel
+                (
+                    hpId : 1,
+                    ptId: 1,
+                    ptBirthday: 19901212,
+                    seqNo: 999,
+                    hokenSbtCd: 45677,
+                    hokenPid: 30,
+                    hokenKbn: 1,
+                    hokenMemo: "",
+                    sinDate: 20230102,
+                    startDate: 2030101,
+                    endDate: 20230103,
+                    hokenId: 789012,
+                    kohi1Id: 30,
+                    kohi2Id: 20,
+                    kohi3Id: 10,
+                    kohi4Id : 50,
+                    isAddNew: false,
+                    isDeleted: 0,
+                    hokenPatternSelected: true
+                ),
+            };
+
+            var hokenInfs = new List<HokenInfModel>()
+            {
+                new HokenInfModel(
+                                  hpId: 1,
+                                  ptId: 123456,
+                                  hokenId: 789012,
+                                  seqNo: 1,
+                                  hokenNo: 456,
+                                  hokenEdaNo: 2,
+                                  hokenKbn: 3,
+                                  hokensyaNo: "39345678",
+                                  kigo: "K123",
+                                  bango: "B567",
+                                  edaNo: "E789",
+                                  honkeKbn: 4,
+                                  startDate: 20230101,
+                                  endDate: 20230103,
+                                  sikakuDate: 20220115,
+                                  kofuDate: 20220201,
+                                  confirmDate: 20220215,
+                                  kogakuKbn: 1,
+                                  tasukaiYm: 202203,
+                                  tokureiYm1: 202204,
+                                  tokureiYm2: 202205,
+                                  genmenKbn: 1,
+                                  genmenRate: 80,
+                                  genmenGaku: 500000,
+                                  syokumuKbn: 2,
+                                  keizokuKbn: 1,
+                                  tokki1: "Tokki1",
+                                  tokki2: "Tokki2",
+                                  tokki3: "Tokki3",
+                                  tokki4: "Tokki4",
+                                  tokki5: "Tokki5",
+                                  rousaiKofuNo: "RousaiKofu123",
+                                  rousaiRoudouCd: "R123",
+                                  rousaiSaigaiKbn: 0,
+                                  rousaiKantokuCd: "K123",
+                                  rousaiSyobyoDate: 20221001,
+                                  ryoyoStartDate: 20221001,
+                                  ryoyoEndDate: 20221231,
+                                  rousaiSyobyoCd: "RSC123",
+                                  rousaiJigyosyoName: "RousaiJigyosyo",
+                                  rousaiPrefName: "Tokyo",
+                                  rousaiCityName: "Shinjuku",
+                                  rousaiReceCount: 3,
+                                  hokensyaName: "HokensyaName",
+                                  hokensyaAddress: "HokensyaAddress",
+                                  hokensyaTel: "123-456-7890",
+                                  sinDate: 20230102,
+                                  jibaiHokenName: "JibaiHokenName",
+                                  jibaiHokenTanto: "TantoName",
+                                  jibaiHokenTel: "987-654-3210",
+                                  jibaiJyusyouDate: 20220301,
+                                  houbetu: "Houbetu123",
+                                  confirmDateList: new List<ConfirmDateModel>(),
+                                  listRousaiTenki: new List<RousaiTenkiModel>(),
+                                  isReceKisaiOrNoHoken: true,
+                                  isDeleted: 0,
+                                  hokenMst: new HokenMstModel(),
+                                  isAddNew: true,
+                                  isAddHokenCheck: true,
+                                  hokensyaMst: new HokensyaMstModel()
+                                  ),
+            };
+
+            int birthDay = 19590102;
+            int sinDay = 20230102;
+            int hpId = 1;
+            var reactFromUI = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1005, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            mockSystemConf.Setup(x => x.GetSettingParams(1005, 0, hpId, string.Empty))
+            .Returns((int input1, int input2, int input3, string input4) => "0");
+
+            // Act
+            var resultIEnum = savePatientInfo.HasElderHoken(insurances, hokenInfs, birthDay, sinDay, reactFromUI);
+
+            var result = resultIEnum.ToList();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.First().Message, Is.EqualTo("後期高齢者保険の対象外の患者に、後期高齢者保険が登録されています。\r\n保険者証"));
+            Assert.That(result.First().Code, Is.EqualTo(SavePatientInforValidationCode.WarningInsuranceElderlyLaterNotYetCovered));
         }
     }
 }

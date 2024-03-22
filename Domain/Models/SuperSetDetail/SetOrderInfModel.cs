@@ -70,6 +70,11 @@ public class SetOrderInfModel
         OrdInfDetails = ordInfDetails;
     }
 
+    public SetOrderInfModel(int odrKouiKbn)
+    {
+        OdrKouiKbn = odrKouiKbn;
+    }
+
     public long Id { get; private set; }
 
     public int HpId { get; private set; }
