@@ -555,7 +555,7 @@ namespace Interactor.PatientInfor
             return true;
         }
 
-        private IEnumerable<SavePatientInfoValidationResult> IsValidAgeCheck(
+        public IEnumerable<SavePatientInfoValidationResult> IsValidAgeCheck(
             List<InsuranceModel> insurances,
             int birthDay,
             int sinDay,

@@ -10475,7 +10475,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
             // Arrange
             var hpId = 1;
-            var kanaName = string.Empty; 
+            var kanaName = string.Empty;
             var kanjiName = string.Empty;
 
             var react = new ReactSavePatientInfo();
@@ -11202,6 +11202,135 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
             // Assert
             Assert.IsTrue(!result);
+        }
+
+        [Test]
+        public void TC_069_IsValidAgeCheck_ValidPattern_Null()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            var insurances = new List<InsuranceModel>()
+            {
+                new InsuranceModel
+                (
+                    hpId : 1,
+                    ptId: 1,
+                    ptBirthday: 19901212,
+                    seqNo: 999,
+                    hokenSbtCd: 45677,
+                    hokenPid: 30,
+                    hokenKbn: 1,
+                    hokenMemo: "",
+                    sinDate: 20240101,
+                    startDate: 2030101,
+                    endDate: 20240101,
+                    hokenId: 40,
+                    kohi1Id: 30,
+                    kohi2Id: 20,
+                    kohi3Id: 10,
+                    kohi4Id : 50,
+                    isAddNew: false,
+                    isDeleted: 0,
+                    hokenPatternSelected: true
+                ),
+            };
+
+            int birthDay = 20000101;
+            int sinDay = 20240101;
+            int hpId = 1;
+            var reactFromUI = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1005, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidAgeCheck(insurances, birthDay, sinDay, hpId, reactFromUI);
+
+            var result = resultIEnum.ToList();
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void TC_070_IsValidAgeCheck_ValidPattern_Null()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            var hokenInf = new HokenInfModel(
+                                    hpId: 1,
+                                    ptId: 99999,
+                                    hokenId:1,
+                                    hokenKbn: 30,
+                                    houbetu: string.Empty,
+                                    startDate: 20230101,
+                                    endDate: 20231212,
+                                    sinDate: 20230505,
+                                    hokenMst: new HokenMstModel(),
+                                    confirmDateModels: new List<ConfirmDateModel>()
+                               );
+
+            // Arrange
+            var insurances = new List<InsuranceModel>()
+            {
+                new InsuranceModel
+                (
+                    hpId : 1,
+                    ptId: 1,
+                    ptBirthday: 19901212,
+                    seqNo: 999,
+                    hokenSbtCd: 45677,
+                    hokenPid: 30,
+                    hokenKbn: 1,
+                    hokenMemo: "",
+                    sinDate: 20240101,
+                    startDate: 2030101,
+                    endDate: 20240101,
+                    hokenId: 40,
+                    kohi1Id: 30,
+                    kohi2Id: 20,
+                    kohi3Id: 10,
+                    kohi4Id : 50,
+                    isAddNew: false,
+                    isDeleted: 0,
+                    hokenPatternSelected: true
+                ),
+            };
+
+            int birthDay = 20000101;
+            int sinDay = 20240101;
+            int hpId = 1;
+            var reactFromUI = new ReactSavePatientInfo();
+
+            //Mock
+            mockSystemConf.Setup(x => x.GetSettingValue(1005, 0, hpId))
+            .Returns((int input1, int input2, int input3) => 1);
+
+            mockSystemConf.Setup(x => x.GetSettingParams(1005, 0, hpId, string.Empty))
+            .Returns((int input1, int input2, int input3, string input4) => "0");
+
+            // Act
+            var resultIEnum = savePatientInfo.IsValidAgeCheck(insurances, birthDay, sinDay, hpId, reactFromUI);
+
+            var result = resultIEnum.ToList();
+             
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(0));
         }
     }
 }
