@@ -40,6 +40,12 @@ namespace Domain.Models.NextOrder
         {
             OrdInfDetails = ordInfDetails;
         }
+
+        public RsvkrtOrderInfModel(int odrKouiKbn)
+        {
+            OdrKouiKbn = odrKouiKbn;
+        }
+
         public KeyValuePair<string, OrdInfValidationStatus> Validation(int flag)
         {
 
