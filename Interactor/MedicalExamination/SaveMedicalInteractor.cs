@@ -89,7 +89,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _validateFamilyList = validateFamilyList;
         _summaryInfRepository = summaryInfRepository;
         _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        var dbContextOptions = tenantProvider.CreateNewTrackingAdminDbContextOption();
+        if (dbContextOptions != null)
+        {
+            _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+        }
         _kensaIraiCommon = kensaIraiCommon;
         _systemConfRepository = systemConfRepository;
         _auditLogRepository = auditLogRepository;
@@ -451,7 +455,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
         catch (Exception ex)
         {
-            _loggingHandler.WriteLogExceptionAsync(ex);
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+            }
             throw;
         }
         finally
@@ -470,7 +477,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _validateFamilyList.ReleaseResource();
             _summaryInfRepository.ReleaseResource();
             _tenantProvider.DisposeDataContext();
-            _loggingHandler.Dispose();
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.Dispose();
+            }
             _saveMedicalRepository.ReleaseResource();
         }
     }
@@ -991,7 +1001,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return UpsertPtDiseaseListStatus.Valid;
     }
 
-    private void AddAuditKaikeiSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    public void AddAuditKaikeiSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
     {
         var args = new List<ArgumentModel>();
 
