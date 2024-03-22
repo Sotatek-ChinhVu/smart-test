@@ -616,7 +616,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private IEnumerable<SavePatientInfoValidationResult> HasElderHoken(
+        public IEnumerable<SavePatientInfoValidationResult> HasElderHoken(
             List<InsuranceModel> insurances,
             List<HokenInfModel> hokenInfs,
             int birthDay,
