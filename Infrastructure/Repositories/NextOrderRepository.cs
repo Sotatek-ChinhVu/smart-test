@@ -169,7 +169,7 @@ namespace Infrastructure.Repositories
                         oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
                         foreach (var item in nextOrderModel.RsvkrtOrderInfs.Where(o => o.IsDeleted == DeleteTypes.Deleted || o.IsDeleted == DeleteTypes.Confirm))
                         {
-                            var orderInf = TrackingDataContext.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && item.IsDeleted == DeleteTypes.None && o.RsvkrtNo == item.RsvkrtNo);
+                            var orderInf = TrackingDataContext.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.IsDeleted == DeleteTypes.None && o.RsvkrtNo == item.RsvkrtNo); 
                             if (orderInf != null)
                             {
                                 orderInf.IsDeleted = item.IsDeleted;
@@ -181,7 +181,6 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-
                     if (oldNextOrder != null)
                     {
                         oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
@@ -509,7 +508,7 @@ namespace Infrastructure.Repositories
         /// <param name="userId"></param>
         /// <param name="byomeis"></param>
         /// <param name="rsvkrtNo"></param>
-        private void UpsertByomei(ref List<RsvkrtByomei> rsvkrtByomeiEntityList, int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
+        public void UpsertByomei(ref List<RsvkrtByomei> rsvkrtByomeiEntityList, int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
             var allOldByomeis = rsvkrtByomeiEntityList.Where(o => o.RsvkrtNo == rsvkrtNo).ToList();
             foreach (var byomei in byomeis)
@@ -568,13 +567,14 @@ namespace Infrastructure.Repositories
                     else
                     {
                         var orderInfEntity = ConvertModelToRsvkrtByomei(userId, byomei, rsvkrtNo);
-                        TrackingDataContext.Add(orderInfEntity);
+                        TrackingDataContext.RsvkrtByomeis.Add(orderInfEntity);
 
                         // add new orderInfEntity to rsvkrtByomeiEntityList
                         rsvkrtByomeiEntityList.Add(orderInfEntity);
                     }
                 }
             }
+            TrackingDataContext.SaveChanges();
         }
 
         private RsvkrtByomeiModel ConvertByomeiToModel(int hpId, RsvkrtByomei byomei)

@@ -29,6 +29,19 @@ namespace Domain.Models.NextOrder
             FileItem = new();
         }
 
+        public NextOrderModel ChangeModel(string rsvName, int isDeleted)
+        {
+            RsvName = rsvName ?? string.Empty;
+            IsDeleted = isDeleted;
+
+            foreach (var item in RsvkrtOrderInfs)
+            {
+                item.ChangeIsDeletes(isDeleted);
+            }
+
+            return this;
+        }
+
         public NextOrderStatus Validation()
         {
             if (RsvkrtNo < 0)
