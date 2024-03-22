@@ -43,22 +43,6 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                              ItemCd = tenMst.ItemCd ?? santeiInf.ItemCd
                          };
 
-        // Santei inf detail query
-        var santeiInfDetailQuery = NoTrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId
-                                                                                     && item.PtId == ptId
-                                                                                     && item.IsDeleted == 0
-                                                                                     && item.EndDate >= sinDate)
-                                                                         .Select(item => new { item.ItemCd, item.KisanDate });
-
-        // Get 起算日. Get min KISAN_DATE (Check YUUKOU_DATE >= SINDATE)
-        var kisanDateQuery = from kisanDate in santeiInfDetailQuery
-                             group kisanDate by kisanDate.ItemCd into g
-                             select new
-                             {
-                                 ItemCd = g.Key,
-                                 KisanDate = g.Select(item => item.KisanDate).Max()
-                             };
-
         // Get Last order 前回日
         var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
                                                                                         && item.PtId == ptId
@@ -120,29 +104,76 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         }
 
         // Count and sum 回数 and 数量
-        var odrInfDetailCountQuery = from odrInfDetail in odrInfDetailQuery
-                                     join odrInf in odrInfQuery on new { odrInfDetail.HpId, odrInfDetail.SinDate, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpEdaNo, odrInfDetail.RpNo }
-                                                                equals new { odrInf.HpId, odrInf.SinDate, odrInf.PtId, odrInf.RaiinNo, odrInf.RpEdaNo, odrInf.RpNo }
-                                     join tenMst in tenMstList on new { odrInfDetail.ItemCd }
-                                                                equals new { tenMst.ItemCd }
-                                     join kisan in kisanDateQuery on new { odrInfDetail.ItemCd }
-                                                                equals new { kisan.ItemCd } into kisanLeft
-                                     from kisan in kisanLeft.DefaultIfEmpty()
-                                     where kisan.KisanDate == 0 || odrInfDetail.SinDate >= kisan.KisanDate
-                                     group odrInfDetail by tenMst.SanteCd into g
-                                     select new
-                                     {
-                                         ItemCd = g.Key,
-                                         Count = g.Count(),
-                                         Sum = g.Sum(o => o.Suryo)
-                                     };
-        var listOdrInfDetailCounts = odrInfDetailCountQuery.Select(item => new SanteiInfModel(
-                                                                                                item.ItemCd,
-                                                                                                item.Count,
-                                                                                                item.Sum,
-                                                                                                0,
-                                                                                                0
-                                                            )).ToList();
+
+        // Santei inf detail query
+        var santeiInfDetailQuery = NoTrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId
+                                                                                     && item.PtId == ptId
+                                                                                     && item.IsDeleted == 0
+                                                                                     && item.EndDate >= sinDate)
+                                                                         .Select(item => new { item.ItemCd, item.KisanDate, item.KisanSbt })
+                                                                         .OrderBy(item => item.ItemCd)
+                                                                         .ToList();
+
+        // Get 起算日. Get min KISAN_DATE (Check YUUKOU_DATE >= SINDATE)
+        List<KisanDateStruct> kisanDateList = new();
+        int kisanSbt = 0;
+
+        foreach (var mstItem in santeiInfDetailQuery)
+        {
+            var itemCd = mstItem.ItemCd;
+            int kisanDate = mstItem.KisanDate;
+            if (string.IsNullOrEmpty(itemCd))
+            {
+                continue;
+            }
+
+            #region get max kisanDate
+            if (!kisanDateList.Any(item => item.ItemCd == itemCd))
+            {
+                kisanDateList.Add(new(itemCd, kisanDate));
+                kisanSbt = mstItem.KisanSbt;
+                continue;
+            }
+            var kisanDateStructItem = kisanDateList.FirstOrDefault(item => item.ItemCd == itemCd);
+            if (kisanDate > kisanDateStructItem.KisanDate)
+            {
+                kisanDateStructItem.SetKisanDate(kisanDate);
+                kisanSbt = mstItem.KisanSbt;
+            }
+            #endregion
+
+            // logic Type 初回算定 => If 前回日 already exists, 起算日 will not be displayed
+            if (kisanSbt == 1 && dicLastOrderDate.ContainsKey(itemCd) && dicLastOrderDate[itemCd] > kisanDate)
+            {
+                kisanDateStructItem.SetKisanDate(dicLastOrderDate[itemCd]);
+            }
+        }
+        var odrInfDetailJoinList = (from odrInfDetail in odrInfDetailQuery
+                                    join odrInf in odrInfQuery on new { odrInfDetail.HpId, odrInfDetail.SinDate, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpEdaNo, odrInfDetail.RpNo }
+                                                               equals new { odrInf.HpId, odrInf.SinDate, odrInf.PtId, odrInf.RaiinNo, odrInf.RpEdaNo, odrInf.RpNo }
+                                    join tenMst in tenMstList on new { odrInfDetail.ItemCd }
+                                                               equals new { tenMst.ItemCd }
+                                    select new
+                                    {
+                                        odrInfDetail,
+                                        odrInf,
+                                        tenMst
+                                    })
+                                    .ToList();
+
+        var listOdrInfDetailCounts = (from joinItem in odrInfDetailJoinList
+                                      join kisan in kisanDateList on new { joinItem.odrInfDetail.ItemCd }
+                                                                 equals new { kisan.ItemCd } into kisanLeft
+                                      from kisan in kisanLeft.DefaultIfEmpty()
+                                      where kisan.KisanDate == 0 || joinItem.odrInfDetail.SinDate >= kisan.KisanDate
+                                      group joinItem.odrInfDetail by joinItem.tenMst.SanteCd into g
+                                      select new SanteiInfModel(
+                                                 g.Key,
+                                                 g.Count(),
+                                                 g.Sum(o => o.Suryo),
+                                                 0,
+                                                 0)
+                                      ).ToList();
 
         // Current Month Count query
         int currentMonthStDate = 100 * (sinDate / 100) + 1;
@@ -194,6 +225,25 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                     listCurrentMonthOdrInfDetails,
                                                     listSanteiInfDetails))
                      .ToList();
+    }
+
+    private class KisanDateStruct
+    {
+        public string ItemCd { get; private set; }
+
+        public int KisanDate { get; private set; }
+
+        public KisanDateStruct SetKisanDate(int kisanDate)
+        {
+            KisanDate = kisanDate;
+            return this;
+        }
+
+        public KisanDateStruct(string itemCd, int kisanDate)
+        {
+            ItemCd = itemCd;
+            KisanDate = kisanDate;
+        }
     }
 
     public List<SanteiInfDetailModel> GetListSanteiInfDetails(int hpId, long ptId)
