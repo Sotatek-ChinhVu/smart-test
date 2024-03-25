@@ -69,6 +69,15 @@ namespace Domain.Models.NextOrder
             SinKouiKbn = sinKouiKbn;
         }
 
+        public RsvKrtOrderInfDetailModel(int yohoKbn, string itemCd, int sinKouiKbn, string masterSbt, int drugKbn)
+        {
+            YohoKbn = yohoKbn;
+            ItemCd = itemCd;
+            SinKouiKbn = sinKouiKbn;
+            MasterSbt = masterSbt;
+            DrugKbn = drugKbn;
+        }
+
         public OrdInfValidationStatus Validation(int flag)
         {
             #region Validate common

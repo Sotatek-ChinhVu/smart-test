@@ -1,5 +1,4 @@
-﻿using Domain.Core;
-using Domain.Models.User;
+﻿using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constant;
@@ -7,14 +6,12 @@ using Helper.Constants;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Konscious.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Security.Cryptography;
 using System.Text;
-using static Amazon.S3.Util.S3EventNotification;
 using static Helper.Constants.UserConst;
 
 namespace Infrastructure.Repositories
@@ -446,7 +443,7 @@ namespace Infrastructure.Repositories
             var listUserPermissionOfUserDefault = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).ToList();
 
             // get data from UserMstList
-            var isDoctor = _userInfoService.AllUserMstList(hpId).FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
+            var isDoctor = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
             if (string.IsNullOrEmpty(permisionCode))
             {
                 return PermissionType.NotAvailable;
@@ -806,11 +803,13 @@ namespace Infrastructure.Repositories
                 case FunctionCode.Sta3050:
                 case FunctionCode.Sta3060:
                 case FunctionCode.Sta3061:
+                case FunctionCode.Sta3062:
                 case FunctionCode.Sta3070:
                 case FunctionCode.Sta3071:
                 case FunctionCode.Sta3080:
                 case FunctionCode.PatientManagement:
                 case FunctionCode.LockInf:
+                case FunctionCode.ReceiptConfirmation:
                     return PermissionType.Unlimited;
                 default:
                     throw new NotSupportedException("Not supported for code : " + permissionCode);
