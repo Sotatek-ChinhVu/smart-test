@@ -150,7 +150,9 @@ namespace Infrastructure.Repositories
             {
                 UpdateSeqNoKarteFile(hpId, userId, ptId, raiinNo, listFiles.Select(item => new FileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
             }
-            return TrackingDataContext.SaveChanges() > 0;
+
+            TrackingDataContext.SaveChanges();
+            return true;
         }
 
         public int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText)
