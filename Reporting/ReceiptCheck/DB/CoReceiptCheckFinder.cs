@@ -19,7 +19,7 @@ public class CoReceiptCheckFinder : RepositoryBase, ICoReceiptCheckFinder
     {
         var listReceCheckErr = NoTrackingDataContext.ReceCheckErrs.Where(x => x.HpId == hpId);
 
-        var listPtInf = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId);
+        var listPtInf = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && x.IsTester == 0);
         var listReceInf = NoTrackingDataContext.ReceInfs.Where(x => x.HpId == hpId);
         var listReceSeikyu = NoTrackingDataContext.ReceSeikyus.Where(receSeikyu => receSeikyu.HpId == hpId && receSeikyu.SeikyuYm == sinYm);
 
