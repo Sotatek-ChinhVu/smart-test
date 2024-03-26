@@ -173,6 +173,48 @@ namespace Domain.Models.InsuranceInfor
             HokenId = hokenId;
         }
 
+        public InsuranceModel(bool isAddNew, bool hokenPatternSelected, HokenInfModel hokenInf, int hokenId, int hokenPid)
+        {
+            IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
+            HokenMemo = string.Empty;
+            HokenInf = hokenInf;
+            Kohi1 = new();
+            Kohi2 = new();
+            Kohi3 = new();
+            Kohi4 = new();
+            HokenId = hokenId;
+            HokenPid = hokenPid;
+        }
+
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew, int isDeleted, bool hokenPatternSelected, string houbetu)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            PtBirthday = ptBirthday;
+            SeqNo = seqNo;
+            HokenSbtCd = hokenSbtCd;
+            HokenPid = hokenPid;
+            HokenKbn = hokenKbn;
+            HokenMemo = hokenMemo;
+            SinDate = sinDate;
+            IsDeleted = isDeleted;
+            HokenInf = new HokenInfModel(hokenId, startDate, endDate, hokenKbn, houbetu);
+            Kohi1 = new KohiInfModel(kohi1Id);
+            Kohi2 = new KohiInfModel(kohi2Id);
+            Kohi3 = new KohiInfModel(kohi3Id);
+            Kohi4 = new KohiInfModel(kohi4Id);
+            StartDate = startDate;
+            EndDate = endDate;
+            HokenId = hokenId;
+            Kohi1Id = kohi1Id;
+            Kohi2Id = kohi2Id;
+            Kohi3Id = kohi3Id;
+            Kohi4Id = kohi4Id;
+            IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }

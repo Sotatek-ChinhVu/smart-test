@@ -721,7 +721,7 @@ namespace Interactor.PatientInfor
             return false;
         }
 
-        private IEnumerable<SavePatientInfoValidationResult> IsValidMainHoken
+        public IEnumerable<SavePatientInfoValidationResult> IsValidMainHoken
             (List<InsuranceModel> insurances,
             List<HokenInfModel> hokenInfs,
             ReactSavePatientInfo reactFromUI,
@@ -823,7 +823,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private bool IsValidDuplicateHoken(List<HokenInfModel> hokenInfs)
+        public bool IsValidDuplicateHoken(List<HokenInfModel> hokenInfs)
         {
             var allValidHoken = hokenInfs.Where(h => h.IsDeleted == 0 && !string.IsNullOrEmpty(h.HokensyaNo) && h.IsShahoOrKokuho);
             var duplicateQuery = allValidHoken.GroupBy(x => new { x.HokensyaNo, x.StartDate, x.EndDate })
@@ -836,7 +836,7 @@ namespace Interactor.PatientInfor
         }
 
 
-        private bool IsValidPeriod(List<HokenInfModel> hokenInfs)
+        public bool IsValidPeriod(List<HokenInfModel> hokenInfs)
         {
             var dupplicatePeriodHoken = hokenInfs.Count(h => h.IsDeleted == 0 && !string.IsNullOrEmpty(h.HokensyaNo) && h.IsShahoOrKokuho && !h.IsExpirated);
             if (dupplicatePeriodHoken > 1)
@@ -847,7 +847,7 @@ namespace Interactor.PatientInfor
         }
 
 
-        private bool IsValidDuplicateKohi(List<KohiInfModel> kohis)
+        public bool IsValidDuplicateKohi(List<KohiInfModel> kohis)
         {
             var allValidKohi = kohis.Where(h => h.IsDeleted == 0 &&
                         (!string.IsNullOrEmpty(h.FutansyaNo) || !string.IsNullOrEmpty(h.JyukyusyaNo) || !string.IsNullOrEmpty(h.TokusyuNo)));

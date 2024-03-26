@@ -128,6 +128,19 @@ namespace Domain.Models.Insurance
             HokenMstModel = new();
         }
 
+        public KohiInfModel(int startDate, int endDate, string futansyaNo)
+        {
+            StartDate = startDate;
+            EndDate = endDate;
+            ConfirmDateList = new();
+            FutansyaNo = string.Empty;
+            JyukyusyaNo = string.Empty;
+            TokusyuNo = string.Empty;
+            Houbetu = string.Empty;
+            HokenMstModel = new();
+            FutansyaNo = futansyaNo;
+        }
+
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }
 
         public string FutansyaNo { get; private set; }
