@@ -559,7 +559,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return fileInfUpdateTemp;
     }
 
-    private List<OrdInfModel> ConvertInputDataToOrderInfs(int hpId, int sinDate, List<OdrInfItemInputData> inputDataList)
+    public List<OrdInfModel> ConvertInputDataToOrderInfs(int hpId, int sinDate, List<OdrInfItemInputData> inputDataList)
     {
         var allOdrInfs = new List<OrdInfModel>();
 
