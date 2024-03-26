@@ -9,6 +9,8 @@ using Domain.Models.Santei;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Domain.Models.SystemConf;
+using Domain.Models.TodayOdr;
 using Domain.Models.UserConf;
 using Helper.Common;
 using Helper.Constants;
@@ -25,9 +27,9 @@ namespace Interactor.MedicalExamination
         private const string space = " ";
         private readonly IPatientInforRepository _patientInfAddressRepository;
         private readonly IPatientInforRepository _patientInfPhoneRepository;
-        private readonly SpecialNotePatienInfDomain.IPatientInfoRepository _specialNotePatientInfPhysicalRepository;
-        private readonly SpecialNotePatienInfDomain.IPatientInfoRepository _specialNotePatientInfReproductionRepository;
-        private readonly SpecialNotePatienInfDomain.IPatientInfoRepository _specialNotePatientInfLifeHistoryRepository;
+        private readonly IPatientInfoRepository _specialNotePatientInfPhysicalRepository;
+        private readonly IPatientInfoRepository _specialNotePatientInfReproductionRepository;
+        private readonly IPatientInfoRepository _specialNotePatientInfLifeHistoryRepository;
         private readonly IImportantNoteRepository _importantNoteDrugInfAlgryElseRepository;
         private readonly IImportantNoteRepository _importantNoteDrugInfAlgryFoodRepository;
         private readonly IImportantNoteRepository _importantNoteDrugInfAlgryDrugRepository;
@@ -43,7 +45,9 @@ namespace Interactor.MedicalExamination
         private readonly IRaiinCmtInfRepository _raiinCmtInfRepository;
         private readonly IUserConfRepository _userConfRepository;
         private readonly IRsvInfRepository _rsvInfRepository;
+        private readonly ITodayOdrRepository _todayOdrRepository;
         private readonly ISummaryInfRepository _summaryInfRepository;
+        private readonly ISystemConfRepository _systemConfRepository;
         private Dictionary<string, string> _relationship = new();
         private readonly List<SummaryInfItem> _header1Infos = new();
         private readonly List<SummaryInfItem> _header2Infos = new();
@@ -51,7 +55,7 @@ namespace Interactor.MedicalExamination
         private readonly List<PopUpNotificationItem> _notificationPopUps = new();
         private readonly List<UserConfModel> _listNotifiProperty = new();
 
-        public SummaryInfInteractor(IPatientInforRepository patientInfAddressRepository, IPatientInforRepository patientInfPhoneRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfPhysicalRepository, IImportantNoteRepository importantNotePathologicalInflectionRepository, IImportantNoteRepository importantNoteDrugInfElseRepository, IImportantNoteRepository importantNoteInteractionOtherDrugRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IUserConfRepository userConfRepository, IFamilyRepository familyRepository, IRsvInfRepository rsvInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfReproductionRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfLifeHistoryRepository, IImportantNoteRepository importantNoteDrugInfAlgryFoodRepository, IImportantNoteRepository importantNoteDrugInfAlgryDrugRepository, IImportantNoteRepository importantNoteInteractionOtcDrugRepository, IImportantNoteRepository importantNoteInteractionSuppleDrugRepository, IImportantNoteRepository importantNotePathologicalRekiRepository, ISummaryInfRepository summaryInfRepository)
+        public SummaryInfInteractor(IPatientInforRepository patientInfAddressRepository, IPatientInforRepository patientInfPhoneRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfPhysicalRepository, IImportantNoteRepository importantNotePathologicalInflectionRepository, IImportantNoteRepository importantNoteDrugInfElseRepository, IImportantNoteRepository importantNoteInteractionOtherDrugRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IUserConfRepository userConfRepository, IFamilyRepository familyRepository, IRsvInfRepository rsvInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfReproductionRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfLifeHistoryRepository, IImportantNoteRepository importantNoteDrugInfAlgryFoodRepository, IImportantNoteRepository importantNoteDrugInfAlgryDrugRepository, IImportantNoteRepository importantNoteInteractionOtcDrugRepository, IImportantNoteRepository importantNoteInteractionSuppleDrugRepository, IImportantNoteRepository importantNotePathologicalRekiRepository, ISummaryInfRepository summaryInfRepository, ISystemConfRepository systemConfRepository, ITodayOdrRepository todayOdrRepository)
         {
             _patientInfAddressRepository = patientInfAddressRepository;
             _patientInfPhoneRepository = patientInfPhoneRepository;
@@ -74,6 +78,8 @@ namespace Interactor.MedicalExamination
             _importantNoteInteractionOtcDrugRepository = importantNoteInteractionOtcDrugRepository;
             _importantNoteInteractionSuppleDrugRepository = importantNoteInteractionSuppleDrugRepository;
             _summaryInfRepository = summaryInfRepository;
+            _systemConfRepository = systemConfRepository;
+            _todayOdrRepository = todayOdrRepository;
         }
 
         public SummaryInfOutputData Handle(SummaryInfInputData inputData)
@@ -487,6 +493,10 @@ namespace Interactor.MedicalExamination
                         summaryInfItem = GetFamilyList(hpId, ptId, sinDate);
                         //家族歴
                         break;
+                    case "F":
+                        summaryInfItem = GetOnlineConfirm(hpId, ptId, raiinNo, sinDate);
+                        //家族歴
+                        break;
                 }
             }
             else if (infoType == InfoType.SumaryInfo)
@@ -517,6 +527,11 @@ namespace Interactor.MedicalExamination
                         GetFamilyList(hpId, ptId, sinDate);
                         grpItemCd = 15;
                         //家族歴
+                        break;
+                    case "G":
+                        summaryInfItem = GetOnlineConfirm(hpId, ptId, raiinNo, sinDate);
+                        grpItemCd = 16;
+                        //資格確認
                         break;
                 }
                 var splitHeaderInfo = !string.IsNullOrEmpty(headerInf) ? headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList() : summaryInfItem.HeaderInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -1179,6 +1194,29 @@ namespace Interactor.MedicalExamination
             var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
+            return summaryInfItem;
+        }
+
+        private SummaryInfItem GetOnlineConfirm(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            if (_systemConfRepository.GetSettingValue(100029, 0, hpId) != 1)
+            {
+                return new();
+            }
+            int grpItemCd = 15;
+            string headerName = "◆資格確認";
+            string headerInf = string.Empty;
+            var confirmationType = _todayOdrRepository.GetConfirmationType(hpId, ptId, raiinNo, sinDate);
+            if (confirmationType == 1)
+            {
+                headerInf = "マイナンバーカード";
+            }
+            else if (confirmationType == 2)
+            {
+                headerInf = "保険情報";
+            }
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
             return summaryInfItem;
         }
 

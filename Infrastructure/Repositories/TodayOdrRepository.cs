@@ -15,6 +15,7 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Text;
@@ -3667,5 +3668,14 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             CreateDate = CIUtil.GetJapanDateTimeNow(),
             UpdateDate = CIUtil.GetJapanDateTimeNow()
         };
+    }
+
+    public int GetConfirmationType(int hpId, long ptId, long raiinNo, int sinDate)
+    {
+        return NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                      && item.PtId == ptId
+                                                                      && item.RaiinNo == raiinNo
+                                                                      && item.SinDate == sinDate
+                                                                      && item.IsDeleted == DeleteTypes.None)?.ConfirmationType ?? 0;
     }
 }
