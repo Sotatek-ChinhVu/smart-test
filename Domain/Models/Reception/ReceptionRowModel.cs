@@ -403,7 +403,7 @@ public class ReceptionRowModel
         }
     }
 
-    public ReceptionRowModel GetSinDate(int sinDate)
+    public ReceptionRowModel SetSinDate(int sinDate)
     {
         SinDate = sinDate;
         return this;

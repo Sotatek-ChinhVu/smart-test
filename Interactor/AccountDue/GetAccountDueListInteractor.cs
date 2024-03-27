@@ -51,7 +51,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
                 if (hokenPattern != null)
                 {
                     var x = hokenPattern.SinDate;
-                    hokenPattern.GetSinDate(model.SeikyuSinDate);
+                    hokenPattern.SetSinDate(model.SeikyuSinDate);
                     hokenPatternName = hokenPattern.HokenPatternName;
                 }
                 if (model.NyukinKbn == 2 || model.NyukinKbn == 0)
