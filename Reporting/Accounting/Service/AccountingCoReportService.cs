@@ -1148,11 +1148,8 @@ public class AccountingCoReportService : IAccountingCoReportService
                 }
 
                 accountingDicResult.Add(index, accountingOutputModelList);
-                //if (!fileNamePageMap.Values.Contains(formFileName))
-                {
-                    fileNamePageMap.Add(index, formFileName);
-                    formFileName = string.Empty;
-                }
+                fileNamePageMap.Add(index, formFileName);
+                formFileName = string.Empty;
                 index++;
             }
         }
