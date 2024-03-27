@@ -918,7 +918,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return result;
     }
 
-    private UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
+    public UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
     {
         foreach (var tagNo in flowSheets.Select(item => item.TagNo).ToList())
         {
