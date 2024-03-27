@@ -403,5 +403,10 @@ public class ReceptionRowModel
         }
     }
 
+    public ReceptionRowModel SetSinDate(int sinDate)
+    {
+        SinDate = sinDate;
+        return this;
+    }
     public int HokenPid { get; private set; }
 }
