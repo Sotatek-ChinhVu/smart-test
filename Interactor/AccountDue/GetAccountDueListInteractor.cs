@@ -39,15 +39,6 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             var listAccountDues = _accountDueRepository.GetAccountDueList(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IsUnpaidChecked);
             var hokenPatternList = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, -1, inputData.PtId, true);
 
-            // Get HokenPattern List
-            Dictionary<int, string> hokenPatternDict = new Dictionary<int, string>();
-            foreach (var model in hokenPatternList)
-            {
-                if (!hokenPatternDict.ContainsKey(model.HokenPid))
-                {
-                    hokenPatternDict.Add(model.HokenPid, model.HokenPatternNameForAccountDueList);
-                }
-            }
 
             // Calculate Unpaid
             AccountDueModel tempModel = new();
@@ -56,9 +47,12 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
                 var hokenPatternName = string.Empty;
                 var unPaid = 0;
                 var isSeikyuRow = true;
-                if (hokenPatternDict.ContainsKey(model.HokenPid))
+                var hokenPattern = hokenPatternList.FirstOrDefault(p => p.HokenPid == model.HokenPid && p.SinDate == model.SeikyuSinDate);
+                if (hokenPattern != null)
                 {
-                    hokenPatternName = hokenPatternDict[model.HokenPid];
+                    var x = hokenPattern.SinDate;
+                    hokenPattern.GetSinDate(model.SeikyuSinDate);
+                    hokenPatternName = hokenPattern.HokenPatternName;
                 }
                 if (model.NyukinKbn == 2 || model.NyukinKbn == 0)
                 {
