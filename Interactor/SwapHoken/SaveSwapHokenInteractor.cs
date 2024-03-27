@@ -139,9 +139,9 @@ namespace Interactor.SwapHoken
                     {
                         _swapHokenRepository.UpdateReceSeikyu(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenIdBefore, inputData.HokenIdAfter, inputData.UserId);
                     }
+                    seikyuYms.AddRange(seiKyuPendingYms);
+                    seikyuYms = seikyuYms.Distinct().ToList();
                 }
-                seikyuYms.AddRange(seiKyuPendingYms);
-                seikyuYms = seikyuYms.Distinct().ToList();
                 return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Successful, string.Empty, TypeMessage.TypeMessageSuccess, seikyuYms);
             }
             catch (Exception ex)
