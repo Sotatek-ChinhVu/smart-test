@@ -1006,6 +1006,7 @@ namespace Infrastructure.Repositories
                     NyukinjiTensu = item.SeikyuTensu,
                     NyukinjiDetail = item.SeikyuDetail,
                     NyukinjiSeikyu = item.SeikyuGaku,
+                    NyukinDate = syunoSeikyuModels.Any() ? syunoSeikyuModels.FirstOrDefault().SinDate : 0
                 });
 
                 UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);

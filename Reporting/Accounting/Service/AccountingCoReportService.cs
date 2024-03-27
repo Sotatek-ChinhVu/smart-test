@@ -377,6 +377,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeInput, raiinInfModelList, raiinInfModelPayList));
             }
+            coAccountingParamModels = coAccountingParamModels.OrderBy(x => x.StartDate).ThenBy(x => x.RaiinNos.First()).ThenBy(x => x.PrintType).ToList();
             return GetAccountingReportingData(hpId, coAccountingParamModels);
         }
         finally
