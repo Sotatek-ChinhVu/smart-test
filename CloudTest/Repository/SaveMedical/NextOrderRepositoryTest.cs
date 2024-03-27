@@ -1,4 +1,5 @@
-﻿using Domain.Models.NextOrder;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Domain.Models.NextOrder;
 using Entity.Tenant;
 using Helper.Redis;
 using Infrastructure.Interfaces;
@@ -7,6 +8,9 @@ using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
+using System.ComponentModel;
+using System.Linq.Dynamic.Core;
+using ZstdSharp.Unsafe;
 using IDatabase = Microsoft.EntityFrameworkCore.Storage.IDatabase;
 
 namespace CloudUnitTest.Repository.SaveMedical
@@ -28,7 +32,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_001_NextOrderRepository_TestInsertSuccess()
         {
-            //Setup Data Test
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -36,10 +40,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -49,14 +51,17 @@ namespace CloudUnitTest.Repository.SaveMedical
             string rsvName = "";
             int isDeleted = 0;
             int sortNo = 1;
+
             List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
             {
                 new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
             };
+
             RsvkrtKarteInfModel rsvkrtKarteInf = new();
             List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new();
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -79,19 +84,17 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtMstsInsert = tenantTracking.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
             var rsvkrtByomeisInsert = tenantTracking.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo && x.Id == rsvkrtByomeis.First().Id && x.SeqNo == rsvkrtByomeis.First().SeqNo).ToList();
-            var rsvkrtKarteInfsInsert = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo).ToList();
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtMstsInsert.Any() && rsvkrtByomeisInsert.Any() /*&& rsvkrtKarteInfsInsert.Any()*/);
             }
             finally
             {
                 nextOrderRepository.ReleaseResource();
                 tenantTracking.RsvkrtMsts.RemoveRange(rsvkrtMstsInsert);
                 tenantTracking.RsvkrtByomeis.RemoveRange(rsvkrtByomeisInsert);
-                tenantTracking.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfsInsert);
                 tenantTracking.SaveChanges();
             }
         }
@@ -99,6 +102,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_002_NextOrderRepository_TestUpdateSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -106,10 +110,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -119,14 +121,20 @@ namespace CloudUnitTest.Repository.SaveMedical
             string rsvName = "";
             int isDeleted = 0;
             int sortNo = 1;
+            int seqNo = 1;
+            int id = 1;
+
             List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
             {
                 new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
             };
+
             RsvkrtKarteInfModel rsvkrtKarteInf = new();
             List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new();
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -145,39 +153,58 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
-            nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtMstList = tenantTracking.RsvkrtMsts.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId && item.RsvkrtNo == nextOrderModels.First().RsvkrtNo);
-
             foreach (var item in nextOrderModels)
             {
                 item.ChangeModel("Kaito", 0);
             }
 
+            RsvkrtByomei rsvkrtByomei = new RsvkrtByomei()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RsvkrtNo = rsvkrtNo,
+                SeqNo = seqNo,
+                Id = id
+            };
+
+            RsvkrtMst rsvkrtMst = new RsvkrtMst()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RsvkrtNo = rsvkrtNo,
+                RsvkrtKbn = rsvkrtKbn,
+                RsvDate = rsvDate
+            };
+
+            //Act
+            tenant.Add(rsvkrtByomei);
+            tenant.Add(rsvkrtMst);
+            tenant.SaveChanges();
+
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
 
-            var rsvkrtMstsInsert = tenantTracking.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
-            var rsvkrtByomeisInsert = tenantTracking.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo && x.Id == rsvkrtByomeis.First().Id && x.SeqNo == rsvkrtByomeis.First().SeqNo).ToList();
-            var rsvkrtKarteInfsInsert = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo).ToList();
+            var rsvkrtMstsInsert = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo);
+            var rsvkrtKarteInfsInsert = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo).ToList();
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtMstsInsert.Any(x => x.RsvName == "Kaito"));
             }
             finally
             {
                 nextOrderRepository.ReleaseResource();
-                tenantTracking.RsvkrtMsts.RemoveRange(rsvkrtMstsInsert);
-                tenantTracking.RsvkrtByomeis.RemoveRange(rsvkrtByomeisInsert);
-                tenantTracking.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfsInsert);
-                tenantTracking.SaveChanges();
+                tenant.RsvkrtMsts.RemoveRange(rsvkrtMst);
+                tenant.RsvkrtByomeis.RemoveRange(rsvkrtByomei);
+                tenant.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfsInsert);
+                tenant.SaveChanges();
             }
         }
 
         [Test]
         public void TC_003_NextOrderRepository_TestDeleteSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -185,10 +212,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -201,10 +226,12 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+
             List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
             {
                 new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
             };
+
             RsvkrtKarteInfModel rsvkrtKarteInf = new();
             List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new List<RsvkrtOrderInfModel>()
             {
@@ -236,9 +263,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetNoTrackingDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -257,7 +286,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -296,11 +324,14 @@ namespace CloudUnitTest.Repository.SaveMedical
                 item.ChangeModel("Kaito", 1);
             }
 
+            //Act
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            //
+            var rsvkrtMstDelete = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtOdrInfDelete = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.RpNo == rpNo && x.RpEdaNo == rpEdaNo && x.Id == id);
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtMstDelete.Any(x => x.IsDeleted == 1) && rsvkrtOdrInfDelete.Any(x => x.IsDeleted == 1));
             }
             finally
             {
@@ -315,6 +346,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_004_NextOrderRepository_TestUpsertByomeiDeleteSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -322,10 +354,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -338,11 +368,14 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+
             List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
             {
                 new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 1, new(), "", "", "", "")
             };
+
             RsvkrtKarteInfModel rsvkrtKarteInf = new();
+
             List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new List<RsvkrtOrderInfModel>()
             {
                 new RsvkrtOrderInfModel(
@@ -373,9 +406,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetNoTrackingDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -394,7 +429,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -422,13 +456,14 @@ namespace CloudUnitTest.Repository.SaveMedical
                 IsDeleted = 0
             };
 
+            //Act
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
             tenantTracking.Add(rsvkrtByomei);
             tenantTracking.SaveChanges();
 
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            //
+            //Assert
             try
             {
                 Assert.That(result);
@@ -446,6 +481,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_005_NextOrderRepository_TestUpsertByomeiUpdateSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -453,10 +489,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -469,11 +503,15 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+            int seqNo = 1;
+
             List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
             {
                 new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
             };
+
             RsvkrtKarteInfModel rsvkrtKarteInf = new();
+
             List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new List<RsvkrtOrderInfModel>()
             {
                 new RsvkrtOrderInfModel(
@@ -504,9 +542,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetNoTrackingDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -525,7 +565,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -553,16 +592,19 @@ namespace CloudUnitTest.Repository.SaveMedical
                 IsDeleted = 0
             };
 
+            //Act
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
             tenantTracking.Add(rsvkrtByomei);
             tenantTracking.SaveChanges();
 
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            //
+
+            var rsvkrtByomeiInserts = tenant.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.SeqNo == seqNo && x.Id == id);
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtByomeiInserts.Any());
             }
             finally
             {
@@ -577,6 +619,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_006_NextOrderRepository_TestUpsertByomeiInsertSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -584,10 +627,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -600,11 +641,15 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+            int seqNo = 1;
+
             List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
             {
                 new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
             };
+
             RsvkrtKarteInfModel rsvkrtKarteInf = new();
+
             List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new List<RsvkrtOrderInfModel>()
             {
                 new RsvkrtOrderInfModel(
@@ -635,9 +680,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetNoTrackingDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -656,7 +703,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -674,20 +720,23 @@ namespace CloudUnitTest.Repository.SaveMedical
                 Id = 1
             };
 
+            //Act
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
             tenantTracking.SaveChanges();
 
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            //
+            var rsvkrtByomeiList = tenant.RsvkrtByomeis.Where(x => x.HpId == hpId && x.Id == id && x.RsvkrtNo == rsvkrtNo && x.SeqNo == seqNo && x.PtId == ptId);
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtByomeiList.Any());
             }
             finally
             {
                 nextOrderRepository.ReleaseResource();
                 tenantTracking.RsvkrtMsts.Remove(rsvkrtMst);
+                tenantTracking.RsvkrtByomeis.RemoveRange(rsvkrtByomeiList);
                 tenantTracking.RsvkrtOdrInfs.Remove(rsvkrtOdrInf);
                 tenantTracking.SaveChanges();
             }
@@ -696,6 +745,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_007_NextOrderRepository_TestUpsertKarteInfInsertSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -703,10 +753,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -719,6 +767,7 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+            int seqNo = 1;
 
             List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
             {
@@ -757,9 +806,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetNoTrackingDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -778,7 +829,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -796,16 +846,18 @@ namespace CloudUnitTest.Repository.SaveMedical
                 Id = 1
             };
 
+            //Act
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
             tenantTracking.SaveChanges();
 
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarte = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
-            //
+            var rsvkrtKarte = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == rsvkrtKbn && x.SeqNo == seqNo);
+
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtKarte.Any());
             }
             finally
             {
@@ -820,6 +872,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_008_NextOrderRepository_TestUpsertKarteInfUpdateSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -827,10 +880,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -881,9 +932,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -902,7 +955,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -929,6 +981,7 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
+            //Act
             tenant.Add(rsvkrtOdrInf);
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
@@ -937,10 +990,10 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtKarteInfs.Count() == 2);
             }
             finally
             {
@@ -955,6 +1008,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_009_NextOrderRepository_TestUpsertKarteInfDeleteSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -962,10 +1016,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -1037,7 +1089,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -1064,32 +1115,35 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
+            //Act
             tenant.Add(rsvkrtOdrInf);
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.SaveChanges();
 
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+            var rsvkrtKarteInfs = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtKarteInfs.Where(x => x.IsDeleted == 1).Any());
             }
             finally
             {
                 nextOrderRepository.ReleaseResource();
                 tenant.RsvkrtMsts.Remove(rsvkrtMst);
                 tenant.RsvkrtOdrInfs.Remove(rsvkrtOdrInf);
-                tenant.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfs);
+                tenantTracking.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfs);
                 tenant.SaveChanges();
+                tenantTracking.SaveChanges();
             }
         }
 
         [Test]
         public void TC_010_NextOrderRepository_TestUpsertOrderInfUpdateSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -1097,10 +1151,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -1151,9 +1203,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -1172,7 +1226,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -1199,6 +1252,7 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
+            //Act
             tenant.Add(rsvkrtOdrInf);
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
@@ -1207,11 +1261,12 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            //
+            
+            //Assert
             try
             {
-                Assert.That(result);
-            }
+                Assert.That(result && rsvkrtOdrInfs.Count() == 2);
+            } 
             finally
             {
                 nextOrderRepository.ReleaseResource();
@@ -1225,6 +1280,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_011_NextOrderRepository_TestUpsertOrderInfDeleteSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -1232,10 +1288,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -1286,9 +1340,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -1307,7 +1363,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -1334,6 +1389,7 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
+            //Act
             tenant.Add(rsvkrtOdrInf);
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
@@ -1341,17 +1397,18 @@ namespace CloudUnitTest.Repository.SaveMedical
 
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            //
+            var rsvkrtOdrInfs = tenantTracking.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+            
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtOdrInfs.Any(x => x.IsDeleted == 1));
             }
             finally
             {
                 nextOrderRepository.ReleaseResource();
                 tenant.RsvkrtMsts.Remove(rsvkrtMst);
-                tenant.RsvkrtOdrInfs.RemoveRange(rsvkrtOdrInfs);
+                tenant.RsvkrtOdrInfs.RemoveRange(rsvkrtOdrInf);
                 tenant.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfs);
                 tenant.SaveChanges();
             }
@@ -1360,6 +1417,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_012_NextOrderRepository_TestUpsertOrderInfInsertSuccess()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -1367,10 +1425,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -1421,9 +1477,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new();
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -1442,7 +1500,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -1460,6 +1517,7 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
+            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.SaveChanges();
@@ -1468,10 +1526,10 @@ namespace CloudUnitTest.Repository.SaveMedical
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtOdrInfs.Any());
             }
             finally
             {
@@ -1487,6 +1545,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_013_NextOrderRepository_TestSaveNextOrderRaiinListInf0Success()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -1494,10 +1553,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             long ptId = 28032001;
@@ -1510,6 +1567,10 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+            int grpId = 99999999;
+            int kbnCd = 99999999;
+            long ptIdInput = 2803;
+
             List<string> ListFileItems = new List<string>()
             {
                 "Kaito0",
@@ -1609,14 +1670,16 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new FileItemModel(false, ListFileItems);
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
                     hpId,
-                    2803,
+                    ptIdInput,
                     rsvkrtNo,
                     rsvkrtKbn,
                     rsvDate,
@@ -1630,7 +1693,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -1660,8 +1722,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             RaiinListKoui raiinListKoui = new RaiinListKoui()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
+                GrpId = grpId,
+                KbnCd = kbnCd,
                 SeqNo = 99999999,
                 KouiKbnId = 99999999
             };
@@ -1669,21 +1731,21 @@ namespace CloudUnitTest.Repository.SaveMedical
             RaiinListDetail raiinListDetail = new RaiinListDetail()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd
             };
 
             RaiinListMst raiinListMst = new RaiinListMst()
             {
                 HpId = hpId,
-                GrpId = 99999999
+                GrpId = grpId
             };
 
             RaiinListItem raiinListItem = new RaiinListItem()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
+                GrpId = grpId,
+                KbnCd = kbnCd,
                 SeqNo = 99999999
             };
 
@@ -1693,10 +1755,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                 PtId = ptId,
                 SinDate = rsvDate,
                 RaiinNo = 0,
-                GrpId = 99999999,
-                KbnCd = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd
             };
 
+            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -1710,13 +1773,14 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == 2803 || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
             var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
+            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && !raiinListInfs.Any());
             }
             finally
             {
@@ -1738,6 +1802,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_014_NextOrderRepository_TestSaveNextOrderRaiinListInf1Success()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -1745,10 +1810,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             long ptId = 28032001;
@@ -1761,6 +1824,12 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+            int grpId = 99999999;
+            int kbnCd = 99999999;
+            long ptIdInput = 2803;
+            int seqNo = 99999999;
+            int kouiKbnId = 99999999;
+
             List<string> ListFileItems = new List<string>()
             {
                 "Kaito0",
@@ -1860,9 +1929,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new FileItemModel(false, ListFileItems);
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -1881,7 +1952,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -1896,13 +1966,13 @@ namespace CloudUnitTest.Repository.SaveMedical
                 PtId = ptId,
                 RsvkrtNo = rsvkrtNo,
                 KarteKbn = 1,
-                SeqNo = 1
+                SeqNo = seqNo
             };
 
             KouiKbnMst kouiKbnMst = new KouiKbnMst()
             {
-                KouiKbnId = 99999999,
-                SortNo = 99999999,
+                KouiKbnId = kouiKbnId,
+                SortNo = seqNo,
                 KouiKbn1 = 1,
                 KouiKbn2 = 1,
                 KouiGrpName = "Kaito"
@@ -1911,31 +1981,31 @@ namespace CloudUnitTest.Repository.SaveMedical
             RaiinListKoui raiinListKoui = new RaiinListKoui()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
-                SeqNo = 99999999,
-                KouiKbnId = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = seqNo,
+                KouiKbnId = kouiKbnId
             };
 
             RaiinListDetail raiinListDetail = new RaiinListDetail()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999
+                GrpId = grpId,
+                KbnCd = grpId
             };
 
             RaiinListMst raiinListMst = new RaiinListMst()
             {
                 HpId = hpId,
-                GrpId = 99999999
+                GrpId = grpId
             };
 
             RaiinListItem raiinListItem = new RaiinListItem()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
-                SeqNo = 99999999,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = seqNo,
                 ItemCd = "Kaito"
             };
 
@@ -1945,10 +2015,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                 PtId = ptId,
                 SinDate = rsvDate,
                 RaiinNo = 0,
-                GrpId = 99999999,
-                KbnCd = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd
             };
 
+            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -1962,13 +2033,14 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == 2803 || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
             var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
+            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && !raiinListInfs.Any());
             }
             finally
             {
@@ -1990,6 +2062,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_015_NextOrderRepository_TestSaveNextOrderRaiinListInf2Success()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -1997,10 +2070,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             long ptId = 28032001;
@@ -2013,6 +2084,12 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+            int grpId = 99999999;
+            int kbnCd = 99999999;
+            long ptIdInput = 2803;
+            int seqNo = 99999999;
+            int kouiKbnId = 99999999;
+
             List<string> ListFileItems = new List<string>()
             {
                 "Kaito0",
@@ -2112,14 +2189,16 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new FileItemModel(false, ListFileItems);
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
                     hpId,
-                    2803,
+                    ptIdInput,
                     rsvkrtNo,
                     rsvkrtKbn,
                     rsvDate,
@@ -2133,7 +2212,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -2148,13 +2226,13 @@ namespace CloudUnitTest.Repository.SaveMedical
                 PtId = ptId,
                 RsvkrtNo = rsvkrtNo,
                 KarteKbn = 1,
-                SeqNo = 1
+                SeqNo = seqNo
             };
 
             KouiKbnMst kouiKbnMst = new KouiKbnMst()
             {
-                KouiKbnId = 99999999,
-                SortNo = 99999999,
+                KouiKbnId = kouiKbnId,
+                SortNo = sortNo,
                 KouiKbn1 = 1,
                 KouiKbn2 = 1,
                 KouiGrpName = "Kaito"
@@ -2163,31 +2241,31 @@ namespace CloudUnitTest.Repository.SaveMedical
             RaiinListKoui raiinListKoui = new RaiinListKoui()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
-                SeqNo = 99999999,
-                KouiKbnId = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = seqNo,
+                KouiKbnId = kouiKbnId
             };
 
             RaiinListDetail raiinListDetail = new RaiinListDetail()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd
             };
 
             RaiinListMst raiinListMst = new RaiinListMst()
             {
                 HpId = hpId,
-                GrpId = 99999999
+                GrpId = grpId
             };
 
             RaiinListItem raiinListItem = new RaiinListItem()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
-                SeqNo = 99999999,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = seqNo,
                 ItemCd = "Kaito"
             };
 
@@ -2197,10 +2275,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                 PtId = ptId,
                 SinDate = rsvDate,
                 RaiinNo = 0,
-                GrpId = 99999999,
-                KbnCd = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd
             };
 
+            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -2214,13 +2293,14 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == 2803 || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
             var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
+            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && raiinListInfs.Count() == 1);
             }
             finally
             {
@@ -2243,6 +2323,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_016_NextOrderRepository_TestSaveNextOrderRaiinListInf3Success()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -2250,10 +2331,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             long ptId = 28032001;
@@ -2266,6 +2345,12 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+            int grpId = 99999999;
+            int kbnCd = 99999999;
+            long ptIdInput = 2803;
+            int seqNo = 99999999;
+            int kouiKbnId = 99999999;
+
             List<string> ListFileItems = new List<string>()
             {
                 "Kaito0",
@@ -2365,14 +2450,16 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new FileItemModel(false, ListFileItems);
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
                     hpId,
-                    2803,
+                    ptIdInput,
                     rsvkrtNo,
                     rsvkrtKbn,
                     rsvDate,
@@ -2386,7 +2473,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -2401,13 +2487,13 @@ namespace CloudUnitTest.Repository.SaveMedical
                 PtId = ptId,
                 RsvkrtNo = rsvkrtNo,
                 KarteKbn = 1,
-                SeqNo = 1
+                SeqNo = seqNo
             };
 
             KouiKbnMst kouiKbnMst = new KouiKbnMst()
             {
-                KouiKbnId = 99999999,
-                SortNo = 99999999,
+                KouiKbnId = kouiKbnId,
+                SortNo = sortNo,
                 KouiKbn1 = 1,
                 KouiKbn2 = 1,
                 KouiGrpName = "Kaito"
@@ -2416,34 +2502,35 @@ namespace CloudUnitTest.Repository.SaveMedical
             RaiinListKoui raiinListKoui = new RaiinListKoui()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
-                SeqNo = 99999999,
-                KouiKbnId = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = seqNo,
+                KouiKbnId = kouiKbnId
             };
 
             RaiinListDetail raiinListDetail = new RaiinListDetail()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd
             };
 
             RaiinListMst raiinListMst = new RaiinListMst()
             {
                 HpId = hpId,
-                GrpId = 99999999
+                GrpId = kbnCd
             };
 
             RaiinListItem raiinListItem = new RaiinListItem()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
-                SeqNo = 99999999,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = seqNo,
                 ItemCd = "Kaito"
             };
-   
+
+            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -2452,17 +2539,17 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListMst);
             tenant.Add(raiinListItem);
             tenant.SaveChanges();
-
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == 2803 || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
             var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
+            var raiinListInfInsert = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && raiinListInfInsert.Any());
             }
             finally
             {
@@ -2476,6 +2563,7 @@ namespace CloudUnitTest.Repository.SaveMedical
                 tenant.RsvkrtOdrInfs.RemoveRange(rsvkrtOdrInfs);
                 tenant.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfs);
                 tenant.RsvkrtOdrInfDetails.RemoveRange(rsvkrtOdrInfDetails);
+                tenant.RaiinListInfs.RemoveRange(raiinListInfInsert);
                 tenant.SaveChanges();
             }
         }
@@ -2484,6 +2572,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_017_NextOrderRepository_TestSaveNextOrderRaiinListInf4False()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -2491,10 +2580,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             long ptId = 28032001;
@@ -2507,6 +2594,12 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+            int grpId = 99999999;
+            int kbnCd = 99999999;
+            long ptIdInput = 2803;
+            int seqNo = 99999999;
+            int kouiKbnId = 99999999;
+
             List<string> ListFileItems = new List<string>()
             {
                 "Kaito0",
@@ -2606,14 +2699,16 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new FileItemModel(false, ListFileItems);
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
                     hpId,
-                    2803,
+                    ptIdInput,
                     rsvkrtNo,
                     rsvkrtKbn,
                     rsvDate,
@@ -2627,7 +2722,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -2642,40 +2736,41 @@ namespace CloudUnitTest.Repository.SaveMedical
                 PtId = ptId,
                 RsvkrtNo = rsvkrtNo,
                 KarteKbn = 1,
-                SeqNo = 1
+                SeqNo = seqNo
             };
 
             RaiinListKoui raiinListKoui = new RaiinListKoui()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
-                SeqNo = 99999999,
-                KouiKbnId = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = seqNo,
+                KouiKbnId = kouiKbnId
             };
 
             RaiinListDetail raiinListDetail = new RaiinListDetail()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999
+                GrpId = grpId,
+                KbnCd = kbnCd
             };
 
             RaiinListMst raiinListMst = new RaiinListMst()
             {
                 HpId = hpId,
-                GrpId = 99999999
+                GrpId = grpId
             };
 
             RaiinListItem raiinListItem = new RaiinListItem()
             {
                 HpId = hpId,
-                GrpId = 99999999,
-                KbnCd = 99999999,
-                SeqNo = 99999999,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = seqNo,
                 ItemCd = "Kaito"
             };
 
+            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(raiinListKoui);
@@ -2687,14 +2782,14 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == 2803 || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
             var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
             var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && (x.PtId == ptId || x.PtId == 2803) && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == 99999999);
 
-            //
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && raiinListInfs.Count() == 1);
             }
             finally
             {
@@ -2715,6 +2810,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_018_NextOrderRepository_TestKeyDelete()
         {
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -2722,10 +2818,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             long ptId = 28032001;
@@ -2738,6 +2832,7 @@ namespace CloudUnitTest.Repository.SaveMedical
             long rpNo = 1;
             long rpEdaNo = 1;
             long id = 1;
+
             List<string> ListFileItems = new List<string>()
             {
                 "Kaito0",
@@ -2837,9 +2932,11 @@ namespace CloudUnitTest.Repository.SaveMedical
                     ""
                     )
             };
+
             FileItemModel fileItem = new FileItemModel(false, ListFileItems);
             var tenantTracking = TenantProvider.GetNoTrackingDataContext();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -2858,7 +2955,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
             RsvkrtMst rsvkrtMst = new RsvkrtMst()
             {
                 HpId = hpId,
@@ -2907,6 +3003,7 @@ namespace CloudUnitTest.Repository.SaveMedical
                 ItemCd = "Kaito"
             };
 
+            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(raiinListKoui);
@@ -2924,7 +3021,7 @@ namespace CloudUnitTest.Repository.SaveMedical
             var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
             var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && (x.PtId == ptId || x.PtId == 2803) && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == 99999999);
 
-            //
+            //Assert
             try
             {
                 Assert.That(!_cache.KeyExists(finalKey));
@@ -2946,9 +3043,9 @@ namespace CloudUnitTest.Repository.SaveMedical
         }
 
         [Test]
-        public void TC_019_NextOrderRepository_TestInsertSuccess()
+        public void TC_019_NextOrderRepository_TestInsertFalse()
         {
-            //Setup Data Test
+            //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -2956,10 +3053,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
-            //Mock data
             int userId = 999;
             int hpId = 1;
             int ptId = 28032001;
@@ -2969,14 +3064,17 @@ namespace CloudUnitTest.Repository.SaveMedical
             string rsvName = "";
             int isDeleted = 0;
             int sortNo = 1;
+
             List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
             {
                 new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
             };
+
             RsvkrtKarteInfModel rsvkrtKarteInf = new();
             List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new();
             FileItemModel fileItem = new();
             var tenant = TenantProvider.GetTrackingTenantDataContext();
+
             List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
             {
                 new NextOrderModel (
@@ -3018,27 +3116,22 @@ namespace CloudUnitTest.Repository.SaveMedical
                 RsvDate = rsvDate,
             };
 
+            //Act
             tenant.Add(rsvkrtMst);
             tenant.SaveChanges();
 
-            //Act
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtMstsInsert = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
-            var rsvkrtByomeisInsert = tenant.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo && x.Id == rsvkrtByomeis.First().Id && x.SeqNo == rsvkrtByomeis.First().SeqNo).ToList();
-            var rsvkrtKarteInfsInsert = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo).ToList();
-
-            //
+            
+            //Assert
             try
             {
-                Assert.That(result);
+                Assert.That(result && rsvkrtMstsInsert.Count() == 0);
             }
             finally
             {
                 nextOrderRepository.ReleaseResource();
-                tenant.RsvkrtMsts.RemoveRange(rsvkrtMstsInsert);
                 tenant.RsvkrtMsts.Remove(rsvkrtMst);
-                tenant.RsvkrtByomeis.RemoveRange(rsvkrtByomeisInsert);
-                tenant.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfsInsert);
                 tenant.SaveChanges();
             }
         }
