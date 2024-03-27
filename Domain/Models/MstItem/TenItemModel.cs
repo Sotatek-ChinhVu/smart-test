@@ -697,13 +697,48 @@ namespace Domain.Models.MstItem
         {
             ItemCd = itemCd;
         }
-        public TenItemModel(string itemCd, string odrUnitName = "", string cnvUnitName ="", int sinKouiKbn =0)
+        public TenItemModel(string itemCd, string odrUnitName = "", string cnvUnitName = "", int sinKouiKbn = 0)
         {
             ItemCd = itemCd;
             OdrUnitName = odrUnitName;
             CnvUnitName = cnvUnitName;
-            SinKouiKbn =sinKouiKbn;
+            SinKouiKbn = sinKouiKbn;
         }
+
+        public TenItemModel(int hpId, string itemCd, string ipnNameCd, string masterSbt, int cmtCol1, int ten)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            MasterSbt = masterSbt;
+            IpnNameCd = ipnNameCd;
+            CmtCol1 = cmtCol1;
+            Ten = ten;
+            KanaName1 = string.Empty;
+            Name = string.Empty;
+            OdrUnitName = string.Empty;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            IpnCD = string.Empty;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            SanteiItemCd = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnName = string.Empty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaItemCd = string.Empty;
+            ReceName = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
+        }
+
         public int HpId { get; private set; }
 
         public string ReceName { get; private set; }
