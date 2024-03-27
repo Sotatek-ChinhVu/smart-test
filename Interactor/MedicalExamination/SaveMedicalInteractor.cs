@@ -805,7 +805,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return raiinInfStatus;
     }
 
-    private (Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>, List<OrdInfModel>) CheckOrder(int hpId, long ptId, int sinDate, SaveMedicalInputData inputDatas, List<OdrInfItemInputData> inputDataList, byte status)
+    public (Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>, List<OrdInfModel>) CheckOrder(int hpId, long ptId, int sinDate, SaveMedicalInputData inputDatas, List<OdrInfItemInputData> inputDataList, byte status)
     {
         var dicValidation = new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>();
         object obj = new();
@@ -817,7 +817,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             var checkOderInfs = status != (byte)ModeSaveData.TempSave ? _ordInfRepository.GetListToCheckValidate(ptId, hpId, raiinNoOdrs ?? new List<long>()) : Enumerable.Empty<OrdInfModel>();
 
             var hokenPids = status != (byte)ModeSaveData.TempSave ? inputDataList.Select(i => i.HokenPid).Distinct().ToList() : new();
-            var checkHokens = status != (byte)ModeSaveData.TempSave ? _insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>()) : new();
+            var checkHokens = status != (byte)ModeSaveData.TempSave ? (_insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>())) : new();
 
             if (status != (byte)ModeSaveData.TempSave)
             {
