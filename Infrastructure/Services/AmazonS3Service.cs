@@ -19,8 +19,11 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     public AmazonS3Service(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider)
     {
         _options = optionsAccessor.Value;
-        var regionEndpoint = RegionEndpoint.GetBySystemName(_options.Region);
-        _s3Client = new AmazonS3Client(_options.AwsAccessKeyId, _options.AwsSecretAccessKey, regionEndpoint);
+        if (_options != null)
+        {
+            var regionEndpoint = RegionEndpoint.GetBySystemName(_options.Region);
+            _s3Client = new AmazonS3Client(_options.AwsAccessKeyId, _options.AwsSecretAccessKey, regionEndpoint);
+        }
         _tenantProvider = tenantProvider;
     }
 

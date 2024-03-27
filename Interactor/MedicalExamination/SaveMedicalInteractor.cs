@@ -485,7 +485,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
     }
 
-    private void SaveFileKarte(int hpId, int userId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
+    public void SaveFileKarte(int hpId, int userId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
     {
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
         List<string> listFolders = new();
@@ -504,7 +504,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 var checkIsSchemaList = _karteInfRepository.ListCheckIsSchema(hpId, ptId, fileInfUpdateTemp);
                 foreach (var item in fileInfUpdateTemp.Select(item => item.NewFileName))
                 {
-                    var isSchema = checkIsSchemaList.ContainsKey(item) && checkIsSchemaList[item];
+                    var isSchema = checkIsSchemaList != null && checkIsSchemaList.ContainsKey(item) && checkIsSchemaList[item];
                     fileList.Add(new FileInfModel(isSchema, item));
                 }
             }
@@ -521,7 +521,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
     }
 
-    private List<FileMapCopyItem> CopyFileFromDoActionToKarte(long ptNum, List<string> listFileDo)
+    public List<FileMapCopyItem> CopyFileFromDoActionToKarte(long ptNum, List<string> listFileDo)
     {
         List<FileMapCopyItem> fileInfUpdateTemp = new();
 
