@@ -842,9 +842,9 @@ namespace Infrastructure.Repositories
         }
 
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
-                                   int payType, string comment, bool isDisCharged, string kaikeiTime)
+                                   int payType, string comment, bool isDisCharged, string kaikeiTime, out List<long> listRaiinNoPrint)
         {
-
+            listRaiinNoPrint = new List<long>();
             var raiinNos = syunoSeikyuModels.Select(item => item.RaiinNo).Distinct().ToList();
             var raiinInLists = TrackingDataContext.RaiinInfs
                                     .Where(item => item.HpId == hpId
@@ -909,7 +909,7 @@ namespace Infrastructure.Repositories
                         NyukinjiDetail = item.SeikyuDetail,
                         NyukinjiSeikyu = item.SeikyuGaku
                     });
-
+                    listRaiinNoPrint.Add(item.RaiinNo);
                     UpdateStatusRaiinInf(userId, item, raiinInLists, kaikeiTime);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
@@ -944,13 +944,13 @@ namespace Infrastructure.Repositories
             }
             if (accDue != 0 && (thisCredit != 0 && isDisCharged) || (nyukinGaku != 0 && !isDisCharged))
             {
-                AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
+                AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment, listRaiinNoPrint);
             }
 
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        private void AdjustWariExecute(int hpId, long ptId, int userId, int nyukinGakuEarmarked, int accDue, List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int paymentMethod, string comment)
+        private void AdjustWariExecute(int hpId, long ptId, int userId, int nyukinGakuEarmarked, int accDue, List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int paymentMethod, string comment, List<long> listRaiinNoPrint)
         {
             var listRaiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).ToList();
 
@@ -1008,6 +1008,7 @@ namespace Infrastructure.Repositories
                     NyukinjiSeikyu = item.SeikyuGaku,
                     NyukinDate = syunoSeikyuModels.Any() ? syunoSeikyuModels.FirstOrDefault().SinDate : 0
                 });
+                listRaiinNoPrint.Add(item.RaiinNo);
 
                 UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
             }

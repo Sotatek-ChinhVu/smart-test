@@ -10,7 +10,7 @@ namespace EmrCloudApi.Presenters.Accounting
         public Response<SaveAccountingResponse> Result { get; private set; } = new();
         public void Complete(SaveAccountingOutputData outputData)
         {
-            Result.Data = new SaveAccountingResponse(outputData.Status == SaveAccountingStatus.Success);
+            Result.Data = new SaveAccountingResponse(outputData.Status == SaveAccountingStatus.Success, outputData.RaiinNoPrint);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

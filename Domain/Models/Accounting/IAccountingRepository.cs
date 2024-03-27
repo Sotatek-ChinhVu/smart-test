@@ -27,7 +27,7 @@ public interface IAccountingRepository : IRepositoryBase
     List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> kohiIds);
 
     bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
-                               int payType, string comment, bool isDisCharged, string kaikeiTime);
+                               int payType, string comment, bool isDisCharged, string kaikeiTime, out List<long> listRaiinNoPrint);
 
     bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
 
