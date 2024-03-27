@@ -43,7 +43,7 @@ namespace Interactor.Accounting
             try
             {
                 var validateResult = ValidateInputData(inputData);
-                if (validateResult != SaveAccountingStatus.ValidateSuccess) return new SaveAccountingOutputData(validateResult, new(), new());
+                if (validateResult != SaveAccountingStatus.ValidateSuccess) return new SaveAccountingOutputData(validateResult, new(), new(), new());
 
                 var raiinInfList = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
 
@@ -55,7 +55,7 @@ namespace Interactor.Accounting
 
                 if (syunoSeikyu == null)
                 {
-                    return new SaveAccountingOutputData(SaveAccountingStatus.InputDataNull, new(), new());
+                    return new SaveAccountingOutputData(SaveAccountingStatus.InputDataNull, new(), new(), new());
                 }
                 else if (syunoSeikyu.NyukinKbn == 0)
                 {
@@ -77,18 +77,18 @@ namespace Interactor.Accounting
                 {
                     accDue = debitBalance;
                 }
-
+                List<long> listRaiinNoPrint = new List<long>();
                 var save = _accountingRepository.SaveAccounting(listAllSyunoSeikyu, listSyunoSeikyu, inputData.HpId, inputData.PtId, inputData.UserId, accDue, inputData.SumAdjust, inputData.ThisWari, inputData.Credit,
-                                                                inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime);
+                                                                inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime, out listRaiinNoPrint);
                 if (save)
                 {
                     AddAuditTrailLog(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, accDue, inputData.SinDate, inputData.Credit, inputData.IsDisCharged);
 
                     var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, CommonConstants.InvalidId, inputData.PtId, isDeleted: 0);
                     var sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
-                    return new SaveAccountingOutputData(SaveAccountingStatus.Success, receptionInfos, sameVisitList);
+                    return new SaveAccountingOutputData(SaveAccountingStatus.Success, receptionInfos, sameVisitList, listRaiinNoPrint);
                 }
-                return new SaveAccountingOutputData(SaveAccountingStatus.Failed, new(), new());
+                return new SaveAccountingOutputData(SaveAccountingStatus.Failed, new(), new(), new());
 
             }
             catch (Exception ex)
