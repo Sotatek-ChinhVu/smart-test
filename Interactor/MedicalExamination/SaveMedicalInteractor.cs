@@ -1240,7 +1240,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _auditLogRepository.AddListAuditTrailLog(hpId, userId, args);
     }
 
-    private void AddAuditTempSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    public void AddAuditTempSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
     {
         var args = new List<ArgumentModel>();
 
