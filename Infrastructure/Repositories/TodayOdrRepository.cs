@@ -2318,7 +2318,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                         tenMst?.Ten ?? 0,
                         0,
                         0,
-                        0,
+                        detail.KensaGaichu,
                         tenMst?.OdrTermVal ?? 0,
                         tenMst?.CnvTermVal ?? 0,
                         tenMst?.YjCd ?? string.Empty,
