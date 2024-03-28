@@ -87,4 +87,56 @@ public class SanteiInfDetailModelTest
                         && santeiInfDetailModel.IsDeleted == isDeleted
                     );
     }
+
+    [Test]
+    public void SanteiInfDetailModel_TestContructor3Success()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        string itemCd = "itemCd";
+        int startDate = 20221211;
+        int endDate = 20221212;
+
+        #endregion
+        var santeiInfDetailModel = new SanteiInfDetailModel(
+                                       id,
+                                       itemCd,
+                                       startDate,
+                                       endDate);
+        Assert.True(
+                        santeiInfDetailModel.Id == id
+                        && santeiInfDetailModel.ItemCd == itemCd
+                        && santeiInfDetailModel.EndDate == endDate
+                        && santeiInfDetailModel.StartDate == startDate
+                    );
+    }
+
+    [Test]
+    public void SanteiInfDetailModel_TestContructor4Success()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int endDate = 20221212;
+        int kisanSbt = 2;
+        int kisanDate = 20121212;
+        string byomei = "byomei";
+        string hosokuComment = "hosokuComment";
+        string comment = "comment";
+        bool isDeleted = true;
+
+        #endregion
+        var santeiInfDetailModel = new SanteiInfDetailModel(id, itemCd, kisanSbt, kisanDate, endDate);
+        Assert.True(
+                        santeiInfDetailModel.Id == id
+                        && santeiInfDetailModel.ItemCd == itemCd
+                        && santeiInfDetailModel.EndDate == endDate
+                        && santeiInfDetailModel.KisanSbt == kisanSbt
+                        && santeiInfDetailModel.KisanDate == kisanDate
+                    );
+    }
+
 }
