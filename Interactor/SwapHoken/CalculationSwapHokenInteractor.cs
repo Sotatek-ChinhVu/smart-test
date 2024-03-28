@@ -76,6 +76,7 @@ namespace Interactor.SwapHoken
                         percentCompleteCalculate = percentComplete * 100 / (seikyuYms.Count * 3);
                         _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.ReceFutanCalculateMain, new
                         {
+                            HpId = inputData.HpId,
                             PtIds = new List<long>() { inputData.PtId },
                             SeikyuYm = seikyuYms[i]
                         }).Wait();
