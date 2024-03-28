@@ -1070,7 +1070,7 @@ namespace Infrastructure.Repositories
 
             if (credit == allSeikyuGaku || credit < allSeikyuGaku && credit > thisSeikyuGaku)
             {
-                if (isLastRecord == true)
+                if (isLastRecord)
                 {
                     outAdjustFutan = adjustFutan;
                     outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
