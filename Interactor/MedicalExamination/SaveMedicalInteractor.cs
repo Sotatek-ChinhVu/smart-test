@@ -89,7 +89,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _validateFamilyList = validateFamilyList;
         _summaryInfRepository = summaryInfRepository;
         _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        var dbContextOptions = tenantProvider.CreateNewTrackingAdminDbContextOption();
+        if (dbContextOptions != null)
+        {
+            _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+        }
         _kensaIraiCommon = kensaIraiCommon;
         _systemConfRepository = systemConfRepository;
         _auditLogRepository = auditLogRepository;
@@ -451,7 +455,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
         catch (Exception ex)
         {
-            _loggingHandler.WriteLogExceptionAsync(ex);
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+            }
             throw;
         }
         finally
@@ -470,12 +477,15 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _validateFamilyList.ReleaseResource();
             _summaryInfRepository.ReleaseResource();
             _tenantProvider.DisposeDataContext();
-            _loggingHandler.Dispose();
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.Dispose();
+            }
             _saveMedicalRepository.ReleaseResource();
         }
     }
 
-    private void SaveFileKarte(int hpId, int userId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
+    public void SaveFileKarte(int hpId, int userId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
     {
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
         List<string> listFolders = new();
@@ -494,7 +504,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 var checkIsSchemaList = _karteInfRepository.ListCheckIsSchema(hpId, ptId, fileInfUpdateTemp);
                 foreach (var item in fileInfUpdateTemp.Select(item => item.NewFileName))
                 {
-                    var isSchema = checkIsSchemaList.ContainsKey(item) && checkIsSchemaList[item];
+                    var isSchema = checkIsSchemaList != null && checkIsSchemaList.ContainsKey(item) && checkIsSchemaList[item];
                     fileList.Add(new FileInfModel(isSchema, item));
                 }
             }
@@ -511,7 +521,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
     }
 
-    private List<FileMapCopyItem> CopyFileFromDoActionToKarte(long ptNum, List<string> listFileDo)
+    public List<FileMapCopyItem> CopyFileFromDoActionToKarte(long ptNum, List<string> listFileDo)
     {
         List<FileMapCopyItem> fileInfUpdateTemp = new();
 
@@ -549,7 +559,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return fileInfUpdateTemp;
     }
 
-    private List<OrdInfModel> ConvertInputDataToOrderInfs(int hpId, int sinDate, List<OdrInfItemInputData> inputDataList)
+    public List<OrdInfModel> ConvertInputDataToOrderInfs(int hpId, int sinDate, List<OdrInfItemInputData> inputDataList)
     {
         var allOdrInfs = new List<OrdInfModel>();
 
@@ -991,7 +1001,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return UpsertPtDiseaseListStatus.Valid;
     }
 
-    private void AddAuditKaikeiSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    public void AddAuditKaikeiSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
     {
         var args = new List<ArgumentModel>();
 
@@ -1344,7 +1354,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _auditLogRepository.AddListAuditTrailLog(hpId, userId, args);
     }
 
-    private void UpdateOdrKarteEvent(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    public void UpdateOdrKarteEvent(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
     {
         var args = new List<ArgumentModel>();
 

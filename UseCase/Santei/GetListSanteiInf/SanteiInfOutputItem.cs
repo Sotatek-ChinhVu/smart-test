@@ -128,7 +128,7 @@ public class SanteiInfOutputItem
         get
         {
             //Type 初回算定 =>  If 前回日 already exists, 起算日 will not be displayed
-            if (LastOdrDate > 0 && ListSanteInfDetails.Any(item => item.KisanSbt == 1))
+            if (LastOdrDate > 0 && ListSanteInfDetails.OrderByDescending(item => item.KisanDate).FirstOrDefault()?.KisanSbt == 1)
             {
                 return string.Empty;
             }

@@ -54,4 +54,6 @@ public interface ITodayOdrRepository : IRepositoryBase
     List<OdrDateInfModel> GetLastDayInfoList(int hpId, long ptId, int sinDate);
 
     bool SaveSettingLastDayInfo(int hpId, int userId, List<OdrDateInfModel> odrDateInfModels);
+
+    int GetConfirmationType(int hpId, long ptId, long raiinNo, int sinDate);
 }

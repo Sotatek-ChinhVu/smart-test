@@ -40,6 +40,19 @@ namespace Domain.Models.NextOrder
         {
             OrdInfDetails = ordInfDetails;
         }
+
+        public RsvkrtOrderInfModel ChangeIsDeletes(int isDeleted)
+        {
+            IsDeleted = isDeleted;
+            return this;
+        }
+
+
+        public RsvkrtOrderInfModel(int odrKouiKbn)
+        {
+            OdrKouiKbn = odrKouiKbn;
+        }
+
         public KeyValuePair<string, OrdInfValidationStatus> Validation(int flag)
         {
 

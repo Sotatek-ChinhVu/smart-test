@@ -15,6 +15,7 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Text;
@@ -165,7 +166,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         }
     }
 
-    private (int status, string sinStartTime, string sinEndTime, string uketukeTime) GetModeSaveDate(byte modeSaveData, int status, string sinEndTime, string sinStartTime, string uketukeTime)
+    public (int status, string sinStartTime, string sinEndTime, string uketukeTime) GetModeSaveDate(byte modeSaveData, int status, string sinEndTime, string sinStartTime, string uketukeTime)
     {
         string sinStartTimeReCalculate = string.Empty, sinEndTimeReCalculate = string.Empty, uketukeTimeReCalculate = string.Empty;
         int statusRecalculate = 0;
@@ -226,7 +227,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             }
         }
 
-        return new(statusRecalculate, sinEndTimeReCalculate, sinStartTimeReCalculate, uketukeTimeReCalculate);
+        return new(statusRecalculate, sinStartTimeReCalculate, sinEndTimeReCalculate, uketukeTimeReCalculate);
     }
 
     private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int userId)
@@ -459,7 +460,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     {
                         continue;
                     }
-                    var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui) ?? new KouiKbnMst();
+                    var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui);
                     if (kouiMst == null) continue;
 
                     // Get List RaiinListKoui contains koui 
@@ -789,6 +790,8 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             if (karteMst != null)
             {
                 karteMst.IsDeleted = DeleteTypes.Deleted;
+                karteMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                karteMst.UpdateId = userId;
             }
         }
         else
@@ -1008,7 +1011,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     sinKouiDetail.SinYm <= endYm &&
                     itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
                     joinSinkouiCount.SinKouiCount.SinDate >= startDate &&
-                    joinSinkouiCount.SinKouiCount.SinDate <= endDate 
+                    joinSinkouiCount.SinKouiCount.SinDate <= endDate
                 group new { sinKouiDetail, joinSinkouiCount } by new { joinSinkouiCount.SinKouiCount.HpId } into A
                 select new { sum = A.Sum(a => (double)a.joinSinkouiCount.SinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
             );
@@ -2315,7 +2318,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                         tenMst?.Ten ?? 0,
                         0,
                         0,
-                        0,
+                        detail.KensaGaichu,
                         tenMst?.OdrTermVal ?? 0,
                         tenMst?.CnvTermVal ?? 0,
                         tenMst?.YjCd ?? string.Empty,
@@ -3305,7 +3308,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         string ipnName = string.Empty;
         if (!string.IsNullOrEmpty(sourceDetail.IpnCd))
         {
-            ipnName = ipnNameMsts.FirstOrDefault(i =>   i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
+            ipnName = ipnNameMsts.FirstOrDefault(i => i.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
         }
         else
         {
@@ -3665,5 +3668,14 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             CreateDate = CIUtil.GetJapanDateTimeNow(),
             UpdateDate = CIUtil.GetJapanDateTimeNow()
         };
+    }
+
+    public int GetConfirmationType(int hpId, long ptId, long raiinNo, int sinDate)
+    {
+        return NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                      && item.PtId == ptId
+                                                                      && item.RaiinNo == raiinNo
+                                                                      && item.SinDate == sinDate
+                                                                      && item.IsDeleted == DeleteTypes.None)?.ConfirmationType ?? 0;
     }
 }

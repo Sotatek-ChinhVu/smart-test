@@ -842,9 +842,9 @@ namespace Infrastructure.Repositories
         }
 
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
-                                   int payType, string comment, bool isDisCharged, string kaikeiTime)
+                                   int payType, string comment, bool isDisCharged, string kaikeiTime, out List<long> listRaiinNoPrint)
         {
-
+            listRaiinNoPrint = new List<long>();
             var raiinNos = syunoSeikyuModels.Select(item => item.RaiinNo).Distinct().ToList();
             var raiinInLists = TrackingDataContext.RaiinInfs
                                     .Where(item => item.HpId == hpId
@@ -872,11 +872,11 @@ namespace Infrastructure.Repositories
 
                 int thisSeikyuGaku = item.SeikyuGaku - (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku)) -
                                  (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan));
-
+                bool isLastRecord = i == syunoSeikyuModels.Count - 1;
                 if (!isDisCharged)
                 {
                     ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
-                                     out outNyukinKbn);
+                                     out outNyukinKbn, isLastRecord);
                     allSeikyuGaku -= thisSeikyuGaku;
                 }
                 else
@@ -908,8 +908,7 @@ namespace Infrastructure.Repositories
                         NyukinjiTensu = item.SeikyuTensu,
                         NyukinjiDetail = item.SeikyuDetail,
                         NyukinjiSeikyu = item.SeikyuGaku
-                    });
-
+                    });                    
                     UpdateStatusRaiinInf(userId, item, raiinInLists, kaikeiTime);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
@@ -940,17 +939,17 @@ namespace Infrastructure.Repositories
                     UpdateStatusRaiinInf(userId, item, raiinInLists, kaikeiTime);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
-
+                listRaiinNoPrint.Add(item.RaiinNo);
             }
             if (accDue != 0 && (thisCredit != 0 && isDisCharged) || (nyukinGaku != 0 && !isDisCharged))
             {
-                AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
+                AdjustWariExecute(hpId, ptId, userId, nyukinGaku, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment, listRaiinNoPrint);
             }
 
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        private void AdjustWariExecute(int hpId, long ptId, int userId, int nyukinGakuEarmarked, int accDue, List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int paymentMethod, string comment)
+        private void AdjustWariExecute(int hpId, long ptId, int userId, int nyukinGakuEarmarked, int accDue, List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int paymentMethod, string comment, List<long> listRaiinNoPrint)
         {
             var listRaiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).ToList();
 
@@ -1006,7 +1005,9 @@ namespace Infrastructure.Repositories
                     NyukinjiTensu = item.SeikyuTensu,
                     NyukinjiDetail = item.SeikyuDetail,
                     NyukinjiSeikyu = item.SeikyuGaku,
+                    NyukinDate = syunoSeikyuModels.Any() ? syunoSeikyuModels.FirstOrDefault().SinDate : 0
                 });
+                listRaiinNoPrint.Add(item.RaiinNo);
 
                 UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
             }
@@ -1063,13 +1064,21 @@ namespace Infrastructure.Repositories
         }
 
         private void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
-            out int outNyukinGaku, out int outNyukinKbn)
+            out int outNyukinGaku, out int outNyukinKbn, bool isLastRecord)
         {
             int credit = adjustFutan + nyukinGaku;
 
             if (credit == allSeikyuGaku || credit < allSeikyuGaku && credit > thisSeikyuGaku)
             {
-                if (adjustFutan >= thisSeikyuGaku)
+                if (isLastRecord)
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else if (adjustFutan >= thisSeikyuGaku)
                 {
                     outAdjustFutan = thisSeikyuGaku;
                     outNyukinGaku = thisSeikyuGaku - outAdjustFutan;

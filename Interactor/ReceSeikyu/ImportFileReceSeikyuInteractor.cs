@@ -96,7 +96,7 @@ namespace Interactor.ReceSeikyu
                         // Egg1
                         if (slCol[20].AsString().Length == 18)
                         {
-                            ptId = _patientInforRepository.GetPtIdFromPtNum(hpId, CIUtil.StrToIntDef(CIUtil.Copy(slCol[20], 1, 9), 0)); // 1~9桁
+                            ptId = _patientInforRepository.GetPtIdFromPtNum(hpId, CIUtil.StrToLongDef(CIUtil.Copy(slCol[20], 1, 9), 0)); // 1~9桁
                             birthday = StringToDateImport(slCol[6]);
                             sinYm = StringToSinYmImport(slCol[3]);
                             if (sinYm == 0)
@@ -114,7 +114,7 @@ namespace Interactor.ReceSeikyu
                         // Hayabusa
                         else
                         {
-                            ptId = CIUtil.StrToIntDef(CIUtil.Copy(slCol[20], 1, 10), 0); // 1~10桁
+                            ptId = CIUtil.StrToLongDef(CIUtil.Copy(slCol[20], 1, 10), 0); // 1~10桁
                             sinYm = StringToSinYmImport(slCol[3]);
                             if (sinYm == 0)
                             {
@@ -176,7 +176,7 @@ namespace Interactor.ReceSeikyu
                         // Egg1
                         if (slCol[20].AsString().Length == 11)
                         {
-                            ptId = _patientInforRepository.GetPtIdFromPtNum(hpId, CIUtil.StrToIntDef(CIUtil.Copy(slCol[20], 1, 9), 0)); // 1~9桁
+                            ptId = _patientInforRepository.GetPtIdFromPtNum(hpId, CIUtil.StrToLongDef(CIUtil.Copy(slCol[20], 1, 9), 0)); // 1~9桁
                             sinYm = StringToSinYmImport(slCol[3]);
                             birthday = StringToDateImport(slCol[6]);
                             if (!CheckIsValidImportData(hpId, ptId, sinYm, birthday))
@@ -190,7 +190,7 @@ namespace Interactor.ReceSeikyu
                         // Hayabusa
                         else
                         {
-                            ptId = CIUtil.StrToIntDef(CIUtil.Copy(slCol[20], 1, 10), 0); // 1~10桁
+                            ptId = CIUtil.StrToLongDef(CIUtil.Copy(slCol[20], 1, 10), 0); // 1~10桁
                             sinYm = StringToSinYmImport(slCol[3]);
                             if (sinYm == 0)
                             {

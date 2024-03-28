@@ -2295,6 +2295,25 @@ namespace Helper.Common
             return ret;
         }
 
+        /// <summary>
+        /// 文字列をlong型に変換する
+        /// 変換に失敗した場合、defaultValを返す
+        /// </summary>
+        /// <param name="str">変換する文字列</param>
+        /// <param name="defaultVal">変換できなかった時に返す値</param>
+        /// <returns>引数strをlong型に変換した値</returns>
+        public static long StrToLongDef(string str, long defaultVal)
+        {
+            long ret;
+
+            if (!long.TryParse(str, out ret))
+            {
+                ret = defaultVal;
+            }
+
+            return ret;
+        }
+
         ///<summary>
         ///指定の週数前の日曜日の日付を取得する
         ///</summary>

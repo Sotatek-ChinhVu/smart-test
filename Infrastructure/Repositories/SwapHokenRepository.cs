@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SwapHoken;
+using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -103,14 +104,32 @@ namespace Infrastructure.Repositories
 
         public bool UpdateReceSeikyu(int hpId, long ptId, List<int> sinYms, int oldHokenId, int newHokenId, int userId)
         {
-            var receSeiKyus = TrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && sinYms.Contains(p.SinYm)).ToList();
+            var receSeiKyus = TrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && p.SeikyuYm != 999999 && sinYms.Contains(p.SinYm)).ToList();
             if (!receSeiKyus.Any())
+            {
                 return true;
+            }
+
+            var receSeikyuWithNewHokenList = NoTrackingDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                                             && item.PtId == ptId
+                                                                                             && item.HokenId == newHokenId
+                                                                                             && item.IsDeleted == DeleteTypes.None)
+                                                                              .ToList();
             foreach (var receSeiKyu in receSeiKyus)
             {
                 if (oldHokenId != newHokenId && receSeiKyu.HokenId == newHokenId)
+                {
                     receSeiKyu.IsDeleted = DeleteTypes.Deleted;
-                receSeiKyu.HokenId = newHokenId;
+                }
+                else if (receSeiKyu.HokenId == oldHokenId)
+                {
+                    var receSeikyuWithNewHoken = receSeikyuWithNewHokenList.FirstOrDefault(item => item.SinYm == receSeiKyu.SinYm);
+                    if (receSeikyuWithNewHoken != null && !receSeiKyus.Any(p => p.SeqNo == receSeikyuWithNewHoken.SeqNo))
+                    {
+                        receSeiKyu.IsDeleted = DeleteTypes.Deleted;
+                    }
+                    receSeiKyu.HokenId = newHokenId;
+                }
                 receSeiKyu.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 receSeiKyu.UpdateId = userId;
             }
