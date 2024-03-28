@@ -94,8 +94,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
             SaveMedicalInputData inputDatas = new SaveMedicalInputData(hpId, ptId, raiinNo, sinDate, 0, 0, 0, 0, 0, 0, "", "", "", status, inputDataList, new(), 999, true, true, 
                                                                        fileItemInputItem, new(), new(), new(), new(), new(), new(), new());
             
+            // Act
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
+            // Assert
             Assert.That(result.Item1.Any() || result.Item2.Any());
         }
 
@@ -157,8 +159,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
             SaveMedicalInputData inputDatas = new SaveMedicalInputData(hpId, ptId, raiinNo, sinDate, 0, 0, 0, 0, 0, 0, "", "", "", status, inputDataList, new(), 999, true, true,
                                                                        fileItemInputItem, new(), new(), new(), new(), new(), new(), new());
 
+            //Act
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
+            // Assert
             Assert.That(result.Item1.Any() || result.Item2.Any());
         }
 
@@ -242,8 +246,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
             SaveMedicalInputData inputDatas = new SaveMedicalInputData(hpId, ptId, raiinNo, sinDate, 0, 0, 0, 0, 0, 0, "", "", "", status, inputDataList, new(), 999, true, true,
                                                                        fileItemInputItem, new(), new(), new(), new(), new(), new(), new());
 
+            // Act
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
+            // Assert
             try
             {
                 Assert.That(result.Item1.Any() || result.Item2.Any());
@@ -324,7 +330,6 @@ namespace CloudUnitTest.Interactor.SaveMedical
             List<long> raiinNos = new List<long>()
             {
                 odrInfs.RaiinNo
-                //12345
             };
 
             List<OrdInfModel> ordInfModels = new List<OrdInfModel>()
@@ -356,8 +361,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
             SaveMedicalInputData inputDatas = new SaveMedicalInputData(hpId, ptId, raiinNo, sinDate, 0, 0, 0, 0, 0, 0, "", "", "", status, inputDataList, new(), 999, true, true,
                                                                        fileItemInputItem, new(), new(), new(), new(), new(), new(), new());
 
+            // Act
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
+            // Assert
             try
             {
                 Assert.That(result.Item1.Any() || result.Item2.Any());
@@ -438,7 +445,6 @@ namespace CloudUnitTest.Interactor.SaveMedical
             List<long> raiinNos = new List<long>()
             {
                 odrInfs.RaiinNo
-                //12345
             };
 
             List<OrdInfModel> ordInfModels = new List<OrdInfModel>()
@@ -470,8 +476,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
             SaveMedicalInputData inputDatas = new SaveMedicalInputData(hpId, ptId, raiinNo, sinDate, 0, 0, 0, 0, 0, 0, "", "", "", status, inputDataList, new(), 999, true, true,
                                                                        fileItemInputItem, new(), new(), new(), new(), new(), new(), new());
 
+            // Act
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
+            // Assert
             try
             {
                 Assert.That(result.Item1.Any() || result.Item2.Any());
@@ -524,7 +532,6 @@ namespace CloudUnitTest.Interactor.SaveMedical
             int hokenPid = 1;
             long ptId = odrInfs?.PtId ?? 0;
             int sinDate = odrInfs?.SinDate ?? 0;
-            int sinDateTest = 20220202;
             byte status = 1;
             long raiinNo = odrInfs?.RaiinNo ?? 0;
             int id = 0;
@@ -555,8 +562,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
             tenantTracking.SaveChanges();
             hokenPids.Add(1);
             hokenPids.Add(0);
+
             List<TenItemModel> tenMstList = new() { new TenItemModel(hpId, itemCd, ipnNameCd, masterSbt, cmtCol1, ten) };
             var ipnNameMsts = new List<Tuple<string, string>>() { Tuple.Create(ipnNameCd, ipnName) };
+
             mockIOrdInfRepository.Setup(finder => finder.GetIpnMst(hpId, 20050307, 20050307, new() { ipnCd }))
             .Returns((int hpId, int sinDateMin, int sinDateMax, List<string> ipnCds) => ipnNameMsts);
 
@@ -569,8 +578,8 @@ namespace CloudUnitTest.Interactor.SaveMedical
 
             var ptHokenPatterns = tenantTracking.PtHokenPatterns.Where(h => h.HpId == hpId && hokenPids.Contains(h.HokenPid) && h.PtId == ptHokenPattern.PtId && h.IsDeleted == 0);
             var hokenInfModels = ptHokenPatterns.Select(r => new HokenInfModel(r.HokenPid, r.PtId, r.HpId, r.StartDate, r.EndDate)).ToList();
-            mockIInsuranceRepository.Setup(finder => finder.GetCheckListHokenInf(hpId, ptHokenPattern.PtId, hokenPids))
-            .Returns((int hpId, long ptId, List<int> hokenPids) => hokenInfModels);
+            
+            mockIInsuranceRepository.Setup(finder => finder.GetCheckListHokenInf(hpId, ptHokenPattern.PtId, hokenPids)).Returns((int hpId, long ptId, List<int> hokenPids) => hokenInfModels);
 
             List<long> raiinNos = new List<long>()
             {
@@ -611,8 +620,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
             SaveMedicalInputData inputDatas = new SaveMedicalInputData(hpId, ptId, raiinNo, sinDate, 0, 0, 0, 0, 0, 0, "", "", "", status, inputDataList, new(), 999, true, true,
                                                                        fileItemInputItem, new(), new(), new(), new(), new(), new(), new());
 
+            // Act
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
+            // Assert
             try
             {
                 Assert.That(result.Item1.Any() || result.Item2.Any());
