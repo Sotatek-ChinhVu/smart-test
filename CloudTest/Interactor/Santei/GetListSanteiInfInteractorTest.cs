@@ -52,6 +52,17 @@ public class GetListSanteiInfInteractorTest : BaseUT
                                                         "byomei",
                                                         "hosokuComment",
                                                         "comment"
+                                                    ),
+                                                new SanteiInfDetailModel(
+                                                        2,
+                                                        883,
+                                                        "itemCd",
+                                                        20221110,
+                                                        1,
+                                                        20220101,
+                                                        "byomei",
+                                                        "hosokuComment",
+                                                        "comment"
                                                     )
                                             });
         listSanteiInfs.Add(santeiInf);
