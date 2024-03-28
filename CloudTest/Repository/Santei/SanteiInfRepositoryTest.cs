@@ -9,7 +9,7 @@ public class SanteiInfRepositoryTest : BaseUT
 {
     #region Get List SanteiInf
     [Test]
-    public void GetListSanteiInf_TestSuccess()
+    public void GetListSanteiInf_TestSuccess_01()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -55,6 +55,66 @@ public class SanteiInfRepositoryTest : BaseUT
             santeiInfRepository.ReleaseResource();
             tenant.SanteiInfs.RemoveRange(santeiInfs);
             tenant.SanteiInfDetails.RemoveRange(santeiInfDetails);
+            tenant.OdrInfs.RemoveRange(orderInfs);
+            tenant.OdrInfDetails.RemoveRange(orderInfDetails);
+            tenant.TenMsts.RemoveRange(tenMsts);
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void GetListSanteiInf_TestSuccess_02()
+    {
+        #region Fetch data
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+
+        // SanteiInf
+        var santeiInfs = ReadDataSanteiInf.ReadSanteiInf();
+        tenant.SanteiInfs.AddRange(santeiInfs);
+
+        // SanteiInfDetail
+        var santeiInfDetail = ReadDataSanteiInf.ReadSanteiInfDetail().FirstOrDefault();
+        SanteiInfDetail santeiInfDetail2 = santeiInfDetail!.Clone();
+        santeiInfDetail2.KisanDate = santeiInfDetail.KisanDate + 1;
+        tenant.SanteiInfDetails.Add(santeiInfDetail);
+        tenant.SanteiInfDetails.Add(santeiInfDetail2);
+
+
+        // OrderInf
+        var orderInfs = ReadDataSanteiInf.ReadOrderInf();
+        tenant.OdrInfs.AddRange(orderInfs);
+
+        // OrderInfDetail
+        var orderInfDetails = ReadDataSanteiInf.ReadOrderInfDetail();
+        tenant.OdrInfDetails.AddRange(orderInfDetails);
+
+        // TenMst
+        var tenMsts = ReadDataSanteiInf.ReadTenMst();
+        tenant.TenMsts.AddRange(tenMsts);
+        #endregion
+
+        // Arrange
+        SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
+
+        // Assert
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            long ptId = 123456789;
+            var resultQuery = santeiInfRepository.GetListSanteiInf(1, ptId, 20221212);
+
+            Assert.True(CompareListSanteiInf(ptId, resultQuery, santeiInfs, new() { santeiInfDetail }, orderInfs, orderInfDetails, tenMsts));
+        }
+        finally
+        {
+            #region Remove Data Fetch
+            santeiInfRepository.ReleaseResource();
+            tenant.SanteiInfs.RemoveRange(santeiInfs);
+            tenant.SanteiInfDetails.Remove(santeiInfDetail);
+            tenant.SanteiInfDetails.Remove(santeiInfDetail2);
             tenant.OdrInfs.RemoveRange(orderInfs);
             tenant.OdrInfDetails.RemoveRange(orderInfDetails);
             tenant.TenMsts.RemoveRange(tenMsts);
@@ -163,6 +223,63 @@ public class SanteiInfRepositoryTest : BaseUT
         try
         {
             Assert.True(result);
+        }
+        finally
+        {
+            #region Remove Data Fetch
+            santeiInfRepository.ReleaseResource();
+            tenant.TenMsts.RemoveRange(tenMsts);
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void CheckExistItemCd_TestFalse_1()
+    {
+        // Arrange
+        SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
+
+        // Act
+        var result = santeiInfRepository.CheckExistItemCd(1, new());
+
+        // Assert
+        try
+        {
+            Assert.True(!result);
+        }
+        finally
+        {
+            #region Remove Data Fetch
+            santeiInfRepository.ReleaseResource();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void CheckExistItemCd_TestFalse_2()
+    {
+        #region Fetch data
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        // SanteiInfDetail
+        var tenMsts = ReadDataSanteiInf.ReadTenMst();
+        tenant.TenMsts.AddRange(tenMsts);
+        tenant.SaveChanges();
+        #endregion
+
+        // Arrange
+        SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
+
+        // Act
+        bool result = false;
+        List<string> listItemCds = tenMsts.Select(item => item.ItemCd ?? string.Empty).ToList();
+        listItemCds.Add("itemCdNotExist");
+        result = santeiInfRepository.CheckExistItemCd(1, listItemCds);
+
+        // Assert
+        try
+        {
+            Assert.True(!result);
         }
         finally
         {

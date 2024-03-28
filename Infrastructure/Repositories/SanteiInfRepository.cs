@@ -120,12 +120,8 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
         foreach (var mstItem in santeiInfDetailQuery)
         {
-            var itemCd = mstItem.ItemCd;
+            string itemCd = mstItem.ItemCd ?? string.Empty;
             int kisanDate = mstItem.KisanDate;
-            if (string.IsNullOrEmpty(itemCd))
-            {
-                continue;
-            }
 
             #region get max kisanDate
             if (!kisanDateList.Any(item => item.ItemCd == itemCd))
@@ -135,7 +131,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                 continue;
             }
             var kisanDateStructItem = kisanDateList.FirstOrDefault(item => item.ItemCd == itemCd);
-            if (kisanDate > kisanDateStructItem.KisanDate)
+            if (kisanDate > kisanDateStructItem?.KisanDate)
             {
                 kisanDateStructItem.SetKisanDate(kisanDate);
                 kisanSbt = mstItem.KisanSbt;
@@ -145,7 +141,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
             // logic Type 初回算定 => If 前回日 already exists, 起算日 will not be displayed
             if (kisanSbt == 1 && dicLastOrderDate.ContainsKey(itemCd) && dicLastOrderDate[itemCd] > kisanDate)
             {
-                kisanDateStructItem.SetKisanDate(dicLastOrderDate[itemCd]);
+                kisanDateStructItem?.SetKisanDate(dicLastOrderDate[itemCd]);
             }
         }
         var odrInfDetailJoinList = (from odrInfDetail in odrInfDetailQuery
