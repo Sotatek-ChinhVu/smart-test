@@ -817,7 +817,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             var checkOderInfs = status != (byte)ModeSaveData.TempSave ? _ordInfRepository.GetListToCheckValidate(ptId, hpId, raiinNoOdrs ?? new List<long>()) : Enumerable.Empty<OrdInfModel>();
 
             var hokenPids = status != (byte)ModeSaveData.TempSave ? inputDataList.Select(i => i.HokenPid).Distinct().ToList() : new();
-            var checkHokens = status != (byte)ModeSaveData.TempSave ? (_insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>())) : new();
+            var checkHokens = status != (byte)ModeSaveData.TempSave ? _insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>()) : new();
 
             if (status != (byte)ModeSaveData.TempSave)
             {
