@@ -193,6 +193,7 @@ namespace Interactor.ReceSeikyu
                                 //Call httpClient 
                                 _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.ReceFutanCalculateMain, new
                                 {
+                                    HpId = inputData.HpId,
                                     PtIds = new List<long>() { receSeikyu.PtId },
                                     SeikyuYm = receSeikyu.SeikyuYm
                                 }).Wait();
@@ -203,6 +204,7 @@ namespace Interactor.ReceSeikyu
                             {
                                 _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.ReceFutanCalculateMain, new
                                 {
+                                    HpId = inputData.HpId,
                                     PtIds = new List<long>() { receSeikyu.PtId },
                                     SeikyuYm = receSeikyu.SinYm
                                 }).Wait();

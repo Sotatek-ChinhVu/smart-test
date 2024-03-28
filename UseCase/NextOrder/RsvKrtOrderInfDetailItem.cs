@@ -2,7 +2,7 @@
 {
     public class RsvKrtOrderInfDetailItem
     {
-        public RsvKrtOrderInfDetailItem(int hpId, long ptId, long rsvkrtNo, long rpNo, long rpEdaNo, int rowNo, int rsvDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline)
+        public RsvKrtOrderInfDetailItem(int hpId, long ptId, long rsvkrtNo, long rpNo, long rpEdaNo, int rowNo, int rsvDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, int kensaGaichu)
         {
             HpId = hpId;
             PtId = ptId;
@@ -33,6 +33,7 @@
             CmtOpt = cmtOpt;
             FontColor = fontColor;
             CommentNewline = commentNewline;
+            KensaGaichu = kensaGaichu;
         }
 
         public int HpId { get; private set; }
@@ -92,5 +93,7 @@
         public string FontColor { get; private set; }
 
         public int CommentNewline { get; private set; }
+
+        public int KensaGaichu { get; private set; }
     }
 }
