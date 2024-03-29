@@ -1,5 +1,4 @@
 ﻿using Domain.Models.Santei;
-using Moq;
 
 namespace CloudUnitTest.Model.Santei;
 
@@ -202,5 +201,604 @@ public class SanteiInfModelTest
                         && !santeiInfModel.SanteiInfDetailList.Any()
                         && !santeiInfModel.IsDeleted
                     );
+    }
+
+    [Test]
+    public void SanteiInfModel_TestDayCountDisplay_1()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 2;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 new());
+        Assert.True(santeiInfModel.DayCountDisplay == $"{santeiInfModel.DayCount}日");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestDayCountDisplay_2()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 3;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 new());
+        Assert.True(santeiInfModel.DayCountDisplay == $"{santeiInfModel.DayCount}週");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestDayCountDisplay_3()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 4;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 new());
+        Assert.True(santeiInfModel.DayCountDisplay == $"{santeiInfModel.DayCount}ヶ月");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestDayCountDisplay_4()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 5;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 new());
+        Assert.True(santeiInfModel.DayCountDisplay == $"{santeiInfModel.DayCount}週");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestDayCountDisplay_5()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 new());
+        Assert.True(santeiInfModel.DayCountDisplay == $"{santeiInfModel.DayCount}ヶ月");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestKisanType_1()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 new());
+        Assert.True(santeiInfModel.KisanType == "前回日");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestKisanType_2()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+        int kisanSbt = 1;
+        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
+        {
+            new SanteiInfDetailModel(
+                    1,
+                    ptId,
+                    itemCd,
+                    20221212,
+                    kisanSbt,
+                    20111212,
+                    "byomei",
+                    "hosokuComment",
+                    "comment"
+                )
+        };
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 listSanteiInfDetails);
+        Assert.True(santeiInfModel.KisanType == "前回日");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestKisanType_3()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+        int kisanSbt = 2;
+        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
+        {
+            new SanteiInfDetailModel(
+                    1,
+                    ptId,
+                    itemCd,
+                    20221212,
+                    kisanSbt,
+                    20111212,
+                    "byomei",
+                    "hosokuComment",
+                    "comment"
+                )
+        };
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 listSanteiInfDetails);
+        Assert.True(santeiInfModel.KisanType == "発症日");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestKisanType_4()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+        int kisanSbt = 3;
+        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
+        {
+            new SanteiInfDetailModel(
+                    1,
+                    ptId,
+                    itemCd,
+                    20221212,
+                    kisanSbt,
+                    20111212,
+                    "byomei",
+                    "hosokuComment",
+                    "comment"
+                )
+        };
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 listSanteiInfDetails);
+        Assert.True(santeiInfModel.KisanType == "急性増悪");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestKisanType_5()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+        int kisanSbt = 4;
+        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
+        {
+            new SanteiInfDetailModel(
+                    1,
+                    ptId,
+                    itemCd,
+                    20221212,
+                    kisanSbt,
+                    20111212,
+                    "byomei",
+                    "hosokuComment",
+                    "comment"
+                )
+        };
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 listSanteiInfDetails);
+        Assert.True(santeiInfModel.KisanType == "治療開始");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestKisanType_6()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+        int kisanSbt = 5;
+        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
+        {
+            new SanteiInfDetailModel(
+                    1,
+                    ptId,
+                    itemCd,
+                    20221212,
+                    kisanSbt,
+                    20111212,
+                    "byomei",
+                    "hosokuComment",
+                    "comment"
+                )
+        };
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 listSanteiInfDetails);
+        Assert.True(santeiInfModel.KisanType == "手術日");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestKisanType_7()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+        int kisanSbt = 6;
+        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
+        {
+            new SanteiInfDetailModel(
+                    1,
+                    ptId,
+                    itemCd,
+                    20221212,
+                    kisanSbt,
+                    20111212,
+                    "byomei",
+                    "hosokuComment",
+                    "comment"
+                )
+        };
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 listSanteiInfDetails);
+        Assert.True(santeiInfModel.KisanType == "初回診断");
+    }
+
+    [Test]
+    public void SanteiInfModel_TestKisanType_8()
+    {
+        // Arrange
+        #region Data Example
+        int id = 1;
+        long ptId = 1;
+        string itemCd = "itemCd";
+        int seqNo = 1;
+        int alertDays = 1;
+        int alertTerm = 6;
+        string itemName = "itemName";
+        int lastOdrDate = 20221212;
+        int santeiItemCount = 1;
+        double santeiItemSum = 1.1;
+        int currentMonthSanteiItemCount = 1;
+        double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
+        int kisanSbt = 7;
+        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
+        {
+            new SanteiInfDetailModel(
+                    1,
+                    ptId,
+                    itemCd,
+                    20221212,
+                    kisanSbt,
+                    20111212,
+                    "byomei",
+                    "hosokuComment",
+                    "comment"
+                )
+        };
+
+        #endregion
+        var santeiInfModel = new SanteiInfModel(
+                                 id,
+                                 ptId,
+                                 itemCd,
+                                 seqNo,
+                                 alertDays,
+                                 alertTerm,
+                                 itemName,
+                                 lastOdrDate,
+                                 santeiItemCount,
+                                 santeiItemSum,
+                                 currentMonthSanteiItemCount,
+                                 currentMonthSanteiItemSum,
+                                 sinDate,
+                                 listSanteiInfDetails);
+        Assert.True(santeiInfModel.KisanType == "前回日");
     }
 }

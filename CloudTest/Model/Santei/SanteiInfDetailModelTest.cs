@@ -43,6 +43,7 @@ public class SanteiInfDetailModelTest
                         && santeiInfDetailModel.HosokuComment == hosokuComment
                         && santeiInfDetailModel.Comment == comment
                         && !santeiInfDetailModel.IsDeleted
+                        && !santeiInfDetailModel.CheckDefaultValue()
                     );
     }
 
