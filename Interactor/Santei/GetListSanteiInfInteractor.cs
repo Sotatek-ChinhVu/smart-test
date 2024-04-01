@@ -93,7 +93,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             int targetDateInt = kisanDate != 0 ? kisanDate : santeiInf.LastOdrDate;
 
             // Type 初回算定 =>  If 前回日 already exists, 起算日 will not be displayed
-            if (santeiInf.LastOdrDate > kisanDate && kisanSbt == 1)
+            if (santeiInf.LastOdrDate > 0 && kisanSbt == 1)
             {
                 targetDateInt = santeiInf.LastOdrDate;
             }
