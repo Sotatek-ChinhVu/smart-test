@@ -69,11 +69,12 @@ public class AddYousikiInteractor : IAddYousikiInputPort
                         return (new AddYousikiOutputData(mFree00010, AddYousikiStatus.InvalidYousikiSelectDataType3), 0);
                 }
             }
+            else if (_yousikiRepository.IsYousikiExist(inputData.HpId, inputData.SinYm, ptId))
+            {
+                return (new AddYousikiOutputData(mFree00030, AddYousikiStatus.IsYousikiExist), 0);
+            }
         }
-        else if (_yousikiRepository.IsYousikiExist(inputData.HpId, inputData.SinYm, ptId))
-        {
-            return (new AddYousikiOutputData(mFree00030, AddYousikiStatus.IsYousikiExist), 0);
-        }
+        
         return (new AddYousikiOutputData(string.Empty, AddYousikiStatus.ValidateSuccessed), ptId);
     }
 }

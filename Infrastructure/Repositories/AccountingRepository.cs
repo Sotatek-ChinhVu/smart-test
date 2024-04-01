@@ -872,11 +872,11 @@ namespace Infrastructure.Repositories
 
                 int thisSeikyuGaku = item.SeikyuGaku - (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku)) -
                                  (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan));
-
+                bool isLastRecord = i == syunoSeikyuModels.Count - 1;
                 if (!isDisCharged)
                 {
                     ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
-                                     out outNyukinKbn);
+                                     out outNyukinKbn, isLastRecord);
                     allSeikyuGaku -= thisSeikyuGaku;
                 }
                 else
@@ -908,8 +908,7 @@ namespace Infrastructure.Repositories
                         NyukinjiTensu = item.SeikyuTensu,
                         NyukinjiDetail = item.SeikyuDetail,
                         NyukinjiSeikyu = item.SeikyuGaku
-                    });
-                    listRaiinNoPrint.Add(item.RaiinNo);
+                    });                    
                     UpdateStatusRaiinInf(userId, item, raiinInLists, kaikeiTime);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
@@ -940,11 +939,11 @@ namespace Infrastructure.Repositories
                     UpdateStatusRaiinInf(userId, item, raiinInLists, kaikeiTime);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
-
+                listRaiinNoPrint.Add(item.RaiinNo);
             }
             if (accDue != 0 && (thisCredit != 0 && isDisCharged) || (nyukinGaku != 0 && !isDisCharged))
             {
-                AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment, listRaiinNoPrint);
+                AdjustWariExecute(hpId, ptId, userId, nyukinGaku, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment, listRaiinNoPrint);
             }
 
             return TrackingDataContext.SaveChanges() > 0;
@@ -1065,13 +1064,21 @@ namespace Infrastructure.Repositories
         }
 
         private void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
-            out int outNyukinGaku, out int outNyukinKbn)
+            out int outNyukinGaku, out int outNyukinKbn, bool isLastRecord)
         {
             int credit = adjustFutan + nyukinGaku;
 
             if (credit == allSeikyuGaku || credit < allSeikyuGaku && credit > thisSeikyuGaku)
             {
-                if (adjustFutan >= thisSeikyuGaku)
+                if (isLastRecord)
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else if (adjustFutan >= thisSeikyuGaku)
                 {
                     outAdjustFutan = thisSeikyuGaku;
                     outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
