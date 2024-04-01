@@ -8,6 +8,11 @@ public class FileItemInputItem
         ListFileItems = listFileItems;
     }
 
+    public FileItemInputItem()
+    {
+        ListFileItems = new();
+    }
+
     public bool IsUpdateFile { get; private set; }
 
     public List<string> ListFileItems { get; private set; }
