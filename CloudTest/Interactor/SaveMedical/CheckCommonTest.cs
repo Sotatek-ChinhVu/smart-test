@@ -29,7 +29,7 @@ public class CheckCommonTest : BaseUT
 {
     #region CheckCommon
     [Test]
-    public void TC_001_CheckCommon_TestInvalidHpId_01()
+    public void TC_001_CheckCommon_TestInvalidHpIdWithHpIdIs0()
     {
         //Setup Data Test
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
@@ -73,7 +73,7 @@ public class CheckCommonTest : BaseUT
     }
 
     [Test]
-    public void TC_002_CheckCommon_TestInvalidHpId_02()
+    public void TC_002_CheckCommon_TestInvalidHpIdWithHpIdListHasMultipleParams()
     {
         //Setup Data Test
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
@@ -117,7 +117,7 @@ public class CheckCommonTest : BaseUT
     }
 
     [Test]
-    public void TC_003_CheckCommon_TestInvalidPtId_01()
+    public void TC_003_CheckCommon_TestInvalidPtIdWithPtIdIs0()
     {
         //Setup Data Test
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
@@ -161,7 +161,7 @@ public class CheckCommonTest : BaseUT
     }
 
     [Test]
-    public void TC_004_CheckCommon_TestInvalidPtId_02()
+    public void TC_004_CheckCommon_TestInvalidPtIdWithPtIdListHasMultipleParams()
     {
         //Setup Data Test
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
@@ -205,7 +205,7 @@ public class CheckCommonTest : BaseUT
     }
 
     [Test]
-    public void TC_005_CheckCommon_TestInvalidRaiinNo_01()
+    public void TC_005_CheckCommon_TestInvalidRaiinNoWithRaiinNoIs0()
     {
         //Setup Data Test
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
@@ -249,7 +249,7 @@ public class CheckCommonTest : BaseUT
     }
 
     [Test]
-    public void TC_006_CheckCommon_TestInvalidPtId_02()
+    public void TC_006_CheckCommon_TestInvalidPtIdWithRaiinNoListHasMuiltipeParams()
     {
         //Setup Data Test
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
@@ -293,7 +293,7 @@ public class CheckCommonTest : BaseUT
     }
 
     [Test]
-    public void TC_007_CheckCommon_TestInvalidSinDate_01()
+    public void TC_007_CheckCommon_TestInvalidSinDateWithSinDateIs0()
     {
         //Setup Data Test
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
@@ -336,7 +336,7 @@ public class CheckCommonTest : BaseUT
     }
 
     [Test]
-    public void TC_008_CheckCommon_TestInvalidSinDate_02()
+    public void TC_008_CheckCommon_TestInvalidSinDateWithSinDateListHasMultipleParams()
     {
         //Setup Data Test
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
