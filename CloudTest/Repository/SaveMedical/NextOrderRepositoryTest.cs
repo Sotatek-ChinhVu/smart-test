@@ -1,6 +1,6 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using Domain.Models.NextOrder;
+﻿using Domain.Models.NextOrder;
 using Entity.Tenant;
+using Helper.Constants;
 using Helper.Redis;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -8,9 +8,8 @@ using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
-using System.ComponentModel;
+using System;
 using System.Linq.Dynamic.Core;
-using ZstdSharp.Unsafe;
 using IDatabase = Microsoft.EntityFrameworkCore.Storage.IDatabase;
 
 namespace CloudUnitTest.Repository.SaveMedical
@@ -18,6 +17,8 @@ namespace CloudUnitTest.Repository.SaveMedical
     public class NextOrderRepositoryTest : BaseUT
     {
         private readonly StackExchange.Redis.IDatabase _cache;
+
+        private readonly string baseAccessUrl = "BaseAccessUrl";
 
         public NextOrderRepositoryTest()
         {
@@ -1261,12 +1262,12 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            
+
             //Assert
             try
             {
                 Assert.That(result && rsvkrtOdrInfs.Count() == 2);
-            } 
+            }
             finally
             {
                 nextOrderRepository.ReleaseResource();
@@ -1398,7 +1399,7 @@ namespace CloudUnitTest.Repository.SaveMedical
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
             var rsvkrtOdrInfs = tenantTracking.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            
+
             //Assert
             try
             {
@@ -3122,7 +3123,7 @@ namespace CloudUnitTest.Repository.SaveMedical
 
             var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
             var rsvkrtMstsInsert = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
-            
+
             //Assert
             try
             {
@@ -3132,6 +3133,875 @@ namespace CloudUnitTest.Repository.SaveMedical
             {
                 nextOrderRepository.ReleaseResource();
                 tenant.RsvkrtMsts.Remove(rsvkrtMst);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_020_NextOrderRepository_TestSaveFileNextOrderSuccess()
+        {
+            //Arrange
+            var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
+            var mockIConfiguration = new Mock<IConfiguration>();
+            var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
+            var mock_cache = new Mock<IDatabase>();
+            mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+            mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+            AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
+            IOptions<AmazonS3Options> options = Options.Create(appSettings);
+
+            var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, options);
+            Random random = new();
+            int userId = 999;
+            int hpId = 1;
+            long ptId = 28032001;
+            long rsvkrtNo = 1;
+            int rsvkrtKbn = 1;
+            int rsvDate = 1;
+            string rsvName = "";
+            int isDeleted = 0;
+            int sortNo = 1;
+            long rpNo = 1;
+            long rpEdaNo = 1;
+            long id = 1;
+            int grpId = 99999999;
+            int kbnCd = 99999999;
+            long ptIdInput = 2803;
+            long ptNum = 28032001;
+            int seqNo = 999999;
+
+            List<string> ListFileItems = new List<string>()
+            {
+                CommonConstants.Store,
+                CommonConstants.Karte
+            };
+
+            List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
+            {
+                new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
+            };
+
+            List<RsvKrtOrderInfDetailModel> rsvKrtOrderInfDetailModels = new List<RsvKrtOrderInfDetailModel>()
+            {
+                new RsvKrtOrderInfDetailModel(
+                    hpId,
+                    ptId,
+                    rsvkrtNo,
+                    rpNo,
+                    rpEdaNo,
+                    rsvDate,
+                    1,
+                    1,
+                    "Kaito",
+                    "Kaito",
+                    1,
+                    "",
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    "",
+                    "",
+                    1,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    1,
+                    "",
+                    1,
+                    1,
+                    true,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    "",
+                    new(),
+                    1,
+                    1,
+                    "",
+                    "",
+                    1,
+                    true
+                    )
+            };
+
+            RsvkrtKarteInfModel rsvkrtKarteInf = new RsvkrtKarteInfModel(hpId, ptId, rsvDate, rsvkrtNo, 1, "KarteInf1", "KarteInf2", 1);
+
+            List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new List<RsvkrtOrderInfModel>()
+            {
+                new RsvkrtOrderInfModel(
+                    hpId,
+                    ptId,
+                    rsvDate,
+                    rsvkrtNo,
+                    rpNo,
+                    rpEdaNo,
+                    id,
+                    0,
+                    0,
+                    "",
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    new(),
+                    0,
+                    "",
+                    rsvKrtOrderInfDetailModels,
+                    new(),
+                    "",
+                    ""
+                    )
+            };
+
+            FileItemModel fileItem = new FileItemModel(true, ListFileItems);
+            var tenantTracking = TenantProvider.GetNoTrackingDataContext();
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+
+            List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
+            {
+                new NextOrderModel (
+                    hpId,
+                    ptIdInput,
+                    rsvkrtNo,
+                    rsvkrtKbn,
+                    rsvDate,
+                    rsvName,
+                    isDeleted,
+                    sortNo,
+                    new(),
+                    new(),
+                    rsvkrtOrderInfs,
+                    fileItem
+                    )
+            };
+
+            PtInf ptInf = new PtInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SeqNo = seqNo,
+                PtNum = ptId
+            };
+
+            RsvkrtMst rsvkrtMst = new RsvkrtMst()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RsvkrtNo = rsvkrtNo,
+                IsDeleted = 0
+            };
+
+            RsvkrtKarteInf rsvkrtKarte = new RsvkrtKarteInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RsvkrtNo = rsvkrtNo,
+                KarteKbn = 1,
+                SeqNo = 1
+            };
+
+            KouiKbnMst kouiKbnMst = new KouiKbnMst()
+            {
+                KouiKbnId = 99999999,
+                SortNo = 99999999,
+                KouiKbn1 = 1,
+                KouiKbn2 = 1,
+                KouiGrpName = "Kaito"
+            };
+
+            RaiinListKoui raiinListKoui = new RaiinListKoui()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = 99999999,
+                KouiKbnId = 99999999
+            };
+
+            RaiinListDetail raiinListDetail = new RaiinListDetail()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd
+            };
+
+            RaiinListMst raiinListMst = new RaiinListMst()
+            {
+                HpId = hpId,
+                GrpId = grpId
+            };
+
+            RaiinListItem raiinListItem = new RaiinListItem()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = 99999999
+            };
+
+            RaiinListInf raiinListInf = new RaiinListInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SinDate = rsvDate,
+                RaiinNo = 0,
+                GrpId = grpId,
+                KbnCd = kbnCd
+            };
+
+            //Act
+            tenant.Add(rsvkrtMst);
+            tenant.Add(rsvkrtKarte);
+            tenant.Add(kouiKbnMst);
+            tenant.Add(raiinListKoui);
+            tenant.Add(raiinListDetail);
+            tenant.Add(raiinListMst);
+            tenant.Add(raiinListItem);
+            tenant.Add(raiinListInf);
+            tenant.Add(ptInf);
+            tenant.SaveChanges();
+
+            List<string> listFileName = new() { "fileName.txt" };
+            List<string> listFolders = new()
+            {
+                CommonConstants.Store,
+                CommonConstants.Karte,
+                CommonConstants.NextPic
+            };
+
+            mockIAmazonS3Service.Setup(finder => finder.GetFolderUploadToPtNum(listFolders, ptNum))
+           .Returns((List<string> folders, long ptNum) => $"/{CommonConstants.Store}/{CommonConstants.Karte}/{ptNum}/");
+
+            mockIAmazonS3Service.Setup(finder => finder.GetUniqueFileNameKey(It.IsAny<string>()))
+           .Returns((string fileName) => It.IsAny<string>());
+
+            mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
+           .Returns((string sourceFile, string destinationFile) => false);
+
+            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
+            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+            var rsvkrtKarteImgInfs = tenant.RsvkrtKarteImgInfs.Where(x => x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
+
+            //Assert
+            try
+            {
+                Assert.That(result && !raiinListInfs.Any() && rsvkrtKarteImgInfs.Any());
+            }
+            finally
+            {
+                nextOrderRepository.ReleaseResource();
+                tenant.KouiKbnMsts.Remove(kouiKbnMst);
+                tenant.RaiinListMsts.Remove(raiinListMst);
+                tenant.RaiinListDetails.Remove(raiinListDetail);
+                tenant.RaiinListKouis.Remove(raiinListKoui);
+                tenant.RaiinListItems.Remove(raiinListItem);
+                tenant.RsvkrtMsts.RemoveRange(rsvkrtMstData);
+                tenant.RsvkrtOdrInfs.RemoveRange(rsvkrtOdrInfs);
+                tenant.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfs);
+                tenant.RsvkrtOdrInfDetails.RemoveRange(rsvkrtOdrInfDetails);
+                tenant.PtInfs.Remove(ptInf);
+                tenant.RsvkrtKarteImgInfs.RemoveRange(rsvkrtKarteImgInfs);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_021_NextOrderRepository_TestSaveFileNextOrderSuccess()
+        {
+            //Arrange
+            var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
+            var mockIConfiguration = new Mock<IConfiguration>();
+            var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
+            var mock_cache = new Mock<IDatabase>();
+            mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+            mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+            AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
+            IOptions<AmazonS3Options> options = Options.Create(appSettings);
+
+            var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, options);
+            Random random = new();
+            int userId = 999;
+            int hpId = 1;
+            long ptId = 28032001;
+            long rsvkrtNo = 1;
+            int rsvkrtKbn = 1;
+            int rsvDate = 1;
+            string rsvName = "";
+            int isDeleted = 0;
+            int sortNo = 1;
+            long rpNo = 1;
+            long rpEdaNo = 1;
+            long id = 1;
+            int grpId = 99999999;
+            int kbnCd = 99999999;
+            long ptIdInput = 2803;
+            long ptNum = 28032001;
+            int seqNo = 999999;
+
+            List<string> ListFileItems = new List<string>()
+            {
+                CommonConstants.Store,
+                CommonConstants.Karte,
+                "BaseAccessUrl/"
+            };
+
+            List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
+            {
+                new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
+            };
+
+            List<RsvKrtOrderInfDetailModel> rsvKrtOrderInfDetailModels = new List<RsvKrtOrderInfDetailModel>()
+            {
+                new RsvKrtOrderInfDetailModel(
+                    hpId,
+                    ptId,
+                    rsvkrtNo,
+                    rpNo,
+                    rpEdaNo,
+                    rsvDate,
+                    1,
+                    1,
+                    "Kaito",
+                    "Kaito",
+                    1,
+                    "",
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    "",
+                    "",
+                    1,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    1,
+                    "",
+                    1,
+                    1,
+                    true,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    "",
+                    new(),
+                    1,
+                    1,
+                    "",
+                    "",
+                    1,
+                    true
+                    )
+            };
+
+            RsvkrtKarteInfModel rsvkrtKarteInf = new RsvkrtKarteInfModel(hpId, ptId, rsvDate, rsvkrtNo, 1, "KarteInf1", "KarteInf2", 1);
+
+            List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new List<RsvkrtOrderInfModel>()
+            {
+                new RsvkrtOrderInfModel(
+                    hpId,
+                    ptId,
+                    rsvDate,
+                    rsvkrtNo,
+                    rpNo,
+                    rpEdaNo,
+                    id,
+                    0,
+                    0,
+                    "",
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    new(),
+                    0,
+                    "",
+                    rsvKrtOrderInfDetailModels,
+                    new(),
+                    "",
+                    ""
+                    )
+            };
+
+            FileItemModel fileItem = new FileItemModel(true, ListFileItems);
+            var tenantTracking = TenantProvider.GetNoTrackingDataContext();
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+
+            List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
+            {
+                new NextOrderModel (
+                    hpId,
+                    ptIdInput,
+                    rsvkrtNo,
+                    rsvkrtKbn,
+                    rsvDate,
+                    rsvName,
+                    isDeleted,
+                    sortNo,
+                    new(),
+                    new(),
+                    rsvkrtOrderInfs,
+                    fileItem
+                    )
+            };
+
+            PtInf ptInf = new PtInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SeqNo = seqNo,
+                PtNum = ptId
+            };
+
+            RsvkrtMst rsvkrtMst = new RsvkrtMst()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RsvkrtNo = rsvkrtNo,
+                IsDeleted = 0
+            };
+
+            RsvkrtKarteInf rsvkrtKarte = new RsvkrtKarteInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RsvkrtNo = rsvkrtNo,
+                KarteKbn = 1,
+                SeqNo = 1
+            };
+
+            KouiKbnMst kouiKbnMst = new KouiKbnMst()
+            {
+                KouiKbnId = 99999999,
+                SortNo = 99999999,
+                KouiKbn1 = 1,
+                KouiKbn2 = 1,
+                KouiGrpName = "Kaito"
+            };
+
+            RaiinListKoui raiinListKoui = new RaiinListKoui()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = 99999999,
+                KouiKbnId = 99999999
+            };
+
+            RaiinListDetail raiinListDetail = new RaiinListDetail()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd
+            };
+
+            RaiinListMst raiinListMst = new RaiinListMst()
+            {
+                HpId = hpId,
+                GrpId = grpId
+            };
+
+            RaiinListItem raiinListItem = new RaiinListItem()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = 99999999
+            };
+
+            RaiinListInf raiinListInf = new RaiinListInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SinDate = rsvDate,
+                RaiinNo = 0,
+                GrpId = grpId,
+                KbnCd = kbnCd
+            };
+
+            //Act
+            tenant.Add(rsvkrtMst);
+            tenant.Add(rsvkrtKarte);
+            tenant.Add(kouiKbnMst);
+            tenant.Add(raiinListKoui);
+            tenant.Add(raiinListDetail);
+            tenant.Add(raiinListMst);
+            tenant.Add(raiinListItem);
+            tenant.Add(raiinListInf);
+            tenant.Add(ptInf);
+            tenant.SaveChanges();
+
+            List<string> listFileName = new() { "fileName.txt" };
+            List<string> listFolders = new()
+            {
+                CommonConstants.Store,
+                CommonConstants.Karte,
+                CommonConstants.NextPic,
+                "BaseAccessUrl/"
+            };
+
+            mockIAmazonS3Service.Setup(finder => finder.GetFolderUploadToPtNum(listFolders, ptNum))
+           .Returns((List<string> folders, long ptNum) => $"/{CommonConstants.Store}/{CommonConstants.Karte}/{ptNum}/");
+
+            mockIAmazonS3Service.Setup(finder => finder.GetUniqueFileNameKey(It.IsAny<string>()))
+           .Returns((string fileName) => It.IsAny<string>());
+
+            mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
+           .Returns((string sourceFile, string destinationFile) => false);
+
+            mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
+            .Returns((string sourceFile, string destinationFile) => true);
+
+            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
+            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+            var rsvkrtKarteImgInfs = tenant.RsvkrtKarteImgInfs.Where(x => x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
+
+            //Assert
+            try
+            {
+                Assert.That(result && !raiinListInfs.Any() && rsvkrtKarteImgInfs.Any());
+            }
+            finally
+            {
+                nextOrderRepository.ReleaseResource();
+                tenant.KouiKbnMsts.Remove(kouiKbnMst);
+                tenant.RaiinListMsts.Remove(raiinListMst);
+                tenant.RaiinListDetails.Remove(raiinListDetail);
+                tenant.RaiinListKouis.Remove(raiinListKoui);
+                tenant.RaiinListItems.Remove(raiinListItem);
+                tenant.RsvkrtMsts.RemoveRange(rsvkrtMstData);
+                tenant.RsvkrtOdrInfs.RemoveRange(rsvkrtOdrInfs);
+                tenant.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfs);
+                tenant.RsvkrtOdrInfDetails.RemoveRange(rsvkrtOdrInfDetails);
+                tenant.PtInfs.Remove(ptInf);
+                tenant.RsvkrtKarteImgInfs.RemoveRange(rsvkrtKarteImgInfs);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_022_NextOrderRepository_TestSaveFileNextOrderSuccess()
+        {
+            //Arrange
+            var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
+            var mockIConfiguration = new Mock<IConfiguration>();
+            var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
+            var mock_cache = new Mock<IDatabase>();
+            mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+            mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+            AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
+            IOptions<AmazonS3Options> options = Options.Create(appSettings);
+
+            var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, options);
+            Random random = new();
+            int userId = 999;
+            int hpId = 1;
+            long ptId = 28032001;
+            long rsvkrtNo = 1;
+            int rsvkrtKbn = 1;
+            int rsvDate = 1;
+            string rsvName = "";
+            int isDeleted = 0;
+            int sortNo = 1;
+            long rpNo = 1;
+            long rpEdaNo = 1;
+            long id = 1;
+            int grpId = 99999999;
+            int kbnCd = 99999999;
+            long ptIdInput = 2803;
+            long ptNum = 28032001;
+            int seqNo = 999999;
+
+            List<string> ListFileItems = new List<string>();
+
+            List<RsvkrtByomeiModel> rsvkrtByomeis = new List<RsvkrtByomeiModel>()
+            {
+                new RsvkrtByomeiModel(1, hpId, ptId, rsvkrtNo, 1, "", "", 1, 1, 1, "", 1, 1, 0, new(), "", "", "", "")
+            };
+
+            List<RsvKrtOrderInfDetailModel> rsvKrtOrderInfDetailModels = new List<RsvKrtOrderInfDetailModel>()
+            {
+                new RsvKrtOrderInfDetailModel(
+                    hpId,
+                    ptId,
+                    rsvkrtNo,
+                    rpNo,
+                    rpEdaNo,
+                    rsvDate,
+                    1,
+                    1,
+                    "Kaito",
+                    "Kaito",
+                    1,
+                    "",
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    "",
+                    "",
+                    1,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    1,
+                    "",
+                    1,
+                    1,
+                    true,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    "",
+                    new(),
+                    1,
+                    1,
+                    "",
+                    "",
+                    1,
+                    true
+                    )
+            };
+
+            RsvkrtKarteInfModel rsvkrtKarteInf = new RsvkrtKarteInfModel(hpId, ptId, rsvDate, rsvkrtNo, 1, "KarteInf1", "KarteInf2", 1);
+
+            List<RsvkrtOrderInfModel> rsvkrtOrderInfs = new List<RsvkrtOrderInfModel>()
+            {
+                new RsvkrtOrderInfModel(
+                    hpId,
+                    ptId,
+                    rsvDate,
+                    rsvkrtNo,
+                    rpNo,
+                    rpEdaNo,
+                    id,
+                    0,
+                    0,
+                    "",
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    new(),
+                    0,
+                    "",
+                    rsvKrtOrderInfDetailModels,
+                    new(),
+                    "",
+                    ""
+                    )
+            };
+
+            FileItemModel fileItem = new FileItemModel(true, ListFileItems);
+            var tenantTracking = TenantProvider.GetNoTrackingDataContext();
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+
+            List<NextOrderModel> nextOrderModels = new List<NextOrderModel>()
+            {
+                new NextOrderModel (
+                    hpId,
+                    ptIdInput,
+                    rsvkrtNo,
+                    rsvkrtKbn,
+                    rsvDate,
+                    rsvName,
+                    isDeleted,
+                    sortNo,
+                    new(),
+                    new(),
+                    rsvkrtOrderInfs,
+                    fileItem
+                    )
+            };
+
+            PtInf ptInf = new PtInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SeqNo = seqNo,
+                PtNum = ptId
+            };
+
+            RsvkrtMst rsvkrtMst = new RsvkrtMst()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RsvkrtNo = rsvkrtNo,
+                IsDeleted = 0
+            };
+
+            RsvkrtKarteInf rsvkrtKarte = new RsvkrtKarteInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RsvkrtNo = rsvkrtNo,
+                KarteKbn = 1,
+                SeqNo = 1
+            };
+
+            KouiKbnMst kouiKbnMst = new KouiKbnMst()
+            {
+                KouiKbnId = 99999999,
+                SortNo = 99999999,
+                KouiKbn1 = 1,
+                KouiKbn2 = 1,
+                KouiGrpName = "Kaito"
+            };
+
+            RaiinListKoui raiinListKoui = new RaiinListKoui()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = 99999999,
+                KouiKbnId = 99999999
+            };
+
+            RaiinListDetail raiinListDetail = new RaiinListDetail()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd
+            };
+
+            RaiinListMst raiinListMst = new RaiinListMst()
+            {
+                HpId = hpId,
+                GrpId = grpId
+            };
+
+            RaiinListItem raiinListItem = new RaiinListItem()
+            {
+                HpId = hpId,
+                GrpId = grpId,
+                KbnCd = kbnCd,
+                SeqNo = 99999999
+            };
+
+            RaiinListInf raiinListInf = new RaiinListInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SinDate = rsvDate,
+                RaiinNo = 0,
+                GrpId = grpId,
+                KbnCd = kbnCd
+            };
+
+            //Act
+            tenant.Add(rsvkrtMst);
+            tenant.Add(rsvkrtKarte);
+            tenant.Add(kouiKbnMst);
+            tenant.Add(raiinListKoui);
+            tenant.Add(raiinListDetail);
+            tenant.Add(raiinListMst);
+            tenant.Add(raiinListItem);
+            tenant.Add(raiinListInf);
+            tenant.Add(ptInf);
+            tenant.SaveChanges();
+
+            List<string> listFileName = new() { "fileName.txt" };
+            List<string> listFolders = new()
+            {
+                CommonConstants.Store,
+                CommonConstants.Karte,
+                CommonConstants.NextPic,
+                "BaseAccessUrl/"
+            };
+
+            mockIAmazonS3Service.Setup(finder => finder.GetFolderUploadToPtNum(listFolders, ptNum))
+           .Returns((List<string> folders, long ptNum) => $"/{CommonConstants.Store}/{CommonConstants.Karte}/{ptNum}/");
+
+            mockIAmazonS3Service.Setup(finder => finder.GetUniqueFileNameKey(It.IsAny<string>()))
+           .Returns((string fileName) => It.IsAny<string>());
+
+            mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
+           .Returns((string sourceFile, string destinationFile) => false);
+
+            mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
+            .Returns((string sourceFile, string destinationFile) => true);
+
+            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
+            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
+            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+            var rsvkrtKarteImgInfs = tenant.RsvkrtKarteImgInfs.Where(x => x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
+
+            //Assert
+            try
+            {
+                Assert.That(result && !raiinListInfs.Any() && rsvkrtKarteImgInfs.Any());
+            }
+            finally
+            {
+                nextOrderRepository.ReleaseResource();
+                tenant.KouiKbnMsts.Remove(kouiKbnMst);
+                tenant.RaiinListMsts.Remove(raiinListMst);
+                tenant.RaiinListDetails.Remove(raiinListDetail);
+                tenant.RaiinListKouis.Remove(raiinListKoui);
+                tenant.RaiinListItems.Remove(raiinListItem);
+                tenant.RsvkrtMsts.RemoveRange(rsvkrtMstData);
+                tenant.RsvkrtOdrInfs.RemoveRange(rsvkrtOdrInfs);
+                tenant.RsvkrtKarteInfs.RemoveRange(rsvkrtKarteInfs);
+                tenant.RsvkrtOdrInfDetails.RemoveRange(rsvkrtOdrInfDetails);
+                tenant.PtInfs.Remove(ptInf);
+                tenant.RsvkrtKarteImgInfs.RemoveRange(rsvkrtKarteImgInfs);
                 tenant.SaveChanges();
             }
         }
