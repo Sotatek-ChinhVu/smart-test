@@ -449,7 +449,7 @@ public static class ReadDataInitKbnSetting
         return raiinKbItemList;
     }
     
-    public static List<RaiinKbnYayoku> ReadRaiinKbnYayoku()
+    public static List<RaiinKbnYayoku> ReadRaiinKbnYayoku(int hpId)
     {
         var rootPath = Environment.CurrentDirectory;
         rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -483,7 +483,6 @@ public static class ReadDataInitKbnSetting
                         switch (columnName)
                         {
                             case "A":
-                                int.TryParse(text, out int hpId);
                                 raiinKbItem.HpId = hpId;
                                 break;
                             case "B":

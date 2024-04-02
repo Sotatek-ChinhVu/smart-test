@@ -36,12 +36,6 @@ namespace Infrastructure.Repositories
             _options = optionsAccessor.Value;
         }
 
-        public NextOrderRepository(ITenantProvider tenantProvider) : base(tenantProvider)
-        {
-            key = string.Empty;
-            _cache = RedisConnectorHelper.Connection.GetDatabase();
-        }
-
         public void GetRedis()
         {
             string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
@@ -1298,7 +1292,7 @@ namespace Infrastructure.Repositories
             return raiinKbns;
         }
 
-        private List<(int sinKouiKbn, int rsvDate, string itemCd)> GetNextOdrInfModels(int hpId, long ptId, int sinDate)
+        public List<(int sinKouiKbn, int rsvDate, string itemCd)> GetNextOdrInfModels(int hpId, long ptId, int sinDate)
         {
             var result = new List<(int sinKouiKbn, int rsvDate, string itemCd)>();
             var nextOdrInfs = NoTrackingDataContext.RsvkrtOdrInfs.Where(p => p.HpId == hpId &&
