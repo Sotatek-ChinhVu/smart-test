@@ -8,8 +8,11 @@ using Domain.Models.OrdInfs;
 using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
+using Infrastructure.Options;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using static Helper.Constants.OrderInfConst;
 
@@ -8934,7 +8937,7 @@ public class CheckedOrderTest : BaseUT
             tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
             tenantTracking.SaveChanges();
         }
-        
+
     }
 
     #endregion
@@ -9026,5 +9029,208 @@ public class CheckedOrderTest : BaseUT
 
         //Assert
         Assert.True(checkModel1s.Count == 0);
+    }
+
+    [Test]
+    public void TrialIryoJyohoKibanCalculation_113_AutoSanteiItem()
+    {
+        int hpId = 1; long ptId = 999; int sinDate = 20240402; long raiinNo = 123;
+        List<OrdInfDetailModel> allOdrInfDetail = new List<OrdInfDetailModel>();
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockMstItem = new Mock<IMstItemRepository>();
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
+
+        //Act
+        var result = medicalExaminationRepository.TrialIryoJyohoKibanCalculation(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
+        //Assert
+        Assert.True(result.Count == 0);
+    }
+
+    [Test]
+    public void TrialIryoJyohoKibanCalculation_114_Check_ExistAutoItem()
+    {
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var autoSanteiMsts = CheckedOrderData.ReadAutoSanteiMst();
+        tenant.AddRange(autoSanteiMsts);
+        int hpId = 1; long ptId = 999; int sinDate = 20240402; long raiinNo = 123;
+        List<OrdInfDetailModel> allOdrInfDetail = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel("111015970",1)
+        };
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockMstItem = new Mock<IMstItemRepository>();
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
+        try
+        {
+            tenant.SaveChanges();
+            //Act
+            var result = medicalExaminationRepository.TrialIryoJyohoKibanCalculation(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
+            //Assert
+            Assert.True(result.Count == 0);
+        }
+        finally
+        {
+            tenant.RemoveRange(autoSanteiMsts);
+            tenant.SaveChanges();
+        }
+        
+    }
+
+    [Test]
+    public void TrialIryoJyohoKibanCalculation_115_Check_isExistFirstVisit()
+    {
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var autoSanteiMsts = CheckedOrderData.ReadAutoSanteiMst();
+        var tenMsts = CheckedOrderData.ReadTenMst();
+        tenMsts[0].ItemCd = ItemCdConst.SyosinIryoJyohoKiban1;
+        tenant.AddRange(autoSanteiMsts);
+        tenant.Add(tenMsts[0]);
+        int hpId = 1; long ptId = 999; int sinDate = 20240402; long raiinNo = 123;
+        List<OrdInfDetailModel> allOdrInfDetail = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(hpId,ItemCdConst.SyosaiKihon,sinDate,1)
+        };
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
+        var mstItemRepository = new MstItemRepository(TenantProvider, mockOptionsAccessor.Object);
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mstItemRepository);
+        try
+        {
+            tenant.SaveChanges();
+            //Act
+            var result = medicalExaminationRepository.TrialIryoJyohoKibanCalculation(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
+            //Assert
+            Assert.True(result.Count == 1 && result.Any(i=>i.ItemCd == ItemCdConst.SyosinIryoJyohoKiban1));
+        }
+        finally
+        {
+            tenant.RemoveRange(autoSanteiMsts);
+            tenant.Remove(tenMsts[0]);
+            tenant.SaveChanges();
+        }
+
+    }
+
+    [Test]
+    public void TrialIryoJyohoKibanCalculation_116_Check_isExistFirstVisit()
+    {
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var autoSanteiMsts = CheckedOrderData.ReadAutoSanteiMst();
+        var tenMsts = CheckedOrderData.ReadTenMst();
+        tenMsts[0].ItemCd = ItemCdConst.IgakuIryoJyohoKiban1;
+        tenant.AddRange(autoSanteiMsts);
+        tenant.Add(tenMsts[0]);
+        int hpId = 1; long ptId = 999; int sinDate = 20240402; long raiinNo = 123;
+        List<OrdInfDetailModel> allOdrInfDetail = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(hpId,ItemCdConst.SyosaiKihon,sinDate,1)
+        };
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
+        var mstItemRepository = new MstItemRepository(TenantProvider, mockOptionsAccessor.Object);
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mstItemRepository);
+        try
+        {
+            tenant.SaveChanges();
+            //Act
+            var result = medicalExaminationRepository.TrialIryoJyohoKibanCalculation(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
+            //Assert
+            Assert.True(result.Count == 1 && result.Any(i => i.ItemCd == ItemCdConst.IgakuIryoJyohoKiban1));
+        }
+        finally
+        {
+            tenant.RemoveRange(autoSanteiMsts);
+            tenant.Remove(tenMsts[0]);
+            tenant.SaveChanges();
+        }
+
+    }
+
+    [Test]
+    public void TrialIryoJyohoKibanCalculation_117_Check_isExistReturnVisit()
+    {
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var autoSanteiMsts = CheckedOrderData.ReadAutoSanteiMst();
+        var tenMsts = CheckedOrderData.ReadTenMst();
+        tenMsts[0].ItemCd = ItemCdConst.SaisinIryoJyohoKiban3;
+        tenant.AddRange(autoSanteiMsts);
+        tenant.Add(tenMsts[0]);
+        int hpId = 1; long ptId = 999; int sinDate = 20240402; long raiinNo = 123;
+        List<OrdInfDetailModel> allOdrInfDetail = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(hpId,ItemCdConst.SyosaiKihon,sinDate,3)
+        };
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
+        var mstItemRepository = new MstItemRepository(TenantProvider, mockOptionsAccessor.Object);
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mstItemRepository);
+        try
+        {
+            tenant.SaveChanges();
+            //Act
+            var result = medicalExaminationRepository.TrialIryoJyohoKibanCalculation(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
+            //Assert
+            Assert.True(result.Count == 1 && result.Any(i => i.ItemCd == ItemCdConst.SaisinIryoJyohoKiban3));
+        }
+        finally
+        {
+            tenant.RemoveRange(autoSanteiMsts);
+            tenant.Remove(tenMsts[0]);
+            tenant.SaveChanges();
+        }
+
+    }
+
+    [Test]
+    public void TrialIryoJyohoKibanCalculation_118_Check_isExistReturnVisit()
+    {
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var autoSanteiMsts = CheckedOrderData.ReadAutoSanteiMst();
+        var tenMsts = CheckedOrderData.ReadTenMst();
+        tenMsts[0].ItemCd = ItemCdConst.IgakuIryoJyohoKiban3;
+        tenant.AddRange(autoSanteiMsts);
+        tenant.Add(tenMsts[0]);
+        int hpId = 1; long ptId = 999; int sinDate = 20240402; long raiinNo = 123;
+        List<OrdInfDetailModel> allOdrInfDetail = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(hpId,ItemCdConst.SyosaiKihon,sinDate,3)
+        };
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
+        var mstItemRepository = new MstItemRepository(TenantProvider, mockOptionsAccessor.Object);
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mstItemRepository);
+        try
+        {
+            tenant.SaveChanges();
+            //Act
+            var result = medicalExaminationRepository.TrialIryoJyohoKibanCalculation(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
+            //Assert
+            Assert.True(result.Count == 1 && result.Any(i => i.ItemCd == ItemCdConst.IgakuIryoJyohoKiban3));
+        }
+        finally
+        {
+            tenant.RemoveRange(autoSanteiMsts);
+            tenant.Remove(tenMsts[0]);
+            tenant.SaveChanges();
+        }
+
     }
 }
