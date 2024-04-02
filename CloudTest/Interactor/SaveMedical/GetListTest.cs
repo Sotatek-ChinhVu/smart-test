@@ -9,15 +9,22 @@ namespace CloudUnitTest.Interactor.SaveMedical
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
-            //Mock data
-            int hpId = 1;
-            long ptId = -1;
-            long raiinNo = 4981;
-            int sinDate = 20100609;
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId;
+            long ptId = -1;
+            long raiinNo;
+            int sinDate;
+            var raiinInf = tenantTracking.RaiinInfs.FirstOrDefault();
+            hpId = raiinInf?.HpId ?? 0;
+            raiinNo = raiinInf?.RaiinNo ?? 0;
+            sinDate = raiinInf?.SinDate ?? 0;
+
+            // Act
             var result = receptionRepository.GetList(hpId, sinDate, raiinNo, ptId);
 
-            Assert.IsNotNull(result);
+            // Assert
+            Assert.That(result.Any() || result.Any(x => x.IsNameDuplicate == false));
         }
 
         [Test]
@@ -25,15 +32,21 @@ namespace CloudUnitTest.Interactor.SaveMedical
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
-            //Mock data
-            int hpId = 1;
-            long ptId = 10065;
-            long raiinNo = 4981;
-            int sinDate = 20100609;
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            
+            int hpId;
+            long ptId;
+            long raiinNo;
+            int sinDate;
+            var raiinInf = tenantTracking.RaiinInfs.FirstOrDefault();
+            hpId = raiinInf?.HpId ?? 0;
+            ptId = raiinInf?.PtId ?? 0;
+            raiinNo = raiinInf?.RaiinNo ?? 0;
+            sinDate = raiinInf?.SinDate ?? 0;
 
             var result = receptionRepository.GetList(hpId, sinDate, raiinNo, ptId);
 
-            Assert.IsNotNull(result);
+            Assert.That(result.Any(x => x.RaiinNo == raiinNo));
         }
 
         [Test]
@@ -41,16 +54,24 @@ namespace CloudUnitTest.Interactor.SaveMedical
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
-            //Mock data
-            int hpId = 1;
-            long ptId = 10065;
-            long raiinNo = 4981;
-            int sinDate = 20100609;
-            bool searchSameVisit = true;
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId;
+            long ptId;
+            long raiinNo;
+            int sinDate;
+            var raiinInf = tenantTracking.RaiinInfs.FirstOrDefault();
+            hpId = raiinInf?.HpId ?? 0;
+            raiinNo = raiinInf?.RaiinNo ?? 0;
+            sinDate = raiinInf?.SinDate ?? 0;
+            ptId = raiinInf?.PtId ?? 0;
+            bool searchSameVisit = true;
+            
+            //Act
             var result = receptionRepository.GetList(hpId, sinDate, raiinNo, ptId, false, false, 2, searchSameVisit);
 
-            Assert.IsNotNull(result);
+            // Assert
+            Assert.That(result.Any(x=> x.RaiinNo == raiinNo));
         }
 
         [Test]
@@ -58,16 +79,24 @@ namespace CloudUnitTest.Interactor.SaveMedical
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
-            //Mock data
-            int hpId = 1;
-            long ptId = 10065;
-            long raiinNo = 4981;
-            int sinDate = 20100609;
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+          
+            int hpId;
+            long ptId;
+            long raiinNo;
+            int sinDate;
+            var raiinInf = tenantTracking.RaiinInfs.FirstOrDefault();
+            hpId = raiinInf?.HpId ?? 0;
+            raiinNo = raiinInf?.RaiinNo ?? 0;
+            sinDate = raiinInf?.SinDate ?? 0;
+            ptId = raiinInf?.PtId ?? 0;
             bool isGetFamily = true;
 
+            // Act
             var result = receptionRepository.GetList(hpId, sinDate, raiinNo, ptId, false, isGetFamily, 2, false);
 
-            Assert.IsNotNull(result);
+            // Assert
+            Assert.IsNotNull(result.Any(x => x.RaiinNo == raiinNo));
         }
 
         [Test]
@@ -84,7 +113,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
 
             var result = receptionRepository.GetList(hpId, sinDate, raiinNo, ptId, false, isGetFamily, 2, false);
 
-            Assert.IsNotNull(result);
+            Assert.That(result.Any(x => x.IsNameDuplicate = true));
         }
     }
 }
