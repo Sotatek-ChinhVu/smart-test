@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Entity.Tenant;
+﻿using Entity.Tenant;
 using Helper.Redis;
 using Infrastructure.Repositories.SpecialNote;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +35,8 @@ namespace CloudUnitTest.Interactor.SaveMedical
             long ptId = 28032001;
             int seqNo = 99999999;
             string text = "平成28年8月13日にて事故症状固定";
+            string finalKey = "SummaryInfGetList_1_28032001";
+            _cache.StringAppend(finalKey, string.Empty);
 
             SummaryInf summaryInf = new SummaryInf()
             {
@@ -47,14 +48,12 @@ namespace CloudUnitTest.Interactor.SaveMedical
             };
 
             tenantTracking.SummaryInfs.Add(summaryInf);
-            tenantTracking.SaveChanges();
-
-            string finalKey = "SummaryInfGetList_1_28032001";
-            _cache.StringAppend(finalKey, string.Empty);
-
-            var result = summaryInfRepository.Get(hpid, ptId);
             try
             {
+                tenantTracking.SaveChanges();
+
+                var result = summaryInfRepository.Get(hpid, ptId);
+
                 Assert.That(result.Id != 9999999 && _cache.KeyExists(finalKey));
             }
             finally
@@ -92,11 +91,12 @@ namespace CloudUnitTest.Interactor.SaveMedical
             };
 
             tenantTracking.SummaryInfs.Add(summaryInf);
-            tenantTracking.SaveChanges();
-
-            var result = summaryInfRepository.Get(hpid, ptId);
             try
             {
+                tenantTracking.SaveChanges();
+
+                var result = summaryInfRepository.Get(hpid, ptId);
+
                 Assert.That(result.Id == 9999999 && _cache.KeyExists(finalKey));
             }
             finally
