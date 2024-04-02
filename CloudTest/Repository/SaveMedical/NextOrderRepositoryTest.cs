@@ -8,7 +8,6 @@ using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
-using System;
 using System.Linq.Dynamic.Core;
 using IDatabase = Microsoft.EntityFrameworkCore.Storage.IDatabase;
 
@@ -86,10 +85,10 @@ namespace CloudUnitTest.Repository.SaveMedical
             var rsvkrtMstsInsert = tenantTracking.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
             var rsvkrtByomeisInsert = tenantTracking.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo && x.Id == rsvkrtByomeis.First().Id && x.SeqNo == rsvkrtByomeis.First().SeqNo).ToList();
 
-            //Assert
             try
             {
-                Assert.That(result && rsvkrtMstsInsert.Any() && rsvkrtByomeisInsert.Any() /*&& rsvkrtKarteInfsInsert.Any()*/);
+                //Assert
+                Assert.That(result && rsvkrtMstsInsert.Any() && rsvkrtByomeisInsert.Any());
             }
             finally
             {
@@ -177,19 +176,19 @@ namespace CloudUnitTest.Repository.SaveMedical
                 RsvDate = rsvDate
             };
 
-            //Act
             tenant.Add(rsvkrtByomei);
             tenant.Add(rsvkrtMst);
-            tenant.SaveChanges();
+            var rsvkrtKarteInfsInsert = new List<RsvkrtKarteInf>();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-
-            var rsvkrtMstsInsert = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo);
-            var rsvkrtKarteInfsInsert = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo).ToList();
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                var rsvkrtMstsInsert = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo);
+                rsvkrtKarteInfsInsert = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo).ToList();
+
+                //Assert
                 Assert.That(result && rsvkrtMstsInsert.Any(x => x.RsvName == "Kaito"));
             }
             finally
@@ -318,20 +317,21 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
             tenantTracking.Add(rsvkrtByomei);
-            tenantTracking.SaveChanges();
-
-            foreach (var item in nextOrderModels)
-            {
-                item.ChangeModel("Kaito", 1);
-            }
-
-            //Act
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtMstDelete = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDelete = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.RpNo == rpNo && x.RpEdaNo == rpEdaNo && x.Id == id);
-            //Assert
             try
             {
+                //Act
+                tenantTracking.SaveChanges();
+
+                foreach (var item in nextOrderModels)
+                {
+                    item.ChangeModel("Kaito", 1);
+                }
+
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                var rsvkrtMstDelete = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
+                var rsvkrtOdrInfDelete = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.RpNo == rpNo && x.RpEdaNo == rpEdaNo && x.Id == id);
+
+                //Assert
                 Assert.That(result && rsvkrtMstDelete.Any(x => x.IsDeleted == 1) && rsvkrtOdrInfDelete.Any(x => x.IsDeleted == 1));
             }
             finally
@@ -457,16 +457,17 @@ namespace CloudUnitTest.Repository.SaveMedical
                 IsDeleted = 0
             };
 
-            //Act
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
             tenantTracking.Add(rsvkrtByomei);
-            tenantTracking.SaveChanges();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            //Assert
             try
             {
+                //Act
+                tenantTracking.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+
+                //Assert
                 Assert.That(result);
             }
             finally
@@ -593,18 +594,18 @@ namespace CloudUnitTest.Repository.SaveMedical
                 IsDeleted = 0
             };
 
-            //Act
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
             tenantTracking.Add(rsvkrtByomei);
-            tenantTracking.SaveChanges();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-
-            var rsvkrtByomeiInserts = tenant.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.SeqNo == seqNo && x.Id == id);
-            //Assert
             try
             {
+                //Act
+                tenantTracking.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                var rsvkrtByomeiInserts = tenant.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.SeqNo == seqNo && x.Id == id);
+
+                //Assert
                 Assert.That(result && rsvkrtByomeiInserts.Any());
             }
             finally
@@ -721,16 +722,18 @@ namespace CloudUnitTest.Repository.SaveMedical
                 Id = 1
             };
 
-            //Act
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
-            tenantTracking.SaveChanges();
+            var rsvkrtByomeiList = new List<RsvkrtByomei>();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtByomeiList = tenant.RsvkrtByomeis.Where(x => x.HpId == hpId && x.Id == id && x.RsvkrtNo == rsvkrtNo && x.SeqNo == seqNo && x.PtId == ptId);
-            //Assert
             try
             {
+                //Act
+                tenantTracking.SaveChanges();
+
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtByomeiList = tenant.RsvkrtByomeis.Where(x => x.HpId == hpId && x.Id == id && x.RsvkrtNo == rsvkrtNo && x.SeqNo == seqNo && x.PtId == ptId).ToList();
+                //Assert
                 Assert.That(result && rsvkrtByomeiList.Any());
             }
             finally
@@ -847,17 +850,18 @@ namespace CloudUnitTest.Repository.SaveMedical
                 Id = 1
             };
 
-            //Act
             tenantTracking.Add(rsvkrtOdrInf);
             tenantTracking.Add(rsvkrtMst);
-            tenantTracking.SaveChanges();
+            var rsvkrtKarte = new List<RsvkrtKarteInf>();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarte = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == rsvkrtKbn && x.SeqNo == seqNo);
-
-            //Assert
             try
             {
+                //Act
+                tenantTracking.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarte = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == rsvkrtKbn && x.SeqNo == seqNo).ToList();
+
+                //Assert
                 Assert.That(result && rsvkrtKarte.Any());
             }
             finally
@@ -982,18 +986,19 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
-            //Act
             tenant.Add(rsvkrtOdrInf);
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
-            tenant.SaveChanges();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+
+                //Assert
                 Assert.That(result && rsvkrtKarteInfs.Count() == 2);
             }
             finally
@@ -1116,18 +1121,19 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
-            //Act
             tenant.Add(rsvkrtOdrInf);
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
-            tenant.SaveChanges();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenantTracking.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+
+                //Assert
                 Assert.That(result && rsvkrtKarteInfs.Where(x => x.IsDeleted == 1).Any());
             }
             finally
@@ -1253,19 +1259,21 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
-            //Act
             tenant.Add(rsvkrtOdrInf);
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
-            tenant.SaveChanges();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+
+                //Assert
                 Assert.That(result && rsvkrtOdrInfs.Count() == 2);
             }
             finally
@@ -1390,19 +1398,20 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
-            //Act
             tenant.Add(rsvkrtOdrInf);
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
-            tenant.SaveChanges();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenantTracking.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                var rsvkrtOdrInfs = tenantTracking.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+
+                //Assert
                 Assert.That(result && rsvkrtOdrInfs.Any(x => x.IsDeleted == 1));
             }
             finally
@@ -1518,18 +1527,20 @@ namespace CloudUnitTest.Repository.SaveMedical
                 SeqNo = 1
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
-            tenant.SaveChanges();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+
+                //Assert
                 Assert.That(result && rsvkrtOdrInfs.Any());
             }
             finally
@@ -1760,7 +1771,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                 KbnCd = kbnCd
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -1769,18 +1779,24 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListMst);
             tenant.Add(raiinListItem);
             tenant.Add(raiinListInf);
-            tenant.SaveChanges();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
-            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+            var rsvkrtMstData = new List<RsvkrtMst>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfDetails = new List<RsvkrtOdrInfDetail>();
 
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+                rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo).ToList();
+                rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+
+                //Assert
                 Assert.That(result && !raiinListInfs.Any());
             }
             finally
@@ -2020,7 +2036,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                 KbnCd = kbnCd
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -2029,18 +2044,24 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListMst);
             tenant.Add(raiinListItem);
             tenant.Add(raiinListInf);
-            tenant.SaveChanges();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
-            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+            var rsvkrtMstData = new List<RsvkrtMst>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfDetails = new List<RsvkrtOdrInfDetail>();
 
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+                rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo).ToList();
+                rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+
+                //Assert
                 Assert.That(result && !raiinListInfs.Any());
             }
             finally
@@ -2280,7 +2301,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                 KbnCd = kbnCd
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -2289,18 +2309,24 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListMst);
             tenant.Add(raiinListItem);
             tenant.Add(raiinListInf);
-            tenant.SaveChanges();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
-            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+            var rsvkrtMstData = new List<RsvkrtMst>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfDetails = new List<RsvkrtOdrInfDetail>();
 
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+                rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo).ToList();
+                rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
+
+                //Assert
                 Assert.That(result && raiinListInfs.Count() == 1);
             }
             finally
@@ -2531,7 +2557,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                 ItemCd = "Kaito"
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -2539,17 +2564,25 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListDetail);
             tenant.Add(raiinListMst);
             tenant.Add(raiinListItem);
-            tenant.SaveChanges();
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
-            var raiinListInfInsert = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
 
-            //Assert
+            var rsvkrtMstData = new List<RsvkrtMst>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfDetails = new List<RsvkrtOdrInfDetail>();
+            var raiinListInfInsert = new List<RaiinListInf>();
+
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+                rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo).ToList();
+                rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                raiinListInfInsert = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd).ToList();
+
+                //Assert
                 Assert.That(result && raiinListInfInsert.Any());
             }
             finally
@@ -2778,18 +2811,24 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListDetail);
             tenant.Add(raiinListMst);
             tenant.Add(raiinListItem);
-            tenant.SaveChanges();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
-            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && (x.PtId == ptId || x.PtId == 2803) && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == 99999999);
+            var rsvkrtMstData = new List<RsvkrtMst>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfDetails = new List<RsvkrtOdrInfDetail>();
+            var raiinListInfs = new List<RaiinListInf>();
 
-            //Assert
             try
             {
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+                rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo).ToList();
+                rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && (x.PtId == ptId || x.PtId == 2803) && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == 99999999).ToList();
+
+                //Assert
                 Assert.That(result && raiinListInfs.Count() == 1);
             }
             finally
@@ -3011,20 +3050,26 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListDetail);
             tenant.Add(raiinListMst);
             tenant.Add(raiinListItem);
-            tenant.SaveChanges();
-            string finalKey = "GetNextOrderList28032001-1";
-            _cache.StringAppend(finalKey, string.Empty);
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == 2803 || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
-            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && (x.PtId == ptId || x.PtId == 2803) && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == 99999999);
+            var rsvkrtMstData = new List<RsvkrtMst>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfDetails = new List<RsvkrtOdrInfDetail>();
+            var raiinListInfs = new List<RaiinListInf>();
 
-            //Assert
             try
             {
+                tenant.SaveChanges();
+                string finalKey = "GetNextOrderList28032001-1";
+                _cache.StringAppend(finalKey, string.Empty);
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+                rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == 2803 || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo).ToList();
+                rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && (x.PtId == ptId || x.PtId == 2803) && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == 99999999).ToList();
+
+                //Assert
                 Assert.That(!_cache.KeyExists(finalKey));
             }
             finally
@@ -3117,16 +3162,16 @@ namespace CloudUnitTest.Repository.SaveMedical
                 RsvDate = rsvDate,
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
-            tenant.SaveChanges();
 
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtMstsInsert = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                var rsvkrtMstsInsert = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
+
+                //Assert
                 Assert.That(result && rsvkrtMstsInsert.Count() == 0);
             }
             finally
@@ -3365,7 +3410,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                 KbnCd = kbnCd
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -3375,36 +3419,44 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListItem);
             tenant.Add(raiinListInf);
             tenant.Add(ptInf);
-            tenant.SaveChanges();
 
-            List<string> listFileName = new() { "fileName.txt" };
-            List<string> listFolders = new()
-            {
-                CommonConstants.Store,
-                CommonConstants.Karte,
-                CommonConstants.NextPic
-            };
+            var rsvkrtMstData = new List<RsvkrtMst>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfDetails = new List<RsvkrtOdrInfDetail>();
+            var raiinListInfs = new List<RaiinListInf>();
+            var rsvkrtKarteImgInfs = new List<RsvkrtKarteImgInf>();
 
-            mockIAmazonS3Service.Setup(finder => finder.GetFolderUploadToPtNum(listFolders, ptNum))
-           .Returns((List<string> folders, long ptNum) => $"/{CommonConstants.Store}/{CommonConstants.Karte}/{ptNum}/");
-
-            mockIAmazonS3Service.Setup(finder => finder.GetUniqueFileNameKey(It.IsAny<string>()))
-           .Returns((string fileName) => It.IsAny<string>());
-
-            mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
-           .Returns((string sourceFile, string destinationFile) => false);
-
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
-            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
-            var rsvkrtKarteImgInfs = tenant.RsvkrtKarteImgInfs.Where(x => x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                List<string> listFileName = new() { "fileName.txt" };
+                List<string> listFolders = new()
+                {
+                    CommonConstants.Store,
+                    CommonConstants.Karte,
+                    CommonConstants.NextPic
+                };
+
+                mockIAmazonS3Service.Setup(finder => finder.GetFolderUploadToPtNum(listFolders, ptNum))
+               .Returns((List<string> folders, long ptNum) => $"/{CommonConstants.Store}/{CommonConstants.Karte}/{ptNum}/");
+
+                mockIAmazonS3Service.Setup(finder => finder.GetUniqueFileNameKey(It.IsAny<string>()))
+               .Returns((string fileName) => It.IsAny<string>());
+
+                mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
+               .Returns((string sourceFile, string destinationFile) => false);
+
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+                rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo).ToList();
+                rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd).ToList();
+                rsvkrtKarteImgInfs = tenant.RsvkrtKarteImgInfs.Where(x => x.PtId == ptId && x.RsvkrtNo == rsvkrtNo).ToList();
+
+                //Assert
                 Assert.That(result && !raiinListInfs.Any() && rsvkrtKarteImgInfs.Any());
             }
             finally
@@ -3654,7 +3706,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                 KbnCd = kbnCd
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(kouiKbnMst);
@@ -3664,40 +3715,48 @@ namespace CloudUnitTest.Repository.SaveMedical
             tenant.Add(raiinListItem);
             tenant.Add(raiinListInf);
             tenant.Add(ptInf);
-            tenant.SaveChanges();
 
-            List<string> listFileName = new() { "fileName.txt" };
-            List<string> listFolders = new()
-            {
-                CommonConstants.Store,
-                CommonConstants.Karte,
-                CommonConstants.NextPic,
-                "BaseAccessUrl/"
-            };
+            var rsvkrtMstData = new List<RsvkrtMst>();
+            var rsvkrtOdrInfs = new List<RsvkrtOdrInf>();
+            var rsvkrtKarteInfs = new List<RsvkrtKarteInf>();
+            var rsvkrtOdrInfDetails = new List<RsvkrtOdrInfDetail>();
+            var raiinListInfs = new List<RaiinListInf>();
+            var rsvkrtKarteImgInfs = new List<RsvkrtKarteImgInf>();
 
-            mockIAmazonS3Service.Setup(finder => finder.GetFolderUploadToPtNum(listFolders, ptNum))
-           .Returns((List<string> folders, long ptNum) => $"/{CommonConstants.Store}/{CommonConstants.Karte}/{ptNum}/");
-
-            mockIAmazonS3Service.Setup(finder => finder.GetUniqueFileNameKey(It.IsAny<string>()))
-           .Returns((string fileName) => It.IsAny<string>());
-
-            mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
-           .Returns((string sourceFile, string destinationFile) => false);
-
-            mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
-            .Returns((string sourceFile, string destinationFile) => true);
-
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
-            var rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
-            var rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo);
-            var rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId);
-            var raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd);
-            var rsvkrtKarteImgInfs = tenant.RsvkrtKarteImgInfs.Where(x => x.PtId == ptId && x.RsvkrtNo == rsvkrtNo);
-
-            //Assert
             try
             {
+                //Act
+                tenant.SaveChanges();
+                List<string> listFileName = new() { "fileName.txt" };
+                List<string> listFolders = new()
+                {
+                    CommonConstants.Store,
+                    CommonConstants.Karte,
+                    CommonConstants.NextPic,
+                    "BaseAccessUrl/"
+                };
+
+                mockIAmazonS3Service.Setup(finder => finder.GetFolderUploadToPtNum(listFolders, ptNum))
+               .Returns((List<string> folders, long ptNum) => $"/{CommonConstants.Store}/{CommonConstants.Karte}/{ptNum}/");
+
+                mockIAmazonS3Service.Setup(finder => finder.GetUniqueFileNameKey(It.IsAny<string>()))
+               .Returns((string fileName) => It.IsAny<string>());
+
+                mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
+               .Returns((string sourceFile, string destinationFile) => false);
+
+                mockIAmazonS3Service.Setup(finder => finder.CopyObjectAsync(It.IsAny<string>(), It.IsAny<string>()).Result)
+                .Returns((string sourceFile, string destinationFile) => true);
+
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtKarteInfs = tenant.RsvkrtKarteInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.KarteKbn == 1).ToList();
+                rsvkrtOdrInfs = tenant.RsvkrtOdrInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RsvkrtNo == rsvkrtNo && x.Id == 1).ToList();
+                rsvkrtMstData = tenant.RsvkrtMsts.Where(x => x.HpId == hpId && (x.PtId == ptIdInput || x.PtId == ptId) && x.RsvkrtNo == rsvkrtNo).ToList();
+                rsvkrtOdrInfDetails = tenant.RsvkrtOdrInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                raiinListInfs = tenant.RaiinListInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == rsvDate && x.RaiinNo == 0 && x.GrpId == grpId && x.KbnCd == kbnCd).ToList();
+                rsvkrtKarteImgInfs = tenant.RsvkrtKarteImgInfs.Where(x => x.PtId == ptId && x.RsvkrtNo == rsvkrtNo).ToList();
+
+                //Assert
                 Assert.That(result && !raiinListInfs.Any() && rsvkrtKarteImgInfs.Any());
             }
             finally
