@@ -716,6 +716,83 @@ namespace CloudUnitTest.SampleData
             return tekiouByomeiMsts;
         }
 
+        public static List<TenMst> ReadTenMst()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            int count = 1;
+            string fileName = Path.Combine(rootPath, "SampleData", "CheckedOrderDataSample.xlsx");
+            var tenMsts = new List<TenMst>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "TEN_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var tenMst = new TenMst();
+                        tenMst.CreateId = 1;
+                        tenMst.CreateDate = DateTime.UtcNow;
+                        tenMst.UpdateId = 1;
+                        tenMst.UpdateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    tenMst.HpId = hpId;
+                                    break;
+                                case "B":
+                                    tenMst.ItemCd = text;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int startDate);
+                                    tenMst.StartDate = startDate;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int endDate);
+                                    tenMst.EndDate = endDate;
+                                    break;
+                                case "DI":
+                                    tenMst.CdKbn = text;
+                                    break;
+                                case "DL":
+                                    int.TryParse(text, out int cdKbnoo);
+                                    tenMst.CdKbnno = cdKbnoo;
+                                    break;
+                                case "DV":
+                                    tenMst.Kokuji2 = text;
+                                    break;
+                                case "DM":
+                                    int.TryParse(text, out int cdEdaNo);
+                                    tenMst.CdEdano = cdEdaNo;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        tenMsts.Add(tenMst);
+                        count++;
+                    }
+                }
+            }
+
+            return tenMsts;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
             var workbookPart = spreadsheetDocument.WorkbookPart;

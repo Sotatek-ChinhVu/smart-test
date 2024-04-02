@@ -144,7 +144,7 @@ public class CheckedOrderTest : BaseUT
     /// Check IsJouHou if it is true then check sinDate and tenMst, if it is false then only check tenMst
     /// </summary>
     [Test]
-    public void IgakuTokusitu_002_IsJouhou()
+    public void IgakuTokusitu_004_IsJouhou()
     {
         // Arrange
         int hpId = 1, sinDate1 = 20221111, sinDate2 = 20210101, hokenId = 10, syosaisinKbn = 1;
@@ -188,7 +188,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void IgakuTokusitu_003_Syosai()
+    public void IgakuTokusitu_005_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate1 = 20221111, sinDate2 = 20210101, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
@@ -234,7 +234,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Special
     /// </summary>
     [Test]
-    public void IgakuTokusitu_004_Disease_Special()
+    public void IgakuTokusitu_006_Disease_Special()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -281,7 +281,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Orther
     /// </summary>
     [Test]
-    public void IgakuTokusitu_005_Disease_Other()
+    public void IgakuTokusitu_007_Disease_Other()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -328,7 +328,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Not Special and Other
     /// </summary>
     [Test]
-    public void IgakuTokusitu_006_Disease_NoMainDisease()
+    public void IgakuTokusitu_008_Disease_NoMainDisease()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -397,7 +397,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Not Special and Other
     /// </summary>
     [Test]
-    public void IgakuTokusitu_007_Disease_NoDisease()
+    public void IgakuTokusitu_009_Disease_NoDisease()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -450,7 +450,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Item Sihifu of Order Detail
     /// </summary>
     [Test]
-    public void SihifuToku1_008_ItemSihifu()
+    public void SihifuToku1_010_ItemSihifu()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -508,7 +508,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void SihifuToku1_009_NotTenMst()
+    public void SihifuToku1_011_NotTenMst()
     {
         // Arrange
         int hpId = -1, sinDate = 20221111, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -566,7 +566,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void SihifuToku1_010_IsJouhou_NotTenMst()
+    public void SihifuToku1_012_IsJouhou_NotTenMst()
     {
         // Arrange
         int hpId = -1, sinDate = 20220401, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -624,7 +624,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void SihifuToku1_011_IsJouhou_NotTenMst()
+    public void SihifuToku1_013_IsJouhou_NotTenMst()
     {
         // Arrange
         int hpId = -1, sinDate = 20220331, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -682,7 +682,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void SihifuToku1_012_IsJouhou_NotTenMst()
+    public void SihifuToku1_014_IsJouhou_NotTenMst()
     {
         // Arrange
         int hpId = -1, sinDate = 20220331, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -740,7 +740,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void SihifuToku1_012_hifukaSetting()
+    public void SihifuToku1_015_hifukaSetting()
     {
         // Arrange
         int hpId = 1, sinDate = 20220402, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -844,7 +844,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void SihifuToku1_013_hifukaSetting()
+    public void SihifuToku1_016_hifukaSetting()
     {
         // Arrange
         int hpId = 1, sinDate = 20220402, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -916,7 +916,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void SihifuToku1_014_existByoMeiSkin1()
+    public void SihifuToku1_017_existByoMeiSkin1()
     {
         // Arrange
         int hpId = 1, sinDate = 20220402, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -1017,11 +1017,113 @@ public class CheckedOrderTest : BaseUT
         }
     }
 
+    [Test]
+    public void SihifuToku1_018_existByoMeiSkin1()
+    {
+        // Arrange
+        int hpId = 1, sinDate = 20220402, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
+        bool isJouhou = true;
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                3,
+                10,
+                0,
+                20221212,
+                1
+            ),
+             new PtDiseaseModel(
+                8,
+                0,
+                1,
+                20221010,
+                1
+            )
+        };
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "113000911",
+                10
+            ),
+             new OrdInfDetailModel(
+                "113000911",
+                10
+            ),
+            new OrdInfDetailModel(
+                "113034511",
+                10
+            ),
+            new OrdInfDetailModel(
+                "113002311",
+                10
+            ),
+            new OrdInfDetailModel(
+                "113034611",
+                10
+            )
+        };
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+            && p.GrpCd == 4001
+            && p.GrpEdaNo == 2);
+        bool isUpdate = false;
+        bool isCreate = false;
+        double value = 0;
+        if (systemConf == null)
+        {
+            systemConf = new SystemConf()
+            {
+                HpId = hpId,
+                GrpCd = 4001,
+                GrpEdaNo = 2,
+                Val = 0
+            };
+            tenantTracking.Add(systemConf);
+            isCreate = true;
+        }
+        else if (systemConf != null && systemConf.Val != 0)
+        {
+            value = systemConf.Val;
+            systemConf.Val = 0;
+            isUpdate = true;
+        }
+
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockMstItem = new Mock<IMstItemRepository>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+        // Act
+        try
+        {
+            tenantTracking.SaveChanges();
+            var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
+            Assert.True(iagkutokusitu1.Count == 1);
+        }
+        finally
+        {
+            if (isUpdate)
+            {
+                systemConf.Val = value;
+                systemConf.CreateDate = systemConf.CreateDate.ToUniversalTime();
+                systemConf.UpdateDate = systemConf.UpdateDate.ToUniversalTime();
+                tenantTracking.Update(systemConf);
+            }
+            else if (isCreate)
+            {
+                tenantTracking.Remove(systemConf);
+            }
+            tenantTracking.SaveChanges();
+        }
+    }
+
     /// <summary>
     /// Check TenMst follow IsJouHou
     /// </summary>
     [Test]
-    public void SihifuToku1_009_TenMst()
+    public void SihifuToku1_019_TenMst()
     {
         // Arrange
         int hpId = 1, sinDate1 = 20220331, ptId = 1, sinDate2 = 20220430, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -1072,7 +1174,7 @@ public class CheckedOrderTest : BaseUT
     /// Check MeiSkin
     /// </summary>
     [Test]
-    public void SihifuToku1_010_MeiSkin()
+    public void SihifuToku1_020_MeiSkin()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1;
@@ -1170,7 +1272,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void SihifuToku1_011_Syosai()
+    public void SihifuToku1_021_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
@@ -1273,7 +1375,7 @@ public class CheckedOrderTest : BaseUT
     /// True
     /// </summary>
     [Test]
-    public void SihifuToku1_012_True()
+    public void SihifuToku1_022_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20220822, hokenId = 10, syosaisinKbn1 = 20;
@@ -1375,7 +1477,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Item Sihifu of Order Detail
     /// </summary>
     [Test]
-    public void SihifuToku2_013_Sihifu()
+    public void SihifuToku2_023_Sihifu()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1, iBirthDay = 30;
@@ -1432,7 +1534,7 @@ public class CheckedOrderTest : BaseUT
     /// Check TenMst follow IsJouHou
     /// </summary>
     [Test]
-    public void SihifuToku2_014_TenMst()
+    public void SihifuToku2_024_TenMst()
     {
         // Arrange
         int hpId = 1, sinDate1 = 20220331, ptId = 1, sinDate2 = 20220430, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1, iBirthDay = 30;
@@ -1484,7 +1586,7 @@ public class CheckedOrderTest : BaseUT
     /// Check TenMst follow IsJouHou, null TenMst
     /// </summary>
     [Test]
-    public void SihifuToku2_015_TenMst()
+    public void SihifuToku2_025_TenMst()
     {
         // Arrange
         int hpId = -1, sinDate1 = 20220401, ptId = 1, sinDate2 = 20220430, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1, iBirthDay = 30;
@@ -1536,7 +1638,7 @@ public class CheckedOrderTest : BaseUT
     /// Check MeiSkin
     /// </summary>
     [Test]
-    public void SihifuToku2_015_Hifuka()
+    public void SihifuToku2_026_Hifuka()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay = 30;
@@ -1636,7 +1738,7 @@ public class CheckedOrderTest : BaseUT
     /// Check SihifuToku1 Skin2 contain L20
     /// </summary>
     [Test]
-    public void SihifuToku2_016_Skin2_L20()
+    public void SihifuToku2_027_Skin2_L20()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 15;
@@ -1741,7 +1843,7 @@ public class CheckedOrderTest : BaseUT
     /// Check SihifuToku1 Skin2 contain L20
     /// </summary>
     [Test]
-    public void SihifuToku2_017_Skin2_L20()
+    public void SihifuToku2_028_Skin2_L20()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 20210202;
@@ -1844,7 +1946,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Skin2 doesn't no L20
     /// </summary>
     [Test]
-    public void SihifuToku2_017_Skin2_No_L20()
+    public void SihifuToku2_029_Skin2_No_L20()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 15;
@@ -1946,7 +2048,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void SihifuToku2_018_Syosai()
+    public void SihifuToku2_030_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8, iBirthDay = 30;
@@ -2049,7 +2151,7 @@ public class CheckedOrderTest : BaseUT
     /// Check True
     /// </summary>
     [Test]
-    public void SihifuToku2_019_True()
+    public void SihifuToku2_031_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20, iBirthDay = 30;
@@ -2148,7 +2250,7 @@ public class CheckedOrderTest : BaseUT
     /// Check True, check santeiKanren
     /// </summary>
     [Test]
-    public void SihifuToku2_020_True()
+    public void SihifuToku2_032_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20, iBirthDay = 30;
@@ -2278,7 +2380,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void IgakuTenkan_020_Igaku()
+    public void IgakuTenkan_031_Igaku()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -2323,7 +2425,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void IgakuTenkan_021_TenMst()
+    public void IgakuTenkan_032_TenMst()
     {
         // Arrange
         int hpId = -1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -2373,7 +2475,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void IgakuTenkan_021_Syosai()
+    public void IgakuTenkan_033_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
@@ -2473,7 +2575,7 @@ public class CheckedOrderTest : BaseUT
     /// Check meiEpi
     /// </summary>
     [Test]
-    public void IgakuTenkan_022_MeiEpi()
+    public void IgakuTenkan_034_MeiEpi()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
@@ -2571,7 +2673,7 @@ public class CheckedOrderTest : BaseUT
     /// Check other
     /// </summary>
     [Test]
-    public void IgakuTenkan_023_Orther()
+    public void IgakuTenkan_035_Orther()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
@@ -2671,7 +2773,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some itemCd is Nanbyo
     /// </summary>
     [Test]
-    public void IgakuNanbyo_024_IgakuNanByo()
+    public void IgakuNanbyo_036_IgakuNanByo()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -2716,7 +2818,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void IgakuNanbyo_025_TenMst()
+    public void IgakuNanbyo_037_TenMst()
     {
         // Arrange
         int hpId = -1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -2766,7 +2868,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void IgakuNanbyo_025_Syosai()
+    public void IgakuNanbyo_038_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
@@ -2867,7 +2969,7 @@ public class CheckedOrderTest : BaseUT
     /// Check IsJouhou
     /// </summary>
     [Test]
-    public void IgakuNanbyo_026_IsJouhou()
+    public void IgakuNanbyo_039_IsJouhou()
     {
         // Arrange
         int hpId = 1, sinDate = 20220301, hokenId = 10, syosaisinKbn1 = 1;
@@ -2963,7 +3065,7 @@ public class CheckedOrderTest : BaseUT
     /// Check santeigai
     /// </summary>
     [Test]
-    public void IgakuNanbyo_027_SanteiGai()
+    public void IgakuNanbyo_040_SanteiGai()
     {
         // Arrange
         int hpId = 1, sinDate = 20221212, hokenId = 10, syosaisinKbn1 = 20;
@@ -3066,7 +3168,7 @@ public class CheckedOrderTest : BaseUT
     /// Check santeigai
     /// </summary>
     [Test]
-    public void IgakuNanbyo_028_SanteiGai()
+    public void IgakuNanbyo_041_SanteiGai()
     {
         // Arrange
         int hpId = 1, sinDate = 20221212, hokenId = 10, syosaisinKbn1 = 20;
@@ -3203,7 +3305,7 @@ public class CheckedOrderTest : BaseUT
     /// Check true
     /// </summary>
     [Test]
-    public void IgakuNanbyo_028_True()
+    public void IgakuNanbyo_042_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
@@ -3299,7 +3401,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are IgakuNanbyo
     /// </summary>
     [Test]
-    public void InitPriorityCheckDetail_029_IgakuNanbyo()
+    public void InitPriorityCheckDetail_043_IgakuNanbyo()
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3365,7 +3467,7 @@ public class CheckedOrderTest : BaseUT
     /// Check ItemCd are IakuTenkan
     /// </summary>
     [Test]
-    public void InitPriorityCheckDetail_030_IgakuTenkan()
+    public void InitPriorityCheckDetail_044_IgakuTenkan()
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3421,7 +3523,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are SihifuToku
     /// </summary>
     [Test]
-    public void InitPriorityCheckDetail_031_SihifuToku1()
+    public void InitPriorityCheckDetail_045_SihifuToku1()
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3470,7 +3572,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are IgakuTokusitu
     /// </summary>
     [Test]
-    public void InitPriorityCheckDetail_032_IgakuTokusitu()
+    public void InitPriorityCheckDetail_046_IgakuTokusitu()
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3508,7 +3610,7 @@ public class CheckedOrderTest : BaseUT
     /// Check tikiHokatu
     /// </summary>
     [Test]
-    public void ChikiHokatu_033_TikiHokatu()
+    public void ChikiHokatu_047_TikiHokatu()
     {
         //Arrange
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 1;
@@ -3550,7 +3652,7 @@ public class CheckedOrderTest : BaseUT
     /// Check SyosaisinKbn
     /// </summary>
     [Test]
-    public void ChikiHokatu_034_SyosaisinKbn()
+    public void ChikiHokatu_049_SyosaisinKbn()
     {
         //Arrange
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 1;
@@ -3587,14 +3689,14 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void ChikiHokatu_035_TiikiSantei()
+    public void ChikiHokatu_050_TiikiSantei()
     {
         //Arrange
         int randomKey = 35;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConf(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
-        
+
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3635,20 +3737,20 @@ public class CheckedOrderTest : BaseUT
         {
             tenant.RemoveRange(ptSanteiConfs);
             tenant.SaveChanges();
-        }        
+        }
     }
 
     /// <summary>
     /// Check Primary doctor
     /// </summary>
     [Test]
-    public void ChikiHokatu_036_PrimaryDoctor()
+    public void ChikiHokatu_051_PrimaryDoctor()
     {
         //Arrange
         int randomKey = 36;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
-        tenant.PtSanteiConfs.AddRange(ptSanteiConfs);        
+        tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 0, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3688,14 +3790,14 @@ public class CheckedOrderTest : BaseUT
         {
             tenant.RemoveRange(ptSanteiConfs);
             tenant.SaveChanges();
-        }             
+        }
     }
 
     /// <summary>
     /// Check TantoId
     /// </summary>
     [Test]
-    public void ChikiHokatu_037_TantoId()
+    public void ChikiHokatu_052_TantoId()
     {
         //Arrange
         int randomKey = 37;
@@ -3703,7 +3805,7 @@ public class CheckedOrderTest : BaseUT
         var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
         var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
-        tenant.UserMsts.AddRange(users);        
+        tenant.UserMsts.AddRange(users);
         int hpId = 1, userId = 99999, sinDate = 20110101, primaryDoctor = 2, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3732,14 +3834,14 @@ public class CheckedOrderTest : BaseUT
             tenant.RemoveRange(ptSanteiConfs);
             tenant.RemoveRange(users);
             tenant.SaveChanges();
-        }              
+        }
     }
 
     /// <summary>
     /// Check Oshin
     /// </summary>
     [Test]
-    public void ChikiHokatu_038_Oshin()
+    public void ChikiHokatu_053_Oshin()
     {
         //Arrange
         int randomKey = 38;
@@ -3748,7 +3850,7 @@ public class CheckedOrderTest : BaseUT
         var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.UserMsts.AddRange(users);
-       
+
         int hpId = 1, userId = 99999, sinDate1 = 20110101, sinDate2 = 20180402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3767,7 +3869,7 @@ public class CheckedOrderTest : BaseUT
                 "114042810",
                 14
             )
-        };  
+        };
         try
         {
             tenant.SaveChanges();
@@ -3782,11 +3884,11 @@ public class CheckedOrderTest : BaseUT
             tenant.RemoveRange(ptSanteiConfs);
             tenant.RemoveRange(users);
             tenant.SaveChanges();
-        }               
+        }
     }
 
     [Test]
-    public void ChikiHokatu_039_JidoSantei()
+    public void ChikiHokatu_054_JidoSantei()
     {
         //Arrange
         int randomKey = 39;
@@ -3794,7 +3896,7 @@ public class CheckedOrderTest : BaseUT
         var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
         var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
-        tenant.UserMsts.AddRange(users);        
+        tenant.UserMsts.AddRange(users);
         int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue - randomKey;
         var mockConfiguration = new Mock<IConfiguration>();
@@ -3823,11 +3925,11 @@ public class CheckedOrderTest : BaseUT
             tenant.RemoveRange(ptSanteiConfs);
             tenant.RemoveRange(users);
             tenant.SaveChanges();
-        }             
+        }
     }
 
     [Test]
-    public void ChikiHokatu_040_JidoSantei()
+    public void ChikiHokatu_055_JidoSantei()
     {
         //Arrange
         int randomKey = 39;
@@ -3861,7 +3963,7 @@ public class CheckedOrderTest : BaseUT
             value = systemConf.Val;
             systemConf.Val = 1;
             isUpdate = true;
-        }       
+        }
         var mockConfiguration = new Mock<IConfiguration>();
         var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
@@ -3903,15 +4005,433 @@ public class CheckedOrderTest : BaseUT
     }
 
     /// <summary>
+    ///check ninTiikiSanteiConf
+    /// </summary>
+    [Test]
+    public void ChikiHokatu_056_JidoSantei()
+    {
+        //Arrange
+        int randomKey = 39;
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        foreach (var i in ptSanteiConfs)
+        {
+            i.EdaNo = 2;
+        }
+        var users = CheckedOrderData.ReadUserMst(randomKey);
+        tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
+        tenant.UserMsts.AddRange(users);
+        int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
+        long ptId = long.MaxValue - randomKey;
+        var systemConf = tenant.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+        && p.GrpCd == 4001
+        && p.GrpEdaNo == 8);
+        bool isUpdate = false;
+        bool isCreate = false;
+        double value = 0;
+        if (systemConf == null)
+        {
+            systemConf = new SystemConf()
+            {
+                HpId = hpId,
+                GrpCd = 4001,
+                GrpEdaNo = 8,
+                Val = 1
+            };
+            tenant.Add(systemConf);
+            isCreate = true;
+        }
+        else if (systemConf != null && systemConf.Val != 1)
+        {
+            value = systemConf.Val;
+            systemConf.Val = 1;
+            isUpdate = true;
+        }
+        var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "Y90298",
+                1
+            )
+        };
+        try
+        {
+            tenant.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.ChikiHokatu(hpId, ptId, userId, sinDate, primaryDoctor, tantoId, ordInfDetailModels, syosaisinKbn);
+            //Assert
+            Assert.True(checkModels.Count > 0);
+        }
+        finally
+        {
+            if (isUpdate)
+            {
+                systemConf.Val = value;
+                systemConf.CreateDate = systemConf.CreateDate.ToUniversalTime();
+                systemConf.UpdateDate = systemConf.UpdateDate.ToUniversalTime();
+                tenant.Update(systemConf);
+            }
+            else if (isCreate)
+            {
+                tenant.Remove(systemConf);
+            }
+            tenant.RemoveRange(ptSanteiConfs);
+            tenant.RemoveRange(users);
+            tenant.SaveChanges();
+        }
+    }
+
+    /// <summary>
+    ///check ninTiikiSanteiConf
+    /// </summary>
+    [Test]
+    public void ChikiHokatu_057_JidoSantei()
+    {
+        //Arrange
+        int randomKey = 39;
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        foreach (var i in ptSanteiConfs)
+        {
+            i.EdaNo = 2;
+        }
+        var users = CheckedOrderData.ReadUserMst(randomKey);
+        tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
+        tenant.UserMsts.AddRange(users);
+        int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
+        long ptId = long.MaxValue - randomKey;
+        var systemConf = tenant.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+        && p.GrpCd == 4001
+        && p.GrpEdaNo == 8);
+        bool isUpdate = false;
+        bool isCreate = false;
+        double value = 0;
+        if (systemConf == null)
+        {
+            systemConf = new SystemConf()
+            {
+                HpId = hpId,
+                GrpCd = 4001,
+                GrpEdaNo = 8,
+                Val = 10
+            };
+            tenant.Add(systemConf);
+            isCreate = true;
+        }
+        else if (systemConf != null && systemConf.Val != 0)
+        {
+            value = systemConf.Val;
+            systemConf.Val = 0;
+            isUpdate = true;
+        }
+        var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "Y90298",
+                1
+            )
+        };
+        try
+        {
+            tenant.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.ChikiHokatu(hpId, ptId, userId, sinDate, primaryDoctor, tantoId, ordInfDetailModels, syosaisinKbn);
+            //Assert
+            Assert.True(checkModels.Count > 0);
+        }
+        finally
+        {
+            if (isUpdate)
+            {
+                systemConf.Val = value;
+                systemConf.CreateDate = systemConf.CreateDate.ToUniversalTime();
+                systemConf.UpdateDate = systemConf.UpdateDate.ToUniversalTime();
+                tenant.Update(systemConf);
+            }
+            else if (isCreate)
+            {
+                tenant.Remove(systemConf);
+            }
+            tenant.RemoveRange(ptSanteiConfs);
+            tenant.RemoveRange(users);
+            tenant.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void ChikiHokatu_058_PrimaryDoctor()
+    {
+        //Arrange
+        int randomKey = 39;
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        foreach (var i in ptSanteiConfs)
+        {
+            i.EdaNo = 2;
+        }
+        var users = CheckedOrderData.ReadUserMst(randomKey);
+        tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
+        tenant.UserMsts.AddRange(users);
+        int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 0, tantoId = 1, syosaisinKbn = 3;
+        long ptId = long.MaxValue - randomKey;
+        var systemConf = tenant.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+        && p.GrpCd == 4001
+        && p.GrpEdaNo == 8);
+        bool isUpdate = false;
+        bool isCreate = false;
+        double value = 0;
+        if (systemConf == null)
+        {
+            systemConf = new SystemConf()
+            {
+                HpId = hpId,
+                GrpCd = 4001,
+                GrpEdaNo = 8,
+                Val = 10
+            };
+            tenant.Add(systemConf);
+            isCreate = true;
+        }
+        else if (systemConf != null && systemConf.Val != 0)
+        {
+            value = systemConf.Val;
+            systemConf.Val = 0;
+            isUpdate = true;
+        }
+        var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "Y90298",
+                1
+            )
+        };
+        try
+        {
+            tenant.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.ChikiHokatu(hpId, ptId, userId, sinDate, primaryDoctor, tantoId, ordInfDetailModels, syosaisinKbn);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            if (isUpdate)
+            {
+                systemConf.Val = value;
+                systemConf.CreateDate = systemConf.CreateDate.ToUniversalTime();
+                systemConf.UpdateDate = systemConf.UpdateDate.ToUniversalTime();
+                tenant.Update(systemConf);
+            }
+            else if (isCreate)
+            {
+                tenant.Remove(systemConf);
+            }
+            tenant.RemoveRange(ptSanteiConfs);
+            tenant.RemoveRange(users);
+            tenant.SaveChanges();
+        }
+    }
+
+    /// <summary>
+    /// Check Sname null, primaryDoctor != tantoId
+    /// </summary>
+    [Test]
+    public void ChikiHokatu_059_CHeckSName()
+    {
+        //Arrange
+        int randomKey = 39;
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        var users = CheckedOrderData.ReadUserMst(randomKey);
+        tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
+        tenant.UserMsts.AddRange(users);
+        int hpId = 1, userId = -99999, userId2 = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, tantoId2 = 2, syosaisinKbn = 3;
+        long ptId = long.MaxValue - randomKey;
+        var systemConf = tenant.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+        && p.GrpCd == 4001
+        && p.GrpEdaNo == 8);
+        bool isUpdate = false;
+        bool isCreate = false;
+        double value = 0;
+        if (systemConf == null)
+        {
+            systemConf = new SystemConf()
+            {
+                HpId = hpId,
+                GrpCd = 4001,
+                GrpEdaNo = 8,
+                Val = 10
+            };
+            tenant.Add(systemConf);
+            isCreate = true;
+        }
+        else if (systemConf != null && systemConf.Val != 0)
+        {
+            value = systemConf.Val;
+            systemConf.Val = 0;
+            isUpdate = true;
+        }
+        var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "Y90298",
+                1
+            )
+        };
+        try
+        {
+            tenant.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.ChikiHokatu(hpId, ptId, userId, sinDate, primaryDoctor, tantoId, ordInfDetailModels, syosaisinKbn);
+            var checkModels2 = medicalExaminationRepository.ChikiHokatu(hpId, ptId, userId2, sinDate, primaryDoctor, tantoId2, ordInfDetailModels, syosaisinKbn);
+            //Assert
+            Assert.True(checkModels.Count == 0 && checkModels2.Count == 0);
+        }
+        finally
+        {
+            if (isUpdate)
+            {
+                systemConf.Val = value;
+                systemConf.CreateDate = systemConf.CreateDate.ToUniversalTime();
+                systemConf.UpdateDate = systemConf.UpdateDate.ToUniversalTime();
+                tenant.Update(systemConf);
+            }
+            else if (isCreate)
+            {
+                tenant.Remove(systemConf);
+            }
+            tenant.RemoveRange(ptSanteiConfs);
+            tenant.RemoveRange(users);
+            tenant.SaveChanges();
+        }
+    }
+
+    /// <summary>
+    /// check TenMst
+    /// </summary>
+    [Test]
+    public void ChikiHokatu_060_OshinDetails()
+    {
+        //Arrange
+        int randomKey = 39;
+        var tenant = TenantProvider.GetTrackingTenantDataContext();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        var users = CheckedOrderData.ReadUserMst(randomKey);
+        var tenMsts = CheckedOrderData.ReadTenMst();
+        tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
+        tenant.UserMsts.AddRange(users);
+        tenant.TenMsts.AddRange(tenMsts);
+        int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
+        long ptId = long.MaxValue - randomKey;
+        var systemConf = tenant.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+        && p.GrpCd == 4001
+        && p.GrpEdaNo == 8);
+        bool isUpdate = false;
+        bool isCreate = false;
+        double value = 0;
+        if (systemConf == null)
+        {
+            systemConf = new SystemConf()
+            {
+                HpId = hpId,
+                GrpCd = 4001,
+                GrpEdaNo = 8,
+                Val = 10
+            };
+            tenant.Add(systemConf);
+            isCreate = true;
+        }
+        else if (systemConf != null && systemConf.Val != 0)
+        {
+            value = systemConf.Val;
+            systemConf.Val = 0;
+            isUpdate = true;
+        }
+        var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+        var ordInfDetailModels1 = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "Y90298",
+                14
+            )
+        };
+        var ordInfDetailModels2 = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "Y90299",
+                14
+            )
+        };
+        try
+        {
+            tenant.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.ChikiHokatu(hpId, ptId, userId, sinDate, primaryDoctor, tantoId, ordInfDetailModels1, syosaisinKbn);
+            var checkModels2 = medicalExaminationRepository.ChikiHokatu(hpId, ptId, userId, sinDate, primaryDoctor, tantoId, ordInfDetailModels2, syosaisinKbn);
+            //Assert
+            Assert.True(checkModels.Count == 0 && checkModels2.Count == 0);
+        }
+        finally
+        {
+            if (isUpdate)
+            {
+                systemConf.Val = value;
+                systemConf.CreateDate = systemConf.CreateDate.ToUniversalTime();
+                systemConf.UpdateDate = systemConf.UpdateDate.ToUniversalTime();
+                tenant.Update(systemConf);
+            }
+            else if (isCreate)
+            {
+                tenant.Remove(systemConf);
+            }
+            tenant.RemoveRange(ptSanteiConfs);
+            tenant.RemoveRange(users);
+            tenant.RemoveRange(tenMsts);
+            tenant.SaveChanges();
+        }
+    }
+
+    /// <summary>
     /// Check some ItemCd are Yakkuzai
     /// </summary>
     [Test]
-    public void YakkuZai_040_Item()
+    public void YakkuZai_061_Item()
     {
         //Arrange
         int hpId = 1, birthDay = 20, sinDate = 20220402;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -3931,12 +4451,14 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void YakkuZai_041_IsDrug()
+    public void YakkuZai_062_IsDrug()
     {
         //Arrange
         int hpId = 1, birthDay = 20, sinDate = 20220402;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -3965,7 +4487,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Age
     /// </summary>
     [Test]
-    public void YakkuZai_042_Age()
+    public void YakkuZai_063_Age()
     {
         //Arrange
         int hpId = 1, birthDay = CIUtil.DateTimeToInt(DateTime.UtcNow.AddYears(-1)), sinDate = CIUtil.DateTimeToInt(DateTime.UtcNow);
@@ -4021,9 +4543,10 @@ public class CheckedOrderTest : BaseUT
 
         }
 
-        tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4041,22 +4564,29 @@ public class CheckedOrderTest : BaseUT
                 new()
                 )
         };
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.YakkuZai(hpId, ptId, sinDate, birthDay, ordInfDetailModels, ordInfs);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            if (autoSanteiMst.Id > 0) tenantTracking.RemoveRange(autoSanteiMst);
+            tenantTracking.SaveChanges();
+        }
 
-        // Act
-        var checkModels = medicalExaminationRepository.YakkuZai(hpId, ptId, sinDate, birthDay, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemGenerationConf.Val = temp;
-        if (autoSanteiMst.Id > 0) tenantTracking.RemoveRange(autoSanteiMst);
-        tenantTracking.SaveChanges();
     }
 
     /// <summary>
     /// Check YakuzaiJoho
     /// </summary>
     [Test]
-    public void YakkuZai_043_YakuzaiJoho()
+    public void YakkuZai_064_YakuzaiJoho()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 999999999;
@@ -4112,9 +4642,10 @@ public class CheckedOrderTest : BaseUT
 
         }
 
-        tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4132,21 +4663,27 @@ public class CheckedOrderTest : BaseUT
                 new()
                 )
         };
-        // Act
-        var checkModels = medicalExaminationRepository.YakkuZai(hpId, ptId, sinDate, birthDay, ordInfDetailModels, ordInfs);
-
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenantTracking.RemoveRange(autoSanteiMst);
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.YakkuZai(hpId, ptId, sinDate, birthDay, ordInfDetailModels, ordInfs);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            tenantTracking.RemoveRange(autoSanteiMst);
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
     /// Check YakuzaiJohoTeiyo
     /// </summary>
     [Test]
-    public void YakkuZai_044_YakuzaiJohoTeiyo()
+    public void YakkuZai_065_YakuzaiJohoTeiyo()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 999999999;
@@ -4202,9 +4739,11 @@ public class CheckedOrderTest : BaseUT
 
         }
 
-        tenantTracking.SaveChanges();
+
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4222,21 +4761,29 @@ public class CheckedOrderTest : BaseUT
                 new()
                 )
         };
-        // Act
-        var checkModels = medicalExaminationRepository.YakkuZai(hpId, ptId, sinDate, birthDay, ordInfDetailModels, ordInfs);
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.YakkuZai(hpId, ptId, sinDate, birthDay, ordInfDetailModels, ordInfs);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            tenantTracking.RemoveRange(autoSanteiMst);
+            tenantTracking.SaveChanges();
+        }
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenantTracking.RemoveRange(autoSanteiMst);
-        tenantTracking.SaveChanges();
     }
+
 
     /// <summary>
     /// Check Exist message which are returned
     /// </summary>
     [Test]
-    public void YakkuZai_045_ExistMessage()
+    public void YakkuZai_066_ExistMessage()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
@@ -4291,9 +4838,10 @@ public class CheckedOrderTest : BaseUT
 
         }
 
-        tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4311,27 +4859,34 @@ public class CheckedOrderTest : BaseUT
                 new()
                 )
         };
-
-        // Act
-        var checkModels = medicalExaminationRepository.YakkuZai(hpId, ptId, sinDate, birthDay, ordInfDetailModels, ordInfs);
-
-        //Assert
-        Assert.True(checkModels.Count == 2);
-        systemGenerationConf.Val = temp;
-        if (autoSanteiMst.Id > 0) tenantTracking.RemoveRange(autoSanteiMst);
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.YakkuZai(hpId, ptId, sinDate, birthDay, ordInfDetailModels, ordInfs);
+            //Assert
+            Assert.True(checkModels.Count == 2);
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            if (autoSanteiMst.Id > 0) tenantTracking.RemoveRange(autoSanteiMst);
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
     /// Check Some ItemCd are SiIkuji
     /// </summary>
     [Test]
-    public void SiIkuji_046_Item()
+    public void SiIkuji_067_Item()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4358,12 +4913,14 @@ public class CheckedOrderTest : BaseUT
     /// Check isjouhou
     /// </summary>
     [Test]
-    public void SiIkuji_047_IsJouhou()
+    public void SiIkuji_068_IsJouhou()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate1 = 20220330, sinDate2 = 999999999;
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4391,7 +4948,7 @@ public class CheckedOrderTest : BaseUT
     /// Check shonika
     /// </summary>
     [Test]
-    public void SiIkuji_048_Shonika()
+    public void SiIkuji_069_Shonika()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
@@ -4421,9 +4978,11 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemGenerationConfs.Add(systemGenerationConf);
         }
-        tenantTracking.SaveChanges();
+
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4434,21 +4993,26 @@ public class CheckedOrderTest : BaseUT
                 1
             )
         };
-
-        // Act
-        var checkModels = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
-
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
     /// Check autosantei
     /// </summary>
     [Test]
-    public void SiIkuji_049_AutoSantei()
+    public void SiIkuji_070_AutoSantei()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
@@ -4503,9 +5067,10 @@ public class CheckedOrderTest : BaseUT
 
         }
 
-        tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4516,21 +5081,27 @@ public class CheckedOrderTest : BaseUT
                 1
             )
         };
-        // Act
-        var checkModels = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
-
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemGenerationConf.Val = temp;
-        if (autoSanteiMst.Id > 0) tenantTracking.RemoveRange(autoSanteiMst);
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            if (autoSanteiMst.Id > 0) tenantTracking.RemoveRange(autoSanteiMst);
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
     /// Check Age
     /// </summary>
     [Test]
-    public void SiIkuji_050_Age()
+    public void SiIkuji_071_Age()
     {
         //Arrange
         int hpId = 1, birthDay = 21000101, sinDate = 21100101;
@@ -4572,7 +5143,7 @@ public class CheckedOrderTest : BaseUT
             tenantTracking.RemoveRange(autoSanteis);
         }
 
-        tenantTracking.SaveChanges();
+
 
         var mockConfiguration = new Mock<IConfiguration>();
         var mockMstItem = new Mock<IMstItemRepository>();
@@ -4587,21 +5158,28 @@ public class CheckedOrderTest : BaseUT
                 1
             )
         };
-        // Act
-        var checkModels = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
+            tenantTracking.SaveChanges();
+        }
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemGenerationConf.Val = temp;
-        if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
-        tenantTracking.SaveChanges();
     }
 
     /// <summary>
     /// Check Syosin
     /// </summary>
     [Test]
-    public void SiIkuji_051_Syosin()
+    public void SiIkuji_072_Syosin()
     {
         //Arrange
         int hpId = 1, birthDay = 21000101, sinDate = 21000101;
@@ -4643,9 +5221,10 @@ public class CheckedOrderTest : BaseUT
             tenantTracking.RemoveRange(autoSanteis);
         }
 
-        tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4656,21 +5235,27 @@ public class CheckedOrderTest : BaseUT
                 1
             )
         };
-        // Act
-        var checkModels = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 5);
-
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemGenerationConf.Val = temp;
-        if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 5);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
     /// Check when messages are returned
     /// </summary>
     [Test]
-    public void SiIkuji_052_ExistMessage()
+    public void SiIkuji_073_ExistMessage()
     {
         //Arrange
         int hpId = 1, birthDay = 21000101, sinDate = 21000101;
@@ -4712,9 +5297,11 @@ public class CheckedOrderTest : BaseUT
             tenantTracking.RemoveRange(autoSanteis);
         }
 
-        tenantTracking.SaveChanges();
+
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4725,32 +5312,40 @@ public class CheckedOrderTest : BaseUT
                 1
             )
         };
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModel1s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
+            var checkModel2s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 6);
+            var checkModel3s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, false, 1);
+            var checkModel4s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, false, 6);
 
-        // Act
-        var checkModel1s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
-        var checkModel2s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 6);
-        var checkModel3s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, false, 1);
-        var checkModel4s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, false, 6);
-
-        //Assert
-        Assert.True(checkModel1s.Count == 1 && checkModel1s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料（情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(checkModel2s.Count == 1 && checkModel2s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料（情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(checkModel3s.Count == 1 && checkModel3s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料\"を算定できる可能性があります。"));
-        Assert.True(checkModel4s.Count == 1 && checkModel4s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料\"を算定できる可能性があります。"));
-        systemGenerationConf.Val = temp;
-        if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModel1s.Count == 1 && checkModel1s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料（情報通信機器）\"を算定できる可能性があります。"));
+            Assert.True(checkModel2s.Count == 1 && checkModel2s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料（情報通信機器）\"を算定できる可能性があります。"));
+            Assert.True(checkModel3s.Count == 1 && checkModel3s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料\"を算定できる可能性があります。"));
+            Assert.True(checkModel4s.Count == 1 && checkModel4s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料\"を算定できる可能性があります。"));
+        }
+        finally
+        {
+            systemGenerationConf.Val = temp;
+            if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
     /// Check some ItemCd are zanyaku
     /// </summary>
     [Test]
-    public void Zanyaku_053_Item()
+    public void Zanyaku_074_Item()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4780,15 +5375,36 @@ public class CheckedOrderTest : BaseUT
         Assert.True(checkModel1s.Count == 0);
     }
 
-    /// <summary>
-    /// Check Zanyaku is drug
-    /// </summary>
     [Test]
-    public void Zanyaku_054_Drug()
+    public void Zanyaku_075_Check_ExistOutOrder()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockMstItem = new Mock<IMstItemRepository>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+
+        // Act
+        var checkModel1s = medicalExaminationRepository.Zanyaku(hpId, sinDate, new(), new());
+
+        //Assert
+        Assert.True(checkModel1s.Count == 0);
+    }
+
+    /// <summary>
+    /// Check Zanyaku is drug
+    /// </summary>
+    [Test]
+    public void Zanyaku_076_Drug()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101;
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         var mockSystemConf = new Mock<ISystemConfRepository>();
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
@@ -4827,11 +5443,13 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are TouyakutokusyoSyoho
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_055_Item()
+    public void TouyakuTokusyoSyoho_077_Item()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4884,11 +5502,13 @@ public class CheckedOrderTest : BaseUT
     /// Check TouyakuTokusyoSyoho is drug
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_056_Drug()
+    public void TouyakuTokusyoSyoho_078_Drug()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -4942,11 +5562,13 @@ public class CheckedOrderTest : BaseUT
     /// Check TouyakuTokusyoSyoho is true
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_057_True()
+    public void TouyakuTokusyoSyoho_079_True()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
@@ -5067,24 +5689,30 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModel1s = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModel1s, ordInf1s);
-        var checkModel2s = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModel1s, ordInf2s);
+            // Act
+            var checkModel1s = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModel1s, ordInf1s);
+            var checkModel2s = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModel1s, ordInf2s);
 
-        //Assert
-        Assert.True(checkModel1s.Count > 0 && checkModel2s.Count > 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModel1s.Count > 0 && checkModel2s.Count > 0);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
     /// Check special
     /// </summary>
     [Test]
-    public void CheckByoMei_058_Special()
+    public void CheckByoMei_080_Special()
     {
         //Arrange
         int hpId = 1, sinDate = 21100101, hokenId = 10, inoutKbn = 0;
@@ -5123,7 +5751,6 @@ public class CheckedOrderTest : BaseUT
             IsInvalidTokusyo = 2
         } };
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
-        tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
         var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
@@ -5155,6 +5782,7 @@ public class CheckedOrderTest : BaseUT
 
         try
         {
+            tenant.SaveChanges();
             // Act
             var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
             var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
@@ -5171,7 +5799,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void CheckByoMei_059_Other()
+    public void CheckByoMei_081_Other()
     {
         //Arrange
         int hpId = 1, sinDate = 21100101, hokenId = 10, inoutKbn = 0;
@@ -5210,7 +5838,6 @@ public class CheckedOrderTest : BaseUT
             IsInvalidTokusyo = 2
         } };
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
-        tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
         var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
@@ -5242,6 +5869,7 @@ public class CheckedOrderTest : BaseUT
 
         try
         {
+            tenant.SaveChanges();
             // Act
             var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
             var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
@@ -5259,7 +5887,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void CheckByoMei_060_True()
+    public void CheckByoMei_082_True()
     {
         //Arrange
         int hpId = 1, sinDate = 21100101, hokenId = 10, inoutKbn = 0;
@@ -5298,7 +5926,6 @@ public class CheckedOrderTest : BaseUT
             IsInvalidTokusyo = 2
         } };
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
-        tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
         var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
@@ -5330,6 +5957,7 @@ public class CheckedOrderTest : BaseUT
 
         try
         {
+            tenant.SaveChanges();
             // Act
             var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
             var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
@@ -5350,7 +5978,7 @@ public class CheckedOrderTest : BaseUT
     /// Check  day < 28
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_061_SystemSetting1_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_083_SystemSetting1_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -5429,20 +6057,26 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_062_SystemSetting1_InOutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_084_SystemSetting1_InOutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -5529,20 +6163,26 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_063_SystemSetting1_InHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_085_SystemSetting1_InHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -5629,20 +6269,25 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方料）");
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
-
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_064_SystemSetting1_NoMainDisease_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_086_SystemSetting1_NoMainDisease_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -5722,20 +6367,26 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_065_SystemSetting1_MainDisease_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_087_SystemSetting1_MainDisease_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -5815,20 +6466,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_066_SystemSetting1_MainDisease_NoMapDrug_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_088_SystemSetting1_MainDisease_NoMapDrug_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
@@ -5907,20 +6566,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_067SystemSetting1_MainDisease_MapDrug_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_089_SystemSetting1_MainDisease_MapDrug_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6010,26 +6677,34 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
-        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     /// <summary>
     /// Check day > 28
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_068_SystemSetting2_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_090_SystemSetting2_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6112,20 +6787,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_069_SystemSetting2_InOutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_091_SystemSetting2_InOutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6216,20 +6899,27 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_070_SystemSetting2_InHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_092_SystemSetting2_InHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6320,21 +7010,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方料）");
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方料）");
 
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_071_SystemSetting2_NoMainDisease_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_093_SystemSetting2_NoMainDisease_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6418,20 +7115,27 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 0);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_072_SystemSetting2_MainDisease_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_094_SystemSetting2_MainDisease_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6515,19 +7219,27 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）"); systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）"); systemConf.Val = temp;
+
+        }
+        finally
+        {
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_073_SystemSetting2_MainDisease_NoMapDrug_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_095_SystemSetting2_MainDisease_NoMapDrug_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
@@ -6611,20 +7323,26 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_074_SystemSetting2_MainDisease_MapDrug_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_096_SystemSetting2_MainDisease_MapDrug_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6715,18 +7433,26 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
-        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     #endregion
@@ -6736,7 +7462,7 @@ public class CheckedOrderTest : BaseUT
     /// Check  day < 28
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_075_SystemSetting1_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_097_SystemSetting1_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6815,20 +7541,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_076_SystemSetting1_InOutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_098_SystemSetting1_InOutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -6915,20 +7649,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_077_SystemSetting1_InHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_099_SystemSetting1_InHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7008,20 +7750,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方料）");
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_078_SystemSetting1_NoMainDisease_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_100_SystemSetting1_NoMainDisease_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7101,20 +7851,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 0);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_079_SystemSetting1_MainDisease_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_101_SystemSetting1_MainDisease_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7194,20 +7952,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_080_SystemSetting1_MainDisease_NoMapDrug_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_102_SystemSetting1_MainDisease_NoMapDrug_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
@@ -7287,20 +8053,26 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_081_SystemSetting1_MainDisease_MapDrug_OutHospistal_LessThan28()
+    public void TouyakuTokusyoSyoho_103_SystemSetting1_MainDisease_MapDrug_OutHospistal_LessThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7387,25 +8159,33 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
-        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     /// <summary>
     /// Check day > 28
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_082_SystemSetting2_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_104_SystemSetting2_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7490,20 +8270,27 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_083_SystemSetting2_InOutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_105_SystemSetting2_InOutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7594,20 +8381,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_084_SystemSetting2_InHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_106_SystemSetting2_InHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7698,21 +8493,27 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方料）" && !checkModels.First().Santei);
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方料）" && !checkModels.First().Santei);
 
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_085_SystemSetting2_NoMainDisease_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_107_SystemSetting2_NoMainDisease_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7796,20 +8597,26 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 0);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_086_SystemSetting2_MainDisease_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_108_SystemSetting2_MainDisease_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -7895,20 +8702,26 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_087_SystemSetting2_MainDisease_NoMapDrug_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_109_SystemSetting2_MainDisease_NoMapDrug_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
@@ -7991,20 +8804,28 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 0);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 0);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
-    public void TouyakuTokusyoSyoho_088_SystemSetting2_MainDisease_MapDrug_OutHospistal_MoreThan28()
+    public void TouyakuTokusyoSyoho_110_SystemSetting2_MainDisease_MapDrug_OutHospistal_MoreThan28()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -8094,31 +8915,84 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        // Act
-        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+            // Act
+            var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
-        //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
-        systemConf.Val = temp;
-        systemConf2.Val = temp;
-        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
-        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
-        tenantTracking.SaveChanges();
+            //Assert
+            Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
+
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            systemConf2.Val = temp;
+            tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+            tenantTracking.SaveChanges();
+        }
+        
     }
 
     #endregion
+
+    [Test]
+    public void Zanyaku_111_Check_ExistOutOrder()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101;
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockMstItem = new Mock<IMstItemRepository>();
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "123421341",
+                1
+            ),
+            new OrdInfDetailModel(
+                "123421342",
+                1
+            )
+        };
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                new()
+                )
+        };
+
+        var tenItem = new TenItemModel();
+
+        var mock = new Mock<IMstItemRepository>();
+        mock.Setup(finder => finder.GetTenMstInfo(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            .Returns((int hpId, string itemCd, int sinDate) => null);
+
+        // Act
+        var checkModel1s = medicalExaminationRepository.Zanyaku(hpId, sinDate, new(), new());
+
+        //Assert
+        Assert.True(checkModel1s.Count == 0);
+    }
 
     /// <summary>
     /// Check Zanyaku is drug
     /// </summary>
     [Test]
-    public void Zanyaku_076_Drug()
+    public void Zanyaku_112_Drug()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         var mockMstItem = new Mock<IMstItemRepository>();
         var mockSystemConf = new Mock<ISystemConfRepository>();
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
