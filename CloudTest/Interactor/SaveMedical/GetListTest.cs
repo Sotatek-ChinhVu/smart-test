@@ -5,7 +5,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
     public class GetListTest : BaseUT
     {
         [Test]
-        public void TC_001_SaveMedicalInteractor_TestGetList_PtId_InvalidId()
+        public void TC_001_SaveMedicalInteractor_GetListRepection_InvalidPtId()
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
@@ -28,7 +28,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_002_SaveMedicalInteractor_TestGetList_PtId()
+        public void TC_002_SaveMedicalInteractor_GetListRepection_ValidPtId()
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
@@ -50,7 +50,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_003_SaveMedicalInteractor_TestGetList_SearchSameVisit_true()
+        public void TC_003_SaveMedicalInteractor_GetListRepection_SearchSameVisit()
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
@@ -75,7 +75,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_004_SaveMedicalInteractor_TestGetList_IsGetFamily_true()
+        public void TC_004_SaveMedicalInteractor_GetListRepection_IsNameDuplicate_False()
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
@@ -100,7 +100,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_005_SaveMedicalInteractor_TestGetList_IsGetFamily_true_IsNameDuplicate_True()
+        public void TC_005_SaveMedicalInteractor_TestGetList_IsNameDuplicate_True()
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
