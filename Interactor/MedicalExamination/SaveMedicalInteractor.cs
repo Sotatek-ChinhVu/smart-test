@@ -788,7 +788,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return raiinInfStatus;
     }
 
-    private (Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>, List<OrdInfModel>) CheckOrder(int hpId, long ptId, int sinDate, SaveMedicalInputData inputDatas, List<OdrInfItemInputData> inputDataList, byte status)
+    public (Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>, List<OrdInfModel>) CheckOrder(int hpId, long ptId, int sinDate, SaveMedicalInputData inputDatas, List<OdrInfItemInputData> inputDataList, byte status)
     {
         var dicValidation = new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>();
         object obj = new();
