@@ -1,6 +1,5 @@
 ﻿using CloudUnitTest.SampleData;
 using Domain.Models.NextOrder;
-using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
@@ -178,6 +177,39 @@ public class InitKbnSettingTest : BaseUT
 
         // Assert
         Assert.True(resultQuery.Status == InitKbnSettingStatus.InvalidSinDate);
+    }
+
+    [Test]
+    public void InvalidWindowType_TestSuccess()
+    {
+        // Arrange
+        var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
+        var mockRaiinKubunMstRepository = new Mock<IRaiinKubunMstRepository>();
+        var mockNextOrderRepository = new Mock<INextOrderRepository>();
+
+        var interactor = new InitKbnSettingInteractor(mockTodayOdrRepository.Object, mockRaiinKubunMstRepository.Object, mockNextOrderRepository.Object);
+
+        // Act
+        int hpId = 1;
+        long ptId = 123456789;
+        long raiinNo = 999999999;
+        int sinDate = 0;
+        int frameId = 0;
+
+        InitKbnSettingInputData inputData = new InitKbnSettingInputData(
+                                                                            hpId,
+                                                                            (WindowType)21,
+                                                                            frameId,
+                                                                            true,
+                                                                            ptId,
+                                                                            raiinNo,
+                                                                            sinDate,
+                                                                            new()
+                                                                        );
+        var resultQuery = interactor.Handle(inputData);
+
+        // Assert
+        Assert.True(resultQuery.Status == InitKbnSettingStatus.InvalidWindowType);
     }
 
     #endregion
