@@ -36,7 +36,6 @@ namespace CloudUnitTest.Interactor.SaveMedical
             int seqNo = 99999999;
             string text = "平成28年8月13日にて事故症状固定";
             string finalKey = "SummaryInfGetList_1_28032001";
-            _cache.StringAppend(finalKey, string.Empty);
 
             SummaryInf summaryInf = new SummaryInf()
             {
@@ -50,6 +49,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             tenantTracking.SummaryInfs.Add(summaryInf);
             try
             {
+                _cache.StringAppend(finalKey, string.Empty);
                 tenantTracking.SaveChanges();
 
                 var result = summaryInfRepository.Get(hpid, ptId);
