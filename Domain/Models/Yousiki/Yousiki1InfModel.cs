@@ -16,6 +16,7 @@ public class Yousiki1InfModel
         Status = status;
         StatusDic = statusDic;
         SeqNo = seqNo;
+        DataTypeSeqNoDic = new();
         Yousiki1InfDetailList = yousiki1InfDetailList.OrderBy(item => item.CodeNo)
                                                      .ThenBy(item => item.RowNo)
                                                      .ThenBy(item => item.Payload)
@@ -36,9 +37,7 @@ public class Yousiki1InfModel
         StatusDic = new();
         Yousiki1InfDetailList = new();
         DataTypeSeqNoDic = new();
-        FilterYousiki1InfDetailList = new(); 
         FilterYousiki1InfDetailList = new();
-
     }
 
     public Yousiki1InfModel(int hpId, long ptId, int sinYm, int dataType, int seqNo, int isDeleted, int status, long ptNum, string name)

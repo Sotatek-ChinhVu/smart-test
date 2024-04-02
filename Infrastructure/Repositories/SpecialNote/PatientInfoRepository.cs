@@ -6,7 +6,6 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
-using System.Linq;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories.SpecialNote
@@ -279,6 +278,43 @@ namespace Infrastructure.Repositories.SpecialNote
             var list = NoTrackingDataContext.GcStdMsts.Where(item => sex == 0 || item.Sex == sex).AsEnumerable()
                 .Select(item => new GcStdInfModel(hpId, item.StdKbn, item.Sex, item.Point, item.SdM25, item.SdM20, item.SdM10, item.SdAvg, item.SdP10, item.SdP20, item.SdP25, item.Per03, item.Per10, item.Per25, item.Per50, item.Per75, item.Per90, item.Per97)).ToList();
             return list;
+        }
+
+        public List<KensaInfDetailModel> GetPtPhysicalInfoToYousiki(int hpId, long ptId, int sinDate)
+        {
+            var result = NoTrackingDataContext.KensaInfDetails.Where(item => item.HpId == hpId
+                                                                             && item.PtId == ptId
+                                                                             && item.IraiDate <= sinDate
+                                                                             && item.IsDeleted == 0
+                                                                             && (item.KensaItemCd == "V0001" || item.KensaItemCd == "V0002")
+                                                                             && !string.IsNullOrEmpty(item.ResultVal))
+                                                              .OrderByDescending(u => u.IraiDate)
+                                                              .ThenByDescending(u => u.UpdateDate)
+                                                              .ToList()
+                                                              .GroupBy(item => item.KensaItemCd)
+                                                              .Select(item => item.FirstOrDefault())
+                                                              .Select(item => new KensaInfDetailModel(
+                                                                    item!.HpId,
+                                                                    item.PtId,
+                                                                    item.IraiCd,
+                                                                    item.SeqNo,
+                                                                    item.IraiDate,
+                                                                    item.RaiinNo,
+                                                                    item.KensaItemCd ?? string.Empty,
+                                                                    item.ResultVal ?? string.Empty,
+                                                                    item.ResultType ?? string.Empty,
+                                                                    item.AbnormalKbn ?? string.Empty,
+                                                                    item.IsDeleted,
+                                                                    item.CmtCd1 ?? string.Empty,
+                                                                    item.CmtCd2 ?? string.Empty,
+                                                                    item.UpdateDate,
+                                                                    string.Empty,
+                                                                    string.Empty,
+                                                                    0,
+                                                                    string.Empty
+                                                                  ))
+                                                              .ToList();
+            return result;
         }
 
         public void ReleaseResource()

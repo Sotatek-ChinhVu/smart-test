@@ -13,7 +13,6 @@ using Helper.Constants;
 using Domain.Models.OrdInfDetails;
 using KensaInfDetailModel = Domain.Models.KensaIrai.KensaInfDetailModel;
 using UseCase.MedicalExamination.SaveKensaIrai;
-using Helper.Common;
 
 namespace CloudUnitTest.Interactor.SaveMedical;
 

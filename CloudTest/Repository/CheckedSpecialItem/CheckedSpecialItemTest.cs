@@ -149,12 +149,14 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.RoudouMsts.AddRange(roudous);
         tenant.PtRousaiTenkis.AddRange(ptRouSaiTenkis);
         tenant.PtHokenPatterns.AddRange(ptHokenPatterns);
-        tenant.SaveChanges();
-        var mockConfiguration = new Mock<IConfiguration>();
-        InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider, mockConfiguration.Object);
-
         try
         {
+            tenant.SaveChanges();
+            var mockConfiguration = new Mock<IConfiguration>();
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+            InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider, mockConfiguration.Object);
+
             // Act
             var hokenInf = insuranceRepository.GetPtHokenInf(1, 99999, 999999, 20220325);
             // Assert
