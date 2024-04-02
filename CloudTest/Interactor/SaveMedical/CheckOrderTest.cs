@@ -40,7 +40,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
     public class CheckOrderTest : BaseUT
     {
         [Test]
-        public void TC_001_SaveMedicalInteractor_TestAddAuditTempSaveData()
+        public void TC_001_SaveMedicalInteractor_TestAddAuditTempSaveData_InvalidTodayOrdUpdatedNoExist()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -104,7 +104,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_002_SaveMedicalInteractor_TestAddAuditTempSaveData()
+        public void TC_002_SaveMedicalInteractor_TestAddAuditTempSaveData_InvalidHokenPId()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -169,7 +169,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_003_SaveMedicalInteractor_TestAddAuditTempSaveData()
+        public void TC_003_SaveMedicalInteractor_TestAddAuditTempSaveData_NoMess()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -264,7 +264,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_004_SaveMedicalInteractor_TestAddAuditTempSaveData()
+        public void TC_004_SaveMedicalInteractor_TestAddAuditTempSaveData_DuplicateTodayOrd()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -369,7 +369,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             // Assert
             try
             {
-                Assert.That(result.Item1.Count() != 0 || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
+                Assert.That(result.Item1.Count() != 0 || result.Item1.Any(x => x.Value.Value == OrdInfValidationStatus.DuplicateTodayOrd) || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
             }
             finally
             {
@@ -379,7 +379,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_005_SaveMedicalInteractor_TestAddAuditTempSaveData()
+        public void TC_005_SaveMedicalInteractor_TestAddAuditTempSaveData_HokenPidNoExist()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -484,7 +484,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             // Assert
             try
             {
-                Assert.That(result.Item1.Count() != 0 || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
+                Assert.That(result.Item1.Any(x => x.Value.Value == OrdInfValidationStatus.HokenPidNoExist)|| result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
             }
             finally
             {
@@ -494,7 +494,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_006_SaveMedicalInteractor_TestAddAuditTempSaveData()
+        public void TC_006_SaveMedicalInteractor_TestAddAuditTempSaveData_OdrNoMapOdrDetail()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -585,13 +585,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
 
             List<long> raiinNos = new List<long>()
             {
-                odrInfs.RaiinNo
+                odrInfs?.RaiinNo ?? 0
             };
 
-            List<OrdInfModel> ordInfModels = new List<OrdInfModel>()
-            {
-
-            };
+            List<OrdInfModel> ordInfModels = new List<OrdInfModel>();
 
             var allOdrInf = tenantTracking.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo) && odr.IsDeleted == 0)?.ToList();
             var ordInfDetailModels = allOdrInf?.Select(o => ConvertToModel(o)) ?? new List<OrdInfModel>();
@@ -628,7 +625,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             // Assert
             try
             {
-                Assert.That(result.Item1.Count() != 0 || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
+                Assert.That(result.Item1.Any(x => x.Value.Value == OrdInfValidationStatus.OdrNoMapOdrDetail) || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
             }
             finally
             {
