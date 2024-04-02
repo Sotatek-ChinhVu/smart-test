@@ -123,6 +123,37 @@ namespace Domain.Models.OrdInfs
             UpdateMachine = string.Empty;
         }
 
+        public OrdInfModel(int inoutKbn, int odrKouiKbn, int hokenPid, List<OrdInfDetailModel> ordInfDetailModels)
+        {
+            HpId = 0;
+            RaiinNo = 0;
+            RpNo = 0;
+            RpEdaNo = 0;
+            PtId = 0;
+            SinDate = 0;
+            HokenPid = hokenPid;
+            OdrKouiKbn = odrKouiKbn;
+            RpName = string.Empty;
+            InoutKbn = inoutKbn;
+            SikyuKbn = 0;
+            SyohoSbt = 0;
+            SanteiKbn = 0;
+            TosekiKbn = 0;
+            DaysCnt = 0;
+            SortNo = 0;
+            IsDeleted = 0;
+            Id = 0;
+            GroupKoui = GroupKoui.From(0);
+            OrdInfDetails = ordInfDetailModels;
+            CreateDate = DateTime.MinValue;
+            CreateId = 0;
+            CreateName = string.Empty;
+            UpdateDate = DateTime.MinValue;
+            UpdateName = string.Empty;
+            CreateMachine = string.Empty;
+            UpdateMachine = string.Empty;
+        }
+
         public OrdInfModel(int inoutKbn, int odrKouiKbn, List<OrdInfDetailModel> ordInfDetailModels)
         {
             HpId = 0;
@@ -153,6 +184,7 @@ namespace Domain.Models.OrdInfs
             CreateMachine = string.Empty;
             UpdateMachine = string.Empty;
         }
+
         public OrdInfModel(int hpId, long ptId, int sinDate, long raiinNo, int hokenPid, long rpNo, long rpEdaNo, int sinKouiKbn, List<OrdInfDetailModel> ordInfDetailModels)
         {
             HpId = hpId;
