@@ -32,6 +32,8 @@ using ZstdSharp.Unsafe;
 using System.Drawing;
 using System;
 using Domain.Models.OrdInf;
+using Helper.Constants;
+using static Helper.Constants.OrderInfConst;
 
 namespace CloudUnitTest.Interactor.SaveMedical
 {
@@ -98,7 +100,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
             // Assert
-            Assert.That(result.Item1.Any() || result.Item2.Any());
+            Assert.That(result.Item1.Any(x => x.Value.Value == OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist) || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
         }
 
         [Test]
@@ -163,7 +165,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
             // Assert
-            Assert.That(result.Item1.Any() || result.Item2.Any());
+            Assert.That(result.Item1.Any(x => x.Value.Value == OrdInfValidationStatus.InvalidHokenPId) || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
         }
 
         [Test]
@@ -252,7 +254,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             // Assert
             try
             {
-                Assert.That(result.Item1.Any() || result.Item2.Any());
+                Assert.That(result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
             }
             finally
             {
@@ -329,7 +331,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
 
             List<long> raiinNos = new List<long>()
             {
-                odrInfs.RaiinNo
+                odrInfs?.RaiinNo ?? 0
             };
 
             List<OrdInfModel> ordInfModels = new List<OrdInfModel>()
@@ -367,7 +369,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             // Assert
             try
             {
-                Assert.That(result.Item1.Any() || result.Item2.Any());
+                Assert.That(result.Item1.Count() != 0 || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
             }
             finally
             {
@@ -444,7 +446,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
 
             List<long> raiinNos = new List<long>()
             {
-                odrInfs.RaiinNo
+                odrInfs?.RaiinNo ?? 0
             };
 
             List<OrdInfModel> ordInfModels = new List<OrdInfModel>()
