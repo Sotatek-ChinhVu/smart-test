@@ -23,7 +23,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_001_SaveMedicalInteractor_Test()
+        public void TC_001_SaveMedicalInteractor_Test_KeyExists()
         {
             //Arrange
             var mockIConfiguration = new Mock<IConfiguration>();
@@ -55,7 +55,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             var result = summaryInfRepository.Get(hpid, ptId);
             try
             {
-                Assert.That(result.Id == 9999999);
+                Assert.That(result.Id != 9999999 && _cache.KeyExists(finalKey));
             }
             finally
             {
@@ -67,7 +67,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_002_SaveMedicalInteractor_Test()
+        public void TC_002_SaveMedicalInteractor_Test_NoKeyExists()
         {
             //Arrange
             var mockIConfiguration = new Mock<IConfiguration>();
@@ -80,6 +80,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             long ptId = 28032001;
             int seqNo = 99999999;
             string text = "平成28年8月13日にて事故症状固定";
+            string finalKey = "SummaryInfGetList_1_28032001";
 
             SummaryInf summaryInf = new SummaryInf()
             {
@@ -96,11 +97,12 @@ namespace CloudUnitTest.Interactor.SaveMedical
             var result = summaryInfRepository.Get(hpid, ptId);
             try
             {
-                Assert.That(result.Id == 9999999);
+                Assert.That(result.Id == 9999999 && _cache.KeyExists(finalKey));
             }
             finally
             {
                 summaryInfRepository.ReleaseResource();
+                _cache.KeyDelete(finalKey);
                 tenantTracking.SummaryInfs.Remove(summaryInf);
                 tenantTracking.SaveChanges();
             }
