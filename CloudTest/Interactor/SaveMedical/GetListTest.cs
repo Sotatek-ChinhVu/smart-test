@@ -100,19 +100,23 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_005_SaveMedicalInteractor_TestGetList_IsGetFamily_true()
+        public void TC_005_SaveMedicalInteractor_TestGetList_IsGetFamily_true_IsNameDuplicate_True()
         {
             //Arrange
             var receptionRepository = new ReceptionRepository(TenantProvider);
-            //Mock data
-            int hpId = 1;
-            long ptId = 123;
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var raiinInf = tenantTracking.RaiinInfs.FirstOrDefault();
+
+            int hpId = raiinInf?.HpId ?? 0;
+            long ptId = raiinInf?.PtId ?? 0;
             long raiinNo = -1;
-            int sinDate = 20100609;
+            int sinDate = raiinInf?.SinDate ?? 0;
             bool isGetFamily = true;
 
+            // Act
             var result = receptionRepository.GetList(hpId, sinDate, raiinNo, ptId, false, isGetFamily, 2, false);
 
+            // Assert
             Assert.That(result.Any(x => x.IsNameDuplicate = true));
         }
     }
