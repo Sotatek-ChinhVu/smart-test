@@ -484,7 +484,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             // Assert
             try
             {
-                Assert.That(result.Item1.Any() || result.Item2.Any());
+                Assert.That(result.Item1.Count() != 0 || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
             }
             finally
             {
@@ -628,7 +628,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             // Assert
             try
             {
-                Assert.That(result.Item1.Any() || result.Item2.Any());
+                Assert.That(result.Item1.Count() != 0 || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
             }
             finally
             {
