@@ -104,7 +104,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_002_SaveMedicalInteractor_CheckOrder_InputDataList_IsDeleted_1()
+        public void TC_002_SaveMedicalInteractor_CheckOrder_InvalidHoken()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -169,7 +169,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_003_SaveMedicalInteractor_CheckOrder_NoMess()
+        public void TC_003_SaveMedicalInteractor_CheckOrder_NoMessage()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -633,6 +633,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
                 tenantTracking.SaveChanges();
             }
         }
+
 
         private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "", string updateName = "")
         {
