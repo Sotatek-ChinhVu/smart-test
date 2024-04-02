@@ -6,12 +6,12 @@ using Moq;
 
 namespace CloudUnitTest.Interactor.SaveMedical
 {
-    public class GetTest : BaseUT
+    public class GetSummaryInfTest : BaseUT
     {
 
         private readonly StackExchange.Redis.IDatabase _cache;
 
-        public GetTest()
+        public GetSummaryInfTest()
         {
             string connection = string.Concat("10.2.15.78", ":", "6379");
             if (RedisConnectorHelper.RedisHost != connection)
@@ -22,7 +22,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_001_SaveMedicalInteractor_Test_KeyExists()
+        public void TC_001_SaveMedicalInteractor_GetSummaryInf_KeyExists()
         {
             //Arrange
             var mockIConfiguration = new Mock<IConfiguration>();
@@ -66,7 +66,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_002_SaveMedicalInteractor_Test_NoKeyExists()
+        public void TC_002_SaveMedicalInteractor_GetSummaryInf_NoKeyExists()
         {
             //Arrange
             var mockIConfiguration = new Mock<IConfiguration>();
