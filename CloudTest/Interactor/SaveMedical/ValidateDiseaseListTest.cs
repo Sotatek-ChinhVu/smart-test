@@ -30,7 +30,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
     public class ValidateDiseaseListTest : BaseUT
     {
         [Test]
-        public void TC_001_SaveMedicalInteractor_TestValidateDiseaseList()
+        public void TC_001_SaveMedicalInteractor_ValidateDiseaseList_InValid()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -83,7 +83,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_002_SaveMedicalInteractor_TestValidateDiseaseList_PtDiseaseListPtIdNoExist()
+        public void TC_002_SaveMedicalInteractor_ValidateDiseaseList_PtDiseaseListPtIdNoExist()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -115,7 +115,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
                                                                   mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
             int hpId = 1;
-            long ptId = 28032001;
+            long ptId = 9999999999;
             long seqNo = 999;
             string byomeiCd = "kaito";
             int sortNo = 0;
@@ -157,7 +157,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_003_SaveMedicalInteractor_TestValidateDiseaseList_Valid()
+        public void TC_003_SaveMedicalInteractor_ValidateDiseaseList_Valid()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
