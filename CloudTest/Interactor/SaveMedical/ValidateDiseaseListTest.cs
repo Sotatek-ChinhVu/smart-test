@@ -83,7 +83,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_002_SaveMedicalInteractor_TestValidateDiseaseList()
+        public void TC_002_SaveMedicalInteractor_TestValidateDiseaseList_PtDiseaseListPtIdNoExist()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -157,7 +157,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_003_SaveMedicalInteractor_TestValidateDiseaseList()
+        public void TC_003_SaveMedicalInteractor_TestValidateDiseaseList_Valid()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
