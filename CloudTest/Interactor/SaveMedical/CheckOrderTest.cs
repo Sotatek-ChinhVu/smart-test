@@ -40,7 +40,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
     public class CheckOrderTest : BaseUT
     {
         [Test]
-        public void TC_001_SaveMedicalInteractor_TestAddAuditTempSaveData_InvalidTodayOrdUpdatedNoExist()
+        public void TC_001_SaveMedicalInteractor_CheckOrder_InvalidTodayOrdUpdatedNoExist()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -104,7 +104,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_002_SaveMedicalInteractor_TestAddAuditTempSaveData_InvalidHokenPId()
+        public void TC_002_SaveMedicalInteractor_CheckOrder_InputDataList_IsDeleted_1()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -169,7 +169,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_003_SaveMedicalInteractor_TestAddAuditTempSaveData_NoMess()
+        public void TC_003_SaveMedicalInteractor_CheckOrder_NoMess()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -264,7 +264,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_004_SaveMedicalInteractor_TestAddAuditTempSaveData_DuplicateTodayOrd()
+        public void TC_004_SaveMedicalInteractor_CheckOrder_DuplicateTodayOrd()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -379,7 +379,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_005_SaveMedicalInteractor_TestAddAuditTempSaveData_HokenPidNoExist()
+        public void TC_005_SaveMedicalInteractor_CheckOrder_HokenPidNoExist()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
@@ -494,7 +494,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
         }
 
         [Test]
-        public void TC_006_SaveMedicalInteractor_TestAddAuditTempSaveData_OdrNoMapOdrDetail()
+        public void TC_006_SaveMedicalInteractor_CheckOrder_OdrNoMapOdrDetail()
         {
             //Arrange
             var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
