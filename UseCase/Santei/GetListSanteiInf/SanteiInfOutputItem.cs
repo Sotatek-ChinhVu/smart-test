@@ -1,5 +1,4 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 
 namespace UseCase.Santei.GetListSanteiInf;
 

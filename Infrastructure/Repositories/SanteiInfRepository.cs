@@ -115,35 +115,25 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                                          .ToList();
 
         // Get 起算日. Get min KISAN_DATE (Check YUUKOU_DATE >= SINDATE)
-        List<KisanDateStruct> kisanDateList = new();
         int kisanSbt = 0;
 
-        foreach (var mstItem in santeiInfDetailQuery)
+        // logic get last kisanDate
+        List<KisanDateStruct> kisanDateList = santeiInfDetailQuery.Where(item => !string.IsNullOrEmpty(item.ItemCd))
+                                                                  .OrderByDescending(item => item.KisanDate)
+                                                                  .GroupBy(item => item.ItemCd)
+                                                                  .Select(item => item.First())
+                                                                  .Select(item => new KisanDateStruct(item.ItemCd!, item.KisanDate, item.KisanSbt))
+                                                                  .ToList();
+
+        // logic Type 初回算定 => If 前回日 already exists, 起算日 will not be displayed
+        foreach (var kisanDateStructItem in kisanDateList)
         {
-            string itemCd = mstItem.ItemCd ?? string.Empty;
-            int kisanDate = mstItem.KisanDate;
-
-            #region get max kisanDate
-            if (!kisanDateList.Any(item => item.ItemCd == itemCd))
+            if (dicLastOrderDate.ContainsKey(kisanDateStructItem.ItemCd) && kisanDateStructItem.KisanSbt == 1)
             {
-                kisanDateList.Add(new(itemCd, kisanDate));
-                kisanSbt = mstItem.KisanSbt;
-                continue;
-            }
-            var kisanDateStructItem = kisanDateList.FirstOrDefault(item => item.ItemCd == itemCd);
-            if (kisanDate > kisanDateStructItem?.KisanDate)
-            {
-                kisanDateStructItem.SetKisanDate(kisanDate);
-                kisanSbt = mstItem.KisanSbt;
-            }
-            #endregion
-
-            // logic Type 初回算定 => If 前回日 already exists, 起算日 will not be displayed
-            if (kisanSbt == 1 && dicLastOrderDate.ContainsKey(itemCd) && dicLastOrderDate[itemCd] > kisanDate)
-            {
-                kisanDateStructItem?.SetKisanDate(dicLastOrderDate[itemCd]);
+                kisanDateStructItem.SetKisanDate(dicLastOrderDate[kisanDateStructItem.ItemCd], kisanSbt);
             }
         }
+
         var odrInfDetailJoinList = (from odrInfDetail in odrInfDetailQuery
                                     join odrInf in odrInfQuery on new { odrInfDetail.HpId, odrInfDetail.SinDate, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpEdaNo, odrInfDetail.RpNo }
                                                                equals new { odrInf.HpId, odrInf.SinDate, odrInf.PtId, odrInf.RaiinNo, odrInf.RpEdaNo, odrInf.RpNo }
@@ -229,15 +219,19 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
         public int KisanDate { get; private set; }
 
-        public KisanDateStruct SetKisanDate(int kisanDate)
+        public int KisanSbt { get; private set; }
+
+        public KisanDateStruct SetKisanDate(int kisanDate, int kisanSbt)
         {
             KisanDate = kisanDate;
+            KisanSbt = kisanSbt;
             return this;
         }
 
-        public KisanDateStruct(string itemCd, int kisanDate)
+        public KisanDateStruct(string itemCd, int kisanDate, int kisanSbt)
         {
             ItemCd = itemCd;
+            KisanSbt = kisanSbt;
             KisanDate = kisanDate;
         }
     }
