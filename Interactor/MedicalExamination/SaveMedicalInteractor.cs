@@ -913,7 +913,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return UpsertFlowSheetStatus.Valid;
     }
 
-    private UpsertPtDiseaseListStatus ValidateDiseaseList(int hpId, List<PtDiseaseModel> ptDiseases)
+    public UpsertPtDiseaseListStatus ValidateDiseaseList(int hpId, List<PtDiseaseModel> ptDiseases)
     {
         foreach (var data in ptDiseases)
         {
