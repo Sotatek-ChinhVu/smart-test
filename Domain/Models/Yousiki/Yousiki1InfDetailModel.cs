@@ -44,6 +44,12 @@ public class Yousiki1InfDetailModel
         return this;
     }
 
+    public Yousiki1InfDetailModel ChangeSeqNo(int seqNo)
+    {
+        SeqNo = seqNo + 1;
+        return this;
+    }
+
     public long PtId { get; private set; }
 
     public int SinYm { get; private set; }

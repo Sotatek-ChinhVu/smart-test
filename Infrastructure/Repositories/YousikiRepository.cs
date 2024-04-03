@@ -7,6 +7,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using System.Collections.Generic;
 
 namespace Infrastructure.Repositories;
 
@@ -860,6 +861,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
     public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> categoryModels, bool isTemporarySave)
     {
+        List<int> categoryDataType = new List<int>();
         UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
 
         foreach (var categoryModel in categoryModels)
@@ -869,8 +871,16 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                 DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
             }
 
+            if (categoryModel.Status == 2)
+            {
+                AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
+                categoryDataType.Add(categoryModel.DataType);
+            }
+
             UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, isTemporarySave ? 1 : 2);
         }
+
+        UpdateSeqNo(yousiki1InfDetailModels, categoryDataType);
 
         foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)
         {
@@ -902,6 +912,75 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             }
         }
 
+        TrackingDataContext.SaveChanges();
+    }
+
+    public void UpdateSeqNo(List<Yousiki1InfDetailModel> yousiki1InfDetailModels, List<int> categoryDataType)
+    {
+        foreach (var item in yousiki1InfDetailModels)
+        {
+            if (categoryDataType.Contains(item.DataType))
+            {
+                item.ChangeSeqNo(item.SeqNo);
+            }
+        }
+    }
+
+    public void AddYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType)
+    {
+        int maxSeqNo = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
+                          x.PtId == ptId &&
+                          x.SinYm == sinYm &&
+                          x.DataType == dataType)
+                        .AsEnumerable()
+                        .Select(x => x.SeqNo)
+                        .OrderByDescending(x => x)
+                        .FirstOrDefault();
+        if (dataType != 0)
+        {
+            var commonInf = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
+                          x.PtId == ptId &&
+                          x.SinYm == sinYm &&
+                          x.DataType == 0 &&
+                          x.IsDeleted == 0)
+                        .FirstOrDefault();
+            if (commonInf == null)
+            {
+                int maxCommonSeqNo = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
+                          x.PtId == ptId &&
+                          x.SinYm == sinYm &&
+                          x.DataType == 0)
+                        .AsEnumerable()
+                        .Select(x => x.SeqNo)
+                        .OrderByDescending(x => x)
+                        .FirstOrDefault();
+                NoTrackingDataContext.Yousiki1Infs.Add(new Yousiki1Inf()
+                {
+                    HpId = hpId,
+                    SinYm = sinYm,
+                    PtId = ptId,
+                    DataType = 0,
+                    SeqNo = maxCommonSeqNo + 1,
+                    CreateId = userId,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow()
+            });
+            }
+        }
+        var newYousiki = new Yousiki1Inf()
+        {
+            HpId = hpId,
+            SinYm = sinYm,
+            PtId = ptId,
+            DataType = dataType,
+            SeqNo = maxSeqNo + 1,
+            CreateId = userId,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            UpdateId = userId,
+            UpdateDate = CIUtil.GetJapanDateTimeNow()
+        };
+        TrackingDataContext.Yousiki1Infs.Add(newYousiki);
         TrackingDataContext.SaveChanges();
     }
 
