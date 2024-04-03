@@ -9,7 +9,7 @@ public class SanteiInfRepositoryTest : BaseUT
 {
     #region Get List SanteiInf
     [Test]
-    public void GetListSanteiInf_TestSuccess_01()
+    public void GetListSanteiInf_TestSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -64,7 +64,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void GetListSanteiInf_TestSuccess_02()
+    public void GetListSanteiInf_TestCoverLineSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -208,20 +208,21 @@ public class SanteiInfRepositoryTest : BaseUT
         // SanteiInfDetail
         var tenMsts = ReadDataSanteiInf.ReadTenMst();
         tenant.TenMsts.AddRange(tenMsts);
-        tenant.SaveChanges();
         #endregion
-
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
-
-        // Act
-        bool result = false;
-        List<string> listItemCds = tenMsts.Select(item => item.ItemCd ?? string.Empty).ToList();
-        result = santeiInfRepository.CheckExistItemCd(1, listItemCds);
 
         // Assert
         try
         {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = false;
+            List<string> listItemCds = tenMsts.Select(item => item.ItemCd ?? string.Empty).ToList();
+            result = santeiInfRepository.CheckExistItemCd(1, listItemCds);
+
+
             Assert.True(result);
         }
         finally
@@ -235,7 +236,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void CheckExistItemCd_TestFalse_1()
+    public void CheckExistItemCd_TestItemCdListNotExistFalse()
     {
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
@@ -257,28 +258,28 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void CheckExistItemCd_TestFalse_2()
+    public void CheckExistItemCd_TestInvalidHpId()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
         // SanteiInfDetail
         var tenMsts = ReadDataSanteiInf.ReadTenMst();
         tenant.TenMsts.AddRange(tenMsts);
-        tenant.SaveChanges();
         #endregion
-
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
-
-        // Act
-        bool result = false;
-        List<string> listItemCds = tenMsts.Select(item => item.ItemCd ?? string.Empty).ToList();
-        listItemCds.Add("itemCdNotExist");
-        result = santeiInfRepository.CheckExistItemCd(1, listItemCds);
 
         // Assert
         try
         {
+            tenant.SaveChanges();
+
+            // Act
+            bool result = false;
+            List<string> listItemCds = tenMsts.Select(item => item.ItemCd ?? string.Empty).ToList();
+            listItemCds.Add("itemCdNotExist");
+            result = santeiInfRepository.CheckExistItemCd(1, listItemCds);
+
             Assert.True(!result);
         }
         finally
@@ -389,12 +390,17 @@ public class SanteiInfRepositoryTest : BaseUT
             UpdateId = 1
         };
         tenant.SanteiInfs.Add(santeiInfUnitTest);
-        tenant.SaveChanges();
+
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
-        // Act
-        var listSanteiUpdateModels = new List<SanteiInfModel>() { new SanteiInfModel(
+        // Assert
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var listSanteiUpdateModels = new List<SanteiInfModel>() { new SanteiInfModel(
                                                                                     santeiInfUnitTest.Id,
                                                                                     ptId,
                                                                                     itemCd,
@@ -405,22 +411,19 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                     false
                                                                                 )
                                                             };
-        var resultComman = santeiInfRepository.SaveSantei(1, 1, ptId, listSanteiUpdateModels);
-        var santeiInfCheck = tenant.SanteiInfs.OrderBy(item => item.Id)
-                                              .LastOrDefault(item => item.Id == santeiInfUnitTest.Id);
-        var listSanteiInfChecks = new List<SanteiInf>() { santeiInfCheck ?? new SanteiInf() };
-        if (listSanteiInfChecks == null)
-        {
-            resultComman = false;
-        }
-        else
-        {
-            resultComman = CompareOnlySanteiInf(ptId, listSanteiUpdateModels, listSanteiInfChecks);
-        }
+            var resultComman = santeiInfRepository.SaveSantei(1, 1, ptId, listSanteiUpdateModels);
+            var santeiInfCheck = tenant.SanteiInfs.OrderBy(item => item.Id)
+                                                  .LastOrDefault(item => item.Id == santeiInfUnitTest.Id);
+            var listSanteiInfChecks = new List<SanteiInf>() { santeiInfCheck ?? new SanteiInf() };
+            if (listSanteiInfChecks == null)
+            {
+                resultComman = false;
+            }
+            else
+            {
+                resultComman = CompareOnlySanteiInf(ptId, listSanteiUpdateModels, listSanteiInfChecks);
+            }
 
-        // Assert
-        try
-        {
             Assert.True(resultComman);
         }
         finally
@@ -456,12 +459,17 @@ public class SanteiInfRepositoryTest : BaseUT
             UpdateId = 1
         };
         tenant.SanteiInfs.Add(santeiInfUnitTest);
-        tenant.SaveChanges();
+
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
+        SanteiInf? santeiInfCheck = null;
+        // Assert
+        try
+        {
+            tenant.SaveChanges();
 
-        // Act
-        var listSanteiUpdateModels = new List<SanteiInfModel>() { new SanteiInfModel(
+            // Act
+            var listSanteiUpdateModels = new List<SanteiInfModel>() { new SanteiInfModel(
                                                                                     santeiInfUnitTest.Id,
                                                                                     ptId,
                                                                                     itemCd,
@@ -472,12 +480,10 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                     true
                                                                                 )
                                                             };
-        var resultComman = santeiInfRepository.SaveSantei(1, 1, ptId, listSanteiUpdateModels);
-        var santeiInfCheck = tenant.SanteiInfs.OrderBy(item => item.Id)
-                                              .LastOrDefault(item => item.Id == santeiInfUnitTest.Id);
-        // Assert
-        try
-        {
+            var resultComman = santeiInfRepository.SaveSantei(1, 1, ptId, listSanteiUpdateModels);
+            santeiInfCheck = tenant.SanteiInfs.OrderBy(item => item.Id)
+                                                 .LastOrDefault(item => item.Id == santeiInfUnitTest.Id);
+
             Assert.True(resultComman && santeiInfCheck == null);
         }
         finally
@@ -606,40 +612,41 @@ public class SanteiInfRepositoryTest : BaseUT
             Comment = comment
         };
         tenant.SanteiInfDetails.Add(santeiInfDetailUnitTest);
-        tenant.SaveChanges();
 
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
-        // Act
-        var santeiInfDetailModel = new SanteiInfDetailModel(
-                                                                santeiInfDetailUnitTest.Id,
-                                                                ptId,
-                                                                itemCd,
-                                                                endDateNew,
-                                                                kisanSbtNew,
-                                                                kisanDateNew,
-                                                                byomeiNew,
-                                                                hosokuCommentNew,
-                                                                commentNew
-                                                            );
-        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, hpId, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
-
-        var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
-                                                     .LastOrDefault(item => item.Id == santeiInfDetailUnitTest.Id);
-        var listSanteiInfDetails = new List<SanteiInfDetail>() { santeiInfDetail ?? new SanteiInfDetail() };
-        if (listSanteiInfDetails == null)
-        {
-            resultComman = false;
-        }
-        else
-        {
-            resultComman = CompareListSanteiInfDetail(ptId, santeiInfDetailModel, listSanteiInfDetails);
-        }
-
-        // Assert
         try
         {
+            tenant.SaveChanges();
+
+            // Act
+            var santeiInfDetailModel = new SanteiInfDetailModel(
+                                                                    santeiInfDetailUnitTest.Id,
+                                                                    ptId,
+                                                                    itemCd,
+                                                                    endDateNew,
+                                                                    kisanSbtNew,
+                                                                    kisanDateNew,
+                                                                    byomeiNew,
+                                                                    hosokuCommentNew,
+                                                                    commentNew
+                                                                );
+            var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, hpId, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
+
+            var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
+                                                         .LastOrDefault(item => item.Id == santeiInfDetailUnitTest.Id);
+            var listSanteiInfDetails = new List<SanteiInfDetail>() { santeiInfDetail ?? new SanteiInfDetail() };
+            if (listSanteiInfDetails == null)
+            {
+                resultComman = false;
+            }
+            else
+            {
+                resultComman = CompareListSanteiInfDetail(ptId, santeiInfDetailModel, listSanteiInfDetails);
+            }
+
+            // Assert
             Assert.True(resultComman);
         }
         finally
@@ -682,40 +689,42 @@ public class SanteiInfRepositoryTest : BaseUT
             Comment = comment
         };
         tenant.SanteiInfDetails.Add(santeiInfDetailUnitTest);
-        tenant.SaveChanges();
 
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
-        // Act
-        var santeiInfDetailModel = new SanteiInfDetailModel(
-                                                                santeiInfDetailUnitTest.Id,
-                                                                ptId,
-                                                                itemCd,
-                                                                endDate,
-                                                                kisanSbt,
-                                                                kisanDate,
-                                                                byomei,
-                                                                hosokuComment,
-                                                                comment,
-                                                                true
-                                                            );
-        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, hpId, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
-
-        var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
-                                                     .LastOrDefault(item => item.Id == santeiInfDetailUnitTest.Id);
-        if (santeiInfDetail == null)
-        {
-            resultComman = false;
-        }
-        else
-        {
-            resultComman = santeiInfDetail.IsDeleted == 1;
-        }
-
-        // Assert
         try
         {
+            tenant.SaveChanges();
+
+            // Act
+            var santeiInfDetailModel = new SanteiInfDetailModel(
+                                                                    santeiInfDetailUnitTest.Id,
+                                                                    ptId,
+                                                                    itemCd,
+                                                                    endDate,
+                                                                    kisanSbt,
+                                                                    kisanDate,
+                                                                    byomei,
+                                                                    hosokuComment,
+                                                                    comment,
+                                                                    true
+                                                                );
+            var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, hpId, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
+
+            var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
+                                                         .LastOrDefault(item => item.Id == santeiInfDetailUnitTest.Id);
+            if (santeiInfDetail == null)
+            {
+                resultComman = false;
+            }
+            else
+            {
+                resultComman = santeiInfDetail.IsDeleted == 1;
+            }
+
+            // Assert
+
             Assert.True(resultComman);
         }
         finally

@@ -212,7 +212,8 @@ public class KinkiOTCCheckerTest : BaseUT
         var prOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
         tenantTracking.PtOtcDrug.AddRange(prOtcDrugs);
         var m38Ingredients = CommonCheckerData.ReadM38Ingredients(hpId, "");
-        tenantTracking.M38Ingredients.AddRange(m38Ingredients); try
+        tenantTracking.M38Ingredients.AddRange(m38Ingredients);
+        try
         {
             tenantTracking.SaveChanges();
 

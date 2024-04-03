@@ -64,13 +64,14 @@ public class KinkiSuppleCheckerTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
         kinkiSuppleChecker.InitFinder(TenantProvider, cache);
 
         try
         {
+            tenantTracking.SaveChanges();
+
             // Act
             var result = kinkiSuppleChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
