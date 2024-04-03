@@ -3468,6 +3468,16 @@ namespace CalculateService.Receipt.ViewModels
                     p.IsDeleted == DeleteStatus.None
                     ).ForEach(p => ret.Add(new ReceSinRpInfModel(p)));
             }
+            else if (new int[] { SinMeiMode.EFFile }.Contains(mode))
+            {
+                // EFFile
+                sinRpInfModels.FindAll(p =>
+                    (p.IsDeleted == DeleteStatus.None || p.EfFlg == 1) &&
+                    p.SanteiKbn == SanteiKbnConst.Santei &&
+                    p.SinId < 90
+                    ).ForEach(p => ret.Add(new ReceSinRpInfModel(p)));
+
+            }
 
             ret = ret.OrderBy(p => p.RpNo).ToList();
 
@@ -3703,6 +3713,21 @@ namespace CalculateService.Receipt.ViewModels
                 //p.HokenId == (hokenId == 0 ? p.HokenId : hokenId) 
                 //).ForEach(p => ret.Add(new ReceSinKouiModel(p)));
             }
+            else if (new int[] { SinMeiMode.EFFile }.Contains(mode))
+            {
+                // EFFile
+                sinKouiModels.FindAll(p =>
+                        (
+                            (p.IsNodspRece != 1 && p.IsNodspRece != 2) ||
+                            p.SyukeiSaki == ReceSyukeisaki.ZaiCyosei
+                        ) &&
+                        //(new int[] { 0, 1 }.Contains(p.InoutKbn)) &&
+                        (p.HokenId == (hokenId == 0 ? p.HokenId : hokenId) || p.HokenId == hokenId2) &&
+                        (p.IsDeleted == DeleteStatus.None || p.EfFlg == 1)
+                    ).ForEach(p => ret.Add(new ReceSinKouiModel(p, null)));
+
+
+            }
 
             ret = ret.OrderBy(p => p.RpNo).ThenBy(p => p.SeqNo).ToList();
 
@@ -3854,6 +3879,20 @@ namespace CalculateService.Receipt.ViewModels
                             p.IsNodspRyosyu == 0
                         ) &&
                         p.IsDeleted == DeleteStatus.None
+                    ).ForEach(p => ret.Add(new ReceSinKouiDetailModel(p)));
+            }
+            else if (new int[] { SinMeiMode.EFFile }.Contains(mode))
+            {
+                // EFファイル
+
+                sinKouiDetailModels.FindAll(p =>
+                        (
+                            p.IsNodspRece != 1 ||
+                            p.FmtKbn == FmtKbnConst.ZaiCyosei
+                        ) &&
+                        p.IsNodspRece != 2 &&
+                        (p.IsDeleted == DeleteStatus.None || p.EfFlg == 1) &&
+                        !(p.ItemCd == ItemCdConst.CommentFree && string.IsNullOrEmpty(p.ItemName.Replace("\r", "").Replace("\n", "")))
                     ).ForEach(p => ret.Add(new ReceSinKouiDetailModel(p)));
             }
             ret = ret.OrderBy(p => p.RpNo).ThenBy(p => p.SeqNo).ThenBy(p => p.RowNo).ToList();
