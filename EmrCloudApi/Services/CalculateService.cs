@@ -4,6 +4,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
+using System.Net.Http;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
@@ -15,7 +16,7 @@ namespace EmrCloudApi.Services
 {
     public class CalculateService : ICalculateService
     {
-        private readonly HttpClient _httpClient = new HttpClient();
+        private HttpClient? _httpClient = null;
         private readonly IConfiguration _configuration;
         private readonly ITenantProvider _tenantProvider;
         private readonly ILoggingHandler _loggingHandler;
@@ -62,8 +63,10 @@ namespace EmrCloudApi.Services
 
             try
             {
+                _httpClient = new HttpClient();
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
+                _httpClient.Dispose();
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
@@ -116,15 +119,16 @@ namespace EmrCloudApi.Services
 
             try
             {
+                _httpClient = new HttpClient();
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
-                //_httpClient.Timeout = new TimeSpan(5, 0, 0);
+                _httpClient.Timeout = new TimeSpan(24, 0, 0);
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, cancellationToken);
+                _httpClient.Dispose();
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
                     return new CalculateResponse(responseContent, ResponseStatus.Successed);
                 }
-
                 return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
