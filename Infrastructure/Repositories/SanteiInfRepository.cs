@@ -151,7 +151,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                       join kisan in kisanDateList on new { joinItem.odrInfDetail.ItemCd }
                                                                  equals new { kisan.ItemCd } into kisanLeft
                                       from kisan in kisanLeft.DefaultIfEmpty()
-                                      where kisan.KisanDate == 0 || joinItem.odrInfDetail.SinDate >= kisan.KisanDate
+                                      where kisan.KisanDate != null && (kisan.KisanDate == 0 || joinItem.odrInfDetail.SinDate >= kisan.KisanDate)
                                       group joinItem.odrInfDetail by joinItem.tenMst.SanteCd into g
                                       select new SanteiInfModel(
                                                  g.Key,
