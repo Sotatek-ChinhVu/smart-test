@@ -5,7 +5,7 @@ namespace CloudUnitTest.Model.Santei;
 public class SanteiInfModelTest
 {
     [Test]
-    public void SanteiInfModel_TestContructor1Success()
+    public void TC_001_SanteiInfModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -73,7 +73,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestContructor2Success()
+    public void TC_002_SanteiInfModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -111,7 +111,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestContructor3Success()
+    public void TC_003_SanteiInfModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -166,7 +166,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestContructor4Success()
+    public void TC_004_SanteiInfModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -204,7 +204,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestDayCountDisplay_1()
+    public void TC_005_SanteiInfModel_TestDayCountDisplayWithAlertTermEqual1()
     {
         // Arrange
         #region Data Example
@@ -242,7 +242,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestDayCountDisplay_2()
+    public void TC_006_SanteiInfModel_TestDayCountDisplayWithAlertTermEqual2()
     {
         // Arrange
         #region Data Example
@@ -280,7 +280,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestDayCountDisplay_3()
+    public void TC_007_SanteiInfModel_TestDayCountDisplayWithAlertTermEqual3()
     {
         // Arrange
         #region Data Example
@@ -318,7 +318,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestDayCountDisplay_4()
+    public void TC_008_SanteiInfModel_TestDayCountDisplayWithAlertTermEqual4()
     {
         // Arrange
         #region Data Example
@@ -356,7 +356,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestDayCountDisplay_5()
+    public void TC_009_SanteiInfModel_TestDayCountDisplayWithAlertTermEqual5()
     {
         // Arrange
         #region Data Example
@@ -394,7 +394,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestKisanType_1()
+    public void TC_010_SanteiInfModel_TestKisanTypeKisanSbt()
     {
         // Arrange
         #region Data Example
@@ -432,7 +432,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestKisanType_2()
+    public void TC_011_SanteiInfModel_TestKisanTypeWithKisanSbtEqual1()
     {
         // Arrange
         #region Data Example
@@ -485,7 +485,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestKisanType_3()
+    public void TC_012_SanteiInfModel_TestKisanTypeWithKisanSbtEqual2()
     {
         // Arrange
         #region Data Example
@@ -538,7 +538,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestKisanType_4()
+    public void TC_013_SanteiInfModel_TestKisanTypeWithKisanSbtEqual3()
     {
         // Arrange
         #region Data Example
@@ -591,7 +591,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestKisanType_5()
+    public void TC_014_SanteiInfModel_TestKisanTypeWithKisanSbtEqual4()
     {
         // Arrange
         #region Data Example
@@ -644,7 +644,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestKisanType_6()
+    public void TC_015_SanteiInfModel_TestKisanTypeWithKisanSbtEqual5()
     {
         // Arrange
         #region Data Example
@@ -697,7 +697,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestKisanType_7()
+    public void TC_016_SanteiInfModel_TestKisanTypeWithKisanSbtEqual6()
     {
         // Arrange
         #region Data Example
@@ -750,7 +750,7 @@ public class SanteiInfModelTest
     }
 
     [Test]
-    public void SanteiInfModel_TestKisanType_8()
+    public void TC_017_SanteiInfModel_TestKisanTypeWithKisanSbtDefault()
     {
         // Arrange
         #region Data Example

@@ -6,7 +6,7 @@ namespace CloudUnitTest.Model.Santei;
 public class SanteiInfDetailModelTest
 {
     [Test]
-    public void SanteiInfDetailModel_TestContructor1Success()
+    public void TC_001_SanteiInfDetailModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -48,7 +48,7 @@ public class SanteiInfDetailModelTest
     }
 
     [Test]
-    public void SanteiInfDetailModel_TestContructor2Success()
+    public void TC_002_SanteiInfDetailModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -91,7 +91,7 @@ public class SanteiInfDetailModelTest
     }
 
     [Test]
-    public void SanteiInfDetailModel_TestContructor3Success()
+    public void TC_003_SanteiInfDetailModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -115,7 +115,7 @@ public class SanteiInfDetailModelTest
     }
 
     [Test]
-    public void SanteiInfDetailModel_TestContructor4Success()
+    public void TC_004_SanteiInfDetailModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -137,7 +137,7 @@ public class SanteiInfDetailModelTest
     }
 
     [Test]
-    public void SanteiInfDetailModel_TestContructor5Success()
+    public void TC_005_SanteiInfDetailModel_TestContructorSuccess()
     {
         // Arrange
         #region Data Example
@@ -174,7 +174,7 @@ public class SanteiInfDetailModelTest
     }
 
     [Test]
-    public void SanteiInfDetailModel_TestSetKisanDate()
+    public void TC_006_SanteiInfDetailModel_TestSetKisanDate()
     {
         // Arrange
         #region Data Example
