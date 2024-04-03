@@ -1644,7 +1644,7 @@ namespace CalculateService.Ika.DB.Finder
             //);
 
             var joinQuery = (
-                from sinDtl in sinDtls
+                from sinDtl in sinDtls.AsEnumerable()
                 join sinCount in sinCountMaxs on
                     new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
                     new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc
@@ -1659,8 +1659,8 @@ namespace CalculateService.Ika.DB.Finder
                 from a in tm.DefaultIfEmpty()
                 where (
                         (
-                            a.StartDate <= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) &&
-                            (a.EndDate >= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) || a.EndDate == 12341234)
+                            (a.StartDate != null && (a.StartDate <= ((b == null || b.LastDate == null) ? sinDtl.SinYm * 100 + 28 : b.LastDate))) &&
+                            ( a.EndDate != null && (a.EndDate >= ((b == null || a.EndDate == null) ? sinDtl.SinYm * 100 + 28 : b.LastDate) || a.EndDate == 12341234))
                         )
                     //&&
                     //(
