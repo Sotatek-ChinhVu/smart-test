@@ -10,7 +10,7 @@ public class GetListSanteiInfInteractorTest : BaseUT
 {
     #region ConvertToResult
     [Test]
-    public void ConvertToResult_TestSuccess()
+    public void TC_001_ConvertToResult_TestSuccess()
     {
         // Arrange
         int sinDate = 20221111;
@@ -80,7 +80,7 @@ public class GetListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ConvertToResult_TestInvalid()
+    public void TC_002_ConvertToResult_TestInvalid()
     {
         // Arrange
         int sinDate = 20221;
@@ -104,7 +104,7 @@ public class GetListSanteiInfInteractorTest : BaseUT
 
     #region Handle
     [Test]
-    public void Handle_TestSuccess()
+    public void TC_003_Handle_TestSuccess()
     {
         // Arrange
         var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
@@ -179,7 +179,7 @@ public class GetListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_TestInvalid()
+    public void TC_004_Handle_TestInvalid()
     {
         // Arrange
         var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();

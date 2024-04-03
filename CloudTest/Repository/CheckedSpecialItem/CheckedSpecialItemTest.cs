@@ -14,7 +14,7 @@ public class CheckedSpecialItemTest : BaseUT
     /// Check get TenMstItem list
     /// </summary>
     [Test]
-    public void GetTenMstItem()
+    public void TC_001_GetTenMstItem()
     {
         // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -43,7 +43,7 @@ public class CheckedSpecialItemTest : BaseUT
     }
 
     [Test]
-    public void FindDensiSanteiKaisuList()
+    public void TC_002_FindDensiSanteiKaisuList()
     {
         // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -76,7 +76,7 @@ public class CheckedSpecialItemTest : BaseUT
     }
 
     [Test]
-    public void GetSettingValue()
+    public void TC_003_GetSettingValue()
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
@@ -100,7 +100,7 @@ public class CheckedSpecialItemTest : BaseUT
     }
 
     [Test]
-    public void GetFirstVisitWithSyosin()
+    public void TC_004_GetFirstVisitWithSyosin()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var sampleData = CheckedSpecialItemData.ReadRainInf();
@@ -125,7 +125,7 @@ public class CheckedSpecialItemTest : BaseUT
     }
 
     [Test]
-    public void GetPtHokenInf()
+    public void TC_005_GetPtHokenInf()
     {
         // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -180,7 +180,7 @@ public class CheckedSpecialItemTest : BaseUT
     }
 
     [Test]
-    public void SanteiCount()
+    public void TC_006_SanteiCount()
     {
         // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();

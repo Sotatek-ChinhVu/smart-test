@@ -9,7 +9,7 @@ public class SanteiInfRepositoryTest : BaseUT
 {
     #region Get List SanteiInf
     [Test]
-    public void GetListSanteiInf_TestSuccess()
+    public void TC_001_GetListSanteiInf_TestSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -64,7 +64,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void GetListSanteiInf_TestCoverLineSuccess()
+    public void TC_002_GetListSanteiInf_TestCoverLineSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -124,7 +124,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void GetListSanteiInfDetail_TestSuccess()
+    public void TC_003_GetListSanteiInfDetail_TestSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -168,7 +168,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void GetOnlyListSanteiInf_TestSuccess()
+    public void TC_004_GetOnlyListSanteiInf_TestSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -201,7 +201,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void CheckExistItemCd_TestSuccess()
+    public void TC_005_CheckExistItemCd_TestSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -236,7 +236,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void CheckExistItemCd_TestItemCdListNotExistFalse()
+    public void TC_006_CheckExistItemCd_TestItemCdListNotExistFalse()
     {
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
@@ -258,7 +258,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void CheckExistItemCd_TestInvalidHpId()
+    public void TC_007_CheckExistItemCd_TestInvalidHpId()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -295,7 +295,7 @@ public class SanteiInfRepositoryTest : BaseUT
 
     #region SaveSantei
     [Test]
-    public void SaveSantei_TestCreateNewSuccess()
+    public void TC_008_SaveSantei_TestCreateNewSuccess()
     {
         Random random = new();
         long ptId = long.MaxValue;
@@ -366,7 +366,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void SaveSantei_TestUpdateSuccess()
+    public void TC_009_SaveSantei_TestUpdateSuccess()
     {
         Random random = new();
         long ptId = long.MaxValue;
@@ -437,7 +437,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void SaveSantei_TestDeleteSuccess()
+    public void TC_010_SaveSantei_TestDeleteSuccess()
     {
         Random random = new();
         long ptId = long.MaxValue;
@@ -500,7 +500,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void SaveListSanteiInfDetail_TestCreateNewSuccess()
+    public void TC_011_SaveListSanteiInfDetail_TestCreateNewSuccess()
     {
         Random random = new();
         long ptId = long.MaxValue;
@@ -580,7 +580,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void SaveListSanteiInfDetail_TestUpdateSuccess()
+    public void TC_012_SaveListSanteiInfDetail_TestUpdateSuccess()
     {
         Random random = new();
         long ptId = long.MaxValue;
@@ -663,7 +663,7 @@ public class SanteiInfRepositoryTest : BaseUT
     }
 
     [Test]
-    public void SaveListSanteiInfDetail_TestDeleteSuccess()
+    public void TC_013_SaveListSanteiInfDetail_TestDeleteSuccess()
     {
         Random random = new();
         long ptId = long.MaxValue;

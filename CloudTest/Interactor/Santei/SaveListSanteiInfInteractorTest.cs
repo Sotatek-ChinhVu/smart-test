@@ -15,7 +15,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 {
     #region ValidateInput
     [Test]
-    public void ConvertToResult_TestSuccess()
+    public void TC_001_ConvertToResult_TestSuccess()
     {
         // Arrange
         #region Data Example
@@ -138,7 +138,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ConvertToResult_TestInvalidHpId()
+    public void TC_002_ConvertToResult_TestInvalidHpId()
     {
         // Arrange
         #region Data Example
@@ -176,7 +176,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ConvertToResult_TestInvalidPtId()
+    public void TC_003_ConvertToResult_TestInvalidPtId()
     {
         // Arrange
         #region Data Example
@@ -217,7 +217,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ConvertToResult_TestInvalidUserId()
+    public void TC_004_ConvertToResult_TestInvalidUserId()
     {
         // Arrange
         #region Data Example
@@ -261,7 +261,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ConvertToResult_TestInvalidItemCd()
+    public void TC_005_ConvertToResult_TestInvalidItemCd()
     {
         // Arrange
         #region Data Example
@@ -395,7 +395,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ConvertToResult_TestInvalidAlertTerm()
+    public void TC_006_ConvertToResult_TestInvalidAlertTerm()
     {
         // Arrange
         #region Data Example
@@ -500,7 +500,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ConvertToResult_TestInvalidAlertDays()
+    public void TC_007_ConvertToResult_TestInvalidAlertDays()
     {
         // Arrange
         #region Data Example
@@ -571,7 +571,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ValidateInput_TestValidateSanteiInfDetail()
+    public void TC_008_ValidateInput_TestValidateSanteiInfDetail()
     {
         // Arrange
         #region Data Example
@@ -652,7 +652,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ConvertToResult_TestSanteiInfDoesNotAllowSanteiInfDetail()
+    public void TC_009_ConvertToResult_TestSanteiInfDoesNotAllowSanteiInfDetail()
     {
         // Arrange
         #region Data Example
@@ -783,7 +783,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
     #region ValidateSanteiInfDetail
     [Test]
-    public void ValidateSanteiInfDetail_TestSuccess()
+    public void TC_010_ValidateSanteiInfDetail_TestSuccess()
     {
         // Arrange
         #region Data Example
@@ -835,7 +835,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ValidateSanteiInfDetail_TestInvalidKisanSbt()
+    public void TC_011_ValidateSanteiInfDetail_TestInvalidKisanSbt()
     {
         // Arrange
         #region Data Example
@@ -898,7 +898,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ValidateSanteiInfDetail_TestInvalidSanteiInfDetail()
+    public void TC_012_ValidateSanteiInfDetail_TestInvalidSanteiInfDetail()
     {
         // Arrange
         #region Data Example
@@ -950,7 +950,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ValidateSanteiInfDetail_TestInvalidEndDate()
+    public void TC_013_ValidateSanteiInfDetail_TestInvalidEndDate()
     {
         // Arrange
         #region Data Example
@@ -1002,7 +1002,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ValidateSanteiInfDetail_TestInvalidKisanDate()
+    public void TC_014_ValidateSanteiInfDetail_TestInvalidKisanDate()
     {
         // Arrange
         #region Data Example
@@ -1054,7 +1054,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ValidateSanteiInfDetail_TestInvalidHosokuComment()
+    public void TC_015_ValidateSanteiInfDetail_TestInvalidHosokuComment()
     {
         // Arrange
         #region Data Example
@@ -1108,7 +1108,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
     #region ConvertToSanteiInfModel
     [Test]
-    public void ConvertToSanteiInfModel_TestSuccess()
+    public void TC_016_ConvertToSanteiInfModel_TestSuccess()
     {
         // Arrange
         #region Data Example
@@ -1189,7 +1189,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
     #region Handle
     [Test]
-    public void Handle_TestSuccess()
+    public void TC_017_Handle_TestSuccess()
     {
         // Arrange
         #region Data Example
@@ -1286,7 +1286,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_TestFalse()
+    public void TC_018_Handle_TestFalse()
     {
         // Arrange
         #region Data Example
@@ -1383,7 +1383,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_TestInvalid()
+    public void TC_019_Handle_TestInvalid()
     {
         // Arrange
         #region Data Example

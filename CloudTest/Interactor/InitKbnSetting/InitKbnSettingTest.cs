@@ -15,7 +15,7 @@ public class InitKbnSettingTest : BaseUT
 {
     #region Test Validate
     [Test]
-    public void InvalidHpId_TestSuccess()
+    public void TC_001_InvalidHpId_TestSuccess()
     {
         // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
@@ -48,7 +48,7 @@ public class InitKbnSettingTest : BaseUT
     }
 
     [Test]
-    public void InvalidFrameId_TestSuccess()
+    public void TC_002_InvalidFrameId_TestSuccess()
     {
         // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
@@ -81,7 +81,7 @@ public class InitKbnSettingTest : BaseUT
     }
 
     [Test]
-    public void InvalidPtId_TestSuccess()
+    public void TC_003_InvalidPtId_TestSuccess()
     {
         // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
@@ -114,7 +114,7 @@ public class InitKbnSettingTest : BaseUT
     }
 
     [Test]
-    public void InvalidRaiinNo_TestSuccess()
+    public void TC_004_InvalidRaiinNo_TestSuccess()
     {
         // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
@@ -147,7 +147,7 @@ public class InitKbnSettingTest : BaseUT
     }
 
     [Test]
-    public void InvalidSinDate_TestSuccess()
+    public void TC_005_InvalidSinDate_TestSuccess()
     {
         // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
@@ -180,7 +180,7 @@ public class InitKbnSettingTest : BaseUT
     }
 
     [Test]
-    public void InvalidWindowType_TestSuccess()
+    public void TC_006_InvalidWindowType_TestSuccess()
     {
         // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
@@ -216,7 +216,7 @@ public class InitKbnSettingTest : BaseUT
 
     #region Test handle
     [Test]
-    public void InitDefaultByNextOrder_TestSuccess()
+    public void TC_007_InitDefaultByNextOrder_TestSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -308,7 +308,7 @@ public class InitKbnSettingTest : BaseUT
     }
 
     [Test]
-    public void InitDefaultByTodayOrder_TestSuccess()
+    public void TC_008_InitDefaultByTodayOrder_TestSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -460,7 +460,7 @@ public class InitKbnSettingTest : BaseUT
     }
 
     [Test]
-    public void InitDefaultByRsv_TestSuccess()
+    public void TC_009_InitDefaultByRsv_TestSuccess()
     {
         #region Fetch data
         var tenant = TenantProvider.GetNoTrackingDataContext();
