@@ -280,6 +280,80 @@ public class CheckedOrderTest : BaseUT
         Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
     }
 
+    [Test]
+    public void IgakuTokusitu_006_2_Disease_Special()
+    {
+        // Arrange
+        int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
+        bool isJouhou1 = true, isJouhou2 = false;
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                20221212,
+                1
+            ),
+             new PtDiseaseModel(
+                5,
+                0,
+                1,
+                20221010,
+                1
+            )
+        };
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "113001810131",
+                10
+            )
+        };
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+            && p.GrpCd == 4001
+            && p.GrpEdaNo == 0);
+        var temp = systemConf?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 4001,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockMstItem = new Mock<IMstItemRepository>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
+        try
+        {
+            tenantTracking.SaveChanges();
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);
+            var iagkutokusitu2 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou2);
+            Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+            Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+        
+    }
+
     /// <summary>
     /// Check Orther
     /// </summary>
