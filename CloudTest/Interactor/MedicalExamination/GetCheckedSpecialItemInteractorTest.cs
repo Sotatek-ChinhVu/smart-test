@@ -20,7 +20,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 {
     #region AgeLimitCheck
     [Test]
-    public void AgeLimitCheck_True()
+    public void TC_001_AgeLimitCheck_True()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 20221201, checkAge = 1;
@@ -64,7 +64,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void AgeLimitCheck_MaxAge_WithAgeDiffer0()
+    public void TC_002_AgeLimitCheck_MaxAge_WithAgeDiffer0()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 19930903, checkAge = 29;
@@ -109,7 +109,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void AgeLimitCheck_MinAge_WithAgeDiffer0()
+    public void TC_003_AgeLimitCheck_MinAge_WithAgeDiffer0()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 20221221, checkAge = 1;
@@ -154,7 +154,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void AgeLimitCheck_MaxAge_WithMinAgeEqual0()
+    public void TC_004_AgeLimitCheck_MaxAge_WithMinAgeEqual0()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 19930903, checkAge = 29;
@@ -199,7 +199,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void AgeLimitCheck_MinAge_WithMaxAgeEqual0()
+    public void TC_005_AgeLimitCheck_MinAge_WithMaxAgeEqual0()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 20221221, checkAge = 1;
@@ -245,7 +245,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region ExpiredCheck
     [Test]
-    public void ExpiredCheck_True()
+    public void TC_006_ExpiredCheck_True()
     {
         // Arrange
         var sinDate = 20221101;
@@ -285,7 +285,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void ExpiredCheck_MinStartDate()
+    public void TC_007_ExpiredCheck_MinStartDate()
     {
         // Arrange
         var sinDate = 20220101;
@@ -325,7 +325,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void ExpiredCheck_MaxEndDate()
+    public void TC_008_ExpiredCheck_MaxEndDate()
     {
         // Arrange
         var sinDate = 20221101;
@@ -367,7 +367,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region DuplicateCheck
     [Test]
-    public void DuplicateCheck_True()
+    public void TC_009_DuplicateCheck_True()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -442,7 +442,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void DuplicateCheck_Fail()
+    public void TC_010_DuplicateCheck_Fail()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -484,7 +484,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region ItemCommentCheck
     [Test]
-    public void ItemCommentCheck_True()
+    public void TC_011_ItemCommentCheck_True()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -518,7 +518,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void ItemCommentCheck_Fail()
+    public void TC_012_ItemCommentCheck_Fail()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -552,7 +552,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region CalculationCountCheck
     [Test]
-    public void CalculationCountCheck_UnitCd_997_998()
+    public void TC_013_CalculationCountCheck_UnitCd_997_998()
     {
         // Arrange
         int hpId = 999, sinDate = 20221110;
@@ -683,7 +683,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CalculationCountCheck_UnitCd_Other()
+    public void TC_014_CalculationCountCheck_UnitCd_Other()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110;
@@ -816,7 +816,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CalculationCountCheck_UnitCd_Other_StartDateMoreThan0()
+    public void TC_015_CalculationCountCheck_UnitCd_Other_StartDateMoreThan0()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110;
@@ -949,7 +949,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CalculationCountCheck_UnitCd_997_998_True()
+    public void TC_016_CalculationCountCheck_UnitCd_997_998_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110;
@@ -1080,7 +1080,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CalculationCountCheck_UnitCd_Other_True()
+    public void TC_017_CalculationCountCheck_UnitCd_Other_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110;
@@ -1213,7 +1213,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region Check Age
     [Test]
-    public void CheckAge_AA()
+    public void TC_018_CheckAge_AA()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1235,7 +1235,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CheckAge_B3()
+    public void TC_019_CheckAge_B3()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1261,7 +1261,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CheckAge_B6()
+    public void TC_020_CheckAge_B6()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1287,7 +1287,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CheckAge_BF()
+    public void TC_021_CheckAge_BF()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1313,7 +1313,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CheckAge_BK()
+    public void TC_022_CheckAge_BK()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1339,7 +1339,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CheckAge_AE()
+    public void TC_023_CheckAge_AE()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1361,7 +1361,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CheckAge_MG()
+    public void TC_024_CheckAge_MG()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1388,7 +1388,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CheckAge_Other()
+    public void TC_025_CheckAge_Other()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1415,7 +1415,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region Common DensiSantei
     [Test]
-    public void CommonDensiSantei_53()
+    public void TC_026_CommonDensiSantei_53()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1472,7 +1472,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_121()
+    public void TC_027_CommonDensiSantei_121()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1529,7 +1529,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_131()
+    public void TC_028_CommonDensiSantei_131()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1586,7 +1586,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_138()
+    public void TC_029_CommonDensiSantei_138()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1643,7 +1643,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_141()
+    public void TC_030_CommonDensiSantei_141()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1701,7 +1701,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_142()
+    public void TC_031_CommonDensiSantei_142()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1760,7 +1760,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_143()
+    public void TC_032_CommonDensiSantei_143()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1819,7 +1819,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_144()
+    public void TC_033_CommonDensiSantei_144()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1878,7 +1878,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_145()
+    public void TC_034_CommonDensiSantei_145()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1937,7 +1937,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_146()
+    public void TC_035_CommonDensiSantei_146()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1996,7 +1996,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_147()
+    public void TC_036_CommonDensiSantei_147()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2055,7 +2055,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_148()
+    public void TC_037_CommonDensiSantei_148()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2114,7 +2114,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_997()
+    public void TC_038_CommonDensiSantei_997()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2194,7 +2194,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_998()
+    public void TC_039_CommonDensiSantei_998()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2272,7 +2272,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_999_TermSbt2()
+    public void TC_040_CommonDensiSantei_999_TermSbt2()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2352,7 +2352,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_999_TermSbt3()
+    public void TC_041_CommonDensiSantei_999_TermSbt3()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2432,7 +2432,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_999_TermSbt4()
+    public void TC_042_CommonDensiSantei_999_TermSbt4()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2512,7 +2512,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_999_TermSbt5()
+    public void TC_043_CommonDensiSantei_999_TermSbt5()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2592,7 +2592,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void CommonDensiSantei_Other()
+    public void TC_044_CommonDensiSantei_Other()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2653,7 +2653,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region util function
     [Test]
-    public void WeekBefore()
+    public void TC_045_WeekBefore()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2677,7 +2677,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void MonthsBefore()
+    public void TC_046_MonthsBefore()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2703,7 +2703,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void YearsBefore()
+    public void TC_047_YearsBefore()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2729,7 +2729,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void DaysBefore()
+    public void TC_048_DaysBefore()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2754,7 +2754,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void MonthsAfter()
+    public void TC_049_MonthsAfter()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2779,7 +2779,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void GetHokenKbn()
+    public void TC_050_GetHokenKbn()
     {
         // Arrange
         int odrHokenKbn1 = 0, odrHokenKbn2 = 1, odrHokenKbn3 = 2, odrHokenKbn4 = 11, odrHokenKbn5 = 12, odrHokenKbn6 = 13, odrHokenKbn7 = 14;
@@ -2807,7 +2807,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void GetCheckSanteiKbns()
+    public void TC_051_GetCheckSanteiKbns()
     {
         // Arrange
         int odrHokenKbn = 0, hokensyuHandling = 1;
@@ -2828,7 +2828,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void GetCheckHokenKbns()
+    public void TC_052_GetCheckHokenKbns()
     {
         // Arrange
         int hokensyuHandling1 = 0, hokensyuHandling2 = 1, hokensyuHandling3 = 2, odrHokenKbn1 = 0, odrHokenKbn2 = 1, odrHokenKbn3 = 2, odrHokenKbn4 = 11, odrHokenKbn5 = 12, odrHokenKbn6 = 13, odrHokenKbn7 = 14;
@@ -2865,9 +2865,8 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         Assert.True(output9.Contains(4) && output9.Contains(0));
     }
 
-
     [Test]
-    public void GetPtHokenKbn()
+    public void TC_053_GetPtHokenKbn()
     {
         // Arrange
         int hpId = 1, ptId = 5, sinDate = 20221111, rpNo = 1, edano = 1;
@@ -2897,7 +2896,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region Main
     [Test]
-    public void Handle_HpId()
+    public void TC_054_Handle_HpId()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2917,7 +2916,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_PtId()
+    public void TC_055_Handle_PtId()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2937,7 +2936,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_SinDate()
+    public void TC_056_Handle_SinDate()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2957,7 +2956,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_IBirthDay()
+    public void TC_057_Handle_IBirthDay()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2977,7 +2976,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_CheckAge()
+    public void TC_058_Handle_CheckAge()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2997,7 +2996,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_RaiinNo()
+    public void TC_059_Handle_RaiinNo()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -3017,7 +3016,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_InvalidOrderAndKarte()
+    public void TC_060_Handle_InvalidOrderAndKarte()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -3037,7 +3036,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_EnabledInputCheck_True()
+    public void TC_061_Handle_EnabledInputCheck_True()
     {
         // Arrange
         var mockMstItemRepo1 = new Mock<IMstItemRepository>();
@@ -3235,7 +3234,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void Handle_EnabledCommentCheck_True()
+    public void TC_062_Handle_EnabledCommentCheck_True()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();

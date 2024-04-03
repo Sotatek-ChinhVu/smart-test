@@ -104,7 +104,6 @@ public class KinkiOTCCheckerTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
 
         var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
@@ -112,35 +111,35 @@ public class KinkiOTCCheckerTest : BaseUT
         tenantTracking.PtOtcDrug.AddRange(prOtcDrugs);
         var m38Ingredients = CommonCheckerData.ReadM38Ingredients(hpId, "");
         tenantTracking.M38Ingredients.AddRange(m38Ingredients);
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        //setup
-        var ordInfDetails = new List<OrdInfoDetailModel>()
+            //setup
+            var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
             new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
         };
 
-        var odrInfoModel = new List<OrdInfoModel>()
+            var odrInfoModel = new List<OrdInfoModel>()
         {
             new OrdInfoModel(21, 0, ordInfDetails)
         };
 
-        var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
-                                                                RealtimeCheckerType.KinkiOTC, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                    RealtimeCheckerType.KinkiOTC, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
-        var kinkiOTCChecker = new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>();
+            var kinkiOTCChecker = new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
-        kinkiOTCChecker.HpID = hpId;
-        kinkiOTCChecker.PtID = 1231;
-        kinkiOTCChecker.Sinday = 20230404;
-        kinkiOTCChecker.InitFinder(TenantProvider, cache);
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+            kinkiOTCChecker.HpID = hpId;
+            kinkiOTCChecker.PtID = 1231;
+            kinkiOTCChecker.Sinday = 20230404;
+            kinkiOTCChecker.InitFinder(TenantProvider, cache);
 
-        try
-        {
             ///Act
             var result = kinkiOTCChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
@@ -207,7 +206,6 @@ public class KinkiOTCCheckerTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
 
         var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
@@ -215,35 +213,36 @@ public class KinkiOTCCheckerTest : BaseUT
         tenantTracking.PtOtcDrug.AddRange(prOtcDrugs);
         var m38Ingredients = CommonCheckerData.ReadM38Ingredients(hpId, "");
         tenantTracking.M38Ingredients.AddRange(m38Ingredients);
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        //setup
-        var ordInfDetails = new List<OrdInfoDetailModel>()
+            //setup
+            var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
             new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
         };
 
-        var odrInfoModel = new List<OrdInfoModel>()
+            var odrInfoModel = new List<OrdInfoModel>()
         {
             new OrdInfoModel(21, 0, ordInfDetails)
         };
 
-        var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
-                                                                RealtimeCheckerType.KinkiOTC, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                    RealtimeCheckerType.KinkiOTC, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
-        var kinkiOTCChecker = new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>();
+            var kinkiOTCChecker = new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(999, new List<string>() { "620160501" }, 20230101, 1231);
-        kinkiOTCChecker.HpID = 999;
-        kinkiOTCChecker.PtID = 1231;
-        kinkiOTCChecker.Sinday = 20230404;
-        kinkiOTCChecker.InitFinder(TenantProvider, cache);
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(999, new List<string>() { "620160501" }, 20230101, 1231);
+            kinkiOTCChecker.HpID = 999;
+            kinkiOTCChecker.PtID = 1231;
+            kinkiOTCChecker.Sinday = 20230404;
+            kinkiOTCChecker.InitFinder(TenantProvider, cache);
 
-        try
-        {
+
             ///Act
             var result = kinkiOTCChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
@@ -288,7 +287,6 @@ public class KinkiOTCCheckerTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
 
         var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
@@ -296,35 +294,36 @@ public class KinkiOTCCheckerTest : BaseUT
         tenantTracking.PtOtcDrug.AddRange(prOtcDrugs);
         var m38Ingredients = CommonCheckerData.ReadM38Ingredients(hpId, "");
         tenantTracking.M38Ingredients.AddRange(m38Ingredients);
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
 
-        //setup
-        var ordInfDetails = new List<OrdInfoDetailModel>()
+            //setup
+            var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
             new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
         };
 
-        var odrInfoModel = new List<OrdInfoModel>()
+            var odrInfoModel = new List<OrdInfoModel>()
         {
             new OrdInfoModel(21, 0, ordInfDetails)
         };
 
-        var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
-                                                                RealtimeCheckerType.KinkiOTC, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                    RealtimeCheckerType.KinkiOTC, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
-        var kinkiOTCChecker = new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>();
+            var kinkiOTCChecker = new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(999, new List<string>() { "620160501" }, 20230101, 1231);
-        kinkiOTCChecker.HpID = 999;
-        kinkiOTCChecker.PtID = 1231;
-        kinkiOTCChecker.Sinday = 20230404;
-        kinkiOTCChecker.InitFinder(TenantProvider, cache);
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(999, new List<string>() { "620160501" }, 20230101, 1231);
+            kinkiOTCChecker.HpID = 999;
+            kinkiOTCChecker.PtID = 1231;
+            kinkiOTCChecker.Sinday = 20230404;
+            kinkiOTCChecker.InitFinder(TenantProvider, cache);
 
-        try
-        {
+
             ///Act
             var result = kinkiOTCChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
