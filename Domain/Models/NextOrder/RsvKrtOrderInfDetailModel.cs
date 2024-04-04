@@ -67,6 +67,20 @@ namespace Domain.Models.NextOrder
             ItemCd = itemCd;
             IpnCd = ipnCd;
             SinKouiKbn = sinKouiKbn;
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnName = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            MasterSbt = string.Empty;
+            YjCd = string.Empty;
+            YohoSets = new();
+            CenterItemCd1 = string.Empty;
+            CenterItemCd2 = string.Empty;
         }
 
         public RsvKrtOrderInfDetailModel(int yohoKbn, string itemCd, int sinKouiKbn, string masterSbt, int drugKbn)
@@ -76,6 +90,20 @@ namespace Domain.Models.NextOrder
             SinKouiKbn = sinKouiKbn;
             MasterSbt = masterSbt;
             DrugKbn = drugKbn;
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnName = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            YjCd = string.Empty;
+            YohoSets = new();
+            CenterItemCd1 = string.Empty;
+            CenterItemCd2 = string.Empty;
+            IpnCd = string.Empty;
         }
 
         public OrdInfValidationStatus Validation(int flag)

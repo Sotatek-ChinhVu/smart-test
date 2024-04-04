@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories
 
             List<DrugMenuItemModel> drugMenuItems = new List<DrugMenuItemModel>();
             //Root
-            DrugMenuItemModel rootMenu = new DrugMenuItemModel("医薬品情報", "", 0, 0, 0, "", 0, yjCode);
+            DrugMenuItemModel rootMenu = new DrugMenuItemModel("医薬品情報", "", 0, 0, 0, "", 0, yjCode ?? string.Empty);
             drugMenuItems.Add(rootMenu);
 
             var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.Where(item => item.HpId == hpId); //PI_INF_DETAIL
@@ -46,14 +46,14 @@ namespace Infrastructure.Repositories
             var piProductInfCollections = queryDrugInfs.Where(pi => pi.YjCd == yjCode).AsQueryable();
 
             //Kikaku
-            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 1);
+            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode ?? string.Empty, piInfDetailCollection, piProductInfCollections, 1);
             if (kikakuCollection.Count > 0)
             {
                 foreach (var kikakuItem in kikakuCollection)
                 {
                     if (kikakuItem.DbLevel == 0)
                     {
-                        CreateSubMenu(kikakuItem, 1, rootMenu, yjCode);
+                        CreateSubMenu(kikakuItem, 1, rootMenu, yjCode ?? string.Empty);
                     }
 
                 }

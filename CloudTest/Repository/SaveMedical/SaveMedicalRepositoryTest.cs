@@ -210,7 +210,6 @@ public class SaveMedicalRepositoryTest : BaseUT
         List<FlowSheetModel> flowSheetData = new();
         int seqNo = 999;
         MonshinInforModel monshin = new(hpId, ptId, raiinNo, sinDate, string.Empty, string.Empty, 0, 0, seqNo);
-        bool rsvkrtNo = true;
         List<long> byomeiIdList = new List<long>() { It.IsAny<long>(), It.IsAny<long>() };
 
         mockITodayOdrRepository.Setup(finder => finder.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId, status))

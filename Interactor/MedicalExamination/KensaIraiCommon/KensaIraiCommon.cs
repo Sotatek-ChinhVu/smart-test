@@ -25,7 +25,7 @@ public class KensaIraiCommon : IKensaIraiCommon
     private readonly IOrdInfRepository _ordInfRepository;
     private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
     private readonly IGroupInfRepository _groupInfRepository;
-    private readonly ILoggingHandler _loggingHandler;
+    private readonly ILoggingHandler? _loggingHandler;
     private readonly ICoKensaIraiFinder _coKensaIraiFinder;
 
     public KensaIraiCommon(ITenantProvider tenantProvider, IKensaIraiRepository kensaIraiRepository, ISystemConfRepository systemConfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IOrdInfRepository ordInfRepository, IKensaIraiCoReportService kensaIraiCoReportService, IGroupInfRepository groupInfRepository, ICoKensaIraiFinder coKensaIraiFinder)

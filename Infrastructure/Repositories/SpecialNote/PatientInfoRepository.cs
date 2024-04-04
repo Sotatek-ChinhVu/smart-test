@@ -130,7 +130,7 @@ namespace Infrastructure.Repositories.SpecialNote
                         string.Empty,
                         string.Empty,
                         0,
-                        kensaMst.Formula
+                        kensaMst.Formula ?? string.Empty
                       )).ToList()
                     );
                 physicals.Add(physical);
