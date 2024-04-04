@@ -154,7 +154,7 @@ namespace Interactor.Yousiki
                     detail = CreateYousiki1InfDetailModel(hpId, codeNo, rowNo, payLoad, yousiki1InfModel);
                 }
             }
-            yousiki1InfDetailModels.Add(detail);
+            yousiki1InfDetailModels?.Add(detail);
             return detail;
         }
 

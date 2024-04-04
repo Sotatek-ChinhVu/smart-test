@@ -190,7 +190,6 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_006_TestAgeChecker_HandleCheckOrderList_TestSettingLevelIs0()
     {
-        int hpId = 999;
         //Setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
