@@ -6201,7 +6201,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               x?.SanteigaiKbn ?? 0,
                               x?.IsNosearch ?? 0,
                               entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList(),
-                              x.UpdateDate
+                              x?.UpdateDate ?? DateTime.MinValue
                               )).OrderBy(t => t.CreateDate).ToList(),
                 entity.TenMsts.Select(y => new TenItemModel(
                                                             y.SinKouiKbn,

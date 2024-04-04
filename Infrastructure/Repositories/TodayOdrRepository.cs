@@ -38,7 +38,6 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
     private const string SUSPECT_FLAG = "の疑い";
     private readonly ISystemConfRepository? _systemConf;
     private readonly IApprovalInfRepository? _approvalInfRepository;
-    private readonly TenantDataContext _tenantDataContext;
 
     public TodayOdrRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf, IApprovalInfRepository approvalInfRepository) : base(tenantProvider)
     {

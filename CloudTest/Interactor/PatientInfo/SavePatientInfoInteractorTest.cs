@@ -10877,7 +10877,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
                 var input = JsonSerializer.Deserialize<SavePatientInfoInputData>(inputStrInsert);
 
                 //// Act
-                var resultInsert = savePatientInfo.Handle(input);
+                var resultInsert = savePatientInfo.Handle(input ?? new());
                 ptId = resultInsert.PtID;
 
                 var inputstrUpdate = @"{ ""Patient"":{ ""HpId"":1,""PtId"":" + resultInsert.PtID + @",""PtNum"":" + resultInsert.PatientInforModel.PtNum + @",""KanaName"":""Luu Nguyen 1"",""Name"":""Luu Nguyen 1"",""Sex"":1,""Birthday"":19930309,""IsDead"":0,""DeathDate"":0,""Mail"":"""",""HomePost"":"""",""HomeAddress1"":"""",""HomeAddress2"":"""",""Tel1"":"""",""Tel2"":"""",""Setanusi"":"""",""Zokugara"":"""",""Job"":"""",""RenrakuName"":"""",""RenrakuPost"":"""",""RenrakuAddress1"":"""",""RenrakuAddress2"":"""",""RenrakuTel"":"""",""RenrakuMemo"":"""",""OfficeName"":"""",""OfficePost"":"""",""OfficeAddress1"":"""",""OfficeAddress2"":"""",""OfficeTel"":"""",""OfficeMemo"":"""",""IsRyosyoDetail"":0,""PrimaryDoctor"":0,""IsTester"":0,""MainHokenPid"":0,""ReferenceNo"":0,""LimitConsFlg"":0,""Memo"":""""},""PtKyuseis"":[],""PtSanteis"":[],""Insurances"":[],""PtGrps"":[],""HokenInfs"":[],""HokenKohis"":[],""MaxMoneys"":[],""ReactSave"":{ ""ConfirmHaveanExpiredHokenOnMain"":false,""ConfirmRegisteredInsuranceCombination"":false,""ConfirmAgeCheck"":false,""ConfirmInsuranceElderlyLaterNotYetCovered"":false,""ConfirmLaterInsuranceRegisteredPatientsElderInsurance"":false,""ConfirmInsuranceSameInsuranceNumber"":false,""ConfirmMultipleHokenSignedUpSameTime"":false,""ConfirmFundsWithSamePayerCode"":false,""ConfirmInvalidJiscodeCheck"":false,""ConfirmHokenPatternSelectedIsInfMainHokenPid"":false,""ConfirmSamePatientInf"":false,""ConfirmCloneByomei"":false},""InsuranceScans"":[],""HokenIdList"":[],""UserId"":2,""HpId"":1}
@@ -10885,7 +10885,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
                 var inputUpdate = JsonSerializer.Deserialize<SavePatientInfoInputData>(inputstrUpdate);
 
-                var resultUpdate = savePatientInfo.Handle(inputUpdate);
+                var resultUpdate = savePatientInfo.Handle(inputUpdate ?? new());
                 //// Assert
                 Assert.IsTrue(resultUpdate.Status == SavePatientInfoStatus.Successful && resultUpdate.PatientInforModel.KanaName == "Luu Nguyen 1" && resultUpdate.PatientInforModel.Name == "Luu Nguyen 1" && resultUpdate.PatientInforModel.Birthday == 19930309);
             }
@@ -10927,7 +10927,7 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
                 var inputUpdate = JsonSerializer.Deserialize<SavePatientInfoInputData>(inputstrUpdate);
 
-                var resultUpdate = savePatientInfo.Handle(inputUpdate);
+                var resultUpdate = savePatientInfo.Handle(inputUpdate ?? new());
                 ptId = resultUpdate.PtID;
                 //// Assert
                 Assert.IsTrue(resultUpdate.Status == SavePatientInfoStatus.Failed && resultUpdate.PatientInforModel.PtId == 0);
