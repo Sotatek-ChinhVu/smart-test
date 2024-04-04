@@ -2,7 +2,6 @@
 using CommonChecker.DB;
 using Entity.Tenant;
 using Helper.Extension;
-using CalculateService.Extensions;
 
 namespace CloudUnitTest.CommonChecker.Finder
 {
@@ -34,20 +33,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M14CmtCode.AddRange(ageCommentInfo);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
+
                 // Act
                 var result1 = realtimcheckerfinder.FindAgeComment(hpId, testCmt1);
                 var result2 = realtimcheckerfinder.FindAgeComment(hpId, testCmt2);
 
                 // Assert
-                Assert.AreEqual(string.Empty, result1);
-                Assert.AreEqual("COMMENT-Test", result2);
+                Assert.That(result1, Is.EqualTo(string.Empty));
+                Assert.That(result2, Is.EqualTo("COMMENT-Test"));
             }
             finally
             {
@@ -73,14 +73,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result2 = realtimcheckerfinder.FindAgeComment(hpId, testCmt2);
 
             // Assert
-            Assert.AreEqual(string.Empty, result1);
-            Assert.AreEqual(string.Empty, result2);
+            Assert.That(result1, Is.EqualTo(string.Empty));
+            Assert.That(result2, Is.EqualTo(string.Empty));
         }
 
         [Test]
         public void TC_003_FindAnalogueName_Test_AnalogueInfo_Is_Not_Null()
         {
-
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var testAnalogueCd1 = "UT7777";
@@ -102,20 +101,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M56AnalogueCd.AddRange(m56AnalogueCds);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
+
                 // Act
                 var result1 = realtimcheckerfinder.FindAnalogueName(1, testAnalogueCd1);
                 var result2 = realtimcheckerfinder.FindAnalogueName(1, testAnalogueCd2);
 
                 // Assert
-                Assert.AreEqual(string.Empty, result1);
-                Assert.AreEqual("Analogue-Name-Test", result2);
+                Assert.That(result1, Is.EqualTo(string.Empty));
+                Assert.That(result2, Is.EqualTo("Analogue-Name-Test"));
             }
             finally
             {
@@ -157,7 +157,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M56AnalogueCd.AddRange(m56AnalogueCds);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
@@ -165,13 +164,14 @@ namespace CloudUnitTest.CommonChecker.Finder
             var analogueCodeLists = new List<string>() { testAnalogueCd1, testAnalogueCd2 };
             try
             {
+                tenantTracking.SaveChanges();
                 // Act
                 var result = realtimcheckerfinder.FindAnalogueNameDic(hpId, analogueCodeLists);
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
-                Assert.AreEqual(string.Empty, result.First().Value);
-                Assert.AreEqual("Analogue-Name-Test1", result.Last().Value);
+                Assert.That(result.Count, Is.EqualTo(2));
+                Assert.That(result.First().Value, Is.EqualTo(string.Empty));
+                Assert.That(result.Last().Value, Is.EqualTo("Analogue-Name-Test1"));
             }
             finally
             {
@@ -213,21 +213,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M56DrugClass.AddRange(m56s);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
             try
             {
+                tenantTracking.SaveChanges();
                 // Act
                 var result1 = realtimcheckerfinder.FindClassName(1, classCd1);
                 var result2 = realtimcheckerfinder.FindClassName(1, classCd2);
                 var result3 = realtimcheckerfinder.FindClassName(1, classCd4);
 
                 // Assert
-                Assert.AreEqual(string.Empty, result1);
-                Assert.AreEqual("Analogue-Name-Test1", result2);
-                Assert.AreEqual(string.Empty, result3);
+                Assert.That(result1, Is.EqualTo(string.Empty));
+                Assert.That(result2, Is.EqualTo("Analogue-Name-Test1"));
+                Assert.That(result3, Is.EqualTo(string.Empty));
             }
             finally
             {
@@ -271,21 +271,22 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M56ExIngCode.AddRange(m56s);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
             try
             {
+                tenantTracking.SaveChanges();
+
                 // Act
                 var result1 = realtimcheckerfinder.FindComponentName(1, sebunCd1);
                 var result2 = realtimcheckerfinder.FindComponentName(1, sebunCd2);
                 var result3 = realtimcheckerfinder.FindComponentName(1, sebunCd3);
 
                 // Assert
-                Assert.AreEqual("SeibunName-Test1", result1);
-                Assert.AreEqual(string.Empty, result2);
-                Assert.AreEqual(string.Empty, result3);
+                Assert.That(result1, Is.EqualTo("SeibunName-Test1"));
+                Assert.That(result2, Is.EqualTo(string.Empty));
+                Assert.That(result3, Is.EqualTo(string.Empty));
             }
             finally
             {
@@ -329,7 +330,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M56ExIngCode.AddRange(m56s);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
@@ -337,11 +337,12 @@ namespace CloudUnitTest.CommonChecker.Finder
             var sebunCds = new List<string> { sebunCd1, sebunCd2, sebunCd3 };
             try
             {
+                tenantTracking.SaveChanges();
                 // Act
                 var result = realtimcheckerfinder.FindComponentNameDic(1, sebunCds);
 
                 // Assert
-                Assert.AreEqual(3, result.Count);
+                Assert.That(result.Count, Is.EqualTo(3));
             }
             finally
             {
@@ -383,22 +384,22 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M42ContraCmt.AddRange(m42s);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
                 // Act
                 var result1 = realtimcheckerfinder.FindDiseaseComment(hpId, cmtCd1);
                 var result2 = realtimcheckerfinder.FindDiseaseComment(hpId, cmtCd2);
                 var result3 = realtimcheckerfinder.FindDiseaseComment(hpId, cmtCd3);
 
                 // Assert
-                Assert.AreEqual(string.Empty, result1);
-                Assert.AreEqual("000", result2);
-                Assert.AreEqual(string.Empty, result3);
+                Assert.That(result1, Is.EqualTo(string.Empty));
+                Assert.That(result2, Is.EqualTo("000"));
+                Assert.That(result3, Is.EqualTo(string.Empty));
             }
             finally
             {
@@ -440,29 +441,28 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M42ContraindiDisCon.AddRange(m42s);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
                 // Act
                 var result1 = realtimcheckerfinder.FindDiseaseName(hpId, cd1);
                 var result2 = realtimcheckerfinder.FindDiseaseName(hpId, cd2);
                 var result3 = realtimcheckerfinder.FindDiseaseName(hpId, cd3);
 
                 // Assert
-                Assert.AreEqual(string.Empty, result1);
-                Assert.AreEqual("000", result2);
-                Assert.AreEqual(string.Empty, result3);
+                Assert.That(result1, Is.EqualTo(string.Empty));
+                Assert.That(result2, Is.EqualTo("000"));
+                Assert.That(result3, Is.EqualTo(string.Empty));
             }
             finally
             {
                 tenantTracking.M42ContraindiDisCon.RemoveRange(m42s);
                 tenantTracking.SaveChanges();
             }
-
         }
 
         [Test]
@@ -497,7 +497,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M42ContraindiDisCon.AddRange(m42s);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
@@ -505,11 +504,12 @@ namespace CloudUnitTest.CommonChecker.Finder
             var byotaiCdList = new List<string> { cd1, cd2, cd3 };
             try
             {
+                tenantTracking.SaveChanges();
                 // Act
                 var result = realtimcheckerfinder.FindDiseaseNameDic(hpId, byotaiCdList);
 
                 // Assert
-                Assert.AreEqual(3, result.Count);
+                Assert.That(result.Count, Is.EqualTo(3));
             }
             finally
             {
@@ -549,7 +549,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M56DrvalrgyCode.AddRange(m56s);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
@@ -557,11 +556,12 @@ namespace CloudUnitTest.CommonChecker.Finder
             var drvalrgyCodeList = new List<string> { cd1, cd2, cd3 };
             try
             {
+                tenantTracking.SaveChanges();
                 // Act
                 var result = realtimcheckerfinder.FindDrvalrgyNameDic(1, drvalrgyCodeList);
 
                 // Assert
-                Assert.AreEqual(3, result.Count);
+                Assert.That(result.Count, Is.EqualTo(3));
             }
             finally
             {
@@ -601,22 +601,22 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.M56DrvalrgyCode.AddRange(m56s);
-            tenantTracking.SaveChanges();
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
                 // Act
                 var result1 = realtimcheckerfinder.FindDrvalrgyName(1, cd1);
                 var result2 = realtimcheckerfinder.FindDrvalrgyName(1, cd2);
                 var result3 = realtimcheckerfinder.FindDrvalrgyName(1, cd3);
 
                 // Assert
-                Assert.AreEqual(string.Empty, result1);
-                Assert.AreEqual("UNITTEST", result2);
-                Assert.AreEqual(string.Empty, result3);
+                Assert.That(result1, Is.EqualTo(string.Empty));
+                Assert.That(result2, Is.EqualTo("UNITTEST"));
+                Assert.That(result3, Is.EqualTo(string.Empty));
             }
             finally
             {
@@ -1024,7 +1024,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.SaveChanges();
             }
         }
-        
+
         [Test]
         public void TC_021_TEST_FindKinkiComment()
         {
@@ -1279,7 +1279,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
-            
+
             try
             {
                 // Act
