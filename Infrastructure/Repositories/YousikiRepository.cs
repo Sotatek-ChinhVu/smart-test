@@ -923,7 +923,8 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         {
             if (categoryDataType.Contains(item.DataType))
             {
-                item.ChangeSeqNo(item.SeqNo);
+                var seqNoMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == item.PtId && x.SinYm == item.SinYm && x.DataType == item.DataType).Max(x => x.SeqNo);
+                item.ChangeSeqNo(seqNoMax);
             }
         }
     }
