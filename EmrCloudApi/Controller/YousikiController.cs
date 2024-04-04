@@ -171,7 +171,7 @@ public class YousikiController : BaseParamControllerBase
 
         foreach (var categorie in request.Yousiki1Inf.CategoryRequests)
         {
-            categories.Add(new CategoryModel(categorie.DataType, categorie.IsDeleted));
+            categories.Add(new CategoryModel(categorie.DataType, categorie.IsDeleted, categorie.Status));
         }
 
         //ConvertTabCommon

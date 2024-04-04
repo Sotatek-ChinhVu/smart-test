@@ -13,14 +13,14 @@ namespace AWSSDK.Common
 {
     public static class UpdateDataTenant
     {
-        private static List<string> _allTempTable;
-        private static string _baseTable;
-        private static string _tempTable;
-        private static string _type;
+        private static List<string> _allTempTable = new();
+        private static string _baseTable = string.Empty;
+        private static string _tempTable = string.Empty;
+        private static string? _type = string.Empty;
 
-        private static List<string> _keyColumns;
-        private static List<string> _primaryKeyColumns;
-        private static List<string> _columnHeaders;
+        private static List<string> _keyColumns = new();
+        private static List<string> _primaryKeyColumns = new();
+        private static List<string> _columnHeaders = new();
 
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace AWSSDK.Common
                                                 {
                                                     csv.Read();
                                                     var records = csv.GetRecord<dynamic>() as System.Dynamic.ExpandoObject;
-                                                    _columnHeaders = records.ToList().Select(x => x.Value.ToString()).ToList();
+                                                    _columnHeaders = records?.ToList().Select(x => x.Value?.ToString() ?? string.Empty).ToList() ?? new();
                                                 }
                                             }
                                             
@@ -496,7 +496,7 @@ namespace AWSSDK.Common
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -523,8 +523,11 @@ namespace AWSSDK.Common
                 {
                     while (reader.Read())
                     {
-                        string columnName = reader["column_name"].ToString();
-                        primaryKeyColumns.Add(columnName);
+                        string columnName = reader["column_name"].ToString() ?? string.Empty;
+                        if (!string.IsNullOrEmpty(columnName))
+                        {
+                            primaryKeyColumns.Add(columnName);
+                        }
                     }
                 }
             }
@@ -553,7 +556,7 @@ namespace AWSSDK.Common
                 }
                 Console.WriteLine("KeyColumns: " + string.Join(",", _keyColumns.ToArray()));
                 string msg = string.Empty;
-                switch (_type.ToUpper())
+                switch (_type?.ToUpper())
                 {
                     case "INSERT":
                     case "GENERATION_ADD":
@@ -634,7 +637,7 @@ namespace AWSSDK.Common
                 }
                 //Console.WriteLine(_moduleName, this, nameof(MoveDataToBaseTable), msg + ": " + effectRecordCount);
 
-                if (effectRecordCount > 0 && _type.ToUpper() == "GENERATION_ADD")
+                if (effectRecordCount > 0 && _type?.ToUpper() == "GENERATION_ADD")
                 {
                     switch (_baseTable)
                     {
@@ -671,7 +674,7 @@ namespace AWSSDK.Common
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(MoveDataToBaseTable), ex, script);
                 throw;
@@ -728,17 +731,17 @@ namespace AWSSDK.Common
         {
             public int hp_id { get; set; }
 
-            public string houkatu_grp_no { get; set; }
+            public string houkatu_grp_no { get; set; } = string.Empty;
 
-            public string item_cd { get; set; }
+            public string item_cd { get; set; } = string.Empty;
 
-            public string item_cd1 { get; set; }
+            public string item_cd1 { get; set; } = string.Empty;
 
-            public string item_cd2 { get; set; }
+            public string item_cd2 { get; set; } = string.Empty;
 
             public int unit_cd { get; set; }
 
-            public int user_setting { get; set; }
+            public int user_setting { get; set; } 
 
             public int start_date { get; set; }
 
