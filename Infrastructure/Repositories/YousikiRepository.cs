@@ -860,6 +860,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
     public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> categoryModels, bool isTemporarySave)
     {
+        yousiki1InfDetailModels = yousiki1InfDetailModels.Where(x => x.Value != "undefined").ToList();
         UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
 
         foreach (var categoryModel in categoryModels)
@@ -867,6 +868,16 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             if (categoryModel.IsDeleted == 1)
             {
                 DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
+            }
+            else
+            {
+                if (categoryModel.Status == 2)
+                {
+                    var seqNoMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == yousiki1InfModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
+                    AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, seqNoMax);
+                    var yousiki1InfDetailModelChanges = yousiki1InfDetailModels.Where(x => x.DataType == categoryModel.DataType).ToList();
+                    UpdateSeqNo(yousiki1InfDetailModelChanges, seqNoMax);
+                }
             }
 
             UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, isTemporarySave ? 1 : 2);
@@ -902,6 +913,64 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             }
         }
 
+        TrackingDataContext.SaveChanges();
+    }
+
+    public void UpdateSeqNo(List<Yousiki1InfDetailModel> yousiki1InfDetailModels, int seqNo)
+    {
+        foreach (var item in yousiki1InfDetailModels)
+        {
+            item.ChangeSeqNo(seqNo);
+        }
+    }
+
+    public void AddYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType, int maxSeqNo)
+    {
+        if (dataType != 0)
+        {
+            var commonInf = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
+                          x.PtId == ptId &&
+                          x.SinYm == sinYm &&
+                          x.DataType == 0 &&
+                          x.IsDeleted == 0)
+                        .FirstOrDefault();
+            if (commonInf == null)
+            {
+                int maxCommonSeqNo = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
+                          x.PtId == ptId &&
+                          x.SinYm == sinYm &&
+                          x.DataType == 0)
+                        .AsEnumerable()
+                        .Select(x => x.SeqNo)
+                        .OrderByDescending(x => x)
+                        .FirstOrDefault();
+                NoTrackingDataContext.Yousiki1Infs.Add(new Yousiki1Inf()
+                {
+                    HpId = hpId,
+                    SinYm = sinYm,
+                    PtId = ptId,
+                    DataType = 0,
+                    SeqNo = maxCommonSeqNo + 1,
+                    CreateId = userId,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow()
+                });
+            }
+        }
+        var newYousiki = new Yousiki1Inf()
+        {
+            HpId = hpId,
+            SinYm = sinYm,
+            PtId = ptId,
+            DataType = dataType,
+            SeqNo = maxSeqNo + 1,
+            CreateId = userId,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            UpdateId = userId,
+            UpdateDate = CIUtil.GetJapanDateTimeNow()
+        };
+        TrackingDataContext.Yousiki1Infs.Add(newYousiki);
         TrackingDataContext.SaveChanges();
     }
 
