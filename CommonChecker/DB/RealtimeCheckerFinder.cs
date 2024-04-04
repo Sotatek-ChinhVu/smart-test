@@ -2781,7 +2781,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             if (isDataOfDb)
             {
                 //Get data in db
-                KensaInfDetail weightInfo = GetBodyInfo(hpId, ptId, sinday, IraiCodeConstant.WEIGHT_CODE);
+                var weightInfo = GetBodyInfo(hpId, ptId, sinday, IraiCodeConstant.WEIGHT_CODE);
 
                 if (weightInfo != null && CIUtil.IsNumberic(weightInfo?.ResultVal ?? string.Empty))
                 {

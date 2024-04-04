@@ -43,7 +43,7 @@ namespace CloudUnitTest.Repository.PatientCommon
 
                 var resultQuery = patientInforRepository.GetById(1, 999999999, 20250101, firstRaiin?.RaiinNo ?? 0, true, new());
 
-                Assert.True(resultQuery.HpId == 0 && resultQuery.PtId == 0);
+                Assert.True(resultQuery?.HpId == 0 && resultQuery.PtId == 0);
             }
             finally
             {
@@ -99,7 +99,7 @@ namespace CloudUnitTest.Repository.PatientCommon
 
                 var resultQuery = patientInforRepository.GetById(1, 999999999, 20250101, (firstRaiin?.RaiinNo ?? 0) + 1, true, new() { 4, 5, 6, 7, 8, 9 });
 
-                Assert.True(resultQuery.HpId == 1 && resultQuery.PtId == 999999999);
+                Assert.True(resultQuery?.HpId == 1 && resultQuery.PtId == 999999999);
             }
             finally
             {

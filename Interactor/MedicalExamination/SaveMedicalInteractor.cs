@@ -62,7 +62,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly ICalculateService _calculateService;
     private readonly ISummaryInfRepository _summaryInfRepository;
-    private readonly ILoggingHandler _loggingHandler;
+    private readonly ILoggingHandler? _loggingHandler;
     private readonly ITenantProvider _tenantProvider;
     private readonly IKensaIraiCommon _kensaIraiCommon;
     private readonly ISystemConfRepository _systemConfRepository;

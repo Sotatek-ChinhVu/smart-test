@@ -7431,7 +7431,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetYjCdListByItemCdList(hpId, listItem, sinday);
 
                 // Assert
-                Assert.AreEqual(3, result.Count);
+                int checkConst = 3;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -7487,7 +7488,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetFoodAllergyByPtId(hpId, ptId, sinday, new(), isDataOfDb);
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
+                int checkConst = 2;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -7519,8 +7521,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetFoodAllergyByPtId(hpId, ptId, sinday, ptAlrgyFoodModels, isDataOfDb);
 
             // Assert
-            Assert.AreEqual(2, result.Count);
-
+            int checkConst = 2;
+            Assert.That(checkConst, Is.EqualTo(result.Count));
         }
 
         [Test]
@@ -7584,7 +7586,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, new(), isDataOfDb);
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
+                int checkConst = 2;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -7618,7 +7621,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, ptAlrgyDrugModels, isDataOfDb);
 
             // Assert
-            Assert.AreEqual(2, result.Count);
+            int checkConst = 2;
+            Assert.That(checkConst, Is.EqualTo(result.Count));
         }
 
         [Test]
@@ -7680,7 +7684,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetBodyInfo(hpId, ptId, sinday, kensaItemCd);
 
                 // Assert
-                Assert.True(result.IraiCd == 01234);
+                Assert.True(result?.IraiCd == 01234);
             }
             finally
             {
@@ -7806,7 +7810,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
-                Assert.AreEqual(3, result.Count);
+                int checkConst = 3;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -7868,7 +7873,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
+                int checkConst = 2;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -7930,7 +7936,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
+                int checkConst = 2;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -7993,7 +8000,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
+                int checkConst = 2;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -8056,7 +8064,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
+                int checkConst = 2;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -8122,7 +8131,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
+                int checkConst = 2;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -8188,7 +8198,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                int checkConst = 1;
+                Assert.That(checkConst, Is.EqualTo(result.Count));
             }
             finally
             {
@@ -8201,7 +8212,6 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_110_TEST_GetRatio_Test_YYYY_Is_0_MM_Is_0()
         {
-            int hpId = 1;
             //setup
             var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
             var today = CIUtil.DateTimeToInt(DateTime.Now);
@@ -8214,13 +8224,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
 
             // Assert
-            Assert.AreEqual(1.0 / 8, result);
+            double checkConst = 1.0 / 8;
+            Assert.That(checkConst, Is.EqualTo(result));
         }
 
         [Test]
         public void TC_111_TEST_GetRatio_Test_YYYY_Is_0_MM_LessThan_4()
         {
-            int hpId = 1;
             //setup
             var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
             var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(3));
@@ -8233,13 +8243,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
 
             // Assert
-            Assert.AreEqual(1.0 / 6, result);
+            double checkConst = 1.0 / 6;
+            Assert.That(checkConst, Is.EqualTo(result));
         }
 
         [Test]
         public void TC_112_TEST_GetRatio_Test_YYYY_Is_0_MM_LessThan_4()
         {
-            int hpId = 1;
             //setup
             var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
             var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(3));
@@ -8252,13 +8262,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
 
             // Assert
-            Assert.AreEqual(1.0 / 6, result);
+            double checkConst = 1.0 / 6;
+            Assert.That(checkConst, Is.EqualTo(result));
         }
 
         [Test]
         public void TC_113_TEST_GetRatio_Test_YYYY_Is_0_MM_Is_4()
         {
-            int hpId = 1;
             //setup
             var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
             var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
@@ -8271,13 +8281,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
 
             // Assert
-            Assert.AreEqual(1.0 / 5, result);
+            double checkConst = 1.0 / 5;
+            Assert.That(checkConst, Is.EqualTo(result));
         }
 
         [Test]
         public void TC_114_TEST_GetRatio_Test_YYYY_GreaterThan0_And_LessThan_15_MM_Is_4()
         {
-            int hpId = 1;
             //setup
             var fromDay = CIUtil.DateTimeToInt(DateTime.Now.AddYears(-14));
             var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
@@ -8290,13 +8300,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
 
             // Assert
-            Assert.AreEqual(((double)(14 * 4 + 20)) / 100, result);
+            double checkConst = ((double)(14 * 4 + 20)) / 100;
+            Assert.That(checkConst, Is.EqualTo(result));
         }
 
         [Test]
         public void TC_115_TEST_GetRatio_Test_YYYY_Is_15_MM_Is_4()
         {
-            int hpId = 1;
             //setup
             var fromDay = CIUtil.DateTimeToInt(DateTime.Now.AddYears(-15));
             var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
@@ -8309,7 +8319,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetRatio(fromDay, today);
 
             // Assert
-            Assert.AreEqual(1, result);
+            double checkConst = 1;
+            Assert.That(checkConst, Is.EqualTo(result));
         }
 
         [Test]
@@ -8374,7 +8385,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetCommonWeight(1, birthDay, sinday, sex);
 
                 // Assert
-                Assert.AreEqual(60, result);
+                double checkConst = 60;
+                Assert.That(checkConst, Is.EqualTo(result));
             }
             finally
             {
@@ -8448,8 +8460,9 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result2 = realtimeCheckerFinder.GetCommonWeight(1, birthDay, sinday, sex);
 
                 // Assert
-                Assert.AreEqual(99, result1);
-                Assert.AreEqual(99, result2);
+                double checkConst = 99;
+                Assert.That(checkConst, Is.EqualTo(result1));
+                Assert.That(checkConst, Is.EqualTo(result2));
             }
             finally
             {
@@ -8523,8 +8536,9 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result2 = realtimeCheckerFinder.GetCommonHeight(1, birthDay, sinday, sex);
 
                 // Assert
-                Assert.AreEqual(140, result1);
-                Assert.AreEqual(140, result2);
+                int checkConst = 140;
+                Assert.That(checkConst, Is.EqualTo(result1));
+                Assert.That(checkConst, Is.EqualTo(result2));
             }
             finally
             {
@@ -8597,7 +8611,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetCommonHeight(1, birthDay, sinday, sex);
 
                 // Assert
-                Assert.AreEqual(180, result);
+                int checkConst = 180;
+                Assert.That(checkConst, Is.EqualTo(result));
             }
             finally
             {
@@ -8670,7 +8685,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetPatientWeight(hpId, ptId, 20000101, sinday, sex, new(), isDataDb);
 
                 // Assert
-                Assert.AreEqual(9, result);
+                int checkConst = 9;
+                Assert.That(checkConst, Is.EqualTo(result));
             }
             finally
             {
@@ -8705,7 +8721,8 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.GetPatientWeight(hpId, ptId, 20000101, sinday, sex, kensaInfDetailModels, isDataDb);
 
                 // Assert
-                Assert.AreEqual(4, result);
+                int checkConst = 4;
+                Assert.That(checkConst, Is.EqualTo(result));
             }
             finally
             {
@@ -8729,8 +8746,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
 
             // Assert
-            Assert.AreEqual(Math.Pow(weight, 0.444) * Math.Pow(height, 0.663) * 0.008883, result1);
-            Assert.AreEqual(Math.Pow(weight, 0.444) * Math.Pow(height, 0.663) * 0.008883, result2);
+            Assert.That(Math.Pow(weight, 0.444) * Math.Pow(height, 0.663) * 0.008883, Is.EqualTo(result1));
+            Assert.That(Math.Pow(weight, 0.444) * Math.Pow(height, 0.663) * 0.008883, Is.EqualTo(result2));
 
         }
 
@@ -8752,8 +8769,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
 
             // Assert
-            Assert.AreEqual(Math.Pow(weight, 0.423) * Math.Pow(height, 0.362) * 0.038189, result1);
-            Assert.AreEqual(Math.Pow(weight, 0.423) * Math.Pow(height, 0.362) * 0.038189, result2);
+            Assert.That(Math.Pow(weight, 0.423) * Math.Pow(height, 0.362) * 0.038189, Is.EqualTo(result1));
+            Assert.That(Math.Pow(weight, 0.423) * Math.Pow(height, 0.362) * 0.038189, Is.EqualTo(result2));
 
         }
 
@@ -8775,8 +8792,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
 
             // Assert
-            Assert.AreEqual(Math.Pow(weight, 0.473) * Math.Pow(height, 0.655) * 0.009568, result1);
-            Assert.AreEqual(Math.Pow(weight, 0.473) * Math.Pow(height, 0.655) * 0.009568, result2);
+            Assert.That(Math.Pow(weight, 0.473) * Math.Pow(height, 0.655) * 0.009568, Is.EqualTo(result1));
+            Assert.That(Math.Pow(weight, 0.473) * Math.Pow(height, 0.655) * 0.009568, Is.EqualTo(result2));
 
         }
 
@@ -8805,7 +8822,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimeCheckerFinder.GetPatientHeight(hpId, ptId, birthDay, sinDay, sex, kensaInfDetailModels);
 
             // Assert
-            Assert.AreEqual(50, result);
+            int checkConst = 50;
+            Assert.That(checkConst, Is.EqualTo(result));
 
         }
         [Test]

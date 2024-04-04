@@ -44,10 +44,10 @@ namespace AWSSDK.Common
                         TempGenerationMst tempTenMst = new TempGenerationMst
                         {
                             hp_id = Convert.ToInt32(reader["hp_id"]),
-                            houkatu_grp_no = Convert.ToString(reader["houkatu_grp_no"]),
-                            item_cd = Convert.ToString(reader["item_cd"]),
-                            item_cd1 = Convert.ToString(reader["item_cd1"]),
-                            item_cd2 = Convert.ToString(reader["item_cd2"]),
+                            houkatu_grp_no = Convert.ToString(reader["houkatu_grp_no"]) ?? string.Empty,
+                            item_cd = Convert.ToString(reader["item_cd"]) ?? string.Empty,
+                            item_cd1 = Convert.ToString(reader["item_cd1"]) ?? string.Empty,
+                            item_cd2 = Convert.ToString(reader["item_cd2"]) ?? string.Empty,
                             unit_cd = Convert.ToInt32(reader["unit_cd"]),
                             user_setting = Convert.ToInt32(reader["user_setting"]),
                             start_date = Convert.ToInt32(reader["start_date"]),
@@ -93,7 +93,7 @@ namespace AWSSDK.Common
 
         private static T GetEntityByCriteria<T>(NpgsqlConnection connection, string tableName, string[] columns, object[] values, string? optionScript = null) where T : new()
         {
-            T entity = default(T);
+            T entity = default(T) ?? new();
 
             if (columns.Length != values.Length)
             {
@@ -134,7 +134,7 @@ namespace AWSSDK.Common
                 }
             }
 
-            return entity;
+            return entity ?? new();
         }
 
         private static void DeleteEntitiesByCriteria<T>(NpgsqlConnection connection, NpgsqlTransaction transaction, string tableName, string[] columns, List<object[]> valuesList)
@@ -231,11 +231,11 @@ namespace AWSSDK.Common
 
             foreach (var entity in entities)
             {
-                var id = typeof(T).GetProperty("Id").GetValue(entity);
-                var hpId = typeof(T).GetProperty("HpId").GetValue(entity);
-                var itemCd1 = typeof(T).GetProperty("ItemCd1").GetValue(entity);
-                var seqNo = typeof(T).GetProperty("SeqNo").GetValue(entity);
-                var userSetting = typeof(T).GetProperty("UserSetting").GetValue(entity);
+                var id = typeof(T)?.GetProperty("Id")?.GetValue(entity) ?? new();
+                var hpId = typeof(T)?.GetProperty("HpId")?.GetValue(entity) ?? new();
+                var itemCd1 = typeof(T)?.GetProperty("ItemCd1")?.GetValue(entity) ?? new();
+                var seqNo = typeof(T)?.GetProperty("SeqNo")?.GetValue(entity) ?? new();
+                var userSetting = typeof(T)?.GetProperty("UserSetting")?.GetValue(entity) ?? new();
 
                 valuesList.Add(new object[] { id, hpId, itemCd1, seqNo, userSetting });
             }
@@ -505,7 +505,7 @@ namespace AWSSDK.Common
                     DeleteTenMsts(connection, transaction, deleteTenMsts);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(ChangeTenMstGeneration), ex);
                 throw;
@@ -584,7 +584,7 @@ namespace AWSSDK.Common
                     DeleteDensiHaihan<DensiHaihanCustom>(connection, transaction, deleteMsts, DensiHaiHanCustomTableName);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(ChangeDensiHaiHanCustomGeneration), ex);
                 throw;
@@ -663,7 +663,7 @@ namespace AWSSDK.Common
                     DeleteDensiHaihan<DensiHaihanDay>(connection, transaction, deleteMsts, DensiHaihanDayTableName);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 // Console.WriteLine(_moduleName, this, nameof(ChangeDensiHaiHanDayGeneration), ex);
                 throw;
@@ -741,7 +741,7 @@ namespace AWSSDK.Common
                     DeleteDensiHaihan<DensiHaihanKarte>(connection, transaction, deleteMsts, DensiHaihanKarteTableName);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(ChangeDensiHaihanKarteGeneration), ex);
                 throw;
@@ -820,7 +820,7 @@ namespace AWSSDK.Common
                     DeleteDensiHaihan<DensiHaihanMonth>(connection, transaction, deleteMsts, DensiHaihanMonthTableName);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 // Console.WriteLine(_moduleName, this, nameof(ChangeDensiHaihanMonthGeneration), ex);
                 throw;
@@ -900,7 +900,7 @@ namespace AWSSDK.Common
                     DeleteDensiHaihan<DensiHaihanWeek>(connection, transaction, deleteMsts, DensiHaihanWeekTableName);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(ChangeDensiHaihanWeekGeneration), ex);
                 throw;
@@ -973,7 +973,7 @@ namespace AWSSDK.Common
                     DeleteDensiHojyos(connection, transaction, deleteMsts);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(ChangeDensiHojyoGeneration), ex);
                 throw;
@@ -1052,7 +1052,7 @@ namespace AWSSDK.Common
                     DeleteDensiHoukatu(connection, transaction, deleteMsts);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(ChangeDensiHoukatuGeneration), ex);
                 throw;
@@ -1130,7 +1130,7 @@ namespace AWSSDK.Common
                     DeleteDensiHoukatuGrp(connection, transaction, deleteMsts);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(ChangeDensiHoukatuGrpGeneration), ex);
                 throw;
@@ -1210,7 +1210,7 @@ namespace AWSSDK.Common
                     DeleteDensiSanteiKaisus(connection, transaction, deleteMsts);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(_moduleName, this, nameof(ChangeDensiSanteiKaisuGeneration), ex);
                 throw;
