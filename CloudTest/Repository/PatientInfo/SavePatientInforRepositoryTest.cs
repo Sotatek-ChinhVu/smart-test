@@ -19,12 +19,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_001_CreatePatientInfo_PtNum_Is_0()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -67,32 +67,40 @@ namespace CloudUnitTest.Repository.PatientInfo
 
             Func<int, long, long, IEnumerable<InsuranceScanModel>> insuranceScanModel = (param1, param2, param3) => Enumerable.Empty<InsuranceScanModel>();
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), new(), new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-
-            if (createPtInf.resultSave)
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.SaveChanges();
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), new(), new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+
+                // Assert
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                    tenantTracking.SaveChanges();
+                }
             }
         }
 
         [Test]
         public void TC_002_CreatePatientInfo_PtNum_Is_Greater_Than_0()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -135,33 +143,41 @@ namespace CloudUnitTest.Repository.PatientInfo
 
             Func<int, long, long, IEnumerable<InsuranceScanModel>> insuranceScanModel = (param1, param2, param3) => Enumerable.Empty<InsuranceScanModel>();
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), new(), new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-
-            if (createPtInf.resultSave)
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.SaveChanges();
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), new(), new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+
+                // Assert
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                    tenantTracking.SaveChanges();
+                }
             }
         }
 
         [Test]
         public void TC_003_CreatePatientInfo_DeathDate_Is_Greater_Than_0()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -204,33 +220,41 @@ namespace CloudUnitTest.Repository.PatientInfo
 
             Func<int, long, long, IEnumerable<InsuranceScanModel>> insuranceScanModel = (param1, param2, param3) => Enumerable.Empty<InsuranceScanModel>();
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), new(), new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-
-            if (createPtInf.resultSave)
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.SaveChanges();
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), new(), new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+
+                // Assert
+                ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                    tenantTracking.SaveChanges();
+                }
             }
         }
 
         [Test]
         public void TC_004_CreatePatientInfo_Save_PtSanteis()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -278,24 +302,35 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-
-            if (createPtInf.resultSave)
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+            }
+            finally
+            {
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -303,12 +338,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_005_CreatePatientInfo_Save_PtMemos()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -356,41 +391,58 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var memo = tenantTracking.PtMemos.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.HpId, Is.EqualTo(1));
-
-            if (createPtInf.resultSave)
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            PtMemo? memo = null;
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtMemos.Remove(memo);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+
+                // Assert
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                memo = tenantTracking.PtMemos.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.HpId, Is.EqualTo(1));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (memo != null)
+                {
+                    tenantTracking.PtMemos.Remove(memo);
+                }
                 tenantTracking.SaveChanges();
+
             }
         }
 
         [Test]
         public void TC_006_CreatePatientInfo_Save_PtGrps()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -443,32 +495,52 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new GroupInfModel(1, 98422233, 1, "1234", "1234"),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), ptGrps, new(), insuranceScanModel, 9999);
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var memo = tenantTracking.PtMemos.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptGrp = tenantTracking.PtGrpInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.PtId, Is.EqualTo(createPtInf.ptId));
-
-            if (createPtInf.resultSave)
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            PtMemo? memo = null;
+            PtGrpInf? ptGrp = null;
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtMemos.Remove(memo);
-                tenantTracking.PtGrpInfs.Remove(ptGrp);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), ptGrps, new(), insuranceScanModel, 9999);
+
+                // Assert
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                memo = tenantTracking.PtMemos.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptGrp = tenantTracking.PtGrpInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.PtId, Is.EqualTo(createPtInf.ptId));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (memo != null)
+                {
+                    tenantTracking.PtMemos.Remove(memo);
+                }
+                if (ptGrp != null)
+                {
+                    tenantTracking.PtGrpInfs.Remove(ptGrp);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -476,12 +548,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_007_CreatePatientInfo_Save_PtKyuseis()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -539,36 +611,61 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new PtKyuseiModel(1, 98422233, 1, "Sample KanaName", "Name", 20230101)
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, new(), new(), new(), ptGrps, new(), insuranceScanModel, 9999);
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            PtMemo? memo = null;
+            PtGrpInf? ptGrp = null;
+            PtKyusei? ptKyusei = null;
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var memo = tenantTracking.PtMemos.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptGrp = tenantTracking.PtGrpInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantTracking.PtKyuseis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.HpId, Is.EqualTo(1));
-
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtMemos.Remove(memo);
-                tenantTracking.PtGrpInfs.Remove(ptGrp);
-                tenantTracking.PtKyuseis.Remove(ptKyusei);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, new(), new(), new(), ptGrps, new(), insuranceScanModel, 9999);
+
+                // Assert
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                memo = tenantTracking.PtMemos.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptGrp = tenantTracking.PtGrpInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKyusei = tenantTracking.PtKyuseis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.HpId, Is.EqualTo(1));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (memo != null)
+                {
+                    tenantTracking.PtMemos.Remove(memo);
+                }
+                if (ptGrp != null)
+                {
+                    tenantTracking.PtGrpInfs.Remove(ptGrp);
+                }
+                if (ptKyusei != null)
+                {
+                    tenantTracking.PtKyuseis.Remove(ptKyusei);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -576,12 +673,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_008_CreatePatientInfo_Save_PthokenPartterns()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -644,40 +741,69 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new InsuranceModel(1, 98422233, 19900101, 9999, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, new(), new(), ptGrps, new(), insuranceScanModel, 9999);
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            PtMemo? memo = null;
+            PtGrpInf? ptGrp = null;
+            PtKyusei? ptKyusei = null;
+            PtHokenPattern? ptHokenPattern = null;
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var memo = tenantTracking.PtMemos.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptGrp = tenantTracking.PtGrpInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantTracking.PtKyuseis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenPattern = tenantTracking.PtHokenPatterns.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.PtId, Is.EqualTo(createPtInf.ptId));
-
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtMemos.Remove(memo);
-                tenantTracking.PtGrpInfs.Remove(ptGrp);
-                tenantTracking.PtKyuseis.Remove(ptKyusei);
-                tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, new(), new(), ptGrps, new(), insuranceScanModel, 9999);
+
+                // Assert
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                memo = tenantTracking.PtMemos.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptGrp = tenantTracking.PtGrpInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKyusei = tenantTracking.PtKyuseis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenPattern = tenantTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.PtId, Is.EqualTo(createPtInf.ptId));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (memo != null)
+                {
+                    tenantTracking.PtMemos.Remove(memo);
+                }
+                if (ptGrp != null)
+                {
+                    tenantTracking.PtGrpInfs.Remove(ptGrp);
+                }
+                if (ptKyusei != null)
+                {
+                    tenantTracking.PtKyuseis.Remove(ptKyusei);
+                }
+                if (ptHokenPattern != null)
+                {
+                    tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -685,12 +811,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_009_CreatePatientInfo_Save_PtHokenInfs()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -825,52 +951,93 @@ namespace CloudUnitTest.Repository.PatientInfo
                                   ),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, new(), ptGrps, new(), insuranceScanModel, 9999);
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var memo = tenantTracking.PtMemos.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptGrp = tenantTracking.PtGrpInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantTracking.PtKyuseis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenPattern = tenantTracking.PtHokenPatterns.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var pthokenInf = tenantTracking.PtHokenInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptRousaiTenkis = tenantTracking.PtRousaiTenkis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.HokenId == 789012);
-            var ptHokenChecks = tenantTracking.PtHokenChecks.First(x => x.HpId == 1 && x.HokenId == 789012 && x.PtID == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(pthokenInf.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(pthokenInf.EndDate, Is.EqualTo(20221231));
-            Assert.That(ptRousaiTenkis.Tenki, Is.EqualTo(2));
-            Assert.That(ptRousaiTenkis.Sinkei, Is.EqualTo(1));
-            Assert.That(ptRousaiTenkis.HokenId, Is.EqualTo(789012));
-            Assert.That(ptHokenChecks.HokenId, Is.EqualTo(789012));
-
-            if (createPtInf.resultSave)
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            PtMemo? memo = null;
+            PtGrpInf? ptGrp = null;
+            PtKyusei? ptKyusei = null;
+            PtHokenPattern? ptHokenPattern = null;
+            PtHokenInf? pthokenInf = null;
+            PtRousaiTenki? ptRousaiTenkis = null;
+            PtHokenCheck? ptHokenChecks = null;
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtMemos.Remove(memo);
-                tenantTracking.PtGrpInfs.Remove(ptGrp);
-                tenantTracking.PtKyuseis.Remove(ptKyusei);
-                tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
-                tenantTracking.PtHokenInfs.Remove(pthokenInf);
-                tenantTracking.PtRousaiTenkis.Remove(ptRousaiTenkis);
-                tenantTracking.PtHokenChecks.Remove(ptHokenChecks);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, new(), ptGrps, new(), insuranceScanModel, 9999);
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                memo = tenantTracking.PtMemos.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptGrp = tenantTracking.PtGrpInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKyusei = tenantTracking.PtKyuseis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenPattern = tenantTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                pthokenInf = tenantTracking.PtHokenInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptRousaiTenkis = tenantTracking.PtRousaiTenkis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.HokenId == 789012);
+                ptHokenChecks = tenantTracking.PtHokenChecks.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 789012 && x.PtID == createPtInf.ptId);
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(pthokenInf?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(pthokenInf?.EndDate, Is.EqualTo(20221231));
+                Assert.That(ptRousaiTenkis?.Tenki, Is.EqualTo(2));
+                Assert.That(ptRousaiTenkis?.Sinkei, Is.EqualTo(1));
+                Assert.That(ptRousaiTenkis?.HokenId, Is.EqualTo(789012));
+                Assert.That(ptHokenChecks?.HokenId, Is.EqualTo(789012));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (memo != null)
+                {
+                    tenantTracking.PtMemos.Remove(memo);
+                }
+                if (ptGrp != null)
+                {
+                    tenantTracking.PtGrpInfs.Remove(ptGrp);
+                }
+                if (ptKyusei != null)
+                {
+                    tenantTracking.PtKyuseis.Remove(ptKyusei);
+                }
+                if (ptHokenPattern != null)
+                {
+                    tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
+                }
+                if (pthokenInf != null)
+                {
+                    tenantTracking.PtHokenInfs.Remove(pthokenInf);
+                }
+                if (ptRousaiTenkis != null)
+                {
+                    tenantTracking.PtRousaiTenkis.Remove(ptRousaiTenkis);
+                }
+                if (ptHokenChecks != null)
+                {
+                    tenantTracking.PtHokenChecks.Remove(ptHokenChecks);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -878,12 +1045,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_010_CreatePatientInfo_Save_PtKohiInf()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -1048,56 +1215,106 @@ namespace CloudUnitTest.Repository.PatientInfo
                                  seqNo:0
                                  ),
             };
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            PtMemo? memo = null;
+            PtGrpInf? ptGrp = null;
+            PtKyusei? ptKyusei = null;
+            PtHokenPattern? ptHokenPattern = null;
+            PtHokenInf? pthokenInf = null;
+            PtRousaiTenki? ptRousaiTenkis = null;
+            PtHokenCheck? ptHokenChecks = null;
+            PtHokenCheck? ptHokenCheckKohis = null;
+            PtKohi? ptKohis = null;
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, hokenKohis, ptGrps, new(), insuranceScanModel, 9999);
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var memo = tenantTracking.PtMemos.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptGrp = tenantTracking.PtGrpInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantTracking.PtKyuseis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenPattern = tenantTracking.PtHokenPatterns.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var pthokenInf = tenantTracking.PtHokenInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptRousaiTenkis = tenantTracking.PtRousaiTenkis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.HokenId == 789012);
-            var ptHokenChecks = tenantTracking.PtHokenChecks.First(x => x.HpId == 1 && x.HokenId == 789012 && x.PtID == createPtInf.ptId && x.HokenGrp == 1);
-            var ptHokenCheckKohis = tenantTracking.PtHokenChecks.First(x => x.HpId == 1 && x.HokenId == 61 && x.PtID == createPtInf.ptId && x.HokenGrp == 2);
-            var ptKohis = tenantTracking.PtKohis.First(x => x.HpId == 1 && x.HokenId == 61 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(pthokenInf.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(pthokenInf.EndDate, Is.EqualTo(20221231));
-            Assert.That(ptRousaiTenkis.Tenki, Is.EqualTo(2));
-            Assert.That(ptRousaiTenkis.Sinkei, Is.EqualTo(1));
-            Assert.That(ptRousaiTenkis.HokenId, Is.EqualTo(789012));
-            Assert.That(ptHokenCheckKohis.HokenId, Is.EqualTo(61));
-
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtMemos.Remove(memo);
-                tenantTracking.PtGrpInfs.Remove(ptGrp);
-                tenantTracking.PtKyuseis.Remove(ptKyusei);
-                tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
-                tenantTracking.PtHokenInfs.Remove(pthokenInf);
-                tenantTracking.PtRousaiTenkis.Remove(ptRousaiTenkis);
-                tenantTracking.PtHokenChecks.Remove(ptHokenChecks);
-                tenantTracking.PtHokenChecks.Remove(ptHokenCheckKohis);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, hokenKohis, ptGrps, new(), insuranceScanModel, 9999);
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                memo = tenantTracking.PtMemos.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptGrp = tenantTracking.PtGrpInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKyusei = tenantTracking.PtKyuseis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenPattern = tenantTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                pthokenInf = tenantTracking.PtHokenInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptRousaiTenkis = tenantTracking.PtRousaiTenkis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.HokenId == 789012);
+                ptHokenChecks = tenantTracking.PtHokenChecks.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 789012 && x.PtID == createPtInf.ptId && x.HokenGrp == 1);
+                ptHokenCheckKohis = tenantTracking.PtHokenChecks.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 61 && x.PtID == createPtInf.ptId && x.HokenGrp == 2);
+                ptKohis = tenantTracking.PtKohis.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 61 && x.PtId == createPtInf.ptId);
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(pthokenInf?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(pthokenInf?.EndDate, Is.EqualTo(20221231));
+                Assert.That(ptRousaiTenkis?.Tenki, Is.EqualTo(2));
+                Assert.That(ptRousaiTenkis?.Sinkei, Is.EqualTo(1));
+                Assert.That(ptRousaiTenkis?.HokenId, Is.EqualTo(789012));
+                Assert.That(ptHokenCheckKohis?.HokenId, Is.EqualTo(61));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (memo != null)
+                {
+                    tenantTracking.PtMemos.Remove(memo);
+                }
+                if (ptGrp != null)
+                {
+                    tenantTracking.PtGrpInfs.Remove(ptGrp);
+                }
+                if (ptKyusei != null)
+                {
+                    tenantTracking.PtKyuseis.Remove(ptKyusei);
+                }
+                if (ptHokenPattern != null)
+                {
+                    tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
+                }
+                if (pthokenInf != null)
+                {
+                    tenantTracking.PtHokenInfs.Remove(pthokenInf);
+                }
+                if (ptRousaiTenkis != null)
+                {
+                    tenantTracking.PtRousaiTenkis.Remove(ptRousaiTenkis);
+                }
+                if (ptHokenChecks != null)
+                {
+                    tenantTracking.PtHokenChecks.Remove(ptHokenChecks);
+                }
+                if (ptHokenCheckKohis != null)
+                {
+                    tenantTracking.PtHokenChecks.Remove(ptHokenCheckKohis);
+                }
+                if (ptKohis != null)
+                {
+                    tenantTracking.PtKohis.Remove(ptKohis);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -1105,12 +1322,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_011_CreatePatientInfo_Save_Maxmoney()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -1294,59 +1511,113 @@ namespace CloudUnitTest.Repository.PatientInfo
                                    ),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, hokenKohis, ptGrps, maxMoneys, insuranceScanModel, 9999);
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            PtMemo? memo = null;
+            PtGrpInf? ptGrp = null;
+            PtKyusei? ptKyusei = null;
+            PtHokenPattern? ptHokenPattern = null;
+            PtHokenInf? pthokenInf = null;
+            PtRousaiTenki? ptRousaiTenkis = null;
+            PtHokenCheck? ptHokenChecks = null;
+            PtHokenCheck? ptHokenCheckKohis = null;
+            PtKohi? ptKohis = null;
+            List<LimitListInf> limitInfs = new();
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var memo = tenantTracking.PtMemos.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptGrp = tenantTracking.PtGrpInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantTracking.PtKyuseis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenPattern = tenantTracking.PtHokenPatterns.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var pthokenInf = tenantTracking.PtHokenInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptRousaiTenkis = tenantTracking.PtRousaiTenkis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.HokenId == 789012);
-            var ptHokenChecks = tenantTracking.PtHokenChecks.First(x => x.HpId == 1 && x.HokenId == 789012 && x.PtID == createPtInf.ptId && x.HokenGrp == 1);
-            var ptHokenCheckKohis = tenantTracking.PtHokenChecks.First(x => x.HpId == 1 && x.HokenId == 61 && x.PtID == createPtInf.ptId && x.HokenGrp == 2);
-            var ptKohis = tenantTracking.PtKohis.First(x => x.HpId == 1 && x.HokenId == 61 && x.PtId == createPtInf.ptId);
-            var limitInfs = tenantTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(pthokenInf.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(pthokenInf.EndDate, Is.EqualTo(20221231));
-            Assert.That(ptRousaiTenkis.Tenki, Is.EqualTo(2));
-            Assert.That(ptRousaiTenkis.Sinkei, Is.EqualTo(1));
-            Assert.That(ptRousaiTenkis.HokenId, Is.EqualTo(789012));
-            Assert.That(ptHokenCheckKohis.HokenId, Is.EqualTo(61));
-            Assert.That(limitInfs.Any(), Is.EqualTo(true));
-
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtMemos.Remove(memo);
-                tenantTracking.PtGrpInfs.Remove(ptGrp);
-                tenantTracking.PtKyuseis.Remove(ptKyusei);
-                tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
-                tenantTracking.PtHokenInfs.Remove(pthokenInf);
-                tenantTracking.PtRousaiTenkis.Remove(ptRousaiTenkis);
-                tenantTracking.PtHokenChecks.Remove(ptHokenChecks);
-                tenantTracking.PtHokenChecks.Remove(ptHokenCheckKohis);
-                tenantTracking.LimitListInfs.RemoveRange(limitInfs);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, hokenKohis, ptGrps, maxMoneys, insuranceScanModel, 9999);
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                memo = tenantTracking.PtMemos.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptGrp = tenantTracking.PtGrpInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKyusei = tenantTracking.PtKyuseis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenPattern = tenantTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                pthokenInf = tenantTracking.PtHokenInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptRousaiTenkis = tenantTracking.PtRousaiTenkis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.HokenId == 789012);
+                ptHokenChecks = tenantTracking.PtHokenChecks.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 789012 && x.PtID == createPtInf.ptId && x.HokenGrp == 1);
+                ptHokenCheckKohis = tenantTracking.PtHokenChecks.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 61 && x.PtID == createPtInf.ptId && x.HokenGrp == 2);
+                ptKohis = tenantTracking.PtKohis.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 61 && x.PtId == createPtInf.ptId);
+                limitInfs = tenantTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(pthokenInf?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(pthokenInf?.EndDate, Is.EqualTo(20221231));
+                Assert.That(ptRousaiTenkis?.Tenki, Is.EqualTo(2));
+                Assert.That(ptRousaiTenkis?.Sinkei, Is.EqualTo(1));
+                Assert.That(ptRousaiTenkis?.HokenId, Is.EqualTo(789012));
+                Assert.That(ptHokenCheckKohis?.HokenId, Is.EqualTo(61));
+                Assert.That(limitInfs.Any(), Is.EqualTo(true));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (memo != null)
+                {
+                    tenantTracking.PtMemos.Remove(memo);
+                }
+                if (ptGrp != null)
+                {
+                    tenantTracking.PtGrpInfs.Remove(ptGrp);
+                }
+                if (ptKyusei != null)
+                {
+                    tenantTracking.PtKyuseis.Remove(ptKyusei);
+                }
+                if (ptHokenPattern != null)
+                {
+                    tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
+                }
+                if (pthokenInf != null)
+                {
+                    tenantTracking.PtHokenInfs.Remove(pthokenInf);
+                }
+                if (ptRousaiTenkis != null)
+                {
+                    tenantTracking.PtRousaiTenkis.Remove(ptRousaiTenkis);
+                }
+                if (ptHokenChecks != null)
+                {
+                    tenantTracking.PtHokenChecks.Remove(ptHokenChecks);
+                }
+                if (ptHokenCheckKohis != null)
+                {
+                    tenantTracking.PtHokenChecks.Remove(ptHokenCheckKohis);
+                }
+                if (ptKohis != null)
+                {
+                    tenantTracking.PtKohis.Remove(ptKohis);
+                }
+                if (limitInfs.Any())
+                {
+                    tenantTracking.LimitListInfs.RemoveRange(limitInfs);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -1354,12 +1625,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_012_CreatePatientInfo_Save_InsurancesCan()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -1546,83 +1817,141 @@ namespace CloudUnitTest.Repository.PatientInfo
             Func<int, long, long, IEnumerable<InsuranceScanModel>> insuranceScanModel =
                (hpId, ptId, seqNo) =>
                {
-                   // Implementation to return IEnumerable<InsuranceScanModel> based on the parameters provided
+
                    var insuranceScanModels = new List<InsuranceScanModel>()
                    {
                        new InsuranceScanModel(1, ptNumAuto, 0, 11, 40, "Unit-Test", GetSampleFileStream(), 0, "20230101"),
                    };
                    return insuranceScanModels;
                };
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, hokenKohis, ptGrps, maxMoneys, insuranceScanModel, 9999);
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var memo = tenantTracking.PtMemos.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptGrp = tenantTracking.PtGrpInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantTracking.PtKyuseis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenPattern = tenantTracking.PtHokenPatterns.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var pthokenInf = tenantTracking.PtHokenInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptRousaiTenkis = tenantTracking.PtRousaiTenkis.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.HokenId == 789012);
-            var ptHokenChecks = tenantTracking.PtHokenChecks.First(x => x.HpId == 1 && x.HokenId == 789012 && x.PtID == createPtInf.ptId && x.HokenGrp == 1);
-            var ptHokenCheckKohis = tenantTracking.PtHokenChecks.First(x => x.HpId == 1 && x.HokenId == 61 && x.PtID == createPtInf.ptId && x.HokenGrp == 2);
-            var ptKohis = tenantTracking.PtKohis.First(x => x.HpId == 1 && x.HokenId == 61 && x.PtId == createPtInf.ptId);
-            var limitInfs = tenantTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
-            var ptHokenScans = tenantTracking.PtHokenScans.Where(x => x.HpId == 1 && x.PtId == ptNumAuto).ToList();
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            PtMemo? memo = null;
+            PtGrpInf? ptGrp = null;
+            PtKyusei? ptKyusei = null;
+            PtHokenPattern? ptHokenPattern = null;
+            PtHokenInf? pthokenInf = null;
+            PtRousaiTenki? ptRousaiTenkis = null;
+            PtHokenCheck? ptHokenChecks = null;
+            PtHokenCheck? ptHokenCheckKohis = null;
+            PtKohi? ptKohis = null;
+            List<LimitListInf> limitInfs = new();
+            List<PtHokenScan> ptHokenScans = new();
 
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(memo.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.HpId, Is.EqualTo(1));
-            Assert.That(ptGrp.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.HpId, Is.EqualTo(1));
-            Assert.That(ptHokenPattern.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(pthokenInf.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(pthokenInf.EndDate, Is.EqualTo(20221231));
-            Assert.That(ptRousaiTenkis.Tenki, Is.EqualTo(2));
-            Assert.That(ptRousaiTenkis.Sinkei, Is.EqualTo(1));
-            Assert.That(ptRousaiTenkis.HokenId, Is.EqualTo(789012));
-            Assert.That(ptHokenCheckKohis.HokenId, Is.EqualTo(61));
-            Assert.That(limitInfs.Any(), Is.EqualTo(true));
-            Assert.That(ptHokenScans.Any(), Is.EqualTo(true));
-
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtMemos.Remove(memo);
-                tenantTracking.PtGrpInfs.Remove(ptGrp);
-                tenantTracking.PtKyuseis.Remove(ptKyusei);
-                tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
-                tenantTracking.PtHokenInfs.Remove(pthokenInf);
-                tenantTracking.PtRousaiTenkis.Remove(ptRousaiTenkis);
-                tenantTracking.PtHokenChecks.Remove(ptHokenChecks);
-                tenantTracking.PtHokenChecks.Remove(ptHokenCheckKohis);
-                tenantTracking.LimitListInfs.RemoveRange(limitInfs);
-                tenantTracking.PtHokenScans.RemoveRange(ptHokenScans);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, ptKyuseis, ptSantei, insurances, hokenInfs, hokenKohis, ptGrps, maxMoneys, insuranceScanModel, 9999);
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                memo = tenantTracking.PtMemos.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptGrp = tenantTracking.PtGrpInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKyusei = tenantTracking.PtKyuseis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenPattern = tenantTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                pthokenInf = tenantTracking.PtHokenInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptRousaiTenkis = tenantTracking.PtRousaiTenkis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.HokenId == 789012);
+                ptHokenChecks = tenantTracking.PtHokenChecks.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 789012 && x.PtID == createPtInf.ptId && x.HokenGrp == 1);
+                ptHokenCheckKohis = tenantTracking.PtHokenChecks.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 61 && x.PtID == createPtInf.ptId && x.HokenGrp == 2);
+                ptKohis = tenantTracking.PtKohis.FirstOrDefault(x => x.HpId == 1 && x.HokenId == 61 && x.PtId == createPtInf.ptId);
+                limitInfs = tenantTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+                ptHokenScans = tenantTracking.PtHokenScans.Where(x => x.HpId == 1 && x.PtId == ptNumAuto).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(memo?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.HpId, Is.EqualTo(1));
+                Assert.That(ptGrp?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.HpId, Is.EqualTo(1));
+                Assert.That(ptHokenPattern?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(pthokenInf?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(pthokenInf?.EndDate, Is.EqualTo(20221231));
+                Assert.That(ptRousaiTenkis?.Tenki, Is.EqualTo(2));
+                Assert.That(ptRousaiTenkis?.Sinkei, Is.EqualTo(1));
+                Assert.That(ptRousaiTenkis?.HokenId, Is.EqualTo(789012));
+                Assert.That(ptHokenCheckKohis?.HokenId, Is.EqualTo(61));
+                Assert.That(limitInfs.Any(), Is.EqualTo(true));
+                Assert.That(ptHokenScans.Any(), Is.EqualTo(true));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (memo != null)
+                {
+                    tenantTracking.PtMemos.Remove(memo);
+                }
+                if (ptGrp != null)
+                {
+                    tenantTracking.PtGrpInfs.Remove(ptGrp);
+                }
+                if (ptKyusei != null)
+                {
+                    tenantTracking.PtKyuseis.Remove(ptKyusei);
+                }
+                if (ptHokenPattern != null)
+                {
+                    tenantTracking.PtHokenPatterns.Remove(ptHokenPattern);
+                }
+                if (pthokenInf != null)
+                {
+                    tenantTracking.PtHokenInfs.Remove(pthokenInf);
+                }
+                if (ptRousaiTenkis != null)
+                {
+                    tenantTracking.PtRousaiTenkis.Remove(ptRousaiTenkis);
+                }
+                if (ptHokenChecks != null)
+                {
+                    tenantTracking.PtHokenChecks.Remove(ptHokenChecks);
+                }
+                if (ptHokenCheckKohis != null)
+                {
+                    tenantTracking.PtHokenChecks.Remove(ptHokenCheckKohis);
+                }
+                if (ptKohis != null)
+                {
+                    tenantTracking.PtKohis.Remove(ptKohis);
+                }
+                if (limitInfs.Any())
+                {
+                    tenantTracking.LimitListInfs.RemoveRange(limitInfs);
+                }
+                if (ptHokenScans.Any())
+                {
+                    tenantTracking.PtHokenScans.RemoveRange(ptHokenScans);
+                }
                 tenantTracking.SaveChanges();
             }
         }
 
-
         [Test]
         public void TC_013_UpdatePatientInfo_PtInf_Null()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -1670,75 +1999,89 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
-            {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: 98422233,
-                                            ptNum: 1,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 0,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(false));
-        
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                                        {
+                                            new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                                        };
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: 98422233,
+                                                ptNum: 1,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 0,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                // Assert
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(false));
+
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
                 tenantTracking.SaveChanges();
             }
         }
 
-
         [Test]
         public void TC_014_UpdatePatientInfo_Save_PtSanteis()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -1787,87 +2130,98 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 3, 1, 1, 20230101, 20240101, 1000),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtInf? ptInf = null;
+            List<PtSanteiConf> santeis = new();
+            try
+            {
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
                 new CalculationInfModel(1, 98422233, 2, 1, 2, 20230101, 20240101, 0),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 0,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 0,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
 
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSanteiUpdate, new(), new(), new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSanteiUpdate, new(), new(), new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santeis = tenantTracking.PtSanteiConfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == DeleteTypes.None);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santeis.Count() == 2);
-            Assert.That(santeis.First().HpId, Is.EqualTo(1));
-            Assert.That(santeis.First().PtId, Is.EqualTo(createPtInf.ptId));
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santeis = tenantTracking.PtSanteiConfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == DeleteTypes.None).ToList();
 
-            if (createPtInf.resultSave)
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santeis.Count() == 2);
+                Assert.That(santeis.First().HpId, Is.EqualTo(1));
+                Assert.That(santeis.First().PtId, Is.EqualTo(createPtInf.ptId));
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.RemoveRange(santeis);
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santeis.Any())
+                {
+                    tenantTracking.PtSanteiConfs.RemoveRange(santeis);
+                }
                 tenantTracking.SaveChanges();
             }
         }
 
-
         [Test]
         public void TC_015_UpdatePatientInfo_HaveByomei()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -1915,76 +2269,93 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
-            tenantTracking.Add(ptByomei);
-            tenantTracking.SaveChanges();
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtByomei? ptByomei = null;
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+            try
+            {
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
+                tenantTracking.Add(ptByomei);
+                tenantTracking.SaveChanges();
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 0,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 0,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(0));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptByomeiCheck.Count() == 4);
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
 
-            if (createPtInf.resultSave)
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(0));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptByomeiCheck.Count() == 4);
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtByomeis.RemoveRange(ptByomei);
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptByomei != null)
+                {
+                    tenantTracking.PtByomeis.RemoveRange(ptByomei);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -1992,12 +2363,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_016_UpdatePatientInfo_IsDead()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -2045,81 +2416,101 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
-            var ptFamily = new PtFamily { FamilyPtId = createPtInf.ptId, HpId = 1 };
-            tenantTracking.Add(ptByomei);
-            tenantTracking.Add(ptFamily);
-            tenantTracking.SaveChanges();
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtByomei? ptByomei = null;
+            PtFamily? ptFamily = null;
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            try
+            {
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
+                ptFamily = new PtFamily { FamilyPtId = createPtInf.ptId, HpId = 1 };
+                tenantTracking.Add(ptByomei);
+                tenantTracking.Add(ptFamily);
+                tenantTracking.SaveChanges();
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptFamilyCheck = tenantNoTracking.PtFamilys.FirstOrDefault(x => x.HpId == 1 && x.FamilyPtId == createPtInf.ptId);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptByomeiCheck.Count() == 4);
-            Assert.That(ptFamilyCheck?.IsDead == 1);
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var ptFamilyCheck = tenantNoTracking.PtFamilys.FirstOrDefault(x => x.HpId == 1 && x.FamilyPtId == createPtInf.ptId);
 
-            if (createPtInf.resultSave)
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptByomeiCheck.Count() == 4);
+                Assert.That(ptFamilyCheck?.IsDead == 1);
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtByomeis.RemoveRange(ptByomei);
-                tenantTracking.PtFamilys.Remove(ptFamily);
-                tenantTracking.PtSanteiConfs.Remove(santei);
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptByomei != null)
+                {
+                    tenantTracking.PtByomeis.RemoveRange(ptByomei);
+                }
+                if (ptFamily != null)
+                {
+                    tenantTracking.PtFamilys.Remove(ptFamily);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -2127,12 +2518,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_017_UpdatePatientInfo_Remove_Memo()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -2180,84 +2571,114 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
-            var ptFamily = new PtFamily { FamilyPtId = createPtInf.ptId, HpId = 1 };
-            tenantTracking.Add(ptByomei);
-            tenantTracking.Add(ptFamily);
-            tenantTracking.SaveChanges();
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            (bool resultSave, long ptId) createPtInf = new();
+            PtByomei? ptByomei = null;
+            PtFamily? ptFamily = null;
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+
+            try
+            {
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
+                ptFamily = new PtFamily { FamilyPtId = createPtInf.ptId, HpId = 1 };
+                tenantTracking.Add(ptByomei);
+                tenantTracking.Add(ptFamily);
+                tenantTracking.SaveChanges();
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptFamilyCheck = tenantNoTracking.PtFamilys.FirstOrDefault(x => x.HpId == 1 && x.FamilyPtId == createPtInf.ptId);
-            var ptMemo = tenantTracking.PtMemos.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptByomeiCheck.Count() == 4);
-            Assert.That(ptFamilyCheck?.IsDead == 1);
-            Assert.That(ptMemo?.IsDeleted == 1);
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+                var ptFamilyCheck = tenantNoTracking.PtFamilys.FirstOrDefault(x => x.HpId == 1 && x.FamilyPtId == createPtInf.ptId);
+                var ptMemo = tenantTracking.PtMemos.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
 
-            if (createPtInf.resultSave)
+                // Assert
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptByomeiCheck.Count() == 4);
+                Assert.That(ptFamilyCheck?.IsDead == 1);
+                Assert.That(ptMemo?.IsDeleted == 1);
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtFamilys.Remove(ptFamily);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantNoTracking.PtByomeis.RemoveRange(ptByomeiCheck);
-                tenantTracking.PtMemos.RemoveRange(tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1));
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptByomei != null)
+                {
+                    tenantTracking.PtByomeis.RemoveRange(ptByomei);
+                }
+                if (ptFamily != null)
+                {
+                    tenantTracking.PtFamilys.Remove(ptFamily);
+                }
+                if (ptByomeiCheck != null)
+                {
+                    tenantNoTracking.PtByomeis.RemoveRange(ptByomeiCheck);
+                }
+                if (tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1).Any())
+                {
+                    tenantTracking.PtMemos.RemoveRange(tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1));
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -2265,12 +2686,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_018_UpdatePatientInfo_Add_Memo()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -2318,84 +2739,114 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
-            var ptFamily = new PtFamily { FamilyPtId = createPtInf.ptId, HpId = 1 };
-            tenantTracking.Add(ptByomei);
-            tenantTracking.Add(ptFamily);
-            tenantTracking.SaveChanges();
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            (bool resultSave, long ptId) createPtInf = new();
+            PtByomei? ptByomei = null;
+            PtFamily? ptFamily = null;
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+
+            try
+            {
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
+                ptFamily = new PtFamily { FamilyPtId = createPtInf.ptId, HpId = 1 };
+                tenantTracking.Add(ptByomei);
+                tenantTracking.Add(ptFamily);
+                tenantTracking.SaveChanges();
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: "abc"
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: "abc"
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptFamilyCheck = tenantNoTracking.PtFamilys.FirstOrDefault(x => x.HpId == 1 && x.FamilyPtId == createPtInf.ptId);
-            var ptMemo = tenantTracking.PtMemos.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptByomeiCheck.Count() == 4);
-            Assert.That(ptFamilyCheck?.IsDead == 1);
-            Assert.That(ptMemo?.IsDeleted == 0);
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+                var ptFamilyCheck = tenantNoTracking.PtFamilys.FirstOrDefault(x => x.HpId == 1 && x.FamilyPtId == createPtInf.ptId);
+                var ptMemo = tenantTracking.PtMemos.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
 
-            if (createPtInf.resultSave)
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptByomeiCheck.Count() == 4);
+                Assert.That(ptFamilyCheck?.IsDead == 1);
+                Assert.That(ptMemo?.IsDeleted == 0);
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtFamilys.Remove(ptFamily);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantNoTracking.PtByomeis.RemoveRange(ptByomeiCheck);
-                tenantTracking.PtMemos.RemoveRange(tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1));
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptByomei != null)
+                {
+                    tenantTracking.PtByomeis.RemoveRange(ptByomei);
+                }
+                if (ptFamily != null)
+                {
+                    tenantTracking.PtFamilys.Remove(ptFamily);
+                }
+                if (ptByomeiCheck != null)
+                {
+                    tenantNoTracking.PtByomeis.RemoveRange(ptByomeiCheck);
+                }
+                if (tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1).Any())
+                {
+                    tenantTracking.PtMemos.RemoveRange(tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1));
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -2403,12 +2854,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_019_UpdatePatientInfo_Update_Memo()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -2456,84 +2907,114 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
-            var ptFamily = new PtFamily { FamilyPtId = createPtInf.ptId, HpId = 1 };
-            tenantTracking.Add(ptByomei);
-            tenantTracking.Add(ptFamily);
-            tenantTracking.SaveChanges();
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            (bool resultSave, long ptId) createPtInf = new();
+            PtByomei? ptByomei = null;
+            PtFamily? ptFamily = null;
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+
+            try
+            {
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                ptByomei = new PtByomei { HpId = 1, PtId = createPtInf.ptId, ByomeiCd = "0000001", HokenPid = 1, TenkiKbn = 0 };
+                ptFamily = new PtFamily { FamilyPtId = createPtInf.ptId, HpId = 1 };
+                tenantTracking.Add(ptByomei);
+                tenantTracking.Add(ptFamily);
+                tenantTracking.SaveChanges();
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: "memo1"
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: "memo1"
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptFamilyCheck = tenantNoTracking.PtFamilys.FirstOrDefault(x => x.HpId == 1 && x.FamilyPtId == createPtInf.ptId);
-            var ptMemo = tenantTracking.PtMemos.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptByomeiCheck.Count() == 4);
-            Assert.That(ptFamilyCheck?.IsDead == 1);
-            Assert.That(ptMemo?.IsDeleted == 0 && ptMemo?.Memo == "memo1");
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptByomeiCheck = tenantNoTracking.PtByomeis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+                var ptFamilyCheck = tenantNoTracking.PtFamilys.FirstOrDefault(x => x.HpId == 1 && x.FamilyPtId == createPtInf.ptId);
+                var ptMemo = tenantTracking.PtMemos.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
 
-            if (createPtInf.resultSave)
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptByomeiCheck.Count() == 4);
+                Assert.That(ptFamilyCheck?.IsDead == 1);
+                Assert.That(ptMemo?.IsDeleted == 0 && ptMemo?.Memo == "memo1");
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtFamilys.Remove(ptFamily);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantNoTracking.PtByomeis.RemoveRange(ptByomeiCheck);
-                tenantTracking.PtMemos.RemoveRange(tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1));
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptByomei != null)
+                {
+                    tenantTracking.PtByomeis.RemoveRange(ptByomei);
+                }
+                if (ptFamily != null)
+                {
+                    tenantTracking.PtFamilys.Remove(ptFamily);
+                }
+                if (ptByomeiCheck != null)
+                {
+                    tenantNoTracking.PtByomeis.RemoveRange(ptByomeiCheck);
+                }
+                if (tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1).Any())
+                {
+                    tenantTracking.PtMemos.RemoveRange(tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1));
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -2541,12 +3022,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_020_UpdatePatientInfo_Add_PtKyusei()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -2594,72 +3075,100 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+            PtKyusei? ptKyusei = null;
+
+            try
+            {
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new List<PtKyuseiModel> { new PtKyuseiModel(1, createPtInf.ptId, 0, "Kana Name", "Name", 99999999) }, ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new List<PtKyuseiModel> { new PtKyuseiModel(1, createPtInf.ptId, 0, "Kana Name", "Name", 99999999) }, ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei?.KanaName == "Kana Name" && ptKyusei?.Name == "Name");
-            if (createPtInf.resultSave)
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKyusei = tenantTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.KanaName == "Kana Name" && ptKyusei?.Name == "Name");
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                tenantTracking.PtKyuseis.Remove(ptKyusei);
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptByomeiCheck != null)
+                {
+                    tenantNoTracking.PtByomeis.RemoveRange(ptByomeiCheck);
+                }
+                if (ptKyusei != null)
+                {
+                    tenantTracking.PtKyuseis.Remove(ptKyusei);
+                }
+                if (tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1).Any())
+                {
+                    tenantTracking.PtMemos.RemoveRange(tenantTracking.PtMemos.Where(p => p.PtId == createPtInf.ptId && p.HpId == 1));
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -2667,12 +3176,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_021_UpdatePatientInfo_Update_PtKyusei()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -2720,74 +3229,92 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new List<PtKyuseiModel> { new PtKyuseiModel(1, 98422233, 0, "Kana Name", "Name", 99999999) }, ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+            PtKyusei? oldPtKyusei = null;
+            try
+            {
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new List<PtKyuseiModel> { new PtKyuseiModel(1, 98422233, 0, "Kana Name", "Name", 99999999) }, ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var oldPtKyusei = tenantTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new List<PtKyuseiModel> { new PtKyuseiModel(1, oldPtKyusei?.PtId ?? 0, oldPtKyusei?.SeqNo ?? 0, "Kana Name 1", "Name 1", 99999999) }, ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                oldPtKyusei = tenantTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new List<PtKyuseiModel> { new PtKyuseiModel(1, oldPtKyusei?.PtId ?? 0, oldPtKyusei?.SeqNo ?? 0, "Kana Name 1", "Name 1", 99999999) }, ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantNoTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1 && (oldPtKyusei != null && p.SeqNo == oldPtKyusei.SeqNo));
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei?.KanaName == "Kana Name 1" && ptKyusei?.Name == "Name 1");
-            if (createPtInf.resultSave)
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var ptKyusei = tenantNoTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1 && (oldPtKyusei != null && p.SeqNo == oldPtKyusei.SeqNo));
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei?.KanaName == "Kana Name 1" && ptKyusei?.Name == "Name 1");
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
                 if (oldPtKyusei != null)
+                {
                     tenantTracking.PtKyuseis.Remove(oldPtKyusei);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -2795,12 +3322,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_022_UpdatePatientInfo_Remove_PtKyusei()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -2848,74 +3375,92 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new List<PtKyuseiModel> { new PtKyuseiModel(1, 98422233, 0, "Kana Name", "Name", 99999999) }, ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
-            {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var oldPtKyusei = tenantTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+            PtKyusei? oldPtKyusei = null;
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKyusei = tenantNoTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1 && (oldPtKyusei != null && p.SeqNo == oldPtKyusei.SeqNo && p.IsDeleted == 0));
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKyusei == null);
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new List<PtKyuseiModel> { new PtKyuseiModel(1, 98422233, 0, "Kana Name", "Name", 99999999) }, ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                oldPtKyusei = tenantTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1);
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new(), new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var ptKyusei = tenantNoTracking.PtKyuseis.FirstOrDefault(p => p.PtId == createPtInf.ptId && p.HpId == 1 && (oldPtKyusei != null && p.SeqNo == oldPtKyusei.SeqNo && p.IsDeleted == 0));
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKyusei == null);
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
                 if (oldPtKyusei != null)
+                {
                     tenantTracking.PtKyuseis.Remove(oldPtKyusei);
+                }
                 tenantTracking.SaveChanges();
             }
         }
@@ -2923,12 +3468,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_023_UpdatePatientInfo_Add_GrpInf()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -2976,73 +3521,87 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+            List<PtGrpInf> groupInf = new();
+            try
+            {
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new(), new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, createPtInf.ptId, 1, "001", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, createPtInf.ptId, 1, "001", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var groupInf = tenantNoTracking.PtGrpInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                groupInf = tenantNoTracking.PtGrpInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
 
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(groupInf.Count() == 1);
-            if (createPtInf.resultSave)
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf.Sex, Is.EqualTo(1));
+                Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf.IsDead, Is.EqualTo(1));
+                Assert.That(santei.HpId, Is.EqualTo(1));
+                Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(groupInf.Count() == 1);
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (groupInf != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (groupInf.Any())
                 {
                     tenantTracking.RemoveRange(groupInf);
                 }
@@ -3050,16 +3609,15 @@ namespace CloudUnitTest.Repository.PatientInfo
             }
         }
 
-
         [Test]
         public void TC_024_UpdatePatientInfo_Update_GrpInf()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -3107,72 +3665,88 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            (bool resultSave, long ptId) createPtInf = new();
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+            List<PtGrpInf> groupInf = new();
+
+            try
+            {
+                // Act
+                createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, createPtInf.ptId, 1, "001", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, createPtInf.ptId, 1, "001", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var groupInf = tenantNoTracking.PtGrpInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                groupInf = tenantNoTracking.PtGrpInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
 
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(groupInf.Count() == 2 && groupInf.Count(x => x.IsDeleted == 0) == 1 && groupInf.Count(x => x.IsDeleted == 1) == 1);
-            if (createPtInf.resultSave)
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(groupInf.Count() == 2 && groupInf.Count(x => x.IsDeleted == 0) == 1 && groupInf.Count(x => x.IsDeleted == 1) == 1);
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
                 if (groupInf != null)
                 {
                     tenantNoTracking.RemoveRange(groupInf);
@@ -3185,12 +3759,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_025_UpdatePatientInfo_Remove_GrpInf()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -3238,72 +3812,87 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
-            {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+            List<PtGrpInf> groupInf = new();
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var groupInf = tenantNoTracking.PtGrpInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == 1);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(groupInf.Count() == 2);
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                groupInf = tenantNoTracking.PtGrpInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == 1).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(groupInf.Count() == 2);
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
                 if (groupInf != null)
                 {
                     tenantNoTracking.RemoveRange(groupInf);
@@ -3313,16 +3902,15 @@ namespace CloudUnitTest.Repository.PatientInfo
             }
         }
 
-
         [Test]
         public void TC_026_UpdatePatientInfo_Add_Insurance()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -3370,95 +3958,111 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new CalculationInfModel(1, 98422233, 1, 1, 1, 20230101, 20240101, 9999),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtByomei> ptByomeiCheck = new();
+            List<PtGrpInf> groupInf = new();
+            List<PtHokenPattern> ptHokenPattern = new();
+            try
+            {
+
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
             {
                 new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
             };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var insurances = new List<InsuranceModel>()
-            {
-                new InsuranceModel(1, createPtInf.ptId, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
-            };
-
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, insurances, new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenPattern = tenantNoTracking.PtHokenPatterns.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptHokenPattern.Count() == 1);
-            if (createPtInf.resultSave)
-            {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptHokenPattern != null)
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var insurances = new List<InsuranceModel>()
                 {
-                    tenantTracking.RemoveRange(ptHokenPattern);
+                    new InsuranceModel(1, createPtInf.ptId, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
+                };
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, insurances, new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenPattern = tenantNoTracking.PtHokenPatterns.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptHokenPattern.Count() == 1);
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
                 }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptHokenPattern.Any())
+                {
+                    tenantNoTracking.RemoveRange(ptHokenPattern);
+                }
+                tenantNoTracking.SaveChanges();
                 tenantTracking.SaveChanges();
             }
         }
 
-
         [Test]
         public void TC_027_UpdatePatientInfo_Update_Insurance()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -3509,82 +4113,95 @@ namespace CloudUnitTest.Repository.PatientInfo
             {
                 new InsuranceModel(1, 98422233, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenPattern> ptHokenPattern = new();
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            try
             {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var oldPtHokenPattern = tenantNoTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var updateInsurances = new List<InsuranceModel>()
-            {
-                new InsuranceModel(1, createPtInf.ptId, 19900101, oldPtHokenPattern?.SeqNo ?? 0, 4, 4, 4, 20230505, "Sample Memo 1", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew: false),
-            };
-
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, updateInsurances, new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenPattern = tenantNoTracking.PtHokenPatterns.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptHokenPattern.Count() == 1 && ptHokenPattern.First().HokenMemo == "Sample Memo 1");
-            if (createPtInf.resultSave)
-            {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptHokenPattern != null)
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
                 {
-                    tenantTracking.RemoveRange(ptHokenPattern);
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var oldPtHokenPattern = tenantNoTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var updateInsurances = new List<InsuranceModel>()
+                {
+                    new InsuranceModel(1, createPtInf.ptId, 19900101, oldPtHokenPattern?.SeqNo ?? 0, 4, 4, 4, 20230505, "Sample Memo 1", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew: false),
+                };
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, updateInsurances, new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenPattern = tenantNoTracking.PtHokenPatterns.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptHokenPattern.Count() == 1 && ptHokenPattern.First().HokenMemo == "Sample Memo 1");
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptHokenPattern.Any())
+                {
+                    tenantNoTracking.RemoveRange(ptHokenPattern);
                 }
                 tenantTracking.SaveChanges();
             }
@@ -3593,12 +4210,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_028_UpdatePatientInfo_Remove_Insurance()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -3650,77 +4267,90 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new InsuranceModel(1, 98422233, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenPattern> ptHokenPattern = new();
+            try
             {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var oldPtHokenPattern = tenantNoTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenPattern = tenantNoTracking.PtHokenPatterns.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == 1);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptHokenPattern.Count() == 1);
-            if (createPtInf.resultSave)
-            {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptHokenPattern != null)
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
                 {
-                    tenantTracking.RemoveRange(ptHokenPattern);
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var oldPtHokenPattern = tenantNoTracking.PtHokenPatterns.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new List<HokenInfModel>() { new HokenInfModel(1, 0, 99999999) }, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenPattern = tenantNoTracking.PtHokenPatterns.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == 1).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf.Sex, Is.EqualTo(1));
+                Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf.IsDead, Is.EqualTo(1));
+                Assert.That(santei.HpId, Is.EqualTo(1));
+                Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptHokenPattern.Count() == 1);
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptHokenPattern.Any())
+                {
+                    tenantNoTracking.RemoveRange(ptHokenPattern);
                 }
                 tenantTracking.SaveChanges();
             }
@@ -3729,12 +4359,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_029_UpdatePatientInfo_Add_HokenInf()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -3786,151 +4416,166 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new InsuranceModel(1, 98422233, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenPattern> ptHokenPattern = new();
+            List<PtRousaiTenki> ptRousaiTenkis = new();
+            List<PtHokenInf> ptHokenInfs = new();
+            try
             {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var hokenInfs = new List<HokenInfModel>()
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var hokenInfs = new List<HokenInfModel>()
+                {
+                    new HokenInfModel(
+                                      hpId: 1,
+                                      ptId: createPtInf.ptId,
+                                      hokenId: 789012,
+                                      seqNo: 0,
+                                      hokenNo: 456,
+                                      hokenEdaNo: 2,
+                                      hokenKbn: 3,
+                                      hokensyaNo: "ABC1234",
+                                      kigo: "K1234",
+                                      bango: "B5678",
+                                      edaNo: "E7",
+                                      honkeKbn: 5,
+                                      startDate: 20220101,
+                                      endDate: 20221231,
+                                      sikakuDate: 20220115,
+                                      kofuDate: 20220201,
+                                      confirmDate: 20220215,
+                                      kogakuKbn: 1,
+                                      tasukaiYm: 202203,
+                                      tokureiYm1: 202204,
+                                      tokureiYm2: 202205,
+                                      genmenKbn: 1,
+                                      genmenRate: 80,
+                                      genmenGaku: 500000,
+                                      syokumuKbn: 2,
+                                      keizokuKbn: 1,
+                                      tokki1: "11",
+                                      tokki2: "22",
+                                      tokki3: "33",
+                                      tokki4: "44",
+                                      tokki5: "55",
+                                      rousaiKofuNo: "RousaiKofu",
+                                      rousaiRoudouCd: "R1",
+                                      rousaiSaigaiKbn: 0,
+                                      rousaiKantokuCd: "rk",
+                                      rousaiSyobyoDate: 20221001,
+                                      ryoyoStartDate: 20221001,
+                                      ryoyoEndDate: 20221231,
+                                      rousaiSyobyoCd: "rs",
+                                      rousaiJigyosyoName: "rj",
+                                      rousaiPrefName: "Tokyo",
+                                      rousaiCityName: "Shinjuku",
+                                      rousaiReceCount: 3,
+                                      hokensyaName: "HokensyaName",
+                                      hokensyaAddress: "HokensyaAddress",
+                                      hokensyaTel: "123-456-7890",
+                                      sinDate: 20220101,
+                                      jibaiHokenName: "JibaiHokenName",
+                                      jibaiHokenTanto: "TantoName",
+                                      jibaiHokenTel: "987-654-3210",
+                                      jibaiJyusyouDate: 20220301,
+                                      houbetu: "ABC",
+                                      confirmDateList: new List<ConfirmDateModel>()
+                                                          {
+                                                            new ConfirmDateModel(createPtInf.ptId, 1, 50, DateTime.UtcNow, 1, "Check Comment"),
+                                                          },
+                                      listRousaiTenki: new List<RousaiTenkiModel>()
+                                                          {
+                                                            new RousaiTenkiModel(1, 2, 20240101, 3, 0),
+                                                          },
+                                      isReceKisaiOrNoHoken: true,
+                                      isDeleted: 0,
+                                      hokenMst: new HokenMstModel(),
+                                      isAddNew: true,
+                                      isAddHokenCheck: true,
+                                      hokensyaMst: new HokensyaMstModel()
+                                      ),
+                };
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), hokenInfs, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenInfs = tenantNoTracking.PtHokenInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+                ptRousaiTenkis = tenantNoTracking.PtRousaiTenkis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptHokenInfs.Count() == 1);
+                Assert.That(ptRousaiTenkis.Count() == 1);
+            }
+            finally
             {
-                new HokenInfModel(
-                                  hpId: 1,
-                                  ptId: createPtInf.ptId,
-                                  hokenId: 789012,
-                                  seqNo: 0,
-                                  hokenNo: 456,
-                                  hokenEdaNo: 2,
-                                  hokenKbn: 3,
-                                  hokensyaNo: "ABC1234",
-                                  kigo: "K1234",
-                                  bango: "B5678",
-                                  edaNo: "E7",
-                                  honkeKbn: 5,
-                                  startDate: 20220101,
-                                  endDate: 20221231,
-                                  sikakuDate: 20220115,
-                                  kofuDate: 20220201,
-                                  confirmDate: 20220215,
-                                  kogakuKbn: 1,
-                                  tasukaiYm: 202203,
-                                  tokureiYm1: 202204,
-                                  tokureiYm2: 202205,
-                                  genmenKbn: 1,
-                                  genmenRate: 80,
-                                  genmenGaku: 500000,
-                                  syokumuKbn: 2,
-                                  keizokuKbn: 1,
-                                  tokki1: "11",
-                                  tokki2: "22",
-                                  tokki3: "33",
-                                  tokki4: "44",
-                                  tokki5: "55",
-                                  rousaiKofuNo: "RousaiKofu",
-                                  rousaiRoudouCd: "R1",
-                                  rousaiSaigaiKbn: 0,
-                                  rousaiKantokuCd: "rk",
-                                  rousaiSyobyoDate: 20221001,
-                                  ryoyoStartDate: 20221001,
-                                  ryoyoEndDate: 20221231,
-                                  rousaiSyobyoCd: "rs",
-                                  rousaiJigyosyoName: "rj",
-                                  rousaiPrefName: "Tokyo",
-                                  rousaiCityName: "Shinjuku",
-                                  rousaiReceCount: 3,
-                                  hokensyaName: "HokensyaName",
-                                  hokensyaAddress: "HokensyaAddress",
-                                  hokensyaTel: "123-456-7890",
-                                  sinDate: 20220101,
-                                  jibaiHokenName: "JibaiHokenName",
-                                  jibaiHokenTanto: "TantoName",
-                                  jibaiHokenTel: "987-654-3210",
-                                  jibaiJyusyouDate: 20220301,
-                                  houbetu: "ABC",
-                                  confirmDateList: new List<ConfirmDateModel>()
-                                                      {
-                                                        new ConfirmDateModel(createPtInf.ptId, 1, 50, DateTime.UtcNow, 1, "Check Comment"),
-                                                      },
-                                  listRousaiTenki: new List<RousaiTenkiModel>()
-                                                      {
-                                                        new RousaiTenkiModel(1, 2, 20240101, 3, 0),
-                                                      },
-                                  isReceKisaiOrNoHoken: true,
-                                  isDeleted: 0,
-                                  hokenMst: new HokenMstModel(),
-                                  isAddNew: true,
-                                  isAddHokenCheck: true,
-                                  hokensyaMst: new HokensyaMstModel()
-                                  ),
-            };
-
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), hokenInfs, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenInfs = tenantNoTracking.PtHokenInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptRousaiTenkis = tenantNoTracking.PtRousaiTenkis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptHokenInfs.Count() == 1);
-            Assert.That(ptRousaiTenkis.Count() == 1);
-            if (createPtInf.resultSave)
-            {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptHokenInfs != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptHokenInfs.Any())
                 {
                     tenantTracking.RemoveRange(ptHokenInfs);
                 }
-                if (ptRousaiTenkis != null)
+                if (ptRousaiTenkis.Any())
                 {
                     tenantTracking.RemoveRange(ptRousaiTenkis);
                 }
@@ -3941,12 +4586,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_030_UpdatePatientInfo_Update_HokenInf()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -4070,153 +4715,169 @@ namespace CloudUnitTest.Repository.PatientInfo
                                   ),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, hokenInfs, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
-            {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var hokenInf = tenantNoTracking.PtHokenInfs.FirstOrDefault(h => h.PtId == createPtInf.ptId && h.HpId == 1);
-            var rousaiTenki = tenantNoTracking.PtRousaiTenkis.FirstOrDefault(h => h.PtId == createPtInf.ptId && h.HpId == 1);
-            var updateHokenInfs = new List<HokenInfModel>()
-            {
-                new HokenInfModel(
-                                  hpId: 1,
-                                  ptId: createPtInf.ptId,
-                                  hokenId: 789012,
-                                  seqNo: hokenInf?.SeqNo ?? 0,
-                                  hokenNo: 456,
-                                  hokenEdaNo: 2,
-                                  hokenKbn: 3,
-                                  hokensyaNo: "ABC12345",
-                                  kigo: "K12345",
-                                  bango: "B56789",
-                                  edaNo: "E7",
-                                  honkeKbn: 5,
-                                  startDate: 20220101,
-                                  endDate: 20221231,
-                                  sikakuDate: 20220115,
-                                  kofuDate: 20220201,
-                                  confirmDate: 20220215,
-                                  kogakuKbn: 1,
-                                  tasukaiYm: 202203,
-                                  tokureiYm1: 202204,
-                                  tokureiYm2: 202205,
-                                  genmenKbn: 1,
-                                  genmenRate: 80,
-                                  genmenGaku: 500000,
-                                  syokumuKbn: 2,
-                                  keizokuKbn: 1,
-                                  tokki1: "11",
-                                  tokki2: "22",
-                                  tokki3: "33",
-                                  tokki4: "44",
-                                  tokki5: "55",
-                                  rousaiKofuNo: "RousaiKofu",
-                                  rousaiRoudouCd: "R1",
-                                  rousaiSaigaiKbn: 0,
-                                  rousaiKantokuCd: "rk",
-                                  rousaiSyobyoDate: 20221001,
-                                  ryoyoStartDate: 20221001,
-                                  ryoyoEndDate: 20221231,
-                                  rousaiSyobyoCd: "rs",
-                                  rousaiJigyosyoName: "rj",
-                                  rousaiPrefName: "Tokyo",
-                                  rousaiCityName: "Shinjuku",
-                                  rousaiReceCount: 3,
-                                  hokensyaName: "HokensyaName",
-                                  hokensyaAddress: "HokensyaAddress",
-                                  hokensyaTel: "123-456-7890",
-                                  sinDate: 20220101,
-                                  jibaiHokenName: "JibaiHokenName",
-                                  jibaiHokenTanto: "TantoName",
-                                  jibaiHokenTel: "987-654-3210",
-                                  jibaiJyusyouDate: 20220301,
-                                  houbetu: "ABC",
-                                  confirmDateList: new List<ConfirmDateModel>()
-                                                      {
-                                                        new ConfirmDateModel(createPtInf.ptId, 1, 50, DateTime.UtcNow, 1, "Check Comment 2"),
-                                                      },
-                                  listRousaiTenki: new List<RousaiTenkiModel>()
-                                                      {
-                                                        new RousaiTenkiModel(2, 3, 99999999, 3, rousaiTenki?.SeqNo ?? 0),
-                                                        new RousaiTenkiModel(1, 2, 20240101, 3, 0),
-                                                      },
-                                  isReceKisaiOrNoHoken: true,
-                                  isDeleted: 0,
-                                  hokenMst: new HokenMstModel(),
-                                  isAddNew: false,
-                                  isAddHokenCheck: true,
-                                  hokensyaMst: new HokensyaMstModel()
-                                  ),
-            };
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenPattern> ptHokenPattern = new();
+            List<PtRousaiTenki> ptRousaiTenkis = new();
+            List<PtHokenInf> ptHokenInfs = new();
 
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), updateHokenInfs, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptHokenInfs = tenantNoTracking.PtHokenInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptRousaiTenkis = tenantNoTracking.PtRousaiTenkis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptHokenInfs.Count() == 1 && ptHokenInfs.Any(h => h.HokensyaNo == "ABC12345" && h.Kigo == "K12345" && h.Bango == "B56789"));
-            Assert.That(ptRousaiTenkis.Count() == 3 && ptRousaiTenkis.Any(h => h.IsDeleted == 1) && ptRousaiTenkis.Any(h => h.EndDate == 99999999));
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptHokenInfs != null)
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, hokenInfs, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var hokenInf = tenantNoTracking.PtHokenInfs.FirstOrDefault(h => h.PtId == createPtInf.ptId && h.HpId == 1);
+                var rousaiTenki = tenantNoTracking.PtRousaiTenkis.FirstOrDefault(h => h.PtId == createPtInf.ptId && h.HpId == 1);
+                var updateHokenInfs = new List<HokenInfModel>()
+                {
+                    new HokenInfModel(
+                                      hpId: 1,
+                                      ptId: createPtInf.ptId,
+                                      hokenId: 789012,
+                                      seqNo: hokenInf?.SeqNo ?? 0,
+                                      hokenNo: 456,
+                                      hokenEdaNo: 2,
+                                      hokenKbn: 3,
+                                      hokensyaNo: "ABC12345",
+                                      kigo: "K12345",
+                                      bango: "B56789",
+                                      edaNo: "E7",
+                                      honkeKbn: 5,
+                                      startDate: 20220101,
+                                      endDate: 20221231,
+                                      sikakuDate: 20220115,
+                                      kofuDate: 20220201,
+                                      confirmDate: 20220215,
+                                      kogakuKbn: 1,
+                                      tasukaiYm: 202203,
+                                      tokureiYm1: 202204,
+                                      tokureiYm2: 202205,
+                                      genmenKbn: 1,
+                                      genmenRate: 80,
+                                      genmenGaku: 500000,
+                                      syokumuKbn: 2,
+                                      keizokuKbn: 1,
+                                      tokki1: "11",
+                                      tokki2: "22",
+                                      tokki3: "33",
+                                      tokki4: "44",
+                                      tokki5: "55",
+                                      rousaiKofuNo: "RousaiKofu",
+                                      rousaiRoudouCd: "R1",
+                                      rousaiSaigaiKbn: 0,
+                                      rousaiKantokuCd: "rk",
+                                      rousaiSyobyoDate: 20221001,
+                                      ryoyoStartDate: 20221001,
+                                      ryoyoEndDate: 20221231,
+                                      rousaiSyobyoCd: "rs",
+                                      rousaiJigyosyoName: "rj",
+                                      rousaiPrefName: "Tokyo",
+                                      rousaiCityName: "Shinjuku",
+                                      rousaiReceCount: 3,
+                                      hokensyaName: "HokensyaName",
+                                      hokensyaAddress: "HokensyaAddress",
+                                      hokensyaTel: "123-456-7890",
+                                      sinDate: 20220101,
+                                      jibaiHokenName: "JibaiHokenName",
+                                      jibaiHokenTanto: "TantoName",
+                                      jibaiHokenTel: "987-654-3210",
+                                      jibaiJyusyouDate: 20220301,
+                                      houbetu: "ABC",
+                                      confirmDateList: new List<ConfirmDateModel>()
+                                                          {
+                                                            new ConfirmDateModel(createPtInf.ptId, 1, 50, DateTime.UtcNow, 1, "Check Comment 2"),
+                                                          },
+                                      listRousaiTenki: new List<RousaiTenkiModel>()
+                                                          {
+                                                            new RousaiTenkiModel(2, 3, 99999999, 3, rousaiTenki?.SeqNo ?? 0),
+                                                            new RousaiTenkiModel(1, 2, 20240101, 3, 0),
+                                                          },
+                                      isReceKisaiOrNoHoken: true,
+                                      isDeleted: 0,
+                                      hokenMst: new HokenMstModel(),
+                                      isAddNew: false,
+                                      isAddHokenCheck: true,
+                                      hokensyaMst: new HokensyaMstModel()
+                                      ),
+                };
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), updateHokenInfs, new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptHokenInfs = tenantNoTracking.PtHokenInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+                ptRousaiTenkis = tenantNoTracking.PtRousaiTenkis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptHokenInfs.Count() == 1 && ptHokenInfs.Any(h => h.HokensyaNo == "ABC12345" && h.Kigo == "K12345" && h.Bango == "B56789"));
+                Assert.That(ptRousaiTenkis.Count() == 3 && ptRousaiTenkis.Any(h => h.IsDeleted == 1) && ptRousaiTenkis.Any(h => h.EndDate == 99999999));
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptHokenInfs.Any())
                 {
                     tenantTracking.RemoveRange(ptHokenInfs);
                 }
-                if (ptRousaiTenkis != null)
+                if (ptRousaiTenkis.Any())
                 {
                     tenantTracking.RemoveRange(ptRousaiTenkis);
                 }
@@ -4227,12 +4888,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_031_UpdatePatientInfo_Add_Kohi()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -4284,104 +4945,119 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new InsuranceModel(1, 98422233, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
-            {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-            var hokenKohis = new List<KohiInfModel>()
-            {
-                new KohiInfModel(futansyaNo: "123456",
-                                 jyukyusyaNo:"234567",
-                                 hokenId: 61,
-                                 startDate: 20230101,
-                                 endDate: 20240101,
-                                 confirmDate: 20231212,
-                                 rate: 3,
-                                 gendoGaku: 5,
-                                 sikakuDate: 20230506,
-                                 kofuDate: 20230505,
-                                 tokusyuNo: "33444",
-                                 hokenSbtKbn: 55,
-                                 houbetu: "123",
-                                 hokenNo: 55,
-                                 hokenEdaNo: 23,
-                                 prefNo: 21,
-                                 new(),
-                                 sinDate: 20240101,
-                                 confirmDateList: new List<ConfirmDateModel>()
-                                                      {
-                                                        new ConfirmDateModel(123456, 1, 50, DateTime.UtcNow, 1, "Check Comment"),
-                                                      },
-                                 true,
-                                 0,
-                                 isAddNew: true,
-                                 seqNo:0
-                                 ),
-            };
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenPattern> ptHokenPattern = new();
+            List<PtKohi> ptKohiInfs = new();
 
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), hokenKohis, new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKohiInfs = tenantNoTracking.PtKohis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKohiInfs.Count() == 1);
-            if (createPtInf.resultSave)
+            try
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptKohiInfs != null)
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
+                var hokenKohis = new List<KohiInfModel>()
+                {
+                    new KohiInfModel(futansyaNo: "123456",
+                                     jyukyusyaNo:"234567",
+                                     hokenId: 61,
+                                     startDate: 20230101,
+                                     endDate: 20240101,
+                                     confirmDate: 20231212,
+                                     rate: 3,
+                                     gendoGaku: 5,
+                                     sikakuDate: 20230506,
+                                     kofuDate: 20230505,
+                                     tokusyuNo: "33444",
+                                     hokenSbtKbn: 55,
+                                     houbetu: "123",
+                                     hokenNo: 55,
+                                     hokenEdaNo: 23,
+                                     prefNo: 21,
+                                     new(),
+                                     sinDate: 20240101,
+                                     confirmDateList: new List<ConfirmDateModel>()
+                                                          {
+                                                            new ConfirmDateModel(123456, 1, 50, DateTime.UtcNow, 1, "Check Comment"),
+                                                          },
+                                     true,
+                                     0,
+                                     isAddNew: true,
+                                     seqNo:0
+                                     ),
+                };
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), hokenKohis, new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKohiInfs = tenantNoTracking.PtKohis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKohiInfs.Count() == 1);
+            }
+            finally
+            {
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptKohiInfs.Any())
                 {
                     tenantTracking.RemoveRange(ptKohiInfs);
                 }
@@ -4392,12 +5068,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_032_UpdatePatientInfo_Update_Kohi()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -4479,106 +5155,121 @@ namespace CloudUnitTest.Repository.PatientInfo
                                  ),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), hokenKohis, new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenPattern> ptHokenPattern = new();
+            List<PtKohi> ptKohiInfs = new();
+
+            try
             {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), hokenKohis, new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
 
-            var ptKohi = tenantNoTracking.PtKohis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var updateHokenKohis = new List<KohiInfModel>()
+                var ptKohi = tenantNoTracking.PtKohis.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var updateHokenKohis = new List<KohiInfModel>()
+                {
+                    new KohiInfModel(futansyaNo: "12357",
+                                     jyukyusyaNo:"2347",
+                                     hokenId: 61,
+                                     startDate: 20230101,
+                                     endDate: 20240101,
+                                     confirmDate: 20231212,
+                                     rate: 3,
+                                     gendoGaku: 5,
+                                     sikakuDate: 20230506,
+                                     kofuDate: 20230505,
+                                     tokusyuNo: "3347",
+                                     hokenSbtKbn: 55,
+                                     houbetu: "123",
+                                     hokenNo: 55,
+                                     hokenEdaNo: 23,
+                                     prefNo: 21,
+                                     new(),
+                                     sinDate: 20240101,
+                                     confirmDateList: new List<ConfirmDateModel>()
+                                                          {
+                                                            new ConfirmDateModel(123456, 1, 50, DateTime.UtcNow, 1, "Check Comment"),
+                                                          },
+                                     true,
+                                     0,
+                                     isAddNew: false,
+                                     seqNo:ptKohi?.SeqNo ?? 0
+                                     ),
+                };
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), updateHokenKohis, new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptKohiInfs = tenantNoTracking.PtKohis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptKohiInfs.Any(k => k.FutansyaNo == "12357" && k.JyukyusyaNo == "2347" && k.TokusyuNo == "3347"));
+            }
+            finally
             {
-                new KohiInfModel(futansyaNo: "12357",
-                                 jyukyusyaNo:"2347",
-                                 hokenId: 61,
-                                 startDate: 20230101,
-                                 endDate: 20240101,
-                                 confirmDate: 20231212,
-                                 rate: 3,
-                                 gendoGaku: 5,
-                                 sikakuDate: 20230506,
-                                 kofuDate: 20230505,
-                                 tokusyuNo: "3347",
-                                 hokenSbtKbn: 55,
-                                 houbetu: "123",
-                                 hokenNo: 55,
-                                 hokenEdaNo: 23,
-                                 prefNo: 21,
-                                 new(),
-                                 sinDate: 20240101,
-                                 confirmDateList: new List<ConfirmDateModel>()
-                                                      {
-                                                        new ConfirmDateModel(123456, 1, 50, DateTime.UtcNow, 1, "Check Comment"),
-                                                      },
-                                 true,
-                                 0,
-                                 isAddNew: false,
-                                 seqNo:ptKohi?.SeqNo ?? 0
-                                 ),
-            };
-
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), updateHokenKohis, new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptKohiInfs = tenantNoTracking.PtKohis.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptKohiInfs.Any(k => k.FutansyaNo == "12357" && k.JyukyusyaNo == "2347" && k.TokusyuNo == "3347"));
-            if (createPtInf.resultSave)
-            {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptKohiInfs != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptKohiInfs.Any())
                 {
                     tenantTracking.RemoveRange(ptKohiInfs);
                 }
@@ -4586,16 +5277,15 @@ namespace CloudUnitTest.Repository.PatientInfo
             }
         }
 
-
         [Test]
         public void TC_032_UpdatePatientInfo_Add_Limit()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -4647,91 +5337,105 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new InsuranceModel(1, 98422233, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<LimitListInf> ptLimits = new();
+
+            try
             {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
 
-            var maxMoneys = new List<LimitListModel>()
+                var maxMoneys = new List<LimitListModel>()
+                {
+                    new LimitListModel(
+                                        id: 0,
+                                        kohiId: 30,
+                                        sinDate: 20240303,
+                                        hokenPid: 55,
+                                        sortKey: "AM",
+                                        raiinNo: 123456444,
+                                        futanGaku: 9,
+                                        totalGaku: 99,
+                                        biko:"bi",
+                                        isDeleted:0,
+                                        seqNo: 0
+                                       ),
+                };
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, maxMoneys, insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptLimits = tenantNoTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptLimits.Any());
+            }
+            finally
             {
-                new LimitListModel(
-                                    id: 0,
-                                    kohiId: 30,
-                                    sinDate: 20240303,
-                                    hokenPid: 55,
-                                    sortKey: "AM",
-                                    raiinNo: 123456444,
-                                    futanGaku: 9,
-                                    totalGaku: 99,
-                                    biko:"bi",
-                                    isDeleted:0,
-                                    seqNo: 0
-                                   ),
-            };
-
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, maxMoneys, insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptLimits = tenantNoTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptLimits.Any());
-            if (createPtInf.resultSave)
-            {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptLimits != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptLimits.Any())
                 {
                     tenantTracking.RemoveRange(ptLimits);
                 }
@@ -4742,12 +5446,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_033_UpdatePatientInfo_Update_Limit()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -4815,92 +5519,107 @@ namespace CloudUnitTest.Repository.PatientInfo
                                    ),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, maxMoneys, insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<LimitListInf> ptLimits = new();
+
+            try
             {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, maxMoneys, insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
 
-            var ptLimit = tenantNoTracking.LimitListInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var updateMaxMoneys = new List<LimitListModel>()
+                var ptLimit = tenantNoTracking.LimitListInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var updateMaxMoneys = new List<LimitListModel>()
+                {
+                    new LimitListModel(
+                                        id: ptLimit?.Id ?? 0,
+                                        kohiId: 30,
+                                        sinDate: 99999999,
+                                        hokenPid: 55,
+                                        sortKey: "AM1",
+                                        raiinNo: 123456444,
+                                        futanGaku: 9,
+                                        totalGaku: 99,
+                                        biko:"bi1",
+                                        isDeleted:0,
+                                        seqNo: ptLimit?.SeqNo ?? 0
+                                       ),
+                };
+
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, updateMaxMoneys, insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptLimits = tenantNoTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptLimits.Any(l => l.SortKey == "AM1" && l.Biko == "bi1" && l.SinDate == 99999999));
+            }
+            finally
             {
-                new LimitListModel(
-                                    id: ptLimit?.Id ?? 0,
-                                    kohiId: 30,
-                                    sinDate: 99999999,
-                                    hokenPid: 55,
-                                    sortKey: "AM1",
-                                    raiinNo: 123456444,
-                                    futanGaku: 9,
-                                    totalGaku: 99,
-                                    biko:"bi1",
-                                    isDeleted:0,
-                                    seqNo: ptLimit?.SeqNo ?? 0
-                                   ),
-            };
-
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, updateMaxMoneys, insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
-
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptLimits = tenantNoTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptLimits.Any(l => l.SortKey == "AM1" && l.Biko == "bi1" && l.SinDate == 99999999));
-            if (createPtInf.resultSave)
-            {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptLimits != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptLimits.Any())
                 {
                     tenantTracking.RemoveRange(ptLimits);
                 }
@@ -4911,12 +5630,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_034_UpdatePatientInfo_Delete_Limit()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -4983,76 +5702,89 @@ namespace CloudUnitTest.Repository.PatientInfo
                                     seqNo: 0
                                    ),
             };
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<LimitListInf> ptLimits = new();
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, maxMoneys, insuranceScanModel, 9999);
-            var ptSanteiUpdate = new List<CalculationInfModel>()
+            try
             {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, maxMoneys, insuranceScanModel, 9999);
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
+                };
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
 
 
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), insuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptLimits = tenantNoTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == 1);
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptLimits = tenantNoTracking.LimitListInfs.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == 1).ToList();
 
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptLimits.Any());
-            if (createPtInf.resultSave)
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptLimits.Any());
+
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptLimits != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptLimits.Any())
                 {
                     tenantTracking.RemoveRange(ptLimits);
                 }
@@ -5063,12 +5795,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_035_UpdatePatientInfo_Add_Scan()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -5119,85 +5851,100 @@ namespace CloudUnitTest.Repository.PatientInfo
             {
                 new InsuranceModel(1, 98422233, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
 
-            var ptSanteiUpdate = new List<CalculationInfModel>()
-            {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenScan> ptScans = new();
 
-            Func<int, long, long, IEnumerable<InsuranceScanModel>> updateInsuranceScanModel =
-            (hpId, ptId, seqNo) =>
+            try
             {
-                // Implementation to return IEnumerable<InsuranceScanModel> based on the parameters provided
-                var insuranceScanModels = new List<InsuranceScanModel>()
+
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+
+                var ptSanteiUpdate = new List<CalculationInfModel>()
                 {
-                                   new InsuranceScanModel(1, createPtInf.ptId, 0, 11, 40, "Unit-Test", GetSampleFileStream(), 0, "20230101"),
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
                 };
-                return insuranceScanModels;
-            };
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), updateInsuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptScans = tenantNoTracking.PtHokenScans.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Func<int, long, long, IEnumerable<InsuranceScanModel>> updateInsuranceScanModel =
+                (hpId, ptId, seqNo) =>
+                {
+                    var insuranceScanModels = new List<InsuranceScanModel>()
+                    {
+                                   new InsuranceScanModel(1, createPtInf.ptId, 0, 11, 40, "Unit-Test", GetSampleFileStream(), 0, "20230101"),
+                    };
+                    return insuranceScanModels;
+                };
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), updateInsuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptScans.Any());
-            if (createPtInf.resultSave)
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptScans = tenantNoTracking.PtHokenScans.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptScans.Any());
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptScans != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptScans.Any())
                 {
                     tenantTracking.RemoveRange(ptScans);
                 }
@@ -5208,12 +5955,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_036_UpdatePatientInfo_Update_Scan()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -5265,97 +6012,110 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new InsuranceModel(1, 98422233, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenScan> ptScans = new();
 
-            tenantNoTracking.PtHokenScans.Add(new PtHokenScan
+            try
             {
-                PtId = createPtInf.ptId,
-                HpId = 1,
-                HokenGrp = 1,
-                HokenId = 1,
-                SeqNo = 0,
-                FileName = "Unit-Test"
-            });
-            tenantNoTracking.SaveChanges();
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
 
-            var ptSanteiUpdate = new List<CalculationInfModel>()
-            {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-
-            var oldScan = tenantNoTracking.PtHokenScans.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Func<int, long, long, IEnumerable<InsuranceScanModel>> updateInsuranceScanModel =
-            (hpId, ptId, seqNo) =>
-            {
-                // Implementation to return IEnumerable<InsuranceScanModel> based on the parameters provided
-                var insuranceScanModels = new List<InsuranceScanModel>()
+                tenantNoTracking.PtHokenScans.Add(new PtHokenScan
                 {
-                                   new InsuranceScanModel(1, createPtInf.ptId, oldScan?.SeqNo ?? 0, 11, 40, "Unit-Test 1", GetSampleFileStream(), 0, "20230101"),
+                    PtId = createPtInf.ptId,
+                    HpId = 1,
+                    HokenGrp = 1,
+                    HokenId = 1,
+                    SeqNo = 0,
+                    FileName = "Unit-Test"
+                });
+                tenantNoTracking.SaveChanges();
+
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
                 };
-                return insuranceScanModels;
-            };
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), updateInsuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptScans = tenantNoTracking.PtHokenScans.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var oldScan = tenantNoTracking.PtHokenScans.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Func<int, long, long, IEnumerable<InsuranceScanModel>> updateInsuranceScanModel =
+                (hpId, ptId, seqNo) =>
+                {
+                    var insuranceScanModels = new List<InsuranceScanModel>()
+                    {
+                                   new InsuranceScanModel(1, createPtInf.ptId, oldScan?.SeqNo ?? 0, 11, 40, "Unit-Test 1", GetSampleFileStream(), 0, "20230101"),
+                    };
+                    return insuranceScanModels;
+                };
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), updateInsuranceScanModel, 9999, new List<int> { 1, 2, 3 });
 
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptScans.Any(s => s.FileName == "Unit-Test 1"));
-            if (createPtInf.resultSave)
+                ptInf = tenantNoTracking.PtInfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptScans = tenantNoTracking.PtHokenScans.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf?.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf?.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf?.Sex, Is.EqualTo(1));
+                Assert.That(ptInf?.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf?.IsDead, Is.EqualTo(1));
+                Assert.That(santei?.HpId, Is.EqualTo(1));
+                Assert.That(santei?.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptScans.Any(s => s.FileName == "Unit-Test 1"));
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptScans != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptScans.Any())
                 {
                     tenantTracking.RemoveRange(ptScans);
                 }
@@ -5366,12 +6126,12 @@ namespace CloudUnitTest.Repository.PatientInfo
         [Test]
         public void TC_037_UpdatePatientInfo_Delete_Scan()
         {
-            //Mock
+            // Arrange
             var mockReceptionRepos = new Mock<IReceptionRepository>();
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
-            // Arrange
+
             var patientInfoSaveModel = new PatientInforSaveModel(
                                             hpId: 1,
                                             ptId: 98422233,
@@ -5424,97 +6184,111 @@ namespace CloudUnitTest.Repository.PatientInfo
                 new InsuranceModel(1, 98422233, 19900101, 0, 4, 4, 4, 20230505, "Sample Memo", new(), new(), new(), new(), new(), 0, 20230606, 20240101, isAddNew:true),
             };
 
-            // Act
-            var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
+            PtInf? ptInf = null;
+            PtSanteiConf? santei = null;
+            List<PtHokenScan> ptScans = new();
 
-            tenantNoTracking.PtHokenScans.Add(new PtHokenScan
+            try
             {
-                PtId = createPtInf.ptId,
-                HpId = 1,
-                HokenGrp = 1,
-                HokenId = 1,
-                SeqNo = 0,
-                FileName = "Unit-Test"
-            });
-            tenantNoTracking.SaveChanges();
+                // Act
+                var createPtInf = savePatientInfo.CreatePatientInfo(patientInfoSaveModel, new(), ptSantei, insurances, new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 1, "001", "Group Name"), new GroupInfModel(1, 98422233, 2, "002", "Group Name") }, new(), insuranceScanModel, 9999);
 
-            var ptSanteiUpdate = new List<CalculationInfModel>()
-            {
-                new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
-            };
-            var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var patientInfoSaveModelUpdate = new PatientInforSaveModel(
-                                            hpId: 1,
-                                            ptId: createPtInf.ptId,
-                                            ptNum: oldPtInf.PtNum,
-                                            kanaName: "Sample Kana Name 1",
-                                            name: "Sample Name 1",
-                                            sex: 1,
-                                            birthday: 19900101,
-                                            isDead: 1,
-                                            deathDate: 20240312,
-                                            mail: "sample@mail.com",
-                                            homePost: "123-456",
-                                            homeAddress1: "Sample Home Address 1",
-                                            homeAddress2: "Sample Home Address 2",
-                                            tel1: "123-456-7890",
-                                            tel2: "987-654-3210",
-                                            setanusi: "Sample Setanusi",
-                                            zokugara: "Sample Zokugara",
-                                            job: "Sample Job",
-                                            renrakuName: "Sample Renraku Name",
-                                            renrakuPost: "987-654",
-                                            renrakuAddress1: "Sample Renraku Address 1",
-                                            renrakuAddress2: "Sample Renraku Address 2",
-                                            renrakuTel: "555-1234",
-                                            renrakuMemo: "Sample Renraku Memo",
-                                            officeName: "Sample Office Name",
-                                            officePost: "543-210",
-                                            officeAddress1: "Sample Office Address 1",
-                                            officeAddress2: "Sample Office Address 2",
-                                            officeTel: "888-9999",
-                                            officeMemo: "Sample Office Memo",
-                                            isRyosyoDetail: 1,
-                                            primaryDoctor: 2,
-                                            isTester: 0,
-                                            mainHokenPid: 3,
-                                            referenceNo: 987654321,
-                                            limitConsFlg: 1,
-                                            memo: ""
-            );
-
-            var oldScan = tenantNoTracking.PtHokenScans.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            Func<int, long, long, IEnumerable<InsuranceScanModel>> updateInsuranceScanModel =
-            (hpId, ptId, seqNo) =>
-            {
-                // Implementation to return IEnumerable<InsuranceScanModel> based on the parameters provided
-                var insuranceScanModels = new List<InsuranceScanModel>()
+                tenantNoTracking.PtHokenScans.Add(new PtHokenScan
                 {
-                                   new InsuranceScanModel(1, createPtInf.ptId, oldScan?.SeqNo ?? 0, 11, 40, "Unit-Test 1", GetSampleFileStream(), DeleteTypes.Deleted, "20230101"),
+                    PtId = createPtInf.ptId,
+                    HpId = 1,
+                    HokenGrp = 1,
+                    HokenId = 1,
+                    SeqNo = 0,
+                    FileName = "Unit-Test"
+                });
+                tenantNoTracking.SaveChanges();
+
+                var ptSanteiUpdate = new List<CalculationInfModel>()
+                {
+                    new CalculationInfModel(1, 98422233, 1, 1, 2, 20230101, 20240101, 9999),
                 };
-                return insuranceScanModels;
-            };
-            var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), updateInsuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+                var oldPtInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                var patientInfoSaveModelUpdate = new PatientInforSaveModel(
+                                                hpId: 1,
+                                                ptId: createPtInf.ptId,
+                                                ptNum: oldPtInf.PtNum,
+                                                kanaName: "Sample Kana Name 1",
+                                                name: "Sample Name 1",
+                                                sex: 1,
+                                                birthday: 19900101,
+                                                isDead: 1,
+                                                deathDate: 20240312,
+                                                mail: "sample@mail.com",
+                                                homePost: "123-456",
+                                                homeAddress1: "Sample Home Address 1",
+                                                homeAddress2: "Sample Home Address 2",
+                                                tel1: "123-456-7890",
+                                                tel2: "987-654-3210",
+                                                setanusi: "Sample Setanusi",
+                                                zokugara: "Sample Zokugara",
+                                                job: "Sample Job",
+                                                renrakuName: "Sample Renraku Name",
+                                                renrakuPost: "987-654",
+                                                renrakuAddress1: "Sample Renraku Address 1",
+                                                renrakuAddress2: "Sample Renraku Address 2",
+                                                renrakuTel: "555-1234",
+                                                renrakuMemo: "Sample Renraku Memo",
+                                                officeName: "Sample Office Name",
+                                                officePost: "543-210",
+                                                officeAddress1: "Sample Office Address 1",
+                                                officeAddress2: "Sample Office Address 2",
+                                                officeTel: "888-9999",
+                                                officeMemo: "Sample Office Memo",
+                                                isRyosyoDetail: 1,
+                                                primaryDoctor: 2,
+                                                isTester: 0,
+                                                mainHokenPid: 3,
+                                                referenceNo: 987654321,
+                                                limitConsFlg: 1,
+                                                memo: ""
+                );
 
-            var ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
-            var ptScans = tenantNoTracking.PtHokenScans.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == DeleteTypes.Deleted);
+                var oldScan = tenantNoTracking.PtHokenScans.FirstOrDefault(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                Func<int, long, long, IEnumerable<InsuranceScanModel>> updateInsuranceScanModel =
+                (hpId, ptId, seqNo) =>
+                {
 
-            Assert.That(createPtInf.resultSave, Is.EqualTo(true));
-            Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
-            Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
-            Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
-            Assert.That(ptInf.Sex, Is.EqualTo(1));
-            Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
-            Assert.That(ptInf.IsDead, Is.EqualTo(1));
-            Assert.That(santei.HpId, Is.EqualTo(1));
-            Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
-            Assert.That(ptScans.Any());
-            if (createPtInf.resultSave)
+                    var insuranceScanModels = new List<InsuranceScanModel>()
+                    {
+                                   new InsuranceScanModel(1, createPtInf.ptId, oldScan?.SeqNo ?? 0, 11, 40, "Unit-Test 1", GetSampleFileStream(), DeleteTypes.Deleted, "20230101"),
+                    };
+                    return insuranceScanModels;
+                };
+                var updatePtInf = savePatientInfo.UpdatePatientInfo(patientInfoSaveModelUpdate, new(), ptSantei, new(), new(), new(), new List<GroupInfModel>() { new GroupInfModel(1, 98422233, 2, "", "Group Name") }, new(), updateInsuranceScanModel, 9999, new List<int> { 1, 2, 3 });
+
+                ptInf = tenantNoTracking.PtInfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                santei = tenantTracking.PtSanteiConfs.First(x => x.HpId == 1 && x.PtId == createPtInf.ptId);
+                ptScans = tenantNoTracking.PtHokenScans.Where(x => x.HpId == 1 && x.PtId == createPtInf.ptId && x.IsDeleted == DeleteTypes.Deleted).ToList();
+
+                // Assert
+                Assert.That(createPtInf.resultSave, Is.EqualTo(true));
+                Assert.That(updatePtInf.resultSave, Is.EqualTo(true));
+                Assert.That(ptInf.KanaName, Is.EqualTo("Sample Kana Name 1"));
+                Assert.That(ptInf.Name, Is.EqualTo("Sample Name 1"));
+                Assert.That(ptInf.Sex, Is.EqualTo(1));
+                Assert.That(ptInf.Birthday, Is.EqualTo(19900101));
+                Assert.That(ptInf.IsDead, Is.EqualTo(1));
+                Assert.That(santei.HpId, Is.EqualTo(1));
+                Assert.That(santei.PtId, Is.EqualTo(createPtInf.ptId));
+                Assert.That(ptScans.Any());
+            }
+            finally
             {
-                tenantTracking.PtInfs.Remove(ptInf);
-                tenantTracking.PtSanteiConfs.Remove(santei);
-                if (ptScans != null)
+                if (ptInf != null)
+                {
+                    tenantTracking.PtInfs.Remove(ptInf);
+                }
+                if (santei != null)
+                {
+                    tenantTracking.PtSanteiConfs.Remove(santei);
+                }
+                if (ptScans.Any())
                 {
                     tenantTracking.RemoveRange(ptScans);
                 }

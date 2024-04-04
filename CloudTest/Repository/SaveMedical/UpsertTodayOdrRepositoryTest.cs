@@ -37,6 +37,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_001_UpsertTodayOdr_TestCreateOdrInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -223,6 +224,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_002_UpsertTodayOdr_TestUpdateOdrInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -421,6 +423,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_003_UpsertTodayOdr_TestDeleteOdrInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -511,6 +514,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_004_UpsertTodayOdr_TestDeleteOdrInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -601,6 +605,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_005_UpsertTodayOdr_TestRaiinStateReservationOdrInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -693,6 +698,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_006_UpsertTodayOdr_TestGetMaxRpNoSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -751,6 +757,8 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
 
             // Act
             var result = todayOdrRepository.GetMaxRpNo(odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.SinDate);
+
+            // Assert
             Assert.True(result == ordInfModel.RpNo);
         }
         finally
@@ -763,6 +771,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_007_UpsertTodayOdr_TestGetMaxRpNoEqual0Success()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -821,6 +830,8 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
 
             // Act
             var result = todayOdrRepository.GetMaxRpNo(odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, random.Next(999, 99999));
+
+            // Assert
             Assert.True(result == 0);
         }
         finally
@@ -835,6 +846,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_008_UpsertTodayOdr_TestCreateKarteInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -886,6 +898,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
                                                                         && item.RichText == Encoding.UTF8.GetBytes(karteModel.RichText)
                                                                         && item.IsDeleted == 0);
             result = result && karteInfAfter != null;
+
             // Assert
             Assert.True(result);
         }
@@ -899,6 +912,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_009_UpsertTodayOdr_TestUpdateKarteInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -960,6 +974,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
                                                                         && item.RichText == Encoding.UTF8.GetBytes(karteModel.RichText)
                                                                         && item.IsDeleted == 0);
             result = result && karteInfAfter != null;
+
             // Assert
             Assert.True(result);
         }
@@ -973,6 +988,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_010_UpsertTodayOdr_TestUpdateKarteInfWithRaiinStateReservationSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1041,6 +1057,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
                                                                         && item.SeqNo == karteModel.SeqNo
                                                                         && item.IsDeleted == DeleteTypes.Confirm);
             result = result && karteInfAfter != null && karteInfOldVersion != null;
+
             // Assert
             Assert.True(result);
         }
@@ -1054,6 +1071,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_011_UpsertTodayOdr_TestDeletedKarteInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1112,6 +1130,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
                                                                         && item.SeqNo == karteModel.SeqNo
                                                                         && item.IsDeleted == 1);
             result = result && karteInfAfter != null;
+
             // Assert
             Assert.True(result);
         }
@@ -1125,6 +1144,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_012_UpsertTodayOdr_TestUpdateKarteImgInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1199,6 +1219,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
                                                                               && item.RaiinNo == karteModel.RaiinNo);
 
             result = result && karteInfAfter != null;
+
             // Assert
             Assert.True(result);
         }
@@ -1214,6 +1235,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_013_UpsertTodayOdr_TestSaveRaiinInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1294,6 +1316,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_014_UpsertTodayOdr_TestGetModeSaveDate_001()
     {
+        // Arrange
         byte modeSaveData = (byte)ModeSaveData.KeisanSave;
         int status = RaiinState.TempSave;
         string sinEndTime = "",
@@ -1305,6 +1328,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
         var result = todayOdrRepository.GetModeSaveDate(modeSaveData, status, sinEndTime, sinStartTime, uketukeTime);
 
+        // Act
         bool success = result.status == RaiinState.Calculate
             && result.sinStartTime == ""
             && int.Parse(result.sinEndTime) <= int.Parse(CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow()))
@@ -1317,6 +1341,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_015_UpsertTodayOdr_TestGetModeSaveDate_002()
     {
+        // Arrange
         byte modeSaveData = (byte)ModeSaveData.KeisanSave;
         int status = RaiinState.Reservation;
         string sinEndTime = "",
@@ -1328,6 +1353,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
         var result = todayOdrRepository.GetModeSaveDate(modeSaveData, status, sinEndTime, sinStartTime, uketukeTime);
 
+        // Act
         bool success = result.status == RaiinState.Calculate
             && result.sinStartTime == sinStartTime
             && int.Parse(result.sinEndTime) <= int.Parse(CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow()))
@@ -1340,6 +1366,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_016_UpsertTodayOdr_TestGetModeSaveDate_003()
     {
+        // Arrange
         byte modeSaveData = (byte)ModeSaveData.KaikeiSave;
         int status = RaiinState.Calculate;
         string sinEndTime = "",
@@ -1351,6 +1378,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
         var result = todayOdrRepository.GetModeSaveDate(modeSaveData, status, sinEndTime, sinStartTime, uketukeTime);
 
+        // Act
         bool success = result.status == RaiinState.Waiting
             && result.sinStartTime == ""
             && int.Parse(result.sinEndTime) <= int.Parse(CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow()))
@@ -1363,6 +1391,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_017_UpsertTodayOdr_TestGetModeSaveDate_004()
     {
+        // Arrange
         byte modeSaveData = (byte)ModeSaveData.KaikeiSave;
         int status = RaiinState.Settled;
         string sinEndTime = "",
@@ -1372,6 +1401,8 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         var mockSystemConf = new Mock<ISystemConfRepository>();
         var mockapprovalInf = new Mock<IApprovalInfRepository>();
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
+
+        // Act
         var result = todayOdrRepository.GetModeSaveDate(modeSaveData, status, sinEndTime, sinStartTime, uketukeTime);
 
         bool success = result.status == 0
@@ -1386,6 +1417,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_018_UpsertTodayOdr_TestGetModeSaveDate_005()
     {
+        // Arrange
         byte modeSaveData = (byte)ModeSaveData.KaikeiSave;
         int status = RaiinState.Reservation;
         string sinEndTime = "",
@@ -1395,6 +1427,8 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         var mockSystemConf = new Mock<ISystemConfRepository>();
         var mockapprovalInf = new Mock<IApprovalInfRepository>();
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, mockSystemConf.Object, mockapprovalInf.Object);
+
+        // Act
         var result = todayOdrRepository.GetModeSaveDate(modeSaveData, status, sinEndTime, sinStartTime, uketukeTime);
 
         bool success = result.status == RaiinState.Waiting
@@ -1411,6 +1445,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_019_UpsertTodayOdr_TestSaveHeaderInfSuccess_01()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1533,6 +1568,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_020_UpsertTodayOdr_TestSaveHeaderInfSuccess_02()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1640,6 +1676,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_021_UpsertTodayOdr_TestSaveHeaderInfSuccess_03()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1734,6 +1771,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_022_UpsertTodayOdr_TestUserJobCdIs1()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1786,6 +1824,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_023_UpsertTodayOdr_TestUpdateApproveInf_01()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1822,6 +1861,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_024_UpsertTodayOdr_TestUpdateApproveInf_02()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1870,6 +1910,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_025_UpsertTodayOdr_TestUpdateApproveInf_03()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1919,6 +1960,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_026_UpsertTodayOdr_TestUpdateApproveInf_04()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1972,6 +2014,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_027_UpsertTodayOdr_TestGetPermissionByScreenCode_01()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1993,6 +2036,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
 
             // Act
             var result = userRepository.GetPermissionByScreenCode(hpId, userId, permissionCode);
+
             // Assert
             Assert.True(result == PermissionType.NotAvailable);
         }
@@ -2006,6 +2050,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_028_UpsertTodayOdr_TestGetPermissionByScreenCode_02()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2036,6 +2081,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
 
             // Act
             var result = userRepository.GetPermissionByScreenCode(hpId, userId, permissionCode);
+
             // Assert
             Assert.True(result == PermissionType.Unlimited);
         }
@@ -2049,6 +2095,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_029_UpsertTodayOdr_TestGetPermissionByScreenCode_03()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2079,6 +2126,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
 
             // Act
             var result = userRepository.GetPermissionByScreenCode(hpId, userId, permissionCode);
+
             // Assert
             Assert.True(result == PermissionType.Unlimited);
         }
@@ -2092,6 +2140,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_030_UpsertTodayOdr_TestGetPermissionByScreenCode_04()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2114,6 +2163,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
 
             // Act
             var result = userRepository.GetPermissionByScreenCode(hpId, userId, permissionCode);
+
             // Assert
             Assert.True(result == PermissionType.NotAvailable);
         }
@@ -2127,6 +2177,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_031_UpsertTodayOdr_TestGetPermissionByScreenCode_05()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2158,6 +2209,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
 
             // Act
             var result = userRepository.GetPermissionByScreenCode(hpId, userId, permissionCode);
+
             // Assert
             Assert.True(result == PermissionType.Unlimited);
         }
@@ -2173,6 +2225,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_032_UpsertTodayOdr_TestSaveRaiinListInfSuccess_01()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2221,6 +2274,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_033_UpsertTodayOdr_TestSaveRaiinListInfSuccess_02()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2332,7 +2386,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
 
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel);
 
-        //RaiinListInf
         RaiinListInf raiinListInfKouiKbn = new RaiinListInf()
         {
             HpId = hpId,
@@ -2356,7 +2409,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListInfs.Add(raiinListInfKouiKbn);
         tenant.RaiinListInfs.Add(raiinListInfItemKbn);
 
-        // KouiKbnMst
         KouiKbnMst kouiKbnMst = new KouiKbnMst()
         {
             KouiKbnId = kouiKbnId,
@@ -2364,7 +2416,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.KouiKbnMsts.Add(kouiKbnMst);
 
-        // RaiinListItem
         RaiinListItem raiinListItem = new RaiinListItem()
         {
             HpId = hpId,
@@ -2375,7 +2426,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListItems.Add(raiinListItem);
 
-        // RaiinListKoui
         RaiinListKoui raiinListKoui = new RaiinListKoui()
         {
             HpId = hpId,
@@ -2385,7 +2435,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListKouis.Add(raiinListKoui);
 
-        // RaiinListMst
         RaiinListMst raiinListMst = new RaiinListMst()
         {
             HpId = hpId,
@@ -2393,7 +2442,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListMsts.Add(raiinListMst);
 
-        // RaiinListDetail
         RaiinListDetail raiinListDetail = new RaiinListDetail()
         {
             HpId = hpId,
@@ -2437,6 +2485,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_034_UpsertTodayOdr_TestSaveRaiinListInfSuccess_03()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2608,7 +2657,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel);
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel2);
 
-        //RaiinListInf
         RaiinListInf raiinListInfKouiKbn = new RaiinListInf()
         {
             HpId = hpId,
@@ -2632,7 +2680,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListInfs.Add(raiinListInfKouiKbn);
         tenant.RaiinListInfs.Add(raiinListInfItemKbn);
 
-        // KouiKbnMst
         KouiKbnMst kouiKbnMst = new KouiKbnMst()
         {
             KouiKbnId = kouiKbnId,
@@ -2640,7 +2687,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.KouiKbnMsts.Add(kouiKbnMst);
 
-        // RaiinListItem
         RaiinListItem raiinListItem = new RaiinListItem()
         {
             HpId = hpId,
@@ -2658,7 +2704,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListItems.Add(raiinListItem);
         tenant.RaiinListItems.Add(raiinListItem2);
 
-        // RaiinListKoui
         RaiinListKoui raiinListKoui = new RaiinListKoui()
         {
             HpId = hpId,
@@ -2676,7 +2721,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListKouis.Add(raiinListKoui);
         tenant.RaiinListKouis.Add(raiinListKoui2);
 
-        // RaiinListMst
         RaiinListMst raiinListMst = new RaiinListMst()
         {
             HpId = hpId,
@@ -2684,7 +2728,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListMsts.Add(raiinListMst);
 
-        // RaiinListDetail
         RaiinListDetail raiinListDetail = new RaiinListDetail()
         {
             HpId = hpId,
@@ -2744,6 +2787,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_035_UpsertTodayOdr_TestSaveRaiinListInfSuccess_04()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2914,7 +2958,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel);
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel2);
 
-        // KouiKbnMst
         KouiKbnMst kouiKbnMst = new KouiKbnMst()
         {
             KouiKbnId = kouiKbnId,
@@ -2922,7 +2965,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.KouiKbnMsts.Add(kouiKbnMst);
 
-        // RaiinListItem
         RaiinListItem raiinListItem = new RaiinListItem()
         {
             HpId = hpId,
@@ -2932,7 +2974,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListItems.Add(raiinListItem);
 
-        // RaiinListKoui
         RaiinListKoui raiinListKoui = new RaiinListKoui()
         {
             HpId = hpId,
@@ -2942,7 +2983,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListKouis.Add(raiinListKoui);
 
-        // RaiinListMst
         RaiinListMst raiinListMst = new RaiinListMst()
         {
             HpId = hpId,
@@ -2950,7 +2990,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListMsts.Add(raiinListMst);
 
-        // RaiinListDetail
         RaiinListDetail raiinListDetail = new RaiinListDetail()
         {
             HpId = hpId,
@@ -3001,6 +3040,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_036_UpsertTodayOdr_TestSaveRaiinListInfSuccess_05()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -3172,7 +3212,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel);
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel2);
 
-        // KouiKbnMst
         KouiKbnMst kouiKbnMst = new KouiKbnMst()
         {
             KouiKbnId = kouiKbnId,
@@ -3180,7 +3219,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.KouiKbnMsts.Add(kouiKbnMst);
 
-        // RaiinListItem
         RaiinListItem raiinListItem = new RaiinListItem()
         {
             HpId = hpId,
@@ -3198,7 +3236,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListItems.Add(raiinListItem);
         tenant.RaiinListItems.Add(raiinListItem2);
 
-        // RaiinListKoui
         RaiinListKoui raiinListKoui = new RaiinListKoui()
         {
             HpId = hpId,
@@ -3208,7 +3245,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListKouis.Add(raiinListKoui);
 
-        // RaiinListMst
         RaiinListMst raiinListMst = new RaiinListMst()
         {
             HpId = hpId,
@@ -3216,7 +3252,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListMsts.Add(raiinListMst);
 
-        // RaiinListDetail
         RaiinListDetail raiinListDetail = new RaiinListDetail()
         {
             HpId = hpId,
@@ -3276,6 +3311,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_037_UpsertTodayOdr_TestSaveRaiinListInfSuccess_06()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -3505,7 +3541,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel2);
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel3);
 
-        //RaiinListInf
         RaiinListInf raiinListInfKouiKbn = new RaiinListInf()
         {
             HpId = hpId,
@@ -3529,7 +3564,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListInfs.Add(raiinListInfKouiKbn);
         tenant.RaiinListInfs.Add(raiinListInfItemKbn);
 
-        // RaiinListItem
         RaiinListItem raiinListItem = new RaiinListItem()
         {
             HpId = hpId,
@@ -3557,7 +3591,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListItems.Add(raiinListItem2);
         tenant.RaiinListItems.Add(raiinListItem3);
 
-        // RaiinListKoui
         RaiinListKoui raiinListKoui = new RaiinListKoui()
         {
             HpId = hpId,
@@ -3575,7 +3608,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListKouis.Add(raiinListKoui);
         tenant.RaiinListKouis.Add(raiinListKoui2);
 
-        // RaiinListMst
         RaiinListMst raiinListMst = new RaiinListMst()
         {
             HpId = hpId,
@@ -3583,7 +3615,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListMsts.Add(raiinListMst);
 
-        // RaiinListDetail
         RaiinListDetail raiinListDetail = new RaiinListDetail()
         {
             HpId = hpId,
@@ -3643,6 +3674,7 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
     [Test]
     public void TC_038_UpsertTodayOdr_TestSaveRaiinListInfSuccess_07()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -3872,7 +3904,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel2);
         ordInfModel.OrdInfDetails.Add(ordInfDetailModel3);
 
-        //RaiinListInf
         RaiinListInf raiinListInfKouiKbn = new RaiinListInf()
         {
             HpId = hpId,
@@ -3896,7 +3927,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListInfs.Add(raiinListInfKouiKbn);
         tenant.RaiinListInfs.Add(raiinListInfItemKbn);
 
-        // RaiinListItem
         RaiinListItem raiinListItem = new RaiinListItem()
         {
             HpId = hpId,
@@ -3925,7 +3955,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListItems.Add(raiinListItem2);
         tenant.RaiinListItems.Add(raiinListItem3);
 
-        // RaiinListKoui
         RaiinListKoui raiinListKoui = new RaiinListKoui()
         {
             HpId = hpId,
@@ -3943,7 +3972,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         tenant.RaiinListKouis.Add(raiinListKoui);
         tenant.RaiinListKouis.Add(raiinListKoui2);
 
-        // RaiinListMst
         RaiinListMst raiinListMst = new RaiinListMst()
         {
             HpId = hpId,
@@ -3951,7 +3979,6 @@ public class UpsertTodayOdrRepositoryTest : BaseUT
         };
         tenant.RaiinListMsts.Add(raiinListMst);
 
-        // RaiinListDetail
         RaiinListDetail raiinListDetail = new RaiinListDetail()
         {
             HpId = hpId,

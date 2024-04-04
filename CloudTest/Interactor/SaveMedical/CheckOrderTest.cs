@@ -93,9 +93,9 @@ namespace CloudUnitTest.Interactor.SaveMedical
                 new OdrInfItemInputData(hpId, raiinNo, 0, 0, ptId, sinDate, 0, 0, "", 0, 0, 0, 0, 0, 0, sortNo, id, new(), isDeleted)
             };
 
-            SaveMedicalInputData inputDatas = new SaveMedicalInputData(hpId, ptId, raiinNo, sinDate, 0, 0, 0, 0, 0, 0, "", "", "", status, inputDataList, new(), 999, true, true, 
+            SaveMedicalInputData inputDatas = new SaveMedicalInputData(hpId, ptId, raiinNo, sinDate, 0, 0, 0, 0, 0, 0, "", "", "", status, inputDataList, new(), 999, true, true,
                                                                        fileItemInputItem, new(), new(), new(), new(), new(), new(), new());
-            
+
             // Act
             var result = saveMedicalInteractor.CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList, status);
 
@@ -484,7 +484,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             // Assert
             try
             {
-                Assert.That(result.Item1.Any(x => x.Value.Value == OrdInfValidationStatus.HokenPidNoExist)|| result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
+                Assert.That(result.Item1.Any(x => x.Value.Value == OrdInfValidationStatus.HokenPidNoExist) || result.Item2.Any(x => x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate));
             }
             finally
             {
@@ -580,7 +580,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
 
             var ptHokenPatterns = tenantTracking.PtHokenPatterns.Where(h => h.HpId == hpId && hokenPids.Contains(h.HokenPid) && h.PtId == ptHokenPattern.PtId && h.IsDeleted == 0);
             var hokenInfModels = ptHokenPatterns.Select(r => new HokenInfModel(r.HokenPid, r.PtId, r.HpId, r.StartDate, r.EndDate)).ToList();
-            
+
             mockIInsuranceRepository.Setup(finder => finder.GetCheckListHokenInf(hpId, ptHokenPattern.PtId, hokenPids)).Returns((int hpId, long ptId, List<int> hokenPids) => hokenInfModels);
 
             List<long> raiinNos = new List<long>()
@@ -633,7 +633,6 @@ namespace CloudUnitTest.Interactor.SaveMedical
                 tenantTracking.SaveChanges();
             }
         }
-
 
         private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "", string updateName = "")
         {

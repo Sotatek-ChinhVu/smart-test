@@ -17,17 +17,21 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
         [Test]
         public void AutoAddOrdersTest_001()
         {
+            // Arrange
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
 
             try
             {
-                // Your test code here
                 var hpId = 1;
                 int userId = 1;
                 int sinDate = 20240310;
                 List<Tuple<int, int, string, int, int>> addingOdrList = new List<Tuple<int, int, string, int, int>>();
                 List<Tuple<int, int, string, long>> autoAddItems = new List<Tuple<int, int, string, long>>();
+
+                // Act
                 var result = todayOdrRepository.AutoAddOrders(hpId, userId, sinDate, addingOdrList, autoAddItems);
+
+                // Assert
                 Assert.True(!result.Any());
             }
             finally
@@ -39,11 +43,11 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
         [Test]
         public void AutoAddOrdersTest_002()
         {
+            // Arrange
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
 
             try
             {
-                // Your test code here
                 var hpId = 1;
                 int userId = 1;
                 int sinDate = 20240310;
@@ -55,7 +59,11 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
                 {
                     new Tuple<int, int, string, long>(1,1,"test",1)
                 };
+
+                // Act
                 var result = todayOdrRepository.AutoAddOrders(hpId, userId, sinDate, addingOdrList, autoAddItems);
+
+                // Assert
                 Assert.True(!result.Any());
             }
             finally
@@ -67,11 +75,11 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
         [Test]
         public void AutoAddOrdersTest_003()
         {
+            // Arrange
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
 
             try
             {
-                // Your test code here
                 var hpId = 1;
                 int userId = 1;
                 int sinDate = 20240310;
@@ -83,7 +91,11 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
                 {
                     new Tuple<int, int, string, long>(1,1,"test",1)
                 };
+
+                // Act
                 var result = todayOdrRepository.AutoAddOrders(hpId, userId, sinDate, addingOdrList, autoAddItems);
+
+                // Assert
                 Assert.True(result.Any());
             }
             finally
@@ -95,9 +107,10 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
         [Test]
         public void AutoAddOrdersTest_004()
         {
+            // Arrange
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
-            // Your test code here
+
             var hpId = 1;
             int userId = 1;
             int sinDate = 20240310;
@@ -112,10 +125,14 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
             var tenMsts = AutoAddOrdersData.ReadTenMst();
 
             try
-            {                                             
+            {
                 tenant.AddRange(tenMsts);
                 tenant.SaveChanges();
+
+                // Act
                 var result = todayOdrRepository.AutoAddOrders(hpId, userId, sinDate, addingOdrList, autoAddItems);
+
+                // Assert
                 Assert.True(result.Any());
             }
             finally
@@ -129,9 +146,10 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
         [Test]
         public void AutoAddOrdersTest_005()
         {
+            // Arrange
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
-            // Your test code here
+
             var hpId = 1;
             int userId = 1;
             int sinDate = 20240310;
@@ -149,7 +167,11 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
             {
                 tenant.AddRange(tenMsts);
                 tenant.SaveChanges();
+
+                // Act
                 var result = todayOdrRepository.AutoAddOrders(hpId, userId, sinDate, addingOdrList, autoAddItems);
+
+                // Assert
                 Assert.True(result.Any());
             }
             finally
@@ -164,9 +186,10 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
         [Test]
         public void AutoAddOrdersTest_006_GetKensaGaichu()
         {
+            // Arrange
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
-            // Your test code here
+
             var hpId = 1;
             int userId = 1;
             int sinDate = 20240310;
@@ -184,6 +207,8 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
             {
                 tenant.AddRange(tenMsts);
                 tenant.SaveChanges();
+
+                // Act
                 var result = todayOdrRepository.AutoAddOrders(hpId, userId, sinDate, addingOdrList, autoAddItems);
                 bool isTrue = false;
                 foreach (var item in result)
@@ -201,6 +226,8 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
                         }
                     }
                 }
+
+                // Assert
                 Assert.True(isTrue);
             }
             finally
@@ -214,9 +241,10 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
         [Test]
         public void AutoAddOrdersTest_007_GetKensaGaichu()
         {
+            // Arrange
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
-            // Your test code here
+
             var hpId = 1;
             int userId = 1;
             int sinDate = 20240310;
@@ -234,6 +262,8 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
             {
                 tenant.AddRange(tenMsts);
                 tenant.SaveChanges();
+
+                // Act
                 var result = todayOdrRepository.AutoAddOrders(hpId, userId, sinDate, addingOdrList, autoAddItems);
                 bool isTrue = false;
                 foreach (var item in result)
@@ -251,6 +281,8 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
                         }
                     }
                 }
+
+                // Assert
                 Assert.True(isTrue);
             }
             finally
@@ -264,9 +296,10 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
         [Test]
         public void AutoAddOrdersTest_008_GetKensaGaichu()
         {
+            // Arrange
             SetupTestEnvironment(out var systemConfRepository, out var userRepository, out var approvalinfRepository, out var todayOdrRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
-            // Your test code here
+
             var hpId = 1;
             int userId = 1;
             int sinDate = 20240310;
@@ -284,6 +317,8 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
             {
                 tenant.AddRange(tenMsts);
                 tenant.SaveChanges();
+
+                // Act
                 var result = todayOdrRepository.AutoAddOrders(hpId, userId, sinDate, addingOdrList, autoAddItems);
                 bool isTrue = false;
                 foreach (var item in result)
@@ -301,6 +336,8 @@ namespace CloudUnitTest.MedicalCommon.AutoAddOrders
                         }
                     }
                 }
+
+                // Assert
                 Assert.True(isTrue);
             }
             finally

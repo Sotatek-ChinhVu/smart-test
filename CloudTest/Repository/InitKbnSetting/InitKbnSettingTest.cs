@@ -19,22 +19,14 @@ public class InitKbnSettingTest : BaseUT
     [Test]
     public void TC_001_GetRaiinKbns_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
-        // RaiinKbnMst
         var raiinKbnMstList = ReadDataInitKbnSetting.ReadRaiinKbnMst();
         tenant.RaiinKbnMsts.AddRange(raiinKbnMstList);
-
-        // RaiinKbnDetail
         var raiinKbnDetailList = ReadDataInitKbnSetting.ReadRaiinKbnDetail();
         tenant.RaiinKbnDetails.AddRange(raiinKbnDetailList);
-
-        // RaiinKbnInf
         var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
         tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
-        #endregion
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
 
         try
@@ -47,37 +39,30 @@ public class InitKbnSettingTest : BaseUT
             int sindate = 22221212;
             var resultQuery = raiinKubunMstRepository.GetRaiinKbns(1, ptId, raiinNo, sindate);
 
-
+            // Assert
             Assert.True(CompareListRaiinKubunMst(ptId, raiinNo, sindate, resultQuery, raiinKbnMstList, raiinKbnDetailList, raiinKbnInflList));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RaiinKbnMsts.RemoveRange(raiinKbnMstList);
             tenant.RaiinKbnDetails.RemoveRange(raiinKbnDetailList);
             tenant.RaiinKbnInfs.RemoveRange(raiinKbnInflList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_002_GetRaiinKouiKbns_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
-        // RaiinKbnKoui
         var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
         tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
-
-        // KouiKbnMst
         var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
         tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
-        #endregion
-
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
+
         try
         {
             tenant.SaveChanges();
@@ -86,32 +71,26 @@ public class InitKbnSettingTest : BaseUT
             var resultQuery = raiinKubunMstRepository.GetRaiinKouiKbns(1);
 
             // Assert
-
             Assert.True(CompareListRaiinKouiKbn(resultQuery, raiinKbnKouiList, kouiKbnMstlList));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
             tenant.KouiKbnMsts.RemoveRange(kouiKbnMstlList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_003_GetRaiinKbnItems_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
-        // RaiinKbItem
         var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
         tenant.RaiinKbItems.AddRange(raiinKbnItemList);
-        #endregion
-
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
+
         try
         {
             tenant.SaveChanges();
@@ -120,22 +99,20 @@ public class InitKbnSettingTest : BaseUT
             var resultQuery = raiinKubunMstRepository.GetRaiinKbnItems(1);
 
             // Assert
-
             Assert.True(CompareListRaiinKbnItem(resultQuery, raiinKbnItemList));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_004_GetNextOdrInfModels_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -181,7 +158,6 @@ public class InitKbnSettingTest : BaseUT
         {
             tenant.SaveChanges();
 
-            // Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -192,7 +168,6 @@ public class InitKbnSettingTest : BaseUT
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
             // Act
-
             var resultQuery = nextOrderRepository.GetNextOdrInfModels(hpId, ptId, sinDate);
 
             // Assert
@@ -203,12 +178,10 @@ public class InitKbnSettingTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RsvkrtOdrInfs.Remove(rsvkrtOdrInf);
             tenant.RsvkrtOdrInfDetails.Remove(rsvkrtOdrInfDetail);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
@@ -216,40 +189,26 @@ public class InitKbnSettingTest : BaseUT
     [Test]
     public void TC_005_InitDefaultByNextOrder_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
-        // RaiinKbnMst
         var raiinKbnMstList = ReadDataInitKbnSetting.ReadRaiinKbnMst();
         tenant.RaiinKbnMsts.AddRange(raiinKbnMstList);
-
-        // RaiinKbnDetail
         var raiinKbnDetailList = ReadDataInitKbnSetting.ReadRaiinKbnDetail();
         tenant.RaiinKbnDetails.AddRange(raiinKbnDetailList);
-
-        // RaiinKbnInf
         var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
         tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
-
-        // RaiinKbnKoui
         var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
         tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
-
-        // KouiKbnMst
         var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
         tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
-
-        // RaiinKbItem
         var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
         tenant.RaiinKbItems.AddRange(raiinKbnItemList);
-        #endregion
-
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
+
         try
         {
             tenant.SaveChanges();
 
-            // Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -276,7 +235,6 @@ public class InitKbnSettingTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
             tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
@@ -285,13 +243,13 @@ public class InitKbnSettingTest : BaseUT
             tenant.RaiinKbnDetails.RemoveRange(raiinKbnDetailList);
             tenant.RaiinKbnInfs.RemoveRange(raiinKbnInflList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_006_InitDefaultByNextOrder_TestChangeKbnCd()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -360,16 +318,15 @@ public class InitKbnSettingTest : BaseUT
         {
             tenant.SaveChanges();
 
-            // Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
             var mock_cache = new Mock<IDatabase>();
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
-
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
+            // Act
             var resultQuery = nextOrderRepository.InitDefaultByNextOrder(hpId, ptId, sinDate, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds);
 
             // Assert
@@ -378,18 +335,17 @@ public class InitKbnSettingTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RsvkrtOdrInfs.Remove(rsvkrtOdrInf);
             tenant.RsvkrtOdrInfDetails.Remove(rsvkrtOdrInfDetail);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_007_InitDefaultByNextOrder_TestDefaultRsvDate()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -458,17 +414,15 @@ public class InitKbnSettingTest : BaseUT
         try
         {
             tenant.SaveChanges();
-
-            // Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
             var mock_cache = new Mock<IDatabase>();
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
-
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
+            // Act
             var resultQuery = nextOrderRepository.InitDefaultByNextOrder(hpId, ptId, sinDate, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds);
 
             // Assert
@@ -476,20 +430,18 @@ public class InitKbnSettingTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RsvkrtOdrInfs.Remove(rsvkrtOdrInf);
             tenant.RsvkrtOdrInfDetails.Remove(rsvkrtOdrInfDetail);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_008_InitDefaultByNextOrder_TestExcludeItemContinue()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
         Random random = new();
         int hpId = random.Next(999, 99999);
         int userId = random.Next(999, 99999);
@@ -556,7 +508,6 @@ public class InitKbnSettingTest : BaseUT
         {
             tenant.SaveChanges();
 
-            // Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -566,6 +517,7 @@ public class InitKbnSettingTest : BaseUT
 
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
+            // Act
             var resultQuery = nextOrderRepository.InitDefaultByNextOrder(hpId, ptId, sinDate, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds);
 
             // Assert
@@ -573,18 +525,17 @@ public class InitKbnSettingTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RsvkrtOdrInfs.Remove(rsvkrtOdrInf);
             tenant.RsvkrtOdrInfDetails.Remove(rsvkrtOdrInfDetail);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_009_InitDefaultByNextOrder_TestKbnCdLager0()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -653,7 +604,6 @@ public class InitKbnSettingTest : BaseUT
         {
             tenant.SaveChanges();
 
-            // Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -663,6 +613,7 @@ public class InitKbnSettingTest : BaseUT
 
             var nextOrderRepository = new NextOrderRepository(TenantProvider, mockIAmazonS3Service.Object, mockIConfiguration.Object, mockAmazonS3Options.Object);
 
+            // Act
             var resultQuery = nextOrderRepository.InitDefaultByNextOrder(hpId, ptId, sinDate, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds);
 
             // Assert
@@ -670,12 +621,10 @@ public class InitKbnSettingTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RsvkrtOdrInfs.Remove(rsvkrtOdrInf);
             tenant.RsvkrtOdrInfDetails.Remove(rsvkrtOdrInfDetail);
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion InitDefaultByNextOrder
@@ -684,49 +633,37 @@ public class InitKbnSettingTest : BaseUT
     [Test]
     public void TC_010_InitDefaultByTodayOrder_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
-        // RaiinKbnMst
         var raiinKbnMstList = ReadDataInitKbnSetting.ReadRaiinKbnMst();
         tenant.RaiinKbnMsts.AddRange(raiinKbnMstList);
-
-        // RaiinKbnDetail
         var raiinKbnDetailList = ReadDataInitKbnSetting.ReadRaiinKbnDetail();
         tenant.RaiinKbnDetails.AddRange(raiinKbnDetailList);
-
-        // RaiinKbnInf
         var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
         tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
-
-        // RaiinKbnKoui
         var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
         tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
-
-        // KouiKbnMst
         var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
         tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
-
-        // RaiinKbItem
         var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
         tenant.RaiinKbItems.AddRange(raiinKbnItemList);
-        #endregion
-
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
+        try
+        {
+            tenant.SaveChanges();
 
-        // Act
-        int hpId = 1;
-        long ptId = 123456789;
-        long raiinNo = 999999999;
-        int sinDate = 22221212;
+            // Act
+            int hpId = 1;
+            long ptId = 123456789;
+            long raiinNo = 999999999;
+            int sinDate = 22221212;
 
-        var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
-        var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
-        var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
+            var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
+            var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
+            var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
 
-        List<OrdInfModel> orderInfItems = new() {
+            List<OrdInfModel> orderInfItems = new() {
                     new OrdInfModel(
                         1,
                         raiinNo,
@@ -813,17 +750,13 @@ public class InitKbnSettingTest : BaseUT
                         string.Empty
                     )};
 
-        var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
+            var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
 
-        // Assert
-        try
-        {
-            tenant.SaveChanges();
+            // Assert
             Assert.True(CompareInitDefault(hpId, resultQuery, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
             tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
@@ -832,13 +765,13 @@ public class InitKbnSettingTest : BaseUT
             tenant.RaiinKbnDetails.RemoveRange(raiinKbnDetailList);
             tenant.RaiinKbnInfs.RemoveRange(raiinKbnInflList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_011_InitDefaultByTodayOrder_TestFullProgress()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -867,7 +800,6 @@ public class InitKbnSettingTest : BaseUT
         int isAutoDelete = 1;
         int isExclude = 1;
 
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
 
@@ -882,7 +814,12 @@ public class InitKbnSettingTest : BaseUT
         var raiinKbnModels = new List<RaiinKbnModel> { raiinKbnModel };
         var raiinKbnItemCds = new List<RaiinKbnItemModel> { raiinKbnItemModel };
 
-        List<OrdInfModel> orderInfItems = new() {
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            List<OrdInfModel> orderInfItems = new() {
                     new OrdInfModel(
                         hpId,
                         raiinNo,
@@ -969,26 +906,22 @@ public class InitKbnSettingTest : BaseUT
                         string.Empty
                     )};
 
-        var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
+            var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
 
-        // Assert
-        try
-        {
-            tenant.SaveChanges();
+            // Assert
             Assert.True(CompareInitDefault(hpId, resultQuery, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_012_InitDefaultByTodayOrder_TestIncludeItemsExist()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -1016,7 +949,6 @@ public class InitKbnSettingTest : BaseUT
         int isAutoDelete = 1;
         int isExclude = 2;
 
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
 
@@ -1031,8 +963,12 @@ public class InitKbnSettingTest : BaseUT
         var raiinKbnModels = new List<RaiinKbnModel> { raiinKbnModel };
         var raiinKbnItemCds = new List<RaiinKbnItemModel> { raiinKbnItemModel };
 
+        try
+        {
+            tenant.SaveChanges();
 
-        List<OrdInfModel> orderInfItems = new() {
+            // Act
+            List<OrdInfModel> orderInfItems = new() {
                     new OrdInfModel(
                         hpId,
                         raiinNo,
@@ -1119,26 +1055,22 @@ public class InitKbnSettingTest : BaseUT
                         string.Empty
                     )};
 
-        var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
+            var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
 
-        // Assert
-        try
-        {
-            tenant.SaveChanges();
+            // Assert
             Assert.True(CompareInitDefault(hpId, resultQuery, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_013_InitDefaultByTodayOrder_TestExcludeItemsExists()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -1166,7 +1098,6 @@ public class InitKbnSettingTest : BaseUT
         int isAutoDelete = 1;
         int isExclude = 1;
 
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
 
@@ -1181,8 +1112,12 @@ public class InitKbnSettingTest : BaseUT
         var raiinKbnModels = new List<RaiinKbnModel> { raiinKbnModel };
         var raiinKbnItemCds = new List<RaiinKbnItemModel> { raiinKbnItemModel };
 
+        try
+        {
+            tenant.SaveChanges();
 
-        List<OrdInfModel> orderInfItems = new() {
+            // Act
+            List<OrdInfModel> orderInfItems = new() {
                     new OrdInfModel(
                         hpId,
                         raiinNo,
@@ -1269,26 +1204,22 @@ public class InitKbnSettingTest : BaseUT
                         string.Empty
                     )};
 
-        var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
+            var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
 
-        // Assert
-        try
-        {
-            tenant.SaveChanges();
+            // Assert
             Assert.True(CompareInitDefault(hpId, resultQuery, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_014_InitDefaultByTodayOrder_TestExcludeItemsContinue()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -1316,7 +1247,6 @@ public class InitKbnSettingTest : BaseUT
         int isAutoDelete = 1;
         int isExclude = 1;
 
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
 
@@ -1331,8 +1261,12 @@ public class InitKbnSettingTest : BaseUT
         var raiinKbnModels = new List<RaiinKbnModel> { raiinKbnModel };
         var raiinKbnItemCds = new List<RaiinKbnItemModel> { raiinKbnItemModel };
 
+        try
+        {
+            tenant.SaveChanges();
 
-        List<OrdInfModel> orderInfItems = new() {
+            // Act
+            List<OrdInfModel> orderInfItems = new() {
                     new OrdInfModel(
                         hpId,
                         raiinNo,
@@ -1419,26 +1353,22 @@ public class InitKbnSettingTest : BaseUT
                         string.Empty
                     )};
 
-        var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
+            var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
 
-        // Assert
-        try
-        {
-            tenant.SaveChanges();
+            // Assert
             Assert.True(CompareInitDefault(hpId, resultQuery, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_016_InitDefaultByTodayOrder_TestIsExistItem()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -1467,7 +1397,6 @@ public class InitKbnSettingTest : BaseUT
         int isAutoDelete = 1;
         int isExclude = 1;
 
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
 
@@ -1482,7 +1411,12 @@ public class InitKbnSettingTest : BaseUT
         var raiinKbnModels = new List<RaiinKbnModel> { raiinKbnModel };
         var raiinKbnItemCds = new List<RaiinKbnItemModel> { raiinKbnItemModel };
 
-        List<OrdInfModel> orderInfItems = new() {
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            List<OrdInfModel> orderInfItems = new() {
                     new OrdInfModel(
                         hpId,
                         raiinNo,
@@ -1569,21 +1503,17 @@ public class InitKbnSettingTest : BaseUT
                         string.Empty
                     )};
 
-        var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
+            var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
 
-        // Assert
-        try
-        {
-            tenant.SaveChanges();
             var success = resultQuery.Any(mst => mst.RaiinKbnDetailModels.Any(item => item.KbnCd == raiinKbnDetailKbnCd));
+
+            // Assert
             Assert.True(success);
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion InitDefaultByTodayOrder
@@ -1592,7 +1522,7 @@ public class InitKbnSettingTest : BaseUT
     [Test]
     public void TC_017_InitDefaultByRsv_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -1612,20 +1542,15 @@ public class InitKbnSettingTest : BaseUT
         int isConfirmed = 1;
         int isAuto = 1;
         int isAutoDelete = 1;
-
-        // RaiinKbnYayoku
         var raiinKbnYayokuList = ReadDataInitKbnSetting.ReadRaiinKbnYayoku(hpId);
         tenant.RaiinKbnYayokus.AddRange(raiinKbnYayokuList);
-        #endregion
 
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         try
         {
             tenant.SaveChanges();
 
-
-            // Arrange
+            // Act
             TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
 
             RaiinKbnInfModel raiinKbnInfModel = new RaiinKbnInfModel(hpId, ptId, sinDate, raiinNo, grpId, seqNo, raiinKbnInfModelKbnCd, 0);
@@ -1637,22 +1562,19 @@ public class InitKbnSettingTest : BaseUT
             var resultQuery = raiinKubunMstRepository.InitDefaultByRsv(hpId, frameID, raiinKbnModels);
 
             // Assert
-
             Assert.True(CompareInitDefault(hpId, resultQuery, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             tenant.RaiinKbnYayokus.RemoveRange(raiinKbnYayokuList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_018_InitDefaultByRsv_TestKbnCdNotEqual0()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
         Random random = new();
@@ -1671,19 +1593,15 @@ public class InitKbnSettingTest : BaseUT
         int isConfirmed = 1;
         int isAuto = 1;
         int isAutoDelete = 1;
-
-        // RaiinKbnYayoku
         var raiinKbnYayokuList = ReadDataInitKbnSetting.ReadRaiinKbnYayoku(hpId);
         tenant.RaiinKbnYayokus.AddRange(raiinKbnYayokuList);
-        #endregion
-
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
+
         try
         {
             tenant.SaveChanges();
 
-            // Arrange
+            // Act
             TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
 
             RaiinKbnInfModel raiinKbnInfModel = new RaiinKbnInfModel(hpId, ptId, sinDate, raiinNo, grpId, seqNo, kbnCd, 0);
@@ -1695,24 +1613,20 @@ public class InitKbnSettingTest : BaseUT
             var resultQuery = raiinKubunMstRepository.InitDefaultByRsv(hpId, frameID, raiinKbnModels);
 
             // Assert
-
             Assert.True(CompareInitDefault(hpId, resultQuery, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             tenant.RaiinKbnYayokus.RemoveRange(raiinKbnYayokuList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_019_InitDefaultByRsv_TestKbnCdNotEqual0()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
         Random random = new();
         int hpId = random.Next(999, 99999);
         long ptId = random.Next(999, 99999999);
@@ -1731,7 +1645,6 @@ public class InitKbnSettingTest : BaseUT
         int isAuto = 1;
         int isAutoDelete = 1;
 
-        // RaiinKbnYayoku
         var raiinKbnYayokuList = ReadDataInitKbnSetting.ReadRaiinKbnYayoku(hpId);
         var raiinKbnYayoku = raiinKbnYayokuList.FirstOrDefault();
         if (raiinKbnYayoku != null)
@@ -1740,15 +1653,13 @@ public class InitKbnSettingTest : BaseUT
             raiinKbnYayoku.KbnCd = detailKbnCd;
             tenant.RaiinKbnYayokus.Add(raiinKbnYayoku);
         }
-        #endregion
 
-        // Arrange
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         try
         {
             tenant.SaveChanges();
 
-            // Arrange
+            // Act
             TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
 
             RaiinKbnInfModel raiinKbnInfModel = new RaiinKbnInfModel(hpId, ptId, sinDate, raiinNo, grpId, seqNo, kbnCd, 0);
@@ -1759,19 +1670,17 @@ public class InitKbnSettingTest : BaseUT
             int frameID = 12345;
             var resultQuery = raiinKubunMstRepository.InitDefaultByRsv(hpId, frameID, raiinKbnModels);
             var success = resultQuery.Any(mst => mst.RaiinKbnDetailModels.Any(item => item.KbnCd == detailKbnCd));
-            // Assert
 
+            // Assert
             Assert.True(success);
         }
         finally
         {
-            #region Remove Data Fetch
             if (raiinKbnYayoku != null)
             {
                 tenant.RaiinKbnYayokus.Remove(raiinKbnYayoku);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion InitDefaultByRsv

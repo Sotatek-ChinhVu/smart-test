@@ -24,14 +24,8 @@ using Moq;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using Domain.Models.OrdInf;
 using Tuple = System.Tuple;
-using Domain.Models.KarteInf;
 using Infrastructure.Repositories;
 using Entity.Tenant;
-using DocumentFormat.OpenXml.ExtendedProperties;
-using DocumentFormat.OpenXml.Wordprocessing;
-using System.Drawing;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using ZstdSharp.Unsafe;
 using Helper.Redis;
 using StackExchange.Redis;
 using Helper.Constants;
@@ -58,7 +52,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_001_ConvertInputDataToOrderInf_TestSaveSuccessIsTrue()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -142,7 +136,6 @@ public class ConvertInputDataToOrderInfTest : BaseUT
         int isDeleted = 0;
         OdrInfItemInputData odrInfItemInputData = new OdrInfItemInputData(hpId, raiinNo, rpNo, rpEdaNo, ptId, sinDate, hokenPid, odrKouiKbn, rpName, inoutKbn, sikyuKbn, syohoSbt, santeiKbn, tosekiKbn, daysCnt, sortNo, id, odrDetails, isDeleted);
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(options, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
         // Mock data
@@ -243,6 +236,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_002_GetCheckTenItemModels_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -338,7 +332,6 @@ public class ConvertInputDataToOrderInfTest : BaseUT
             // Act
             var result = mstItemRepository.GetCheckTenItemModels(hpId, sinDate, itemCdList);
 
-            // Assert
             var success = result.Any(item => item.HpId == hpId
                                              && item.ItemCd == itemCd
                                              && item.RousaiKbn == rousaiKbn
@@ -379,6 +372,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
                                              && item.Kokuji2 == kokuji2
                                              );
 
+            // Assert
             Assert.True(success);
         }
         finally
@@ -394,6 +388,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_003_GetCheckIpnMinYakkaMsts_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -428,7 +423,6 @@ public class ConvertInputDataToOrderInfTest : BaseUT
             // Act
             var result = ordInfRepository.GetCheckIpnMinYakkaMsts(hpId, sinDate, ipnNameCds);
 
-            // Assert
             var success = result.Any(item => item.Id == id
                                              && item.HpId == hpId
                                              && item.IpnNameCd == ipnNameCd
@@ -438,6 +432,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
                                              && item.SeqNo == seqNo
                                              && item.IsDeleted == isDeleted
                                              && !item.ModelModified);
+            // Assert
             Assert.True(success);
         }
         finally
@@ -453,6 +448,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_004_GetSettingValue_TestSuccess_01()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -492,8 +488,9 @@ public class ConvertInputDataToOrderInfTest : BaseUT
             // Act
             var result = systemGenerationConfRepository.GetSettingValue(hpId, grpCd, grpEdaNo, sinDate, defaultVal, defaultParam, false);
 
-            // Assert
             var success = result.Item1 == val && result.Item2 == param;
+           
+            // Assert
             Assert.True(success);
         }
         finally
@@ -511,6 +508,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_005_GetSettingValue_TestSuccess_02()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -569,6 +567,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_006_GetSettingValue_TestSuccess_03()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -629,6 +628,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_007_CheckIsGetYakkaPrices_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -687,6 +687,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_008_CheckIsGetYakkaPrices_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -723,6 +724,7 @@ public class ConvertInputDataToOrderInfTest : BaseUT
     [Test]
     public void TC_009_GetIpnMst_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);

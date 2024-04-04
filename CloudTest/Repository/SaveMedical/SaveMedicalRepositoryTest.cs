@@ -18,12 +18,10 @@ namespace CloudUnitTest.Repository.SaveMedical;
 public class SaveMedicalRepositoryTest : BaseUT
 {
     #region Upsert
-
     [Test]
     public void TC_001_SaveMedicalRepository_TestSuccess()
     {
-        //Setup Data Test
-
+        // Arrange
         var mockIFamilyRepository = new Mock<IFamilyRepository>();
         var mockITodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockINextOrderRepository = new Mock<INextOrderRepository>();
@@ -32,10 +30,8 @@ public class SaveMedicalRepositoryTest : BaseUT
         var mockIFlowSheetRepository = new Mock<IFlowSheetRepository>();
         var mockIMonshinInforRepository = new Mock<IMonshinInforRepository>();
 
-        // Arrange
         var saveMedicalRepository = new SaveMedicalRepository(TenantProvider, mockIFamilyRepository.Object, mockITodayOdrRepository.Object, mockINextOrderRepository.Object, mockISpecialNoteRepository.Object, mockIPtDiseaseRepository.Object, mockIFlowSheetRepository.Object, mockIMonshinInforRepository.Object);
 
-        // Mock data
         int hpId = 999;
         long ptId = 999;
         long raiinNo = 999;
@@ -96,8 +92,7 @@ public class SaveMedicalRepositoryTest : BaseUT
     [Test]
     public void TC_002_SaveMedicalRepository_TestUpsertTodayOrderFalse()
     {
-        //Setup Data Test
-
+        // Arrange
         var mockIFamilyRepository = new Mock<IFamilyRepository>();
         var mockITodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockINextOrderRepository = new Mock<INextOrderRepository>();
@@ -106,10 +101,8 @@ public class SaveMedicalRepositoryTest : BaseUT
         var mockIFlowSheetRepository = new Mock<IFlowSheetRepository>();
         var mockIMonshinInforRepository = new Mock<IMonshinInforRepository>();
 
-        // Arrange
         var saveMedicalRepository = new SaveMedicalRepository(TenantProvider, mockIFamilyRepository.Object, mockITodayOdrRepository.Object, mockINextOrderRepository.Object, mockISpecialNoteRepository.Object, mockIPtDiseaseRepository.Object, mockIFlowSheetRepository.Object, mockIMonshinInforRepository.Object);
 
-        // Mock data
         int hpId = 999;
         long ptId = 999;
         long raiinNo = 999;
@@ -170,8 +163,7 @@ public class SaveMedicalRepositoryTest : BaseUT
     [Test]
     public void TC_003_SaveMedicalRepository_TestUpsertNextOrderFalse()
     {
-        //Setup Data Test
-
+        // Arrange
         var mockIFamilyRepository = new Mock<IFamilyRepository>();
         var mockITodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockINextOrderRepository = new Mock<INextOrderRepository>();
@@ -183,7 +175,6 @@ public class SaveMedicalRepositoryTest : BaseUT
         // Arrange
         var saveMedicalRepository = new SaveMedicalRepository(TenantProvider, mockIFamilyRepository.Object, mockITodayOdrRepository.Object, mockINextOrderRepository.Object, mockISpecialNoteRepository.Object, mockIPtDiseaseRepository.Object, mockIFlowSheetRepository.Object, mockIMonshinInforRepository.Object);
 
-        // Mock data
         int hpId = 999;
         long ptId = 999;
         long raiinNo = 999;
@@ -243,8 +234,7 @@ public class SaveMedicalRepositoryTest : BaseUT
     [Test]
     public void TC_004_SaveMedicalRepository_TestUpsertSpecialNoteFalse()
     {
-        //Setup Data Test
-
+        // Arrange
         var mockIFamilyRepository = new Mock<IFamilyRepository>();
         var mockITodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockINextOrderRepository = new Mock<INextOrderRepository>();
@@ -317,8 +307,7 @@ public class SaveMedicalRepositoryTest : BaseUT
     [Test]
     public void TC_005_SaveMedicalRepository_TestUpsertFamilyListFalse()
     {
-        //Setup Data Test
-
+        // Arrange
         var mockIFamilyRepository = new Mock<IFamilyRepository>();
         var mockITodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockINextOrderRepository = new Mock<INextOrderRepository>();
@@ -327,10 +316,8 @@ public class SaveMedicalRepositoryTest : BaseUT
         var mockIFlowSheetRepository = new Mock<IFlowSheetRepository>();
         var mockIMonshinInforRepository = new Mock<IMonshinInforRepository>();
 
-        // Arrange
         var saveMedicalRepository = new SaveMedicalRepository(TenantProvider, mockIFamilyRepository.Object, mockITodayOdrRepository.Object, mockINextOrderRepository.Object, mockISpecialNoteRepository.Object, mockIPtDiseaseRepository.Object, mockIFlowSheetRepository.Object, mockIMonshinInforRepository.Object);
 
-        // Mock data
         int hpId = 999;
         long ptId = 999;
         long raiinNo = 999;
@@ -391,8 +378,7 @@ public class SaveMedicalRepositoryTest : BaseUT
     [Test]
     public void TC_006_SaveMedicalRepository_TestUpsertMonshinSheetSuccess()
     {
-        //Setup Data Test
-
+        // Arrange
         var mockIFamilyRepository = new Mock<IFamilyRepository>();
         var mockITodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockINextOrderRepository = new Mock<INextOrderRepository>();
@@ -401,10 +387,8 @@ public class SaveMedicalRepositoryTest : BaseUT
         var mockIFlowSheetRepository = new Mock<IFlowSheetRepository>();
         var mockIMonshinInforRepository = new Mock<IMonshinInforRepository>();
 
-        // Arrange
         var saveMedicalRepository = new SaveMedicalRepository(TenantProvider, mockIFamilyRepository.Object, mockITodayOdrRepository.Object, mockINextOrderRepository.Object, mockISpecialNoteRepository.Object, mockIPtDiseaseRepository.Object, mockIFlowSheetRepository.Object, mockIMonshinInforRepository.Object);
 
-        // Mock data
         int hpId = 999;
         long ptId = 999;
         long raiinNo = 999;
@@ -465,8 +449,7 @@ public class SaveMedicalRepositoryTest : BaseUT
     [Test]
     public void TC_007_SaveMedicalRepository_TestUpsertMonshinSheetFalse()
     {
-        //Setup Data Test
-
+        // Arrange
         var mockIFamilyRepository = new Mock<IFamilyRepository>();
         var mockITodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockINextOrderRepository = new Mock<INextOrderRepository>();
@@ -475,10 +458,8 @@ public class SaveMedicalRepositoryTest : BaseUT
         var mockIFlowSheetRepository = new Mock<IFlowSheetRepository>();
         var mockIMonshinInforRepository = new Mock<IMonshinInforRepository>();
 
-        // Arrange
         var saveMedicalRepository = new SaveMedicalRepository(TenantProvider, mockIFamilyRepository.Object, mockITodayOdrRepository.Object, mockINextOrderRepository.Object, mockISpecialNoteRepository.Object, mockIPtDiseaseRepository.Object, mockIFlowSheetRepository.Object, mockIMonshinInforRepository.Object);
 
-        // Mock data
         int hpId = 999;
         long ptId = 999;
         long raiinNo = 999;
@@ -535,6 +516,5 @@ public class SaveMedicalRepositoryTest : BaseUT
         // Assert
         Assert.That(result == false);
     }
-
     #endregion Upsert
 }

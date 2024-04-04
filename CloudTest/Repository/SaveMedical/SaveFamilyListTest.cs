@@ -10,6 +10,7 @@ public class SaveFamilyListTest : BaseUT
     [Test]
     public void TC_001_SaveFamilyList_TestCreateFamilySuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -48,20 +49,18 @@ public class SaveFamilyListTest : BaseUT
         finally
         {
             familyRepository.ReleaseResource();
-
-            #region Remove Data Fetch
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_002_SaveFamilyList_TestUpdateFamilySuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -108,19 +107,18 @@ public class SaveFamilyListTest : BaseUT
         {
             familyRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_003_SaveFamilyList_TestDeleteFamilySuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -157,19 +155,18 @@ public class SaveFamilyListTest : BaseUT
         {
             familyRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_004_SaveFamilyList_TestUpdateFamilyFalse()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -205,13 +202,11 @@ public class SaveFamilyListTest : BaseUT
         {
             familyRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveFamilyList
@@ -220,6 +215,7 @@ public class SaveFamilyListTest : BaseUT
     [Test]
     public void TC_005_SaveFamilyList_TestSaveFamilyRekiListSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -281,7 +277,6 @@ public class SaveFamilyListTest : BaseUT
         {
             familyRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
@@ -291,13 +286,13 @@ public class SaveFamilyListTest : BaseUT
                 tenant.PtFamilyRekis.Remove(ptFamilyReki);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_006_SaveFamilyList_TestUpdateFamilyRekiListSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -365,7 +360,6 @@ public class SaveFamilyListTest : BaseUT
         {
             familyRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
@@ -375,13 +369,13 @@ public class SaveFamilyListTest : BaseUT
                 tenant.PtFamilyRekis.Remove(ptFamilyReki);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_007_SaveFamilyList_TestDeleteFamilyRekiListSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -445,7 +439,6 @@ public class SaveFamilyListTest : BaseUT
         {
             familyRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
@@ -455,13 +448,13 @@ public class SaveFamilyListTest : BaseUT
                 tenant.PtFamilyRekis.Remove(ptFamilyReki);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_008_SaveFamilyList_TestSaveFamilyRekiListFalse()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -524,7 +517,7 @@ public class SaveFamilyListTest : BaseUT
         {
             familyRepository.ReleaseResource();
 
-            #region Remove Data Fetch
+
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
@@ -534,7 +527,6 @@ public class SaveFamilyListTest : BaseUT
                 tenant.PtFamilyRekis.Remove(ptFamilyReki);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveFamilyRekiList
@@ -543,6 +535,7 @@ public class SaveFamilyListTest : BaseUT
     [Test]
     public void TC_009_SaveFamilyList_TestUpdatePtInfSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -603,7 +596,6 @@ public class SaveFamilyListTest : BaseUT
         {
             familyRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptFamily != null)
             {
                 tenant.PtFamilys.Remove(ptFamily);
@@ -613,7 +605,6 @@ public class SaveFamilyListTest : BaseUT
                 tenant.PtInfs.Remove(ptInf);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion UpdatePtInf

@@ -37,8 +37,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var tenMstItems = new List<TenItemModel>();
 
-        #region Data Example
-        //MaxAge = "AA"
         var tenMstAA = new TenItemModel(
             1,
             "140064650",
@@ -57,7 +55,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
             20221111
             );
         odrDetails.Add(odrDetailAA);
-        #endregion  
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -172,8 +169,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var tenMstItems = new List<TenItemModel>();
 
-        #region Data Example
-        //MaxAge = "B3"
         var tenMstB3 = new TenItemModel(
             1,
             "629901101",
@@ -193,7 +188,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
             20221111
             );
         odrDetails.Add(odrDetailB3);
-        #endregion  
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -217,8 +211,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var tenMstItems = new List<TenItemModel>();
 
-        #region Data Example
-        //MaxAge = "B6"
         var tenMstB6 = new TenItemModel(
             1,
             "629901201",
@@ -238,7 +230,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
            20221111
            );
         odrDetails.Add(odrDetailB6);
-        #endregion  
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -262,8 +253,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var tenMstItems = new List<TenItemModel>();
 
-        #region Data Example
-        //MaxAge = "BF"
         var tenMstBF = new TenItemModel(
             1,
             "629901301",
@@ -283,7 +272,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
            20221111
            );
         odrDetails.Add(odrDetailBF);
-        #endregion  
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -307,8 +295,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var tenMstItems = new List<TenItemModel>();
 
-        #region Data Example
-        //MaxAge = "BF"
         var tenMstBF = new TenItemModel(
             1,
             "629901301",
@@ -327,7 +313,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
            20221111
            );
         odrDetails.Add(odrDetailBF);
-        #endregion  
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -857,7 +842,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var tenMstItems = new List<TenItemModel>();
         var tenMst1 = new TenItemModel(
             hpId,
@@ -965,7 +949,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         itemGrpMsts.Add(itemGrpMst2);
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -1728,7 +1711,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var tenMstItems = new List<TenItemModel>();
         var tenMst1 = new TenItemModel(
             1,
@@ -1838,7 +1820,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         itemGrpMsts.Add(itemGrpMst2);
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -1861,7 +1842,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var tenMstItems = new List<TenItemModel>();
         var tenMst1 = new TenItemModel(
             1,
@@ -1971,7 +1951,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         itemGrpMsts.Add(itemGrpMst2);
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -1994,7 +1973,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var tenMstItems = new List<TenItemModel>();
         var tenMst1 = new TenItemModel(
             1,
@@ -2102,7 +2080,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         itemGrpMsts.Add(itemGrpMst2);
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -2251,7 +2228,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var tenMstItems = new List<TenItemModel>();
         var tenMst1 = new TenItemModel(
             1,
@@ -2359,7 +2335,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         itemGrpMsts.Add(itemGrpMst2);
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -2570,7 +2545,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         // Assert
         Assert.True(!output1 && output2 && output3 && output4);
     }
-
     #endregion
 
     #region Common DensiSantei
@@ -2585,7 +2559,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -2618,7 +2591,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -2642,7 +2614,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -2675,12 +2646,12 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         int startDate = 0, endDate = 0;
         string sTerm = string.Empty;
+
         // Act
         interactor.CommonDensiSantei(hpId, densiSanteiKaisuModel2, odrDetail1, odrDetails, ref startDate, ref endDate, ref sTerm, sinDate, sysyosinDate);
 
@@ -2699,7 +2670,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -2732,7 +2702,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -2756,7 +2725,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -2789,15 +2757,16 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         int startDate = 0, endDate = 0;
         string sTerm = string.Empty;
+
         // Act
         interactor.CommonDensiSantei(hpId, densiSanteiKaisuModel2, odrDetail1, odrDetails, ref startDate, ref endDate, ref sTerm, sinDate, sysyosinDate);
         var newSinDate = interactor.WeeksBefore(sinDate, 1);
+
         // Assert
         Assert.True(sTerm == "週" && startDate == newSinDate);
     }
@@ -2813,7 +2782,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -2846,7 +2814,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -2871,7 +2838,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -2904,7 +2870,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -2930,7 +2895,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -2963,7 +2927,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -2989,7 +2952,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3022,7 +2984,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3048,7 +3009,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3081,7 +3041,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3107,7 +3066,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3140,7 +3098,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3166,7 +3123,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3199,7 +3155,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3225,7 +3180,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3258,7 +3212,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3286,7 +3239,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3337,7 +3289,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
              1,
              2
          );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3364,7 +3315,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3415,7 +3365,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
              1,
              2
          );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3427,6 +3376,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         interactor.CommonDensiSantei(hpId, densiSanteiKaisuModel2, odrDetail1, odrDetails, ref startDate, ref endDate2, ref sTerm, sinDate, sysyosinDate);
         var newSysyosinDate = interactor.MonthsAfter(sysyosinDate, 1);
+
         // Assert
         Assert.True(endDate1 == 99999999 && endDate2 == newSysyosinDate);
     }
@@ -3442,7 +3392,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3493,7 +3442,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
          1,
          2
      );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3522,7 +3470,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3573,7 +3520,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
          1,
          2
      );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3602,7 +3548,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3653,7 +3598,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
          1,
          2
      );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3682,7 +3626,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3733,7 +3676,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
          1,
          2
      );
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3762,7 +3704,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        #region Data Example
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
             1,
@@ -3795,8 +3736,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
                1,
                2
            );
-
-        #endregion
 
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
@@ -3953,7 +3892,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         // Act
-
         var output1 = interactor.GetHokenKbn(odrHokenKbn1);
         var output2 = interactor.GetHokenKbn(odrHokenKbn2);
         var output3 = interactor.GetHokenKbn(odrHokenKbn3);
@@ -4381,6 +4319,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var checkedSpecialItemInputData1 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, false);
         var checkedSpecialItemInputData2 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, false);
+
         // Act
         var output1 = interactor1.Handle(checkedSpecialItemInputData1);
         var output2 = interactor2.Handle(checkedSpecialItemInputData2);

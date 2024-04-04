@@ -11,14 +11,13 @@ namespace CloudUnitTest.Interactor.SaveMedical
         [Test]
         public void TC_001_SaveMedicalInteractor_TestNotAllowSaveMedicalExaminationSuccess()
         {
-            //Setup Data Test
+            //Arrange
             var mockIUserInfoService = new Mock<IUserInfoService>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mock_cache = new Mock<IDatabase>();
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
             mockIConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
 
-            //Arrange
             var userRepository = new UserRepository(TenantProvider, mockIConfiguration.Object, mockIUserInfoService.Object);
 
             //Mock data
@@ -28,10 +27,12 @@ namespace CloudUnitTest.Interactor.SaveMedical
             int sinDate = 28032001;
             int userId = 28032001;
 
+            // Act
             var result = userRepository.NotAllowSaveMedicalExamination(hpId, ptId, raiinNo, sinDate, userId);
 
             try
             {
+                // Assert
                 Assert.That(!result);
             }
             finally

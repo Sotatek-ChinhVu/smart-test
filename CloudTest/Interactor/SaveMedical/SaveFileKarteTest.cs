@@ -37,7 +37,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_001_SaveFileKarte_TestSaveSuccessIsTrue_01()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -61,7 +61,6 @@ public class SaveFileKarteTest : BaseUT
         AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
         IOptions<AmazonS3Options> options = Options.Create(appSettings);
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(options, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
         // Mock data
@@ -100,7 +99,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_002_SaveFileKarte_TestSaveSuccessIsTrue_02()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -124,10 +123,8 @@ public class SaveFileKarteTest : BaseUT
         AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
         IOptions<AmazonS3Options> options = Options.Create(appSettings);
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(options, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int ptId = random.Next(999, 99999);
@@ -173,7 +170,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_003_SaveFileKarte_TestSaveSuccessIsFalse_01()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -197,10 +194,8 @@ public class SaveFileKarteTest : BaseUT
         AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
         IOptions<AmazonS3Options> options = Options.Create(appSettings);
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(options, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int ptId = random.Next(999, 99999);
@@ -244,7 +239,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_004_CopyFileFromDoActionToKarte_TestSuccess_01()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -268,10 +263,8 @@ public class SaveFileKarteTest : BaseUT
         AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
         IOptions<AmazonS3Options> options = Options.Create(appSettings);
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(options, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int ptId = random.Next(999, 99999);
@@ -304,7 +297,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_005_CopyFileFromDoActionToKarte_TestSuccess_02()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -328,10 +321,8 @@ public class SaveFileKarteTest : BaseUT
         AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
         IOptions<AmazonS3Options> options = Options.Create(appSettings);
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(options, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int ptId = random.Next(999, 99999);
@@ -365,7 +356,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_006_CopyFileFromDoActionToKarte_TestSuccess_03()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -389,10 +380,8 @@ public class SaveFileKarteTest : BaseUT
         AmazonS3Options appSettings = new AmazonS3Options() { BaseAccessUrl = baseAccessUrl };
         IOptions<AmazonS3Options> options = Options.Create(appSettings);
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(options, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int ptId = random.Next(999, 99999);
@@ -429,14 +418,12 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_007_GetFolderUploadToPtNum_TestSuccess_01()
     {
-        //Setup Data Test
+        // Arrange
         var mockITenantProvider = new Mock<ITenantProvider>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var amazonS3Service = new AmazonS3Service(mockOptionsAccessor.Object, mockITenantProvider.Object);
 
-        // Mock data
         long ptNum = 123456789;
         List<string> listFolders = new()
         {
@@ -456,14 +443,11 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_008_GetFolderUploadToPtNum_TestSuccess_02()
     {
-        //Setup Data Test
+        // Arrange
         var mockITenantProvider = new Mock<ITenantProvider>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
-
-        // Arrange
         var amazonS3Service = new AmazonS3Service(mockOptionsAccessor.Object, mockITenantProvider.Object);
 
-        // Mock data
         long ptNum = 123;
         List<string> listFolders = new()
         {
@@ -485,14 +469,12 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_009_GetUniqueFileNameKey_TestSuccess_01()
     {
-        //Setup Data Test
+        // Arrange
         var mockITenantProvider = new Mock<ITenantProvider>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var amazonS3Service = new AmazonS3Service(mockOptionsAccessor.Object, mockITenantProvider.Object);
 
-        // Mock data
         string fileName = "path/fileName.txt";
 
         // Act
@@ -506,14 +488,12 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_010_GetUniqueFileNameKey_TestSuccess_02()
     {
-        //Setup Data Test
+        // Arrange
         var mockITenantProvider = new Mock<ITenantProvider>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var amazonS3Service = new AmazonS3Service(mockOptionsAccessor.Object, mockITenantProvider.Object);
 
-        // Mock data
         string fileName = "path/fileName283857158846671447283857620112868106211681062115884667144728385762011286810621158846671447.txt";
 
         // Act
@@ -529,6 +509,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_011_ListCheckIsSchema_TestIsSchemaSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -589,6 +570,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_012_ListCheckIsSchema_TestIsNotSchemaSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -651,6 +633,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_013_SaveListFileKarte_TestSaveTempFileIsTrueSuccess_01()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -697,6 +680,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_014_SaveListFileKarte_TestSaveTempFileIsFalseSuccess_01()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -741,6 +725,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_015_SaveListFileKarte_TestSaveTempFileIsFalseSuccess_02()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -798,6 +783,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_016_SaveListFileKarte_TestSaveTempFileIsFalseSuccess_03()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -855,6 +841,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_017_SaveListFileKarte_TestSaveTempFileIsFalseSuccess_04()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -898,6 +885,7 @@ public class SaveFileKarteTest : BaseUT
     [Test]
     public void TC_018_SaveListFileKarte_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);

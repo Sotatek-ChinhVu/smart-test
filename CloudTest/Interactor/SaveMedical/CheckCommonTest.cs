@@ -30,8 +30,8 @@ public class CheckCommonTest : BaseUT
     #region CheckCommon
     [Test]
     public void TC_001_CheckCommon_TestInvalidHpIdWithHpIdIs0()
-    {
-        //Setup Data Test
+    {        
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -54,10 +54,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -75,7 +73,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_002_CheckCommon_TestInvalidHpIdWithHpIdListHasMultipleParams()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -98,10 +96,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -119,7 +115,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_003_CheckCommon_TestInvalidPtIdWithPtIdIs0()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -142,10 +138,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -163,7 +157,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_004_CheckCommon_TestInvalidPtIdWithPtIdListHasMultipleParams()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -186,10 +180,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -207,7 +199,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_005_CheckCommon_TestInvalidRaiinNoWithRaiinNoIs0()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -230,10 +222,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -251,7 +241,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_006_CheckCommon_TestInvalidPtIdWithRaiinNoListHasMuiltipeParams()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -274,10 +264,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -295,7 +283,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_007_CheckCommon_TestInvalidSinDateWithSinDateIs0()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -318,10 +306,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         long ptId = random.Next(999, 99999999);
@@ -338,7 +324,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_008_CheckCommon_TestInvalidSinDateWithSinDateListHasMultipleParams()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -361,10 +347,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -382,7 +366,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_009_CheckCommon_TestHpIdNoExist()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -405,10 +389,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -435,7 +417,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_010_CheckCommon_TestPtIdNoExist()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -458,10 +440,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -488,7 +468,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_011_CheckCommon_TestRaiinIdNoExist()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -511,10 +491,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -541,7 +519,7 @@ public class CheckCommonTest : BaseUT
     [Test]
     public void TC_012_CheckCommon_TestSuccess()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -564,10 +542,8 @@ public class CheckCommonTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int sinDate = 20220202;
@@ -590,6 +566,5 @@ public class CheckCommonTest : BaseUT
         // Assert
         Assert.That(result == RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid);
     }
-
     #endregion
 }
