@@ -7,7 +7,6 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using System.Collections.Generic;
 
 namespace Infrastructure.Repositories;
 
@@ -861,7 +860,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
     public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> categoryModels, bool isTemporarySave)
     {
-        List<int> categoryDataType = new List<int>();
+        yousiki1InfDetailModels = yousiki1InfDetailModels.Where(x => x.Value != "undefined").ToList();
         UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
 
         foreach (var categoryModel in categoryModels)
@@ -874,17 +873,17 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             {
                 if (categoryModel.Status == 2)
                 {
-                    AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
-                    categoryDataType.Add(categoryModel.DataType);
+                    var seqNoMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == yousiki1InfModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
+                    AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, seqNoMax);
+                    var yousiki1InfDetailModelChanges = yousiki1InfDetailModels.Where(x => x.DataType == categoryModel.DataType).ToList();
+                    UpdateSeqNo(yousiki1InfDetailModelChanges, seqNoMax);
                 }
             }
 
             UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, isTemporarySave ? 1 : 2);
         }
 
-        UpdateSeqNo(yousiki1InfDetailModels, categoryDataType);
-
-        foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels.Where(x => x.Value != "undefined"))
+        foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)
         {
             if (yousiki1InfDetailModel.Equals(null))
             {
@@ -917,28 +916,16 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         TrackingDataContext.SaveChanges();
     }
 
-    public void UpdateSeqNo(List<Yousiki1InfDetailModel> yousiki1InfDetailModels, List<int> categoryDataType)
+    public void UpdateSeqNo(List<Yousiki1InfDetailModel> yousiki1InfDetailModels, int seqNo)
     {
         foreach (var item in yousiki1InfDetailModels)
         {
-            if (categoryDataType.Contains(item.DataType))
-            {
-                var seqNoMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == item.PtId && x.SinYm == item.SinYm && x.DataType == item.DataType).Max(x => x.SeqNo);
-                item.ChangeSeqNo(seqNoMax);
-            }
+            item.ChangeSeqNo(seqNo);
         }
     }
 
-    public void AddYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType)
+    public void AddYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType, int maxSeqNo)
     {
-        int maxSeqNo = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
-                          x.PtId == ptId &&
-                          x.SinYm == sinYm &&
-                          x.DataType == dataType)
-                        .AsEnumerable()
-                        .Select(x => x.SeqNo)
-                        .OrderByDescending(x => x)
-                        .FirstOrDefault();
         if (dataType != 0)
         {
             var commonInf = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
@@ -968,7 +955,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     UpdateDate = CIUtil.GetJapanDateTimeNow()
-            });
+                });
             }
         }
         var newYousiki = new Yousiki1Inf()
