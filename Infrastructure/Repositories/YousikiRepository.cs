@@ -870,11 +870,13 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             {
                 DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
             }
-
-            if (categoryModel.Status == 2)
+            else
             {
-                AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
-                categoryDataType.Add(categoryModel.DataType);
+                if (categoryModel.Status == 2)
+                {
+                    AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
+                    categoryDataType.Add(categoryModel.DataType);
+                }
             }
 
             UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, isTemporarySave ? 1 : 2);
@@ -882,7 +884,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
         UpdateSeqNo(yousiki1InfDetailModels, categoryDataType);
 
-        foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)
+        foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels.Where(x => x.Value != "undefined"))
         {
             if (yousiki1InfDetailModel.Equals(null))
             {
