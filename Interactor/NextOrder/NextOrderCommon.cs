@@ -208,7 +208,7 @@ namespace Interactor.NextOrder
                     0,
                     0,
                     0,
-                    0,
+                    rsvkrtOrderInfDetailItem.KensaGaichu,
                     0,
                     0,
                     0,

@@ -80,6 +80,14 @@ public class SanteiInfDetailModel
         return this;
     }
 
+    public SanteiInfDetailModel()
+    {
+        ItemCd = string.Empty;
+        Byomei = string.Empty;
+        HosokuComment = string.Empty;
+        Comment = string.Empty;
+    }
+
     public long Id { get; private set; }
 
     public long PtId { get; private set; }

@@ -19,5 +19,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
         KensaInfDetailModel GetPtWeight(long ptId, int sinDate);
 
         List<GcStdInfModel> GetStdPoint(int hpId, int sex);
+
+        List<KensaInfDetailModel> GetPtPhysicalInfoToYousiki(int hpId, long ptId, int sinDate);
     }
 }

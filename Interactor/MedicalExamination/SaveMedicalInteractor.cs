@@ -689,7 +689,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return allOdrInfs;
     }
 
-    private RaiinInfConst.RaiinInfTodayOdrValidationStatus CheckCommon(bool isCheckOrder, List<int> hpIds, List<long> ptIds, List<long> raiinNos, List<int> sinDates, int hpId, long ptId, long raiinNo)
+    public RaiinInfConst.RaiinInfTodayOdrValidationStatus CheckCommon(bool isCheckOrder, List<int> hpIds, List<long> ptIds, List<long> raiinNos, List<int> sinDates, int hpId, long ptId, long raiinNo)
     {
         RaiinInfConst.RaiinInfTodayOdrValidationStatus raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid;
 
@@ -732,7 +732,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return raiinInfStatus;
     }
 
-    private RaiinInfConst.RaiinInfTodayOdrValidationStatus CheckRaiinInf(SaveMedicalInputData inputDatas)
+    public RaiinInfConst.RaiinInfTodayOdrValidationStatus CheckRaiinInf(SaveMedicalInputData inputDatas)
     {
         RaiinInfConst.RaiinInfTodayOdrValidationStatus raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid;
 
@@ -752,7 +752,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSanteiKbn;
         }
-        if (inputDatas.TantoId < 0)
+        else if (inputDatas.TantoId < 0)
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidTantoId;
         }
@@ -760,7 +760,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidKaId;
         }
-
         else if (inputDatas.UketukeTime.Length > 6)
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidUKetukeTime;
@@ -768,44 +767,28 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         else if (inputDatas.SinStartTime.Length > 6)
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinStartTime;
-
         }
         else if (inputDatas.SinEndTime.Length > 6)
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinEndTime;
         }
-
-        if (inputDatas.HokenPid > 0)
+        else if (!_insuranceInforRepository.CheckExistHokenPid(inputDatas.HpId, inputDatas.HokenPid))
         {
-            var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HpId, inputDatas.HokenPid);
-            if (!checkHokenId)
-            {
-                raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;
-            }
+            raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;
         }
-
-        if (inputDatas.TantoId > 0)
+        else if (!_userRepository.CheckExistedUserId(inputDatas.HpId, inputDatas.TantoId))
         {
-            var checkHokenId = _userRepository.CheckExistedUserId(inputDatas.HpId, inputDatas.TantoId);
-            if (!checkHokenId)
-            {
-                raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist;
-            }
+            raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist;
         }
-
-        if (inputDatas.KaId > 0)
+        else if (!_kaRepository.CheckKaId(inputDatas.HpId, inputDatas.KaId))
         {
-            var checkHokenId = _kaRepository.CheckKaId(inputDatas.HpId, inputDatas.KaId);
-            if (!checkHokenId)
-            {
-                raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist;
-            }
+            raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist;
         }
 
         return raiinInfStatus;
     }
 
-    private (Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>, List<OrdInfModel>) CheckOrder(int hpId, long ptId, int sinDate, SaveMedicalInputData inputDatas, List<OdrInfItemInputData> inputDataList, byte status)
+    public (Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>, List<OrdInfModel>) CheckOrder(int hpId, long ptId, int sinDate, SaveMedicalInputData inputDatas, List<OdrInfItemInputData> inputDataList, byte status)
     {
         var dicValidation = new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>();
         object obj = new();
@@ -918,7 +901,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return result;
     }
 
-    private UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
+    public UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
     {
         foreach (var tagNo in flowSheets.Select(item => item.TagNo).ToList())
         {
@@ -930,7 +913,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return UpsertFlowSheetStatus.Valid;
     }
 
-    private UpsertPtDiseaseListStatus ValidateDiseaseList(int hpId, List<PtDiseaseModel> ptDiseases)
+    public UpsertPtDiseaseListStatus ValidateDiseaseList(int hpId, List<PtDiseaseModel> ptDiseases)
     {
         foreach (var data in ptDiseases)
         {
@@ -1240,7 +1223,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _auditLogRepository.AddListAuditTrailLog(hpId, userId, args);
     }
 
-    private void AddAuditTempSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    public void AddAuditTempSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
     {
         var args = new List<ArgumentModel>();
 

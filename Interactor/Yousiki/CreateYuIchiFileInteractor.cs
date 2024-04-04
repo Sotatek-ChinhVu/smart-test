@@ -178,7 +178,7 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
             if (isCreateEFile)
             {
                 // send progress to export data
-                SendMessager(false, progress, $"Fファイル{sinYm}月分　作成中・・・");
+                SendMessager(false, progress, $"Eファイル{sinYm}月分　作成中・・・");
 
                 fileData = _fileViewModel.GetEFileData(hpId, sinYm, isCheckedTestPatient);
                 if (!string.IsNullOrEmpty(fileData))
@@ -187,7 +187,7 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
                     fileName = $"Eg_{facilityCode}_{sinYm}.txt";
 
                     // Export txt file
-                    ExportTxtFile(fileName, $"Fファイル{sinYm}月分　作成中・・・", string.Empty, fileData, false);
+                    ExportTxtFile(fileName, $"Eファイル{sinYm}月分　作成中・・・", string.Empty, fileData, false);
                 }
             }
             if (isCreateFFile)

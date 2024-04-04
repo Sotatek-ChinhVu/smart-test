@@ -1,7 +1,10 @@
-﻿using Domain.Models.Yousiki;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.SpecialNote.PatientInfo;
+using Domain.Models.Yousiki;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -9,8 +12,15 @@ namespace Infrastructure.Repositories;
 
 public class YousikiRepository : RepositoryBase, IYousikiRepository
 {
-    public YousikiRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private const string CodeNo_Attributes = "CPP0001";
+    private const string CodeNo_HeightAndWeight = "CPF0001";
+    private readonly IPatientInforRepository _patientInforRepository;
+    private readonly IPatientInfoRepository _patientInfoRepository;
+
+    public YousikiRepository(IPatientInforRepository patientInforRepository, IPatientInfoRepository patientInfoRepository, ITenantProvider tenantProvider) : base(tenantProvider)
     {
+        _patientInforRepository = patientInforRepository;
+        _patientInfoRepository = patientInfoRepository;
     }
 
     public List<Yousiki1InfModel> GetHistoryYousiki(int hpId, int sinYm, long ptId, int dataType)
@@ -176,6 +186,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                                                 item.Payload,
                                                                                                 item.Value ?? string.Empty))
                                                                             .ToList();
+        GetDefaultYousiki1InfDetailList(hpId, dataType, yousiki1Inf, ref yousiki1InfDetailList);
         return new Yousiki1InfModel(hpId,
                                     ptInf.PtNum,
                                     ptInf.Name ?? string.Empty,
@@ -196,6 +207,87 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                                         itemDetail.Payload,
                                                                                         itemDetail.Value ?? string.Empty))
                                                          .ToList());
+    }
+
+    /// <summary>
+    /// Get default Yousiki1InfDetail list
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="dataType"></param>
+    /// <param name="yousiki1Inf"></param>
+    /// <param name="yousiki1InfDetailList"></param>
+    private void GetDefaultYousiki1InfDetailList(int hpId, int dataType, Yousiki1Inf yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    {
+        #region Common
+        #region 属性
+        bool isExistAttributes = yousiki1InfDetailList.Any(item => item.DataType == dataType && item.CodeNo == CodeNo_Attributes);
+        if (!isExistAttributes)
+        {
+            var ptInf = _patientInforRepository.GetPtInf(hpId, yousiki1Inf.PtId);
+
+            // BirthDay
+            yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 1, ptInf.Birthday.AsString()));
+
+            //Sex
+            yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 2, ptInf.Sex.AsString()));
+
+            // HomePost
+            string homePost = ptInf.HomePost.AsString();
+            homePost = homePost.Replace("-", "");
+            homePost = homePost.Replace("ー", "");
+            homePost = homePost.Replace(" ", "");
+            homePost = homePost.Replace("　", "");
+            homePost = homePost.PadRight(7, '0');
+            yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 3, homePost));
+        }
+        #endregion
+
+        #region 身長・体重
+        bool isExistHeightAndWeightPtInf = yousiki1InfDetailList.Any(item => item.DataType == dataType && item.CodeNo == CodeNo_HeightAndWeight);
+        if (!isExistHeightAndWeightPtInf)
+        {
+            int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+            if (yousiki1Inf.SinYm > 0)
+            {
+                sinDate = yousiki1Inf.SinYm * 100 + 31;
+            }
+
+            string bodyHeight = "000";
+            string bodyWeight = "000";
+            var ptPhysicalInfoList = _patientInfoRepository.GetPtPhysicalInfoToYousiki(hpId, yousiki1Inf.PtId, sinDate);
+
+            // BodyHeight
+            var kensaInfHeight = ptPhysicalInfoList.FirstOrDefault(item => item.KensaItemCd == "V0001");
+            if (kensaInfHeight != null && !string.IsNullOrEmpty(kensaInfHeight.ResultVal))
+            {
+                bodyHeight = Math.Round(kensaInfHeight.ResultVal.AsDouble(), 0, MidpointRounding.AwayFromZero).AsInteger().AsString();
+                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_HeightAndWeight, 0, 1, bodyHeight));
+            }
+
+            // BodyWeight
+            var kensaInfWeight = ptPhysicalInfoList.FirstOrDefault(item => item.KensaItemCd == "V0002");
+            if (kensaInfWeight != null && !string.IsNullOrEmpty(kensaInfWeight.ResultVal))
+            {
+                bodyWeight = Math.Round(kensaInfWeight.ResultVal.AsDouble(), 1, MidpointRounding.AwayFromZero).ToString("0.0");
+                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_HeightAndWeight, 0, 2, bodyWeight));
+            }
+        }
+        #endregion
+        #endregion
+    }
+
+    /// <summary>
+    /// CreateYousiki1InfDetailModel
+    /// </summary>
+    /// <param name="codeNo"></param>
+    /// <param name="rowNo"></param>
+    /// <param name="payLoad"></param>
+    /// <param name="valueDefault"></param>
+    /// <returns></returns>
+    private Yousiki1InfDetailModel CreateYousiki1InfDetailModel(Yousiki1Inf yousiki1Inf, string codeNo, int rowNo, int payLoad, string value)
+    {
+        var detail = new Yousiki1InfDetailModel(yousiki1Inf.PtId, yousiki1Inf.SinYm, yousiki1Inf.DataType, yousiki1Inf.SeqNo, codeNo, rowNo, payLoad, value);
+        return detail;
     }
 
     /// <summary>
@@ -849,5 +941,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _patientInforRepository.ReleaseResource();
+        _patientInfoRepository.ReleaseResource();
     }
 }
