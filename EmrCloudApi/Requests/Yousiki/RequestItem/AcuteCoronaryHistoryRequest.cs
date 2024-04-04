@@ -10,6 +10,6 @@
 
         public bool IsDeleted { get; set; }
 
-        public bool IsEnableOnsetDate { get => Type.Value == "1" || Type.Value == "2"; }
+        public bool IsEnableOnsetDate { get => Type?.Value == "1" || Type?.Value == "2"; }
     }
 }

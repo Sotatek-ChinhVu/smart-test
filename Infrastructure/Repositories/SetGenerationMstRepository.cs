@@ -928,7 +928,7 @@ namespace Infrastructure.Repositories
                         TrackingDataContext.SaveChanges();
                         transaction.Commit();
                     }
-                    catch (Exception e)
+                    catch
                     {
                         transaction.Rollback();
                     }
