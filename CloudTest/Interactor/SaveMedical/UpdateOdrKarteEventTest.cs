@@ -30,7 +30,7 @@ public class UpdateOdrKarteEventTest : BaseUT
     [Test]
     public void TC_001_UpdateOdrKarteEvent_TestSuccess_01()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -53,10 +53,8 @@ public class UpdateOdrKarteEventTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         int hpId = It.IsAny<int>();
         int userId = It.IsAny<int>();
         long ptId = It.IsAny<int>();
@@ -81,7 +79,7 @@ public class UpdateOdrKarteEventTest : BaseUT
     [Test]
     public void TC_002_UpdateOdrKarteEvent_TestOdrOrSyosaisinChangedSuccess()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -104,10 +102,8 @@ public class UpdateOdrKarteEventTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         int hpId = It.IsAny<int>();
         int userId = It.IsAny<int>();
         long ptId = It.IsAny<int>();
@@ -132,7 +128,7 @@ public class UpdateOdrKarteEventTest : BaseUT
     [Test]
     public void TC_003_UpdateOdrKarteEvent_TestTodayKarteChangedSuccess()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -155,10 +151,8 @@ public class UpdateOdrKarteEventTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         int hpId = It.IsAny<int>();
         int userId = It.IsAny<int>();
         long ptId = It.IsAny<int>();
@@ -183,7 +177,7 @@ public class UpdateOdrKarteEventTest : BaseUT
     [Test]
     public void TC_004_UpdateOdrKarteEvent_TestNextOdrChangedSuccess()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -206,10 +200,8 @@ public class UpdateOdrKarteEventTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         int hpId = It.IsAny<int>();
         int userId = It.IsAny<int>();
         long ptId = It.IsAny<int>();
@@ -234,7 +226,7 @@ public class UpdateOdrKarteEventTest : BaseUT
     [Test]
     public void TC_005_UpdateOdrKarteEvent_TestPeriodicOdrChangedSuccess()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -257,7 +249,6 @@ public class UpdateOdrKarteEventTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
         // Mock data
@@ -285,7 +276,7 @@ public class UpdateOdrKarteEventTest : BaseUT
     [Test]
     public void TC_006_UpdateOdrKarteEvent_TestOdrDrugInChangedSuccess()
     {
-        //Setup Data Test
+        // Arrange
         var mockIOrdInfRepository = new Mock<IOrdInfRepository>();
         var mockIReceptionRepository = new Mock<IReceptionRepository>();
         var mockIKaRepository = new Mock<IKaRepository>();
@@ -308,10 +299,8 @@ public class UpdateOdrKarteEventTest : BaseUT
         var mockIAuditLogRepository = new Mock<IAuditLogRepository>();
         var mockOptionsAccessor = new Mock<IOptions<AmazonS3Options>>();
 
-        // Arrange
         var saveMedicalInteractor = new SaveMedicalInteractor(mockOptionsAccessor.Object, mockIAmazonS3Service.Object, mockITenantProvider.Object, mockIOrdInfRepository.Object, mockIReceptionRepository.Object, mockIKaRepository.Object, mockIMstItemRepository.Object, mockISystemGenerationConfRepository.Object, mockIPatientInforRepository.Object, mockIInsuranceRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object, mockISaveMedicalRepository.Object, mockITodayOdrRepository.Object, mockIKarteInfRepository.Object, mockICalculateService.Object, mockIValidateFamilyList.Object, mockISummaryInfRepository.Object, mockIKensaIraiCommon.Object, mockISystemConfRepository.Object, mockIAuditLogRepository.Object);
 
-        // Mock data
         int hpId = It.IsAny<int>();
         int userId = It.IsAny<int>();
         long ptId = It.IsAny<int>();

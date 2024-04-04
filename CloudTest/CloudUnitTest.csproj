@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Repository\PatientInfo\glezq24b.pcz~" />
+    <None Remove="Repository\SaveMedical\aien3qa5.p50~" />
     <None Remove="unittest.env.json" />
     <None Remove="unittest.env.json.sample" />
   </ItemGroup>

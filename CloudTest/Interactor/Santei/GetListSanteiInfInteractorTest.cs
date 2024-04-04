@@ -18,14 +18,11 @@ public class GetListSanteiInfInteractorTest : BaseUT
         var mockMstItemRepo = new Mock<IMstItemRepository>();
 
         List<SanteiInfModel> listSanteiInfs = new();
-        List<string> listByomeis = new();
-
-        #region Data Example
-        // byomei
-        listByomeis.Add("byomei1");
-        listByomeis.Add("byomei2");
-
-        // santeiInf
+        List<string> listByomeis = new()
+        {
+            "byomei1",
+            "byomei2"
+        };
         var santeiInf = new SanteiInfModel(
                                             1,
                                             883,
@@ -66,7 +63,6 @@ public class GetListSanteiInfInteractorTest : BaseUT
                                                     )
                                             });
         listSanteiInfs.Add(santeiInf);
-        #endregion
 
         var interactor = new GetListSanteiInfInteractor(mockSanteiInfRepo.Object, mockMstItemRepo.Object);
 

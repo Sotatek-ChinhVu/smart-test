@@ -32,7 +32,7 @@ namespace CloudUnitTest.Repository.SaveMedical
         [Test]
         public void TC_001_NextOrderRepository_TestInsertSuccess()
         {
-            //Arrange
+            // Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
             var mockIConfiguration = new Mock<IConfiguration>();
             var mockAmazonS3Options = new Mock<IOptions<AmazonS3Options>>();
@@ -80,13 +80,15 @@ namespace CloudUnitTest.Repository.SaveMedical
                     )
             };
 
-            //Act
-            var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
-            var rsvkrtMstsInsert = tenantTracking.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
-            var rsvkrtByomeisInsert = tenantTracking.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo && x.Id == rsvkrtByomeis.First().Id && x.SeqNo == rsvkrtByomeis.First().SeqNo).ToList();
-
+            List<RsvkrtMst> rsvkrtMstsInsert = new();
+            List<RsvkrtByomei> rsvkrtByomeisInsert = new();
             try
             {
+                //Act
+                var result = nextOrderRepository.Upsert(userId, hpId, ptId, nextOrderModels);
+                rsvkrtMstsInsert = tenantTracking.RsvkrtMsts.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo).ToList();
+                rsvkrtByomeisInsert = tenantTracking.RsvkrtByomeis.Where(x => x.HpId == hpId && x.PtId == rsvkrtByomeis.First().PtId && x.RsvkrtNo == rsvkrtByomeis.First().RsvkrtNo && x.Id == rsvkrtByomeis.First().Id && x.SeqNo == rsvkrtByomeis.First().SeqNo).ToList();
+
                 //Assert
                 Assert.That(result && rsvkrtMstsInsert.Any() && rsvkrtByomeisInsert.Any());
             }
@@ -1553,9 +1555,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             }
         }
 
-        //Delete with SinKouiKbn
         [Test]
-        public void TC_013_NextOrderRepository_TestSaveNextOrderRaiinListInf0Success()
+        public void TC_013_NextOrderRepository_TestSaveNextOrderRaiinListInf_DeleteWithSinKouiKbn_Success()
         {
             //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
@@ -1815,9 +1816,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             }
         }
 
-        // Delete with ItemCd
         [Test]
-        public void TC_014_NextOrderRepository_TestSaveNextOrderRaiinListInf1Success()
+        public void TC_014_NextOrderRepository_TestSaveNextOrderRaiinListInf_DeleteWithItemCd_Success()
         {
             //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
@@ -2080,9 +2080,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             }
         }
 
-        // Update with ItemCd and SinKouiKbn
         [Test]
-        public void TC_015_NextOrderRepository_TestSaveNextOrderRaiinListInf2Success()
+        public void TC_015_NextOrderRepository_TestSaveNextOrderRaiinListInf_UpdateWithItemCdAndSinKouiKbn_Success()
         {
             //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
@@ -2346,9 +2345,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             }
         }
 
-        // Add with ItemCd and SinKouiKbn
         [Test]
-        public void TC_016_NextOrderRepository_TestSaveNextOrderRaiinListInf3Success()
+        public void TC_016_NextOrderRepository_TestSaveNextOrderRaiinListInf_AddWithItemCdAndSinKouiKbn_Success()
         {
             //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
@@ -2602,9 +2600,8 @@ namespace CloudUnitTest.Repository.SaveMedical
             }
         }
 
-        // Add with SinKouiKbn false
         [Test]
-        public void TC_017_NextOrderRepository_TestSaveNextOrderRaiinListInf4False()
+        public void TC_017_NextOrderRepository_TestSaveNextOrderRaiinListInf_AddWithSinKouiKbn_False()
         {
             //Arrange
             var mockIAmazonS3Service = new Mock<IAmazonS3Service>();
@@ -3043,7 +3040,6 @@ namespace CloudUnitTest.Repository.SaveMedical
                 ItemCd = "Kaito"
             };
 
-            //Act
             tenant.Add(rsvkrtMst);
             tenant.Add(rsvkrtKarte);
             tenant.Add(raiinListKoui);
@@ -3059,6 +3055,7 @@ namespace CloudUnitTest.Repository.SaveMedical
 
             try
             {
+                //Act
                 tenant.SaveChanges();
                 string finalKey = "GetNextOrderList28032001-1";
                 _cache.StringAppend(finalKey, string.Empty);

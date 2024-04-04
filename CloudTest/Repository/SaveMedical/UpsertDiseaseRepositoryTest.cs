@@ -11,6 +11,7 @@ public class UpsertDiseaseRepositoryTest : BaseUT
     [Test]
     public void TC_001_UpsertDiseaseRepository_TestCreateByomeiSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -103,19 +104,18 @@ public class UpsertDiseaseRepositoryTest : BaseUT
         {
             diseaseRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptByomei != null)
             {
                 tenant.PtByomeis.Remove(ptByomei);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_002_UpsertDiseaseRepository_TestCreateByomeiWithoutSortNoSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -207,19 +207,18 @@ public class UpsertDiseaseRepositoryTest : BaseUT
         {
             diseaseRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptByomei != null)
             {
                 tenant.PtByomeis.Remove(ptByomei);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_003_UpsertDiseaseRepository_TestUpdateOnlySortNoSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -336,19 +335,18 @@ public class UpsertDiseaseRepositoryTest : BaseUT
         {
             diseaseRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptByomei != null)
             {
                 tenant.PtByomeis.Remove(ptByomei);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_004_UpsertDiseaseRepository_TestUpdateByomeiWithIsModifiedSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -453,7 +451,6 @@ public class UpsertDiseaseRepositoryTest : BaseUT
         {
             diseaseRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptByomei != null)
             {
                 tenant.PtByomeis.Remove(ptByomei);
@@ -463,13 +460,13 @@ public class UpsertDiseaseRepositoryTest : BaseUT
                 tenant.PtByomeis.Remove(ptByomeiAfter);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_005_UpsertDiseaseRepository_TestDeletedSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -533,13 +530,11 @@ public class UpsertDiseaseRepositoryTest : BaseUT
         {
             diseaseRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptByomei != null)
             {
                 tenant.PtByomeis.Remove(ptByomei);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion UpsertDiseaseRepository
@@ -548,10 +543,10 @@ public class UpsertDiseaseRepositoryTest : BaseUT
     [Test]
     public void TC_006_UpsertDiseaseRepository_TestIsModifiedFalse()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
-        int userId = random.Next(999, 99999);
 
         PrefixSuffixModel prefixSuffixModel = new PrefixSuffixModel("codeUT", "nameUT");
         PtDiseaseModel ptDiseaseModel = new PtDiseaseModel(
@@ -613,31 +608,30 @@ public class UpsertDiseaseRepositoryTest : BaseUT
             tenant.SaveChanges();
 
             // Act
-            var result  = diseaseRepository.IsModified(ptByomei, ptDiseaseModel);
+            var result = diseaseRepository.IsModified(ptByomei, ptDiseaseModel);
 
+            // Assert
             Assert.True(!result);
         }
         finally
         {
             diseaseRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptByomei != null)
             {
                 tenant.PtByomeis.Remove(ptByomei);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_007_UpsertDiseaseRepository_TestIsModifiedTrue()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
-        int userId = random.Next(999, 99999);
 
         PrefixSuffixModel prefixSuffixModel = new PrefixSuffixModel("codeUT", "nameUT");
         PtDiseaseModel ptDiseaseModel = new PtDiseaseModel(
@@ -681,21 +675,20 @@ public class UpsertDiseaseRepositoryTest : BaseUT
             tenant.SaveChanges();
 
             // Act
-            var result  = diseaseRepository.IsModified(ptByomei, ptDiseaseModel);
+            var result = diseaseRepository.IsModified(ptByomei, ptDiseaseModel);
 
+            // Assert
             Assert.True(result);
         }
         finally
         {
             diseaseRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (ptByomei != null)
             {
                 tenant.PtByomeis.Remove(ptByomei);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion IsModified
@@ -704,6 +697,7 @@ public class UpsertDiseaseRepositoryTest : BaseUT
     [Test]
     public void TC_008_ConvertFromModelToPtByomei_TestTenkiKbn()
     {
+        // Arrange
         Random random = new();
         int hpId = random.Next(999, 99999);
         int userId = random.Next(999, 99999);
@@ -736,7 +730,7 @@ public class UpsertDiseaseRepositoryTest : BaseUT
                                             "",
                                             random.Next(999, 99999),
                                             "HosokuCmtPtDisease");
- 
+
 
         DiseaseRepository diseaseRepository = new DiseaseRepository(TenantProvider);
 
@@ -781,12 +775,14 @@ public class UpsertDiseaseRepositoryTest : BaseUT
                      && ptByomei.IsNodspKarte == ptDiseaseModel.IsNodspKarte
                      && ptByomei.IsDeleted == 0;
 
+        // Assert
         Assert.True(result);
     }
 
     [Test]
     public void TC_009_ConvertFromModelToPtByomei_TestOtherCase()
     {
+        // Arrange
         Random random = new();
         int hpId = random.Next(999, 99999);
         int userId = random.Next(999, 99999);
@@ -819,7 +815,7 @@ public class UpsertDiseaseRepositoryTest : BaseUT
                                             "",
                                             random.Next(999, 99999),
                                             "HosokuCmtPtDisease");
- 
+
 
         DiseaseRepository diseaseRepository = new DiseaseRepository(TenantProvider);
 
@@ -864,6 +860,7 @@ public class UpsertDiseaseRepositoryTest : BaseUT
                      && ptByomei.IsNodspKarte == ptDiseaseModel.IsNodspKarte
                      && ptByomei.IsDeleted == 0;
 
+        // Assert
         Assert.True(result);
     }
     #endregion ConvertFromModelToPtByomei

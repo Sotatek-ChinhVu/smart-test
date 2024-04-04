@@ -12,6 +12,7 @@ public class SaveFlowSheetRepositoryTest : BaseUT
     [Test]
     public void TC_001_SaveFlowSheetRepository_UpsertTag_TestSaveSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -51,19 +52,18 @@ public class SaveFlowSheetRepositoryTest : BaseUT
         {
             flowSheetRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (raiinListTag != null)
             {
                 tenant.RaiinListTags.Remove(raiinListTag);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_002_SaveFlowSheetRepository_UpsertTag_TestUpdateSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -107,13 +107,11 @@ public class SaveFlowSheetRepositoryTest : BaseUT
         {
             flowSheetRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (raiinListTag != null)
             {
                 tenant.RaiinListTags.Remove(raiinListTag);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion UpsertTag
@@ -122,6 +120,7 @@ public class SaveFlowSheetRepositoryTest : BaseUT
     [Test]
     public void TC_003_SaveFlowSheetRepository_UpsertCmt_TestSaveSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -162,19 +161,18 @@ public class SaveFlowSheetRepositoryTest : BaseUT
         {
             flowSheetRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (raiinListCmt != null)
             {
                 tenant.RaiinListCmts.Remove(raiinListCmt);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_004_SaveFlowSheetRepository_UpsertCmt_TestUpdateSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -201,10 +199,10 @@ public class SaveFlowSheetRepositoryTest : BaseUT
             flowSheetRepository.UpsertCmt(new() { flowSheetModel }, hpId, userId);
 
             // Assert
-           var raiinListCmtAfter = tenant.RaiinListCmts.FirstOrDefault(item => item.HpId == hpId
-                                                                               && item.PtId == flowSheetModel.PtId
-                                                                               && item.RaiinNo == flowSheetModel.RaiinNo
-                                                                               && item.Text == flowSheetModel.Comment);
+            var raiinListCmtAfter = tenant.RaiinListCmts.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.PtId == flowSheetModel.PtId
+                                                                                && item.RaiinNo == flowSheetModel.RaiinNo
+                                                                                && item.Text == flowSheetModel.Comment);
 
             var result = raiinListCmtAfter != null
                          && raiinListCmtAfter.HpId == hpId
@@ -218,13 +216,12 @@ public class SaveFlowSheetRepositoryTest : BaseUT
         {
             flowSheetRepository.ReleaseResource();
 
-            #region Remove Data Fetch
+
             if (raiinListCmt != null)
             {
                 tenant.RaiinListCmts.Remove(raiinListCmt);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion UpsertCmt

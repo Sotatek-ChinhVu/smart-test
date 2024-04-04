@@ -70,8 +70,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
                 new UpsertFlowSheetItemInputData(raiinNo, ptId, sinDate, tagNo, cmt)
             };
 
+            // Act
             var result = saveMedicalInteractor.ValidateFlowSheet(flowSheets);
 
+            // Assert
             Assert.That(result == UpsertFlowSheetStatus.TagNoNoValid);
         }
 
@@ -118,8 +120,10 @@ namespace CloudUnitTest.Interactor.SaveMedical
                 new UpsertFlowSheetItemInputData(raiinNo, ptId, sinDate, tagNo, cmt)
             };
 
+            // Act
             var result = saveMedicalInteractor.ValidateFlowSheet(flowSheets);
 
+            // Assert
             Assert.That(result == UpsertFlowSheetStatus.Valid);
         }
     }

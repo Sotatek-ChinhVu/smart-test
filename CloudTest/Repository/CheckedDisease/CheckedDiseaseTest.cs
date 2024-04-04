@@ -244,6 +244,7 @@ public class CheckedDiseaseTest : BaseUT
         try
         {
             tenantTracking.SaveChanges();
+
             // Act
             var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
             // Assert
@@ -319,6 +320,7 @@ public class CheckedDiseaseTest : BaseUT
         try
         {
             tenantTracking.SaveChanges();
+
             // Act
             var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
             // Assert

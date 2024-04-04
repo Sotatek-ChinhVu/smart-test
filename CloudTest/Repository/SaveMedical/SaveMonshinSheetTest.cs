@@ -9,6 +9,7 @@ public class SaveMonshinSheetTest : BaseUT
     [Test]
     public void TC_001_SaveMonshinSheet_TestSaveSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -48,19 +49,18 @@ public class SaveMonshinSheetTest : BaseUT
         {
             monshinInforRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (monshinInfo != null)
             {
                 tenant.MonshinInfo.Remove(monshinInfo);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_002_SaveMonshinSheet_TestSaveFalse()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -100,13 +100,11 @@ public class SaveMonshinSheetTest : BaseUT
         {
             monshinInforRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             if (monshinInfo != null)
             {
                 tenant.MonshinInfo.Remove(monshinInfo);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 }

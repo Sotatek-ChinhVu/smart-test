@@ -218,37 +218,21 @@ public class InitKbnSettingTest : BaseUT
     [Test]
     public void TC_007_InitDefaultByNextOrder_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
-        // RaiinKbnMst
         var raiinKbnMstList = ReadDataInitKbnSetting.ReadRaiinKbnMst();
         tenant.RaiinKbnMsts.AddRange(raiinKbnMstList);
-
-        // RaiinKbnDetail
         var raiinKbnDetailList = ReadDataInitKbnSetting.ReadRaiinKbnDetail();
         tenant.RaiinKbnDetails.AddRange(raiinKbnDetailList);
-
-        // RaiinKbnInf
         var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
         tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
-
-        // RaiinKbnKoui
         var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
         tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
-
-        // KouiKbnMst
         var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
         tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
-
-        // RaiinKbItem
         var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
         tenant.RaiinKbItems.AddRange(raiinKbnItemList);
 
-        tenant.SaveChanges();
-        #endregion
-
-        // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockRaiinKubunMstRepository = new Mock<IRaiinKubunMstRepository>();
         var mockNextOrderRepository = new Mock<INextOrderRepository>();
@@ -256,45 +240,46 @@ public class InitKbnSettingTest : BaseUT
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         var interactor = new InitKbnSettingInteractor(mockTodayOdrRepository.Object, mockRaiinKubunMstRepository.Object, mockNextOrderRepository.Object);
 
-        // Act
-        int hpId = 1;
-        long ptId = 123456789;
-        long raiinNo = 999999999;
-        int sinDate = 22221212;
-
-        var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
-        var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
-        var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
-
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbns(hpId, ptId, raiinNo, sinDate))
-                                   .Returns(raiinKbnModels);
-
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKouiKbns(hpId))
-                                   .Returns(raiinKouiKbns);
-
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbnItems(hpId))
-                                   .Returns(raiinKbnItemCds);
-
-        InitKbnSettingInputData inputData = new InitKbnSettingInputData(
-                                                                            hpId,
-                                                                            WindowType.ReceptionInInsertMode,
-                                                                            0,
-                                                                            true,
-                                                                            ptId,
-                                                                            raiinNo,
-                                                                            sinDate,
-                                                                            new()
-                                                                        );
-        var resultQuery = interactor.Handle(inputData);
-
-        // Assert
         try
         {
+            tenant.SaveChanges();
+
+            // Act
+            int hpId = 1;
+            long ptId = 123456789;
+            long raiinNo = 999999999;
+            int sinDate = 22221212;
+
+            var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
+            var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
+            var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
+
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbns(hpId, ptId, raiinNo, sinDate))
+                                       .Returns(raiinKbnModels);
+
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKouiKbns(hpId))
+                                       .Returns(raiinKouiKbns);
+
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbnItems(hpId))
+                                       .Returns(raiinKbnItemCds);
+
+            InitKbnSettingInputData inputData = new InitKbnSettingInputData(
+                                                                                hpId,
+                                                                                WindowType.ReceptionInInsertMode,
+                                                                                0,
+                                                                                true,
+                                                                                ptId,
+                                                                                raiinNo,
+                                                                                sinDate,
+                                                                                new()
+                                                                            );
+            var resultQuery = interactor.Handle(inputData);
+
+            // Assert
             Assert.True(CompareInitDefault(resultQuery.RaiinKbnModels, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
             tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
@@ -303,44 +288,27 @@ public class InitKbnSettingTest : BaseUT
             tenant.RaiinKbnDetails.RemoveRange(raiinKbnDetailList);
             tenant.RaiinKbnInfs.RemoveRange(raiinKbnInflList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_008_InitDefaultByTodayOrder_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
-        // RaiinKbnMst
         var raiinKbnMstList = ReadDataInitKbnSetting.ReadRaiinKbnMst();
         tenant.RaiinKbnMsts.AddRange(raiinKbnMstList);
-
-        // RaiinKbnDetail
         var raiinKbnDetailList = ReadDataInitKbnSetting.ReadRaiinKbnDetail();
         tenant.RaiinKbnDetails.AddRange(raiinKbnDetailList);
-
-        // RaiinKbnInf
         var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
         tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
-
-        // RaiinKbnKoui
         var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
         tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
-
-        // KouiKbnMst
         var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
         tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
-
-        // RaiinKbItem
         var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
         tenant.RaiinKbItems.AddRange(raiinKbnItemList);
 
-        tenant.SaveChanges();
-        #endregion
-
-        // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockRaiinKubunMstRepository = new Mock<IRaiinKubunMstRepository>();
         var mockNextOrderRepository = new Mock<INextOrderRepository>();
@@ -348,26 +316,30 @@ public class InitKbnSettingTest : BaseUT
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         var interactor = new InitKbnSettingInteractor(mockTodayOdrRepository.Object, mockRaiinKubunMstRepository.Object, mockNextOrderRepository.Object);
 
-        // Act
-        int hpId = 1;
-        long ptId = 123456789;
-        long raiinNo = 999999999;
-        int sinDate = 22221212;
+        try
+        {
+            tenant.SaveChanges();
 
-        var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
-        var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
-        var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
+            // Act
+            int hpId = 1;
+            long ptId = 123456789;
+            long raiinNo = 999999999;
+            int sinDate = 22221212;
 
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbns(hpId, ptId, raiinNo, sinDate))
-                                   .Returns(raiinKbnModels);
+            var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
+            var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
+            var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
 
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKouiKbns(hpId))
-                                   .Returns(raiinKouiKbns);
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbns(hpId, ptId, raiinNo, sinDate))
+                                       .Returns(raiinKbnModels);
 
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbnItems(hpId))
-                                   .Returns(raiinKbnItemCds);
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKouiKbns(hpId))
+                                       .Returns(raiinKouiKbns);
 
-        List<OdrInfItemInputData> orderInfItems = new() {
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbnItems(hpId))
+                                       .Returns(raiinKbnItemCds);
+
+            List<OdrInfItemInputData> orderInfItems = new() {
                     new OdrInfItemInputData(
                         1,
                         raiinNo,
@@ -427,26 +399,22 @@ public class InitKbnSettingTest : BaseUT
                         0
                     )};
 
-        InitKbnSettingInputData inputData = new InitKbnSettingInputData(
-                                                                            hpId,
-                                                                            WindowType.MedicalExamination,
-                                                                            0,
-                                                                            true,
-                                                                            ptId,
-                                                                            raiinNo,
-                                                                            sinDate,
-                                                                            orderInfItems
-                                                                        );
-        var resultQuery = interactor.Handle(inputData);
+            InitKbnSettingInputData inputData = new InitKbnSettingInputData(
+                                                        hpId,
+                                                        WindowType.MedicalExamination,
+                                                        0,
+                                                        true,
+                                                        ptId,
+                                                        raiinNo,
+                                                        sinDate,
+                                                        orderInfItems
+                                                    );
+            var resultQuery = interactor.Handle(inputData);
 
-        // Assert
-        try
-        {
             Assert.True(CompareInitDefault(resultQuery.RaiinKbnModels, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
             tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
@@ -455,44 +423,28 @@ public class InitKbnSettingTest : BaseUT
             tenant.RaiinKbnDetails.RemoveRange(raiinKbnDetailList);
             tenant.RaiinKbnInfs.RemoveRange(raiinKbnInflList);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_009_InitDefaultByRsv_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-
-        // RaiinKbnMst
         var raiinKbnMstList = ReadDataInitKbnSetting.ReadRaiinKbnMst();
         tenant.RaiinKbnMsts.AddRange(raiinKbnMstList);
-
-        // RaiinKbnDetail
         var raiinKbnDetailList = ReadDataInitKbnSetting.ReadRaiinKbnDetail();
         tenant.RaiinKbnDetails.AddRange(raiinKbnDetailList);
-
-        // RaiinKbnInf
         var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
         tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
-
-        // RaiinKbnKoui
         var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
         tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
-
-        // KouiKbnMst
         var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
         tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
-
-        // RaiinKbItem
         var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
         tenant.RaiinKbItems.AddRange(raiinKbnItemList);
-
         tenant.SaveChanges();
-        #endregion
 
-        // Arrange
         var mockTodayOdrRepository = new Mock<ITodayOdrRepository>();
         var mockRaiinKubunMstRepository = new Mock<IRaiinKubunMstRepository>();
         var mockNextOrderRepository = new Mock<INextOrderRepository>();
@@ -500,46 +452,45 @@ public class InitKbnSettingTest : BaseUT
         RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
         var interactor = new InitKbnSettingInteractor(mockTodayOdrRepository.Object, mockRaiinKubunMstRepository.Object, mockNextOrderRepository.Object);
 
-        // Act
-        int hpId = 1;
-        long ptId = 123456789;
-        long raiinNo = 999999999;
-        int sinDate = 22221212;
-        int frameID = 12345;
-
-        var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
-        var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
-        var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
-
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbns(hpId, ptId, raiinNo, sinDate))
-                                   .Returns(raiinKbnModels);
-
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKouiKbns(hpId))
-                                   .Returns(raiinKouiKbns);
-
-        mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbnItems(hpId))
-                                   .Returns(raiinKbnItemCds);
-
-        InitKbnSettingInputData inputData = new InitKbnSettingInputData(
-                                                                            hpId,
-                                                                            WindowType.Booking,
-                                                                            frameID,
-                                                                            true,
-                                                                            ptId,
-                                                                            raiinNo,
-                                                                            sinDate,
-                                                                            new()
-                                                                        );
-        var resultQuery = interactor.Handle(inputData);
-
-        // Assert
         try
         {
+            // Act
+            int hpId = 1;
+            long ptId = 123456789;
+            long raiinNo = 999999999;
+            int sinDate = 22221212;
+            int frameID = 12345;
+
+            var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
+            var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
+            var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
+
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbns(hpId, ptId, raiinNo, sinDate))
+                                       .Returns(raiinKbnModels);
+
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKouiKbns(hpId))
+                                       .Returns(raiinKouiKbns);
+
+            mockRaiinKubunMstRepository.Setup(repo => repo.GetRaiinKbnItems(hpId))
+                                       .Returns(raiinKbnItemCds);
+
+            InitKbnSettingInputData inputData = new InitKbnSettingInputData(
+                                                                                hpId,
+                                                                                WindowType.Booking,
+                                                                                frameID,
+                                                                                true,
+                                                                                ptId,
+                                                                                raiinNo,
+                                                                                sinDate,
+                                                                                new()
+                                                                            );
+            var resultQuery = interactor.Handle(inputData);
+
+            // Assert
             Assert.True(CompareInitDefault(resultQuery.RaiinKbnModels, raiinKbnModels));
         }
         finally
         {
-            #region Remove Data Fetch
             raiinKubunMstRepository.ReleaseResource();
             tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
             tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
@@ -548,7 +499,6 @@ public class InitKbnSettingTest : BaseUT
             tenant.RaiinKbnDetails.RemoveRange(raiinKbnDetailList);
             tenant.RaiinKbnInfs.RemoveRange(raiinKbnInflList);
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion

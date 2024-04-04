@@ -20,11 +20,12 @@ public class CheckedSpecialItemTest : BaseUT
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var sampleData = CheckedSpecialItemData.ReadTenMst();
         tenant.TenMsts.AddRange(sampleData);
-        tenant.SaveChanges();
         var mockOptions = new Mock<IOptions<AmazonS3Options>>();
         MstItemRepository mstItemRepository = new MstItemRepository(TenantProvider, mockOptions.Object);
         try
         {
+            tenant.SaveChanges();
+
             // Act
             var tenMsts = mstItemRepository.FindTenMst(1, new List<string>{
             "6412100651",
@@ -49,7 +50,6 @@ public class CheckedSpecialItemTest : BaseUT
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var sampleData = CheckedSpecialItemData.ReadDensiSanteiKaisu();
         tenant.DensiSanteiKaisus.AddRange(sampleData);
-        tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
@@ -61,6 +61,8 @@ public class CheckedSpecialItemTest : BaseUT
 
         try
         {
+            tenant.SaveChanges();
+
             // Act
             var densiSanteis = todayOdrRepository.FindDensiSanteiKaisuList(1, new List<string>{
             "W12334"
@@ -89,29 +91,36 @@ public class CheckedSpecialItemTest : BaseUT
         {
             var tempVal = system.Val;
             system.Val = 1;
-            tenanant.SaveChanges();
-            // Act
-            var systemVal = systemConfRepository.GetSettingValue(3013, 0, 1);
-            // Assert
-            Assert.True(systemVal != 0);
-            system.Val = tempVal;
-            tenanant.SaveChanges();
+            try
+            {
+                tenanant.SaveChanges();
+
+                // Act
+                var systemVal = systemConfRepository.GetSettingValue(3013, 0, 1);
+                // Assert
+                Assert.True(systemVal != 0);
+            }
+            finally
+            {
+                system.Val = tempVal;
+                tenanant.SaveChanges();
+            }
         }
     }
 
     [Test]
     public void TC_004_GetFirstVisitWithSyosin()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var sampleData = CheckedSpecialItemData.ReadRainInf();
         tenant.RaiinInfs.AddRange(sampleData);
-        tenant.SaveChanges();
-
-        // Arrange
         ReceptionRepository receptionRepository = new ReceptionRepository(TenantProvider);
 
         try
         {
+            tenant.SaveChanges();
+
             // Act
             var value = receptionRepository.GetFirstVisitWithSyosin(1, 602, 20220915);
             // Assert
@@ -190,7 +199,6 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.SinRpInfs.AddRange(sinRpInfs);
         tenant.SinKouiCounts.AddRange(sinKouiCounts);
         tenant.SinKouiDetails.AddRange(sinKouiDetails);
-        tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
@@ -200,6 +208,8 @@ public class CheckedSpecialItemTest : BaseUT
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository); TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider, systemConf, approvalinfRepository);
         try
         {
+            tenant.SaveChanges();
+
             // Act
             var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> { 1 }, new List<int> { 10 });
             // Assert

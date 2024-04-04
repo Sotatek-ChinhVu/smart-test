@@ -66,12 +66,11 @@ namespace CloudUnitTest.Interactor.SaveMedical
             int raiinNo = 6739159;
             bool result;
 
-            //Act
             MedicalStateChanged medicalStateChanged = new MedicalStateChanged(false, true, true, true, true, true);
 
-            //Assert
             try
             {
+                //Act
                 saveMedicalInteractor.AddAuditTempSaveData(hpId, userId, ptId, sinDate, raiinNo, medicalStateChanged);
                 result = true;
             }
@@ -79,7 +78,7 @@ namespace CloudUnitTest.Interactor.SaveMedical
             {
                 result = false;
             }
-
+            //Assert
             Assert.IsTrue(result);
         }
     }

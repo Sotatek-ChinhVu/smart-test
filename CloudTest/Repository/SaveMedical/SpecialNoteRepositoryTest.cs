@@ -32,6 +32,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_001_IsInvalidInputId_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(9999, 9999999);
@@ -68,17 +69,16 @@ public class SpecialNoteRepositoryTest : BaseUT
         {
             specialNoteRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_002_IsInvalidInputId_TestHpInfFalse()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -115,17 +115,16 @@ public class SpecialNoteRepositoryTest : BaseUT
         {
             specialNoteRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_003_IsInvalidInputId_TestPtInfFalse()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -162,11 +161,9 @@ public class SpecialNoteRepositoryTest : BaseUT
         {
             specialNoteRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion IsInvalidInputId
@@ -175,6 +172,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_004_SaveSpecialNote_TestSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -213,17 +211,16 @@ public class SpecialNoteRepositoryTest : BaseUT
         {
             specialNoteRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_005_SaveSpecialNote_TestFalse()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -263,11 +260,9 @@ public class SpecialNoteRepositoryTest : BaseUT
         {
             specialNoteRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion
@@ -276,6 +271,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_006_SaveSummaryInf_TestCreateSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetTrackingTenantDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -344,7 +340,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (summaryInf != null)
@@ -352,13 +347,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.SummaryInfs.Remove(summaryInf);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_007_SaveSummaryInf_TestUpdateSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -432,7 +427,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (summaryInf != null)
@@ -440,7 +434,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.SummaryInfs.Remove(summaryInf);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveSummaryInf
@@ -450,6 +443,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_008_SaveImportantNote_TestSaveAlrgyFoodItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -526,7 +520,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 _cache.KeyDelete(finalKey);
             }
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptAlrgyFood != null)
@@ -534,13 +527,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtAlrgyFoods.Remove(ptAlrgyFood);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_009_SaveImportantNote_TestUpdateAlrgyFoodItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -622,7 +615,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptAlrgyFood != null)
@@ -630,7 +622,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtAlrgyFoods.Remove(ptAlrgyFood);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveAlrgyFoodItems
@@ -639,6 +630,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_010_SaveImportantNote_TestSaveElseItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -712,7 +704,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptAlrgyElse != null)
@@ -720,13 +711,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtAlrgyElses.Remove(ptAlrgyElse);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_011_SaveImportantNote_TestUpdateElseItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -808,7 +799,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptAlrgyElse != null)
@@ -816,7 +806,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtAlrgyElses.Remove(ptAlrgyElse);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveElseItems
@@ -825,6 +814,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_012_SaveImportantNote_TestSaveDrugItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -900,7 +890,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptAlrgyDrug != null)
@@ -908,13 +897,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtAlrgyDrugs.Remove(ptAlrgyDrug);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_013_SaveImportantNote_TestUpdateDrugItemsSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -998,7 +987,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptAlrgyDrug != null)
@@ -1006,7 +994,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtAlrgyDrugs.Remove(ptAlrgyDrug);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveElseItems
@@ -1015,6 +1002,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_014_SaveImportantNote_TestSaveKioRekiItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1087,7 +1075,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptKioReki != null)
@@ -1095,13 +1082,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtKioRekis.Remove(ptKioReki);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_015_SaveImportantNote_TestUpdateKioRekiItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1186,7 +1173,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptKioReki != null)
@@ -1194,7 +1180,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtKioRekis.Remove(ptKioReki);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveElseItems
@@ -1203,6 +1188,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_016_SaveImportantNote_TestSaveInfectionsItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1275,7 +1261,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptInfection != null)
@@ -1283,13 +1268,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtInfection.Remove(ptInfection);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_017_SaveImportantNote_TestUpdateInfectionsItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1373,7 +1358,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptInfection != null)
@@ -1381,7 +1365,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtInfection.Remove(ptInfection);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveInfectionsItems
@@ -1390,6 +1373,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_018_SaveImportantNote_TestSaveOtherDrugItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1462,7 +1446,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptOtherDrug != null)
@@ -1470,13 +1453,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtOtherDrug.Remove(ptOtherDrug);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_019_SaveImportantNote_TestUpdateOtherDrugItemmSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1560,7 +1543,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptOtherDrug != null)
@@ -1568,7 +1550,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtOtherDrug.Remove(ptOtherDrug);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveOtherDrugItems
@@ -1577,6 +1558,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_020_SaveImportantNote_TestSaveOtcDrugItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1649,7 +1631,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptOtcDrug != null)
@@ -1657,13 +1638,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtOtcDrug.Remove(ptOtcDrug);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_021_SaveImportantNote_TestUpdateOtcDrugItemmSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1747,7 +1728,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptOtcDrug != null)
@@ -1755,7 +1735,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtOtcDrug.Remove(ptOtcDrug);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveOtcDrugItems
@@ -1764,6 +1743,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_022_SaveImportantNote_TestSaveSuppleItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1836,7 +1816,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptSupple != null)
@@ -1844,13 +1823,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtSupples.Remove(ptSupple);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_023_SaveImportantNote_TestUpdateSuppleItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -1934,7 +1913,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptSupple != null)
@@ -1942,7 +1920,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtSupples.Remove(ptSupple);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveSuppleItems
@@ -1953,6 +1930,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_024_SaveImportantNote_TestSavePregnancyItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2024,7 +2002,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptPregnancy != null)
@@ -2032,13 +2009,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtPregnancies.Remove(ptPregnancy);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_025_SaveImportantNote_TestUpdatePregnancyItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2121,7 +2098,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptPregnancy != null)
@@ -2129,7 +2105,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtPregnancies.Remove(ptPregnancy);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SavePregnancyItems
@@ -2138,6 +2113,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_026_SaveImportantNote_TestSavePtCmtInfItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2199,7 +2175,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptCmtInf != null)
@@ -2207,13 +2182,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtCmtInfs.Remove(ptCmtInf);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_027_SaveImportantNote_TestUpdatePtCmtInfItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2286,7 +2261,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (ptCmtInf != null)
@@ -2294,7 +2268,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.PtCmtInfs.Remove(ptCmtInf);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SavePtCmtInfItems
@@ -2303,6 +2276,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_028_SaveImportantNote_TestSaveSeikatureInfItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2363,7 +2337,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (seikaturekiInf != null)
@@ -2371,13 +2344,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.SeikaturekiInfs.Remove(seikaturekiInf);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_029_SaveImportantNote_TestUpdatePtSeikatureInfItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2449,7 +2422,6 @@ public class SpecialNoteRepositoryTest : BaseUT
             specialNoteRepository.ReleaseResource();
             _cache.KeyDelete(finalKey);
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (seikaturekiInf != null)
@@ -2457,7 +2429,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.SeikaturekiInfs.Remove(seikaturekiInf);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion SaveSeikatureInfItems
@@ -2466,6 +2437,7 @@ public class SpecialNoteRepositoryTest : BaseUT
     [Test]
     public void TC_030_SaveImportantNote_TestSavePhysicalInfItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2555,7 +2527,6 @@ public class SpecialNoteRepositoryTest : BaseUT
         {
             specialNoteRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (kensaInf != null)
@@ -2567,13 +2538,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.KensaInfDetails.Remove(kensaInfDetail);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_031_SaveImportantNote_TestUpdatePtPhysicalInfItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2674,7 +2645,6 @@ public class SpecialNoteRepositoryTest : BaseUT
         {
             specialNoteRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (kensaInf != null)
@@ -2686,13 +2656,13 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.KensaInfDetails.Remove(kensaInfDetail);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_032_SaveImportantNote_TestDeletedPtPhysicalInfItemSuccess()
     {
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
         Random random = new();
         int hpId = random.Next(999, 99999);
@@ -2773,7 +2743,6 @@ public class SpecialNoteRepositoryTest : BaseUT
         {
             specialNoteRepository.ReleaseResource();
 
-            #region Remove Data Fetch
             tenant.HpInfs.Remove(hpInf);
             tenant.PtInfs.Remove(ptInf);
             if (kensaInf != null)
@@ -2785,7 +2754,6 @@ public class SpecialNoteRepositoryTest : BaseUT
                 tenant.KensaInfDetails.Remove(kensaInfDetailAfter);
             }
             tenant.SaveChanges();
-            #endregion
         }
     }
 

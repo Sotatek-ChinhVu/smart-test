@@ -1,4 +1,5 @@
-﻿using Domain.Models.OrdInfs;
+﻿        // Arrange
+using Domain.Models.OrdInfs;
 using Moq;
 using Domain.Models.GroupInf;
 using Domain.Models.KensaIrai;
@@ -21,7 +22,7 @@ public class SaveKensaIraiActionTest : BaseUT
     [Test]
     public void TC_001_SaveKensaIraiAction_TestSuccess()
     {
-        //Setup Data Test
+        // Arrange
         var mockKensaIraiRepository = new Mock<IKensaIraiRepository>();
         var mockSystemConfRepository = new Mock<ISystemConfRepository>();
         var mockPatientInforRepository = new Mock<IPatientInforRepository>();
@@ -31,10 +32,8 @@ public class SaveKensaIraiActionTest : BaseUT
         var mockGroupInfRepository = new Mock<IGroupInfRepository>();
         var mockCoKensaIraiFinder = new Mock<ICoKensaIraiFinder>();
 
-        // Arrange
         var kensaIraiCommon = new KensaIraiCommon(TenantProvider, mockKensaIraiRepository.Object, mockSystemConfRepository.Object, mockPatientInforRepository.Object, mockReceptionRepository.Object, mockOrdInfRepository.Object, mockKensaIraiCoReportService.Object, mockGroupInfRepository.Object, mockCoKensaIraiFinder.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int userId = random.Next(999, 99999);
@@ -350,7 +349,7 @@ public class SaveKensaIraiActionTest : BaseUT
     [Test]
     public void TC_002_SaveKensaIraiAction_TestSuccess()
     {
-        //Setup Data Test
+        // Arrange
         var mockKensaIraiRepository = new Mock<IKensaIraiRepository>();
         var mockSystemConfRepository = new Mock<ISystemConfRepository>();
         var mockPatientInforRepository = new Mock<IPatientInforRepository>();
@@ -360,10 +359,8 @@ public class SaveKensaIraiActionTest : BaseUT
         var mockGroupInfRepository = new Mock<IGroupInfRepository>();
         var mockCoKensaIraiFinder = new Mock<ICoKensaIraiFinder>();
 
-        // Arrange
         var kensaIraiCommon = new KensaIraiCommon(TenantProvider, mockKensaIraiRepository.Object, mockSystemConfRepository.Object, mockPatientInforRepository.Object, mockReceptionRepository.Object, mockOrdInfRepository.Object, mockKensaIraiCoReportService.Object, mockGroupInfRepository.Object, mockCoKensaIraiFinder.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int userId = random.Next(999, 99999);
@@ -387,7 +384,7 @@ public class SaveKensaIraiActionTest : BaseUT
     [Test]
     public void TC_003_SaveKensaIraiAction_TestFalse()
     {
-        //Setup Data Test
+        // Arrange
         var mockKensaIraiRepository = new Mock<IKensaIraiRepository>();
         var mockSystemConfRepository = new Mock<ISystemConfRepository>();
         var mockPatientInforRepository = new Mock<IPatientInforRepository>();
@@ -397,10 +394,8 @@ public class SaveKensaIraiActionTest : BaseUT
         var mockGroupInfRepository = new Mock<IGroupInfRepository>();
         var mockCoKensaIraiFinder = new Mock<ICoKensaIraiFinder>();
 
-        // Arrange
         var kensaIraiCommon = new KensaIraiCommon(TenantProvider, mockKensaIraiRepository.Object, mockSystemConfRepository.Object, mockPatientInforRepository.Object, mockReceptionRepository.Object, mockOrdInfRepository.Object, mockKensaIraiCoReportService.Object, mockGroupInfRepository.Object, mockCoKensaIraiFinder.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int userId = random.Next(999, 99999);
@@ -672,7 +667,7 @@ public class SaveKensaIraiActionTest : BaseUT
     [Test]
     public void TC_004_SaveKensaIraiAction_TestFalse()
     {
-        //Setup Data Test
+        // Arrange
         var mockKensaIraiRepository = new Mock<IKensaIraiRepository>();
         var mockSystemConfRepository = new Mock<ISystemConfRepository>();
         var mockPatientInforRepository = new Mock<IPatientInforRepository>();
@@ -682,10 +677,8 @@ public class SaveKensaIraiActionTest : BaseUT
         var mockGroupInfRepository = new Mock<IGroupInfRepository>();
         var mockCoKensaIraiFinder = new Mock<ICoKensaIraiFinder>();
 
-        // Arrange
         var kensaIraiCommon = new KensaIraiCommon(TenantProvider, mockKensaIraiRepository.Object, mockSystemConfRepository.Object, mockPatientInforRepository.Object, mockReceptionRepository.Object, mockOrdInfRepository.Object, mockKensaIraiCoReportService.Object, mockGroupInfRepository.Object, mockCoKensaIraiFinder.Object);
 
-        // Mock data
         Random random = new();
         int hpId = random.Next(999, 99999);
         int userId = random.Next(999, 99999);

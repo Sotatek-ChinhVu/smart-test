@@ -11,31 +11,24 @@ public class SanteiInfRepositoryTest : BaseUT
     [Test]
     public void TC_001_GetListSanteiInf_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
-        // SanteiInf
         var santeiInfs = ReadDataSanteiInf.ReadSanteiInf();
         tenant.SanteiInfs.AddRange(santeiInfs);
 
-        // SanteiInfDetail
         var santeiInfDetails = ReadDataSanteiInf.ReadSanteiInfDetail();
         tenant.SanteiInfDetails.AddRange(santeiInfDetails);
 
-        // OrderInf
         var orderInfs = ReadDataSanteiInf.ReadOrderInf();
         tenant.OdrInfs.AddRange(orderInfs);
 
-        // OrderInfDetail
         var orderInfDetails = ReadDataSanteiInf.ReadOrderInfDetail();
         tenant.OdrInfDetails.AddRange(orderInfDetails);
 
-        // TenMst
         var tenMsts = ReadDataSanteiInf.ReadTenMst();
         tenant.TenMsts.AddRange(tenMsts);
-        #endregion
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Assert
@@ -51,7 +44,6 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             tenant.SanteiInfs.RemoveRange(santeiInfs);
             tenant.SanteiInfDetails.RemoveRange(santeiInfDetails);
@@ -59,42 +51,33 @@ public class SanteiInfRepositoryTest : BaseUT
             tenant.OdrInfDetails.RemoveRange(orderInfDetails);
             tenant.TenMsts.RemoveRange(tenMsts);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_002_GetListSanteiInf_TestCoverLineSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
 
-        // SanteiInf
         var santeiInfs = ReadDataSanteiInf.ReadSanteiInf();
         tenant.SanteiInfs.AddRange(santeiInfs);
 
-        // SanteiInfDetail
         var santeiInfDetail = ReadDataSanteiInf.ReadSanteiInfDetail().FirstOrDefault();
         SanteiInfDetail santeiInfDetail2 = santeiInfDetail!.Clone();
         santeiInfDetail2.KisanDate = santeiInfDetail.KisanDate + 1;
         tenant.SanteiInfDetails.Add(santeiInfDetail);
         tenant.SanteiInfDetails.Add(santeiInfDetail2);
 
-
-        // OrderInf
         var orderInfs = ReadDataSanteiInf.ReadOrderInf();
         tenant.OdrInfs.AddRange(orderInfs);
 
-        // OrderInfDetail
         var orderInfDetails = ReadDataSanteiInf.ReadOrderInfDetail();
         tenant.OdrInfDetails.AddRange(orderInfDetails);
 
-        // TenMst
         var tenMsts = ReadDataSanteiInf.ReadTenMst();
         tenant.TenMsts.AddRange(tenMsts);
-        #endregion
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Assert
@@ -110,7 +93,6 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             tenant.SanteiInfs.RemoveRange(santeiInfs);
             tenant.SanteiInfDetails.Remove(santeiInfDetail);
@@ -119,22 +101,19 @@ public class SanteiInfRepositoryTest : BaseUT
             tenant.OdrInfDetails.RemoveRange(orderInfDetails);
             tenant.TenMsts.RemoveRange(tenMsts);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_003_GetListSanteiInfDetail_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        // SanteiInfDetail
+
         var santeiInfDetails = ReadDataSanteiInf.ReadSanteiInfDetail();
         tenant.SanteiInfDetails.AddRange(santeiInfDetails);
         tenant.SaveChanges();
-        #endregion
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Act
@@ -159,26 +138,21 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             tenant.SanteiInfDetails.RemoveRange(santeiInfDetails);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_004_GetOnlyListSanteiInf_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        // SanteiInfDetail
         var santeiInfs = ReadDataSanteiInf.ReadSanteiInf();
         tenant.SanteiInfs.AddRange(santeiInfs);
         tenant.SaveChanges();
-        #endregion
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Act
@@ -192,24 +166,21 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             tenant.SanteiInfs.RemoveRange(santeiInfs);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_005_CheckExistItemCd_TestSuccess()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        // SanteiInfDetail
+
         var tenMsts = ReadDataSanteiInf.ReadTenMst();
         tenant.TenMsts.AddRange(tenMsts);
-        #endregion
-        // Arrange
+
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Assert
@@ -222,16 +193,13 @@ public class SanteiInfRepositoryTest : BaseUT
             List<string> listItemCds = tenMsts.Select(item => item.ItemCd ?? string.Empty).ToList();
             result = santeiInfRepository.CheckExistItemCd(1, listItemCds);
 
-
             Assert.True(result);
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             tenant.TenMsts.RemoveRange(tenMsts);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
@@ -251,22 +219,19 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
-            #endregion
         }
     }
 
     [Test]
     public void TC_007_CheckExistItemCd_TestInvalidHpId()
     {
-        #region Fetch data
+        // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        // SanteiInfDetail
+
         var tenMsts = ReadDataSanteiInf.ReadTenMst();
         tenant.TenMsts.AddRange(tenMsts);
-        #endregion
-        // Arrange
+
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Assert
@@ -284,11 +249,9 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             tenant.TenMsts.RemoveRange(tenMsts);
             tenant.SaveChanges();
-            #endregion
         }
     }
     #endregion
@@ -297,6 +260,7 @@ public class SanteiInfRepositoryTest : BaseUT
     [Test]
     public void TC_008_SaveSantei_TestCreateNewSuccess()
     {
+        // Arrange
         Random random = new();
         long ptId = long.MaxValue;
         string itemCd = "ItemCdTest";
@@ -316,7 +280,6 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                 )
                                                             };
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Act
@@ -354,20 +317,19 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             if (listSanteiInfs != null)
             {
                 tenant.SanteiInfs.RemoveRange(listSanteiInfs);
                 tenant.SaveChanges();
             }
-            #endregion
         }
     }
 
     [Test]
     public void TC_009_SaveSantei_TestUpdateSuccess()
     {
+        // Arrange
         Random random = new();
         long ptId = long.MaxValue;
         string itemCd = "ItemCdTest";
@@ -391,7 +353,6 @@ public class SanteiInfRepositoryTest : BaseUT
         };
         tenant.SanteiInfs.Add(santeiInfUnitTest);
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Assert
@@ -429,16 +390,16 @@ public class SanteiInfRepositoryTest : BaseUT
         finally
         {
             santeiInfRepository.ReleaseResource();
-            #region Remove Data Fetch
+
             tenant.SanteiInfs.Remove(santeiInfUnitTest);
             tenant.SaveChanges();
-            #endregion
         }
     }
 
     [Test]
     public void TC_010_SaveSantei_TestDeleteSuccess()
     {
+        // Arrange
         Random random = new();
         long ptId = long.MaxValue;
         string itemCd = "ItemCdTest";
@@ -460,9 +421,9 @@ public class SanteiInfRepositoryTest : BaseUT
         };
         tenant.SanteiInfs.Add(santeiInfUnitTest);
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
         SanteiInf? santeiInfCheck = null;
+
         // Assert
         try
         {
@@ -489,19 +450,18 @@ public class SanteiInfRepositoryTest : BaseUT
         finally
         {
             santeiInfRepository.ReleaseResource();
-            #region Remove Data Fetch
             if (santeiInfCheck != null)
             {
                 tenant.SanteiInfs.Remove(santeiInfUnitTest);
                 tenant.SaveChanges();
             }
-            #endregion
         }
     }
 
     [Test]
     public void TC_011_SaveListSanteiInfDetail_TestCreateNewSuccess()
     {
+        // Arrange
         Random random = new();
         long ptId = long.MaxValue;
         string itemCd = "ItemCdTest";
@@ -525,7 +485,6 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                 )
                                                                         };
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Act
@@ -568,20 +527,19 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             if (santeiInfDetail != null)
             {
                 tenant.SanteiInfDetails.Remove(santeiInfDetail);
                 tenant.SaveChanges();
             }
-            #endregion
         }
     }
 
     [Test]
     public void TC_012_SaveListSanteiInfDetail_TestUpdateSuccess()
     {
+        // Arrange
         Random random = new();
         long ptId = long.MaxValue;
         string itemCd = "ItemCdTest";
@@ -613,7 +571,6 @@ public class SanteiInfRepositoryTest : BaseUT
         };
         tenant.SanteiInfDetails.Add(santeiInfDetailUnitTest);
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         try
@@ -651,20 +608,19 @@ public class SanteiInfRepositoryTest : BaseUT
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             if (santeiInfDetailUnitTest != null)
             {
                 tenant.SanteiInfDetails.Remove(santeiInfDetailUnitTest);
                 tenant.SaveChanges();
             }
-            #endregion
         }
     }
 
     [Test]
     public void TC_013_SaveListSanteiInfDetail_TestDeleteSuccess()
     {
+        // Arrange
         Random random = new();
         long ptId = long.MaxValue;
         string itemCd = "ItemCdTest";
@@ -690,7 +646,6 @@ public class SanteiInfRepositoryTest : BaseUT
         };
         tenant.SanteiInfDetails.Add(santeiInfDetailUnitTest);
 
-        // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         try
@@ -724,20 +679,15 @@ public class SanteiInfRepositoryTest : BaseUT
             }
 
             // Assert
-
             Assert.True(resultComman);
         }
         finally
         {
-            #region Remove Data Fetch
             santeiInfRepository.ReleaseResource();
             tenant.SanteiInfDetails.Remove(santeiInfDetailUnitTest);
             tenant.SaveChanges();
-            #endregion
         }
     }
-
-
     #endregion
 
     #region private function

@@ -49,11 +49,13 @@ namespace CloudUnitTest.Interactor.SaveMedical
             tenantTracking.SummaryInfs.Add(summaryInf);
             try
             {
+                // Act
                 _cache.StringAppend(finalKey, string.Empty);
                 tenantTracking.SaveChanges();
 
                 var result = summaryInfRepository.Get(hpid, ptId);
 
+                // Assert
                 Assert.That(result.Id != 9999999 && _cache.KeyExists(finalKey));
             }
             finally
@@ -93,10 +95,12 @@ namespace CloudUnitTest.Interactor.SaveMedical
             tenantTracking.SummaryInfs.Add(summaryInf);
             try
             {
+                // Act
                 tenantTracking.SaveChanges();
 
                 var result = summaryInfRepository.Get(hpid, ptId);
 
+                // Assert
                 Assert.That(result.Id == 9999999 && _cache.KeyExists(finalKey));
             }
             finally
