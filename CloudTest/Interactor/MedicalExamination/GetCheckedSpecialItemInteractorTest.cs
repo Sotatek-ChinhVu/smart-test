@@ -1,4 +1,5 @@
 ﻿using Amazon.Runtime.Internal.Transform;
+using CloudUnitTest.SampleData;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.KarteInfs;
@@ -8,7 +9,11 @@ using Domain.Models.Reception;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
 using Helper.Common;
+using Infrastructure.Options;
+using Infrastructure.Repositories;
 using Interactor.MedicalExamination;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Globalization;
 using UseCase.MedicalExamination.UpsertTodayOrd;
@@ -64,7 +69,98 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_002_AgeLimitCheck_MaxAge_WithAgeDiffer0()
+    public void TC_002_AgeLimitCheck_CheckAge()
+    {
+        // Arrange
+        int sinDate = 20221111, iBirthDay = 20221201, checkAge = 0;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        var tenMstItems = new List<TenItemModel>();
+
+        #region Data Example
+        //MaxAge = "AA"
+        var tenMstAA = new TenItemModel(
+            1,
+            "140064650",
+            "0",
+            "AA",
+            "140064650",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMstAA);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetailAA = new OrdInfDetailModel(
+            1,
+            "140064650",
+            20221111
+            );
+        odrDetails.Add(odrDetailAA);
+        #endregion  
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.AgeLimitCheck(sinDate, iBirthDay, checkAge, tenMstItems, odrDetails);
+
+        // Assert
+        Assert.True(!output.Any());
+    }
+
+    /// <summary>
+    /// Check ItemCd null
+    /// </summary>
+    [Test]
+    public void TC_003_AgeLimitCheck_CheckItemCd()
+    {
+        // Arrange
+        int sinDate = 20221111, iBirthDay = 20221201, checkAge = 1;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        var tenMstItems = new List<TenItemModel>();
+
+        #region Data Example
+        //MaxAge = "AA"
+        var tenMstAA = new TenItemModel(
+            1,
+            "140064650",
+            "0",
+            "AA",
+            "140064650",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMstAA);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetailAA = new OrdInfDetailModel(
+            1,
+            "",
+            20221111
+            );
+        odrDetails.Add(odrDetailAA);
+        #endregion  
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.AgeLimitCheck(sinDate, iBirthDay, checkAge, tenMstItems, odrDetails);
+
+        // Assert
+        Assert.True(!output.Any());
+    }
+
+    [Test]
+    public void TC_004_AgeLimitCheck_MaxAge_WithAgeDiffer0()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 19930903, checkAge = 29;
@@ -109,7 +205,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_003_AgeLimitCheck_MinAge_WithAgeDiffer0()
+    public void TC_005_AgeLimitCheck_MinAge_WithAgeDiffer0()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 20221221, checkAge = 1;
@@ -154,7 +250,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_004_AgeLimitCheck_MaxAge_WithMinAgeEqual0()
+    public void TC_006_AgeLimitCheck_MaxAge_WithMinAgeEqual0()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 19930903, checkAge = 29;
@@ -199,7 +295,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_005_AgeLimitCheck_MinAge_WithMaxAgeEqual0()
+    public void TC_007_AgeLimitCheck_MinAge_WithMaxAgeEqual0()
     {
         // Arrange
         int sinDate = 20221111, iBirthDay = 20221221, checkAge = 1;
@@ -241,11 +337,57 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         // Assert
         Assert.True(output.Count == odrDetails.Count);
     }
+
+    [Test]
+    public void TC_008_AgeLimitCheck_MinAge_WithMaxAgeEqual0_Continue_ItemCd()
+    {
+        // Arrange
+        int sinDate = 20221111, iBirthDay = 20221221, checkAge = 1;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        var tenMstItems = new List<TenItemModel>();
+
+        #region Data Example
+        //MaxAge = "BF"
+        var tenMstBF = new TenItemModel(
+            1,
+            "629901301",
+            "BF",
+            "0",
+            "140064650",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMstBF);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetailBF = new OrdInfDetailModel(
+           1,
+           "629901301",
+           20221111
+           );
+        odrDetails.Add(odrDetailBF);
+        odrDetails.Add(odrDetailBF);
+        #endregion  
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.AgeLimitCheck(sinDate, iBirthDay, checkAge, tenMstItems, odrDetails);
+
+        // Assert
+        Assert.True(output.Count == 1);
+    }
+
     #endregion
 
     #region ExpiredCheck
     [Test]
-    public void TC_006_ExpiredCheck_True()
+    public void TC_009_ExpiredCheck_True()
     {
         // Arrange
         var sinDate = 20221101;
@@ -284,8 +426,85 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         Assert.True(!output.Any());
     }
 
+    /// <summary>
+    /// Check ItemCd null
+    /// </summary>
     [Test]
-    public void TC_007_ExpiredCheck_MinStartDate()
+    public void TC_010_ExpiredCheck_CheckItemCd()
+    {
+        // Arrange
+        var sinDate = 20221101;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        var tenMstItems = new List<TenItemModel>();
+        var tenMstError = new TenItemModel(
+            1,
+            "140064650",
+            "00",
+            "AA",
+            "140064650",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMstError);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail = new OrdInfDetailModel(
+            1,
+            "",
+            20221111
+            );
+        odrDetails.Add(odrDetail);
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.ExpiredCheck(sinDate, tenMstItems, odrDetails);
+
+        // Assert
+        Assert.True(!output.Any());
+    }
+
+    
+
+    /// <summary>
+    /// tenMstItemList empty
+    /// </summary>
+    [Test]
+    public void TC_011_ExpiredCheck_TenMstItemList()
+    {
+        // Arrange
+        var sinDate = 20221101;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        var tenMstItems = new List<TenItemModel>();
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail = new OrdInfDetailModel(
+            1,
+            "test",
+            20221111
+            );
+        odrDetails.Add(odrDetail);
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.ExpiredCheck(sinDate, tenMstItems, odrDetails);
+
+        // Assert
+        Assert.True(!output.Any());
+    }
+
+    [Test]
+    public void TC_012_ExpiredCheck_MinStartDate()
     {
         // Arrange
         var sinDate = 20220101;
@@ -325,7 +544,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_008_ExpiredCheck_MaxEndDate()
+    public void TC_013_ExpiredCheck_MaxEndDate()
     {
         // Arrange
         var sinDate = 20221101;
@@ -367,7 +586,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region DuplicateCheck
     [Test]
-    public void TC_009_DuplicateCheck_True()
+    public void TC_014_DuplicateCheck_True()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -442,7 +661,82 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_010_DuplicateCheck_Fail()
+    public void TC_015_DuplicateCheck_Continue()
+    {
+        // Arrange
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        var tenMstItems = new List<TenItemModel>();
+        var tenMstError = new TenItemModel(
+            1,
+            "140064650",
+            "00",
+            "AA",
+            "140064650",
+            20220401,
+            99999999,
+            1
+            );
+        tenMstItems.Add(tenMstError);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+
+        var odrDetail1 = new OrdInfDetailModel(
+            1,
+            "140064650",
+            20221111
+            );
+        odrDetails.Add(odrDetail1);
+
+        var odrDetail2 = new OrdInfDetailModel(
+           1,
+           "140038410",
+           20221111
+           );
+        odrDetails.Add(odrDetail2);
+
+        var odrDetail3 = new OrdInfDetailModel(
+           1,
+           "Y0001",
+           20221111
+           );
+        odrDetails.Add(odrDetail3);
+
+        var odrDetail4 = new OrdInfDetailModel(
+          1,
+          "Z0001",
+          20221111
+          );
+        odrDetails.Add(odrDetail4);
+
+        var odrDetail5 = new OrdInfDetailModel(
+          1,
+          "@BUNKATU",
+          20221111
+          );
+        odrDetails.Add(odrDetail5);
+
+        var odrDetail6 = new OrdInfDetailModel(
+          1,
+          "@REFILL",
+          20221111
+          );
+        odrDetails.Add(odrDetail6);
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.DuplicateCheck(tenMstItems, odrDetails);
+
+        // Assert
+        Assert.True(!output.Any());
+    }
+    [Test]
+    public void TC_016_DuplicateCheck_Fail()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -484,7 +778,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region ItemCommentCheck
     [Test]
-    public void TC_011_ItemCommentCheck_True()
+    public void TC_017_ItemCommentCheck_True()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -518,7 +812,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_012_ItemCommentCheck_Fail()
+    public void TC_018_ItemCommentCheck_Fail()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -552,7 +846,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region CalculationCountCheck
     [Test]
-    public void TC_013_CalculationCountCheck_UnitCd_997_998()
+    public void TC_019_CalculationCountCheck_UnitCd_997_998()
     {
         // Arrange
         int hpId = 999, sinDate = 20221110;
@@ -683,7 +977,747 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_014_CalculationCountCheck_UnitCd_Other()
+    public void TC_020_CalculationCountCheck_002_UnitCd_997_998()
+    {
+        // Arrange
+        int hpId = 999, sinDate = 20221110;
+        long raiinNo = 400201159, ptId = 54109;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        #region Data Example
+        var tenMstItems = new List<TenItemModel>();
+        var tenMst1 = new TenItemModel(
+            hpId,
+            "111014210",
+            "0",
+            "AA",
+            "111014210",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst1);
+
+        var tenMst2 = new TenItemModel(
+            hpId,
+            "113003510",
+            "0",
+            "B3",
+            "113003510",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst2);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail1 = new OrdInfDetailModel(
+            hpId,
+            "",
+            20221111
+            );
+        odrDetails.Add(odrDetail1);
+
+        var odrDetail2 = new OrdInfDetailModel(
+            hpId,
+            "113003510",
+            20221111
+            );
+        odrDetails.Add(odrDetail2);
+
+        var santeiTenMsts = new List<TenItemModel>();
+        santeiTenMsts.Add(tenMst1);
+        santeiTenMsts.Add(tenMst2);
+
+        var densiSanteiKaisuModels = new List<DensiSanteiKaisuModel>();
+
+        var densiSanteiKaisuModel1 = new DensiSanteiKaisuModel(
+                1,
+                hpId,
+                "111014210",
+                997,
+                10,
+                0,
+                20220101,
+                99999999,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            );
+
+        var densiSanteiKaisuModel2 = new DensiSanteiKaisuModel(
+               1,
+               hpId,
+               "113003510",
+               998,
+               10,
+               0,
+               20220101,
+               99999999,
+               1,
+               1,
+               1,
+               1,
+               1,
+               1,
+               2
+           );
+        densiSanteiKaisuModels.Add(densiSanteiKaisuModel1);
+        densiSanteiKaisuModels.Add(densiSanteiKaisuModel2);
+
+        var itemGrpMsts = new List<ItemGrpMstModel>();
+
+        var itemGrpMst1 = new ItemGrpMstModel(
+                hpId,
+                1,
+                1,
+                20220101,
+                99999999,
+                "111014210",
+                1
+            );
+
+        var itemGrpMst2 = new ItemGrpMstModel(
+                hpId,
+                1,
+                2,
+                20220101,
+                99999999,
+                "113003510",
+                1
+           );
+        itemGrpMsts.Add(itemGrpMst1);
+        itemGrpMsts.Add(itemGrpMst2);
+
+        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
+        #endregion
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
+
+        // Assert
+        Assert.True(output.Count == 0);
+    }
+
+    [Test]
+    public void TC_021_CalculationCountCheck_003_UnitCd_997_998()
+    {
+        // Arrange
+        int hpId = 999, sinDate = 20221110;
+        long raiinNo = 400201159, ptId = 54109;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        #region Data Example
+        var tenMstItems = new List<TenItemModel>();
+        var tenMst1 = new TenItemModel(
+            hpId,
+            "111014210",
+            "0",
+            "AA",
+            "111014211",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst1);
+
+        var tenMst2 = new TenItemModel(
+            hpId,
+            "113003510",
+            "0",
+            "B3",
+            "113003510",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst2);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail1 = new OrdInfDetailModel(
+            hpId,
+            "111014210",
+            20221111
+            );
+        odrDetails.Add(odrDetail1);
+
+        var odrDetail2 = new OrdInfDetailModel(
+            hpId,
+            "113003510",
+            20221111
+            );
+        odrDetails.Add(odrDetail2);
+
+        var santeiTenMsts = new List<TenItemModel>();
+        santeiTenMsts.Add(tenMst1);
+        santeiTenMsts.Add(tenMst2);
+
+        var densiSanteiKaisuModels = new List<DensiSanteiKaisuModel>();
+
+        var densiSanteiKaisuModel1 = new DensiSanteiKaisuModel(
+                1,
+                hpId,
+                "111014210",
+                997,
+                10,
+                0,
+                20220101,
+                99999999,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            );
+
+        var densiSanteiKaisuModel2 = new DensiSanteiKaisuModel(
+               1,
+               hpId,
+               "113003510",
+               998,
+               10,
+               0,
+               20220101,
+               99999999,
+               1,
+               1,
+               1,
+               1,
+               1,
+               1,
+               2
+           );
+        densiSanteiKaisuModels.Add(densiSanteiKaisuModel1);
+        densiSanteiKaisuModels.Add(densiSanteiKaisuModel2);
+
+        var itemGrpMsts = new List<ItemGrpMstModel>();
+
+        var itemGrpMst1 = new ItemGrpMstModel(
+                hpId,
+                1,
+                1,
+                20220101,
+                99999999,
+                "111014210",
+                1
+            );
+
+        var itemGrpMst2 = new ItemGrpMstModel(
+                hpId,
+                1,
+                2,
+                20220101,
+                99999999,
+                "113003510",
+                1
+           );
+        itemGrpMsts.Add(itemGrpMst1);
+        itemGrpMsts.Add(itemGrpMst2);
+
+        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
+        #endregion
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
+
+        // Assert
+        Assert.True(output.Count == 4);
+    }
+
+    [Test]
+    public void TC_022_CalculationCountCheck_005_MulTi_UnitCd()
+    {
+        // Arrange
+        int hpId = 999, sinDate = 20221110;
+        long raiinNo = 400201159, ptId = 54109;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        #region Data Example
+        var tenMstItems = new List<TenItemModel>();
+        var tenMst1 = new TenItemModel(
+            hpId,
+            "111014210",
+            "0",
+            "AA",
+            "111014211",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst1);
+
+        var tenMst2 = new TenItemModel(
+            hpId,
+            "113003510",
+            "0",
+            "B3",
+            "113003510",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst2);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail1 = new OrdInfDetailModel(
+            hpId,
+            "111014210",
+            20221111
+            );
+        odrDetails.Add(odrDetail1);
+
+        var odrDetail2 = new OrdInfDetailModel(
+            hpId,
+            "113003510",
+            20221111
+            );
+        odrDetails.Add(odrDetail2);
+
+        var santeiTenMsts = new List<TenItemModel>();
+        santeiTenMsts.Add(tenMst1);
+        santeiTenMsts.Add(tenMst2);
+
+        var densiSanteiKaisuModels = new List<DensiSanteiKaisuModel>();
+
+        #region #example densiSanteiKaisuModel
+
+        int[] unitCds = { 121, 131, 138, 141, 142, 143, 144, 145, 146, 147, 148 };
+        for (int i = 0; i < unitCds.Length; i++)
+        {
+            DensiSanteiKaisuModel densiSanteiKaisuModel = new DensiSanteiKaisuModel(
+                1,
+                hpId,
+                "113003510",
+                unitCds[i],
+                10,
+                0,
+                20220101,
+                99999999,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                2
+            );
+
+            // Thêm đối tượng mới vào danh sách
+            densiSanteiKaisuModels.Add(densiSanteiKaisuModel);
+        }
+        #endregion #example densiSanteiKaisuModel1
+
+        var itemGrpMsts = new List<ItemGrpMstModel>();
+
+        var itemGrpMst1 = new ItemGrpMstModel(
+                hpId,
+                1,
+                1,
+                20220101,
+                99999999,
+                "111014210",
+                1
+            );
+
+        var itemGrpMst2 = new ItemGrpMstModel(
+                hpId,
+                1,
+                2,
+                20220101,
+                99999999,
+                "113003510",
+                1
+           );
+        itemGrpMsts.Add(itemGrpMst1);
+        itemGrpMsts.Add(itemGrpMst2);
+
+        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
+        #endregion
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
+
+        // Assert
+        Assert.True(output.Count == 0);
+    }
+
+    [Test]
+    public void TC_023_CalculationCountCheck_006_UnitCd_999_Multi_TermSbt()
+    {
+        // Arrange
+        int hpId = 999, sinDate = 20221110;
+        long raiinNo = 400201159, ptId = 54109;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        #region Data Example
+        var tenMstItems = new List<TenItemModel>();
+        var tenMst1 = new TenItemModel(
+            hpId,
+            "111014210",
+            "0",
+            "AA",
+            "111014211",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst1);
+
+        var tenMst2 = new TenItemModel(
+            hpId,
+            "113003510",
+            "0",
+            "B3",
+            "113003510",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst2);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail1 = new OrdInfDetailModel(
+            hpId,
+            "111014210",
+            20221111
+            );
+        odrDetails.Add(odrDetail1);
+
+        var odrDetail2 = new OrdInfDetailModel(
+            hpId,
+            "113003510",
+            20221111
+            );
+        odrDetails.Add(odrDetail2);
+
+        var santeiTenMsts = new List<TenItemModel>();
+        santeiTenMsts.Add(tenMst1);
+        santeiTenMsts.Add(tenMst2);
+
+        var densiSanteiKaisuModels = new List<DensiSanteiKaisuModel>();
+
+        #region #example densiSanteiKaisuModel
+
+        int[] termSbt = { 2, 3, 4, 5 };
+        for (int i = 0; i < termSbt.Length; i++)
+        {
+            DensiSanteiKaisuModel densiSanteiKaisuModel = new DensiSanteiKaisuModel(
+                1,
+                hpId,
+                "113003510",
+                999,
+                10,
+                0,
+                20220101,
+                99999999,
+                1,
+                1,
+                1,
+                1,
+                termSbt[i],
+                1,
+                2
+            );
+
+            // Thêm đối tượng mới vào danh sách
+            densiSanteiKaisuModels.Add(densiSanteiKaisuModel);
+        }
+        #endregion #example densiSanteiKaisuModel1
+
+        var itemGrpMsts = new List<ItemGrpMstModel>();
+
+        var itemGrpMst1 = new ItemGrpMstModel(
+                hpId,
+                1,
+                1,
+                20220101,
+                99999999,
+                "111014210",
+                1
+            );
+
+        var itemGrpMst2 = new ItemGrpMstModel(
+                hpId,
+                1,
+                2,
+                20220101,
+                99999999,
+                "113003510",
+                1
+           );
+        itemGrpMsts.Add(itemGrpMst1);
+        itemGrpMsts.Add(itemGrpMst2);
+
+        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
+        #endregion
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
+
+        // Assert
+        Assert.True(output.Count == 0);
+    }
+
+    [Test]
+    public void TC_024_CalculationCountCheck_007_UnitCd_999_Multi_TermSbt()
+    {
+        // Arrange
+        int hpId = 999, sinDate = 20221110;
+        long raiinNo = 400201159, ptId = 54109;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        #region Data Example
+        var tenMstItems = new List<TenItemModel>();
+        var tenMst1 = new TenItemModel(
+            hpId,
+            "111014210",
+            "0",
+            "AA",
+            "111014211",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst1);
+
+        var tenMst2 = new TenItemModel(
+            hpId,
+            "113003510",
+            "0",
+            "B3",
+            "113003510",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst2);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail1 = new OrdInfDetailModel(
+            hpId,
+            "111014210",
+            20221111
+            );
+        odrDetails.Add(odrDetail1);
+
+        var odrDetail2 = new OrdInfDetailModel(
+            hpId,
+            "113003510",
+            20221111
+            );
+        odrDetails.Add(odrDetail2);
+
+        var santeiTenMsts = new List<TenItemModel>();
+        santeiTenMsts.Add(tenMst1);
+        santeiTenMsts.Add(tenMst2);
+
+        var densiSanteiKaisuModels = new List<DensiSanteiKaisuModel>();
+
+        #region #example densiSanteiKaisuModel
+
+        int[] termSbt = { 2, 3, 4, 5 };
+        for (int i = 0; i < termSbt.Length; i++)
+        {
+            DensiSanteiKaisuModel densiSanteiKaisuModel = new DensiSanteiKaisuModel(
+                1,
+                hpId,
+                "113003510",
+                999,
+                10,
+                0,
+                20220101,
+                99999999,
+                1,
+                1,
+                1,
+                0,
+                termSbt[i],
+                1,
+                2
+            );
+
+            // Thêm đối tượng mới vào danh sách
+            densiSanteiKaisuModels.Add(densiSanteiKaisuModel);
+        }
+        #endregion #example densiSanteiKaisuModel1
+
+        var itemGrpMsts = new List<ItemGrpMstModel>();
+
+        var itemGrpMst1 = new ItemGrpMstModel(
+                hpId,
+                1,
+                1,
+                20220101,
+                99999999,
+                "111014210",
+                1
+            );
+
+        var itemGrpMst2 = new ItemGrpMstModel(
+                hpId,
+                1,
+                2,
+                20220101,
+                99999999,
+                "113003510",
+                1
+           );
+        itemGrpMsts.Add(itemGrpMst1);
+        itemGrpMsts.Add(itemGrpMst2);
+
+        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
+        #endregion
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
+
+        // Assert
+        Assert.True(output.Count == 0);
+    }
+
+    [Test]
+    public void TC_025_CalculationCountCheck_008_UnitCd_997()
+    {
+        // Arrange
+        int hpId = 999, sinDate = 20221110;
+        long raiinNo = 400201159, ptId = 54109;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+
+        #region Data Example
+        var tenMstItems = new List<TenItemModel>();
+        var tenMst1 = new TenItemModel(
+            hpId,
+            "111014210",
+            "0",
+            "AA",
+            "111014211",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst1);
+
+        var tenMst2 = new TenItemModel(
+            hpId,
+            "113003510",
+            "0",
+            "B3",
+            "113003510",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst2);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail1 = new OrdInfDetailModel(
+            hpId,
+            "111014210",
+            20221111
+            );
+        odrDetails.Add(odrDetail1);
+
+        var odrDetail2 = new OrdInfDetailModel(
+            hpId,
+            "113003510",
+            20221111
+            );
+        odrDetails.Add(odrDetail2);
+
+        var santeiTenMsts = new List<TenItemModel>();
+        santeiTenMsts.Add(tenMst1);
+        santeiTenMsts.Add(tenMst2);
+
+        var densiSanteiKaisuModels = new List<DensiSanteiKaisuModel>();
+
+        #region #example densiSanteiKaisuModel
+
+        DensiSanteiKaisuModel densiSanteiKaisuModel = new DensiSanteiKaisuModel(
+            1,
+            hpId,
+            "113003510",
+            997,
+            10,
+            1,
+            20220101,
+            99999999,
+            1,
+            1,
+            1,
+            0,
+            1,
+            1,
+            2
+        );
+        densiSanteiKaisuModels.Add(densiSanteiKaisuModel);
+        #endregion #example densiSanteiKaisuModel1
+
+        var itemGrpMsts = new List<ItemGrpMstModel>();
+
+        var itemGrpMst1 = new ItemGrpMstModel(
+                hpId,
+                1,
+                1,
+                20220101,
+                99999999,
+                "111014210",
+                1
+            );
+
+        var itemGrpMst2 = new ItemGrpMstModel(
+                hpId,
+                1,
+                2,
+                20220101,
+                99999999,
+                "113003510",
+                1
+           );
+        itemGrpMsts.Add(itemGrpMst1);
+        itemGrpMsts.Add(itemGrpMst2);
+
+        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
+        #endregion
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        // Act
+        var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
+
+        // Assert
+        Assert.True(output.Count == 2);
+    }
+
+    [Test]
+    public void TC_026_CalculationCountCheck_UnitCd_Other()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110;
@@ -816,7 +1850,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_015_CalculationCountCheck_UnitCd_Other_StartDateMoreThan0()
+    public void TC_027_CalculationCountCheck_UnitCd_Other_StartDateMoreThan0()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110;
@@ -949,7 +1983,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_016_CalculationCountCheck_UnitCd_997_998_True()
+    public void TC_028_CalculationCountCheck_UnitCd_997_998_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110;
@@ -1080,7 +2114,133 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_017_CalculationCountCheck_UnitCd_Other_True()
+    public void TC_029_CalculationCountCheck_008_UnitCd_999()
+    {
+        // Arrange
+        int hpId = 999, sinDate = 20221110;
+        long raiinNo = 400201159, ptId = 54109;
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+        var optionsAccessorMock = new Mock<IOptions<AmazonS3Options>>();
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+
+        MstItemRepository mstItemRepository = new MstItemRepository(TenantProvider, optionsAccessorMock.Object);
+        var itemGrpMsts = CheckedSpecialItemInteractorData.ReadItemGrpMst(999);
+        #region Data Example
+        var tenMstItems = new List<TenItemModel>();
+        var tenMst1 = new TenItemModel(
+            hpId,
+            "111014210",
+            "0",
+            "AA",
+            "111014211",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst1);
+
+        var tenMst2 = new TenItemModel(
+            hpId,
+            "113003510",
+            "0",
+            "B3",
+            "113003510",
+            20220401,
+            99999999
+            );
+        tenMstItems.Add(tenMst2);
+
+        var odrDetails = new List<OrdInfDetailModel>();
+        var odrDetail1 = new OrdInfDetailModel(
+            hpId,
+            "111014210",
+            20221111
+            );
+        odrDetails.Add(odrDetail1);
+
+        var odrDetail2 = new OrdInfDetailModel(
+            hpId,
+            "113003510",
+            20221111
+            );
+        odrDetails.Add(odrDetail2);
+
+        var santeiTenMsts = new List<TenItemModel>();
+        santeiTenMsts.Add(tenMst1);
+        santeiTenMsts.Add(tenMst2);
+
+        var densiSanteiKaisuModels = new List<DensiSanteiKaisuModel>();
+
+        #region #example densiSanteiKaisuModel
+
+        DensiSanteiKaisuModel densiSanteiKaisuModel = new DensiSanteiKaisuModel(
+            1,
+            hpId,
+            "113003510",
+            999,
+            10,
+            1,
+            20220101,
+            99999999,
+            1,
+            1,
+            1,
+            0,
+            1,
+            1,
+            2
+        );
+        densiSanteiKaisuModels.Add(densiSanteiKaisuModel);
+        #endregion #example densiSanteiKaisuModel1
+
+        var itemGrpMstModels = new List<ItemGrpMstModel>();
+
+        var itemGrpMst1 = new ItemGrpMstModel(
+                hpId,
+                1,
+                1,
+                20220101,
+                99999999,
+                "111014210",
+                1
+            );
+
+        var itemGrpMst2 = new ItemGrpMstModel(
+                hpId,
+                1,
+                2,
+                20220101,
+                99999999,
+                "113003510",
+                1
+           );
+        itemGrpMstModels.Add(itemGrpMst1);
+        itemGrpMstModels.Add(itemGrpMst2);
+
+        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
+        #endregion
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mstItemRepository, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+        try
+        {
+            tenant.AddRange(itemGrpMsts);
+            tenant.SaveChanges();
+            // Act
+            var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMstModels, hokenIds);
+            // Assert
+            Assert.True(output.Count == 0);
+        }
+        finally
+        {
+            tenant.RemoveRange(itemGrpMsts);
+            tenant.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void TC_030_CalculationCountCheck_UnitCd_Other_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110;
@@ -1213,7 +2373,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region Check Age
     [Test]
-    public void TC_018_CheckAge_AA()
+    public void TC_031_CheckAge_AA()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1235,7 +2395,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_019_CheckAge_B3()
+    public void TC_032_CheckAge_B3()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1261,7 +2421,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_020_CheckAge_B6()
+    public void TC_033_CheckAge_B6()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1287,7 +2447,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_021_CheckAge_BF()
+    public void TC_034_CheckAge_BF()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1313,7 +2473,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_022_CheckAge_BK()
+    public void TC_035_CheckAge_BK()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1339,7 +2499,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_023_CheckAge_AE()
+    public void TC_036_CheckAge_AE()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1361,7 +2521,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_024_CheckAge_MG()
+    public void TC_037_CheckAge_MG()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1388,7 +2548,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_025_CheckAge_Other()
+    public void TC_038_CheckAge_Other()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -1415,7 +2575,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region Common DensiSantei
     [Test]
-    public void TC_026_CommonDensiSantei_53()
+    public void TC_039_CommonDensiSantei_53()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1472,7 +2632,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_027_CommonDensiSantei_121()
+    public void TC_040_CommonDensiSantei_121()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1529,7 +2689,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_028_CommonDensiSantei_131()
+    public void TC_041_CommonDensiSantei_131()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1586,7 +2746,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_029_CommonDensiSantei_138()
+    public void TC_042_CommonDensiSantei_138()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1643,7 +2803,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_030_CommonDensiSantei_141()
+    public void TC_043_CommonDensiSantei_141()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1701,7 +2861,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_031_CommonDensiSantei_142()
+    public void TC_044_CommonDensiSantei_142()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1760,7 +2920,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_032_CommonDensiSantei_143()
+    public void TC_045_CommonDensiSantei_143()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1819,7 +2979,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_033_CommonDensiSantei_144()
+    public void TC_046_CommonDensiSantei_144()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1878,7 +3038,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_034_CommonDensiSantei_145()
+    public void TC_047_CommonDensiSantei_145()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1937,7 +3097,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_035_CommonDensiSantei_146()
+    public void TC_048_CommonDensiSantei_146()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -1996,7 +3156,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_036_CommonDensiSantei_147()
+    public void TC_049_CommonDensiSantei_147()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2055,7 +3215,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_037_CommonDensiSantei_148()
+    public void TC_050_CommonDensiSantei_148()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2114,7 +3274,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_038_CommonDensiSantei_997()
+    public void TC_051_CommonDensiSantei_997()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2194,7 +3354,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_039_CommonDensiSantei_998()
+    public void TC_052_CommonDensiSantei_998()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2272,7 +3432,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_040_CommonDensiSantei_999_TermSbt2()
+    public void TC_053_CommonDensiSantei_999_TermSbt2()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2352,7 +3512,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_041_CommonDensiSantei_999_TermSbt3()
+    public void TC_054_CommonDensiSantei_999_TermSbt3()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2432,7 +3592,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_042_CommonDensiSantei_999_TermSbt4()
+    public void TC_055_CommonDensiSantei_999_TermSbt4()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2512,7 +3672,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_043_CommonDensiSantei_999_TermSbt5()
+    public void TC_056_CommonDensiSantei_999_TermSbt5()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2592,7 +3752,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_044_CommonDensiSantei_Other()
+    public void TC_057_CommonDensiSantei_Other()
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
@@ -2653,7 +3813,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region util function
     [Test]
-    public void TC_045_WeekBefore()
+    public void TC_058_WeekBefore()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2677,7 +3837,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_046_MonthsBefore()
+    public void TC_059_MonthsBefore()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2703,7 +3863,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_047_YearsBefore()
+    public void TC_060_YearsBefore()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2729,7 +3889,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_048_DaysBefore()
+    public void TC_061_DaysBefore()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2754,7 +3914,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_049_MonthsAfter()
+    public void TC_062_MonthsAfter()
     {
         // Arrange
         int baseDate = 20191111, term = 1;
@@ -2779,7 +3939,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_050_GetHokenKbn()
+    public void TC_063_GetHokenKbn()
     {
         // Arrange
         int odrHokenKbn1 = 0, odrHokenKbn2 = 1, odrHokenKbn3 = 2, odrHokenKbn4 = 11, odrHokenKbn5 = 12, odrHokenKbn6 = 13, odrHokenKbn7 = 14;
@@ -2807,7 +3967,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_051_GetCheckSanteiKbns()
+    public void TC_064_GetCheckSanteiKbns()
     {
         // Arrange
         int odrHokenKbn = 0, hokensyuHandling = 1;
@@ -2828,7 +3988,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_052_GetCheckHokenKbns()
+    public void TC_065_GetCheckHokenKbns()
     {
         // Arrange
         int hokensyuHandling1 = 0, hokensyuHandling2 = 1, hokensyuHandling3 = 2, odrHokenKbn1 = 0, odrHokenKbn2 = 1, odrHokenKbn3 = 2, odrHokenKbn4 = 11, odrHokenKbn5 = 12, odrHokenKbn6 = 13, odrHokenKbn7 = 14;
@@ -2866,7 +4026,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_053_GetPtHokenKbn()
+    public void TC_066_GetPtHokenKbn()
     {
         // Arrange
         int hpId = 1, ptId = 5, sinDate = 20221111, rpNo = 1, edano = 1;
@@ -2879,7 +4039,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockTodayRepo = new Mock<ITodayOdrRepository>();
         var mockInsuranceRepo = new Mock<IInsuranceRepository>();
         mockInsuranceRepo.Setup(repo => repo.GetPtHokenInf(1, 10, 5, sinDate))
-.Returns(new InsuranceModel(1, 5, 1, 1, 10, 1, 1, 1, 1, 1, 1, 1, 1, 0));
+    .Returns(new InsuranceModel(1, 5, 1, 1, 10, 1, 1, 1, 1, 1, 1, 1, 1, 0));
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
@@ -2896,7 +4056,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
     #region Main
     [Test]
-    public void TC_054_Handle_HpId()
+    public void TC_067_Handle_HpId()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2916,7 +4076,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_055_Handle_PtId()
+    public void TC_068_Handle_PtId()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2936,7 +4096,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_056_Handle_SinDate()
+    public void TC_069_Handle_SinDate()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2956,7 +4116,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_057_Handle_IBirthDay()
+    public void TC_070_Handle_IBirthDay()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2976,7 +4136,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_058_Handle_CheckAge()
+    public void TC_071_Handle_CheckAge()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -2996,7 +4156,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_059_Handle_RaiinNo()
+    public void TC_072_Handle_RaiinNo()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -3016,7 +4176,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_060_Handle_InvalidOrderAndKarte()
+    public void TC_073_Handle_InvalidOrderAndKarte()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();
@@ -3036,7 +4196,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_061_Handle_EnabledInputCheck_True()
+    public void TC_074_Handle_EnabledInputCheck_True()
     {
         // Arrange
         var mockMstItemRepo1 = new Mock<IMstItemRepository>();
@@ -3234,7 +4394,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     }
 
     [Test]
-    public void TC_062_Handle_EnabledCommentCheck_True()
+    public void TC_075_Handle_EnabledCommentCheck_True()
     {
         // Arrange
         var mockMstItemRepo = new Mock<IMstItemRepository>();

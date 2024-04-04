@@ -739,6 +739,40 @@ namespace Domain.Models.MstItem
             ListGenDate = new();
         }
 
+        public TenItemModel(int hpId, string itemCd, string minAge, string maxAge, string santeiItemCd, int startDate, int endDate, int buiKbn)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            MinAge = minAge;
+            MaxAge = maxAge;
+            SanteiItemCd = santeiItemCd;
+            IpnCD = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            IpnNameCd = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            KensaMstCenterItemCd1 = string.Empty;
+            MasterSbt = string.Empty;
+            OdrUnitName = string.Empty;
+            Name = string.Empty;
+            KanaName1 = string.Empty;
+            StartDate = startDate;
+            EndDate = endDate;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnName = string.Empty;
+            ReceName = string.Empty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaItemCd = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
+            BuiKbn = buiKbn;
+        }
         public int HpId { get; private set; }
 
         public string ReceName { get; private set; }
