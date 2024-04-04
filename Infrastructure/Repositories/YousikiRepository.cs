@@ -873,7 +873,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             {
                 if (categoryModel.Status == 2)
                 {
-                    var seqNoMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == yousiki1InfModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
+                    var seqNoMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == categoryModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
                     AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, seqNoMax);
                     var yousiki1InfDetailModelChanges = yousiki1InfDetailModels.Where(x => x.DataType == categoryModel.DataType).ToList();
                     UpdateSeqNo(yousiki1InfDetailModelChanges, seqNoMax);
