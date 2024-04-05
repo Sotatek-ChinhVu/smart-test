@@ -62,7 +62,6 @@ public class DosageCheckerTest : BaseUT
         var ptInfs = CommonCheckerData.ReadPtInf();
         tenantTracking.PtInfs.AddRange(ptInfs);
 
-        //DosageDrinkingDrugSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -85,7 +84,9 @@ public class DosageCheckerTest : BaseUT
             tenantTracking.SystemConfs.Add(systemConf);
         }
 
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
         var dosageChecker = new DosageChecker<OrdInfoModel, OrdInfoDetailModel>();
         dosageChecker.HpID = 1;
         dosageChecker.PtID = 1231;
@@ -95,8 +96,6 @@ public class DosageCheckerTest : BaseUT
         cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(TenantProvider, cache);
 
-        try
-        {
             // Act
             var result = dosageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
@@ -279,7 +278,6 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_006_HandleCheckOrderList_DosageDrinkingDrugSetting_Is_False()
     {
-        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -384,7 +382,6 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_007_HandleCheckOrderList_DosageDrugAsOrderSetting_Is_True()
     {
-        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -455,7 +452,9 @@ public class DosageCheckerTest : BaseUT
             tenantTracking.SystemConfs.Add(systemConf);
         }
 
-        tenantTracking.SaveChanges();
+        try
+        {
+            tenantTracking.SaveChanges();
         var dosageChecker = new DosageChecker<OrdInfoModel, OrdInfoDetailModel>();
         dosageChecker.HpID = 999;
         dosageChecker.PtID = 1231;
@@ -465,8 +464,6 @@ public class DosageCheckerTest : BaseUT
         cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(TenantProvider, cache);
 
-        try
-        {
             // Act
             var result = dosageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 

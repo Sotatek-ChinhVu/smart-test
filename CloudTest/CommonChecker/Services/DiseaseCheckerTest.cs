@@ -19,7 +19,6 @@ public class DiseaseCheckerTest : BaseUT
     [Test]
     public void CheckDiseaseChecker_001_ReturnsEmptyList_WhenFollowSettingValue()
     {
-        int hpId = 999;
         //Setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
