@@ -80,6 +80,64 @@ namespace CloudUnitTest.SampleData.AccountingRepository
             return raiinInfs;
         }
 
+        public static List<KaikeiInf> ReadKaikeiInf()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "AccountingRepository", "AccountingRepositorySample.xlsx");
+            var kaikeiInfs = new List<KaikeiInf>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "KaikeiInf").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var kaikeiInf = new KaikeiInf();
+                        kaikeiInf.CreateId = 1;
+                        kaikeiInf.CreateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    kaikeiInf.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int ptId);
+                                    kaikeiInf.PtId = ptId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int sinDate);
+                                    kaikeiInf.SinDate = sinDate;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int raiinNo);
+                                    kaikeiInf.RaiinNo = raiinNo;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        kaikeiInfs.Add(kaikeiInf);
+                    }
+                }
+            }
+
+            return kaikeiInfs;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
