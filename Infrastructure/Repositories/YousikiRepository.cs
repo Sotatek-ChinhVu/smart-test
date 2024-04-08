@@ -858,7 +858,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return true;
     }
 
-    public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> categoryModels, bool isTemporarySave)
+    public void UpdateYousiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> categoryModels, bool isTemporarySave)
     {
         yousiki1InfDetailModels = yousiki1InfDetailModels.Where(x => x.Value != "undefined").ToList();
         UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
@@ -873,10 +873,11 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             {
                 if (categoryModel.Status == 2)
                 {
-                    var seqNoMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == categoryModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
-                    AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, seqNoMax);
+                    var seqNoInfDEtailMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == categoryModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
+                    var seqNoInfMax = NoTrackingDataContext.Yousiki1Infs.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == categoryModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
+                    AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, seqNoInfMax);
                     var yousiki1InfDetailModelChanges = yousiki1InfDetailModels.Where(x => x.DataType == categoryModel.DataType).ToList();
-                    UpdateSeqNo(yousiki1InfDetailModelChanges, seqNoMax);
+                    UpdateSeqNo(yousiki1InfDetailModelChanges, seqNoInfDEtailMax);
                 }
             }
 
