@@ -4,10 +4,10 @@ using System;
 
 namespace CloudUnitTest.Repository.AccountDueRepo
 {
-    public class GetUketsukeSbtTest : BaseUT
+    public class AccountDueRepositoryTest : BaseUT
     {
         [Test]
-        public void TC_001_NextOrderRepository_GetUketsukeSbt()
+        public void TC_001_AccountDueRepository_GetUketsukeSbt()
         {
             //Arrange
             AccountDueRepository accountDueRepository = new AccountDueRepository(TenantProvider);
