@@ -21,8 +21,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLimit_001_DayLimitError_WhenDrugExpired()
     {
-        int hpId = 999;
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "61" + "day001", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -36,8 +35,7 @@ public class DayLimitCheckerTest : BaseUT
 
         var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                 RealtimeCheckerType.Days, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
-
-        //Setup Data test
+        
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("day001", "day001");
         var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day001");
@@ -55,10 +53,10 @@ public class DayLimitCheckerTest : BaseUT
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.DrugDayLimits.AddRange(drugDayLimits);
         tenantTracking.M10DayLimit.AddRange(m10DayLimits);
-        tenantTracking.SaveChanges();
-
         try
         {
+            tenantTracking.SaveChanges();
+
             // Act
             var result = dayLimitChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
@@ -81,8 +79,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLitmit_002_WhenCheckingOderWithOdrKouiKbnIs21()
     {
-        int hpId = 999;
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id2", 21, "Y101" + "day002", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
@@ -100,10 +97,10 @@ public class DayLimitCheckerTest : BaseUT
         dayLimitChecker.HpID = 999;
         dayLimitChecker.PtID = 111;
         dayLimitChecker.Sinday = 20230101;
-        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dayLimitChecker.InitFinder(TenantProvider, cache);
+
         // Act
         var result = dayLimitChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
         // Assert
@@ -117,8 +114,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLitmit_003_WhenCheckingOderWithOdrHasIsDrugUsageIsFalse()
     {
-        int hpId = 999;
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "61" + "day003", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -154,7 +150,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLitmit_004_CommonMedicalCheck_CheckListOrder_GetErrorOrder_DaylimitError()
     {
-        //Setup
+        // Arrange
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var mock = new Mock<IRealtimeOrderErrorFinder>();
         var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
@@ -211,7 +207,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLitmit_005_CommonMedicalCheck_CheckListOrder_GetErrorDetails_DaylimitError()
     {
-        //Setup
+        // Arrange
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var mock = new Mock<IRealtimeOrderErrorFinder>();
         var mockRealtimeCheckerFinder = new Mock<IRealtimeCheckerFinder>();
@@ -277,8 +273,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLimit_Service_006_NonError_WhenDRUG_DAY_LIMIThasNoData()
     {
-        int hpId = 999;
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "61" + "day006", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -293,7 +288,7 @@ public class DayLimitCheckerTest : BaseUT
         var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                 RealtimeCheckerType.Days, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
-        //Setup Data test
+        
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("day006", "day006");
         var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day006");
@@ -332,8 +327,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLimit_Service_007_NonError_WhenM10_DAY_LIMIThasNoData()
     {
-        int hpId = 999;
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "61" + "day007", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -346,7 +340,7 @@ public class DayLimitCheckerTest : BaseUT
         var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                 RealtimeCheckerType.Days, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
-        //Setup Data test
+        
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("day007", "day007");
         var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day007");
@@ -383,7 +377,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void Test_008_Finder_CheckDayLimit_WithUsingDayLessThanLimitDay_True()
     {
-        //setup
+        // Arrange
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         int hpId = 999;
         int sinDay = 20230101;
@@ -425,7 +419,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void Test_009_Finder_CheckDayLimit_WithUsingDayEqualThanLimitDay_True()
     {
-        //setup
+        // Arrange
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         int hpId = 999;
         int sinDay = 20230101;
@@ -467,7 +461,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void Test_010_Finder_CheckDayLimit_WithUsingDayMoreThanLimitDay_True()
     {
-        //setup
+        // Arrange
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         int hpId = 999;
         int sinDay = 20230101;
@@ -512,7 +506,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void Test_011_GetUsingDay_Test_Using_Info_IsNotNull()
     {
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "120000710", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 3, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -537,7 +531,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void Test_012_GetUsingDay_Test_Using_Info_IsNull()
     {
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "ITEMCD", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 3, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -566,8 +560,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLimit_013_OdrKouiKbnIs21()
     {
-        int hpId = 999;
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "61" + "day013", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -582,7 +575,7 @@ public class DayLimitCheckerTest : BaseUT
         var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                 RealtimeCheckerType.Days, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
-        //Setup Data test
+        
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("day013", "day013");
         var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day013");
@@ -623,7 +616,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLimit_014_HandleCheckOrder_ThrowsNotImplementedException()
     {
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -644,8 +637,7 @@ public class DayLimitCheckerTest : BaseUT
     [Test]
     public void CheckDayLimit_015_OdrKouiKbnIs21()
     {
-        int hpId = 999;
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "61" + "day013", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -660,7 +652,7 @@ public class DayLimitCheckerTest : BaseUT
         var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                 RealtimeCheckerType.Days, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
-        //Setup Data test
+        
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("day013", "day013");
         var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day013");

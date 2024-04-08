@@ -1,13 +1,7 @@
 ﻿using CloudUnitTest.SampleData;
 using CommonChecker.Caches;
-using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using Entity.Tenant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CloudUnitTest.CommonChecker.Finder
 {
@@ -16,15 +10,14 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_001_TEST_FindIpnNameMst()
         {
-
-            //Setup Data Test
+            // Arrange
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var hpId = 9999;
             var sinDate = 20230101;
             var ipnNameMsts = new List<IpnNameMst>()
             {
-                new IpnNameMst() 
+                new IpnNameMst()
                 {
                     StartDate = 20221231,
                     EndDate = 20230102,
@@ -34,13 +27,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.IpnNameMsts.AddRange(ipnNameMsts);
-            tenantTracking.SaveChanges();
 
-            // Arrange
             var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
+
                 // Act
                 var result = realtimcheckerfinder.FindIpnNameMst(hpId, "UT2604", sinDate);
 
@@ -58,8 +51,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_002_TEST_FindSanteiCntCheck()
         {
-
-            //Setup Data Test
+            // Arrange
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var hpId = 9999;
@@ -77,14 +69,14 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.SanteiCntChecks.AddRange(santeiCntChecks);
-            tenantTracking.SaveChanges();
 
-            // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
+
                 // Act
                 var result = realtimcheckerfinder.FindSanteiCntCheck(hpId, 1205, sinDate);
 
@@ -102,8 +94,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_003_TEST_FindSanteiGrpDetail()
         {
-
-            //Setup Data Test
+            // Arrange
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var hpId = 9999;
@@ -118,14 +109,14 @@ namespace CloudUnitTest.CommonChecker.Finder
             };
 
             tenantTracking.SanteiGrpDetails.AddRange(santeiGrps);
-            tenantTracking.SaveChanges();
 
-            // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
             var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
+
                 // Act
                 var result = realtimcheckerfinder.FindSanteiGrpDetail(hpId, "UT-0426");
 
@@ -143,20 +134,19 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_004_TEST_FindTenMst()
         {
-
-            //Setup Data Test
+            // Arrange
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
             tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.SaveChanges();
 
-            // Arrange
             var realtimcheckerfinder = new MasterFinder(TenantProvider);
 
             try
             {
+                tenantTracking.SaveChanges();
+
                 // Act
                 var result = realtimcheckerfinder.FindTenMst(999, "UT2720", 20230101);
 
@@ -168,8 +158,6 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.TenMsts.RemoveRange(tenMsts);
                 tenantTracking.SaveChanges();
             }
-
         }
-
     }
 }

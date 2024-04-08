@@ -33,21 +33,21 @@ namespace CloudUnitTest.CommonChecker.Models
                                          bunkatuKoui: 0);
 
 
-            Assert.AreEqual(ordInfDetail.Id, "id1");
-            Assert.AreEqual(ordInfDetail.SinKouiKbn, 20);
-            Assert.AreEqual(ordInfDetail.ItemCd, "@REFILL");
-            Assert.AreEqual(ordInfDetail.ItemName, "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」");
-            Assert.AreEqual(ordInfDetail.Suryo, 1);
-            Assert.AreEqual(ordInfDetail.UnitName, "錠");
-            Assert.AreEqual(ordInfDetail.TermVal, 0);
-            Assert.AreEqual(ordInfDetail.SyohoKbn, 2);
-            Assert.AreEqual(ordInfDetail.SyohoLimitKbn, 0);
-            Assert.AreEqual(ordInfDetail.DrugKbn, 1);
-            Assert.AreEqual(ordInfDetail.YohoKbn, 0);
-            Assert.AreEqual(ordInfDetail.IpnCd, "1124017F4");
-            Assert.AreEqual(ordInfDetail.Bunkatu, "きみがすごくきれいだよ。");
-            Assert.AreEqual(ordInfDetail.MasterSbt, "Y");
-            Assert.AreEqual(ordInfDetail.BunkatuKoui, 0);
+            Assert.That("id1", Is.EqualTo(ordInfDetail.Id));
+            Assert.That(20, Is.EqualTo(ordInfDetail.SinKouiKbn));
+            Assert.That("@REFILL", Is.EqualTo(ordInfDetail.ItemCd));
+            Assert.That("ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」", Is.EqualTo(ordInfDetail.ItemName));
+            Assert.That(1, Is.EqualTo(ordInfDetail.Suryo));
+            Assert.That("錠", Is.EqualTo(ordInfDetail.UnitName));
+            Assert.That(0, Is.EqualTo(ordInfDetail.TermVal));
+            Assert.That(2, Is.EqualTo(ordInfDetail.SyohoKbn));
+            Assert.That(0, Is.EqualTo(ordInfDetail.SyohoLimitKbn));
+            Assert.That(1, Is.EqualTo(ordInfDetail.DrugKbn));
+            Assert.That(0, Is.EqualTo(ordInfDetail.YohoKbn));
+            Assert.That("1124017F4", Is.EqualTo(ordInfDetail.IpnCd));
+            Assert.That("きみがすごくきれいだよ。", Is.EqualTo(ordInfDetail.Bunkatu));
+            Assert.That("Y", Is.EqualTo(ordInfDetail.MasterSbt));
+            Assert.That(0, Is.EqualTo(ordInfDetail.BunkatuKoui));
         }
 
         /// <summary>
