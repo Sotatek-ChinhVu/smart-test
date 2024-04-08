@@ -36,5 +36,5 @@ public interface IYousikiRepository : IRepositoryBase
 
     List<Yousiki1InfDetailModel> GetYousiki1InfDetailsByCodeNo(int hpId, int sinYm, long ptId, int dataType, int seqNo, string codeNo);
 
-    void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> dataTypes, bool isTemporarySave = false);
+    void UpdateYousiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> dataTypes, bool isTemporarySave = false);
 }

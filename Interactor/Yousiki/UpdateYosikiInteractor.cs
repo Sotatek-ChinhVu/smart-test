@@ -29,7 +29,7 @@ namespace Interactor.Yousiki
                     }
                 }
 
-                _yousikiRepository.UpdateYosiki(inputData.HpId, inputData.UserId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf, inputData.CategoryModels, inputData.IsTemporarySave);
+                _yousikiRepository.UpdateYousiki(inputData.HpId, inputData.UserId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf, inputData.CategoryModels, inputData.IsTemporarySave);
 
                 return new UpdateYosikiOutputData(UpdateYosikiStatus.Successed, "");
             }
