@@ -503,6 +503,128 @@ namespace CloudUnitTest.SampleData.AccountingRepository
             return hokenMsts;
         }
 
+        public static List<SyunoSeikyu> ReadSyunoSeikyu()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "AccountingRepository", "AccountingRepositorySample.xlsx");
+            var syunoSeikyus = new List<SyunoSeikyu>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SyunoSeikyu").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var syunoSeikyu = new SyunoSeikyu();
+                        syunoSeikyu.CreateId = 1;
+                        syunoSeikyu.CreateDate = DateTime.UtcNow;
+                        syunoSeikyu.UpdateId = 1;
+                        syunoSeikyu.UpdateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    syunoSeikyu.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int ptId);
+                                    syunoSeikyu.PtId = ptId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int sinDate);
+                                    syunoSeikyu.SinDate = sinDate;
+                                    break;
+                                case "D":
+                                    long.TryParse(text, out long raiiNo);
+                                    syunoSeikyu.RaiinNo = raiiNo;
+                                    break;                               
+                                case "E":
+                                    int.TryParse(text, out int nyukinKbn);
+                                    syunoSeikyu.NyukinKbn = nyukinKbn;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        syunoSeikyus.Add(syunoSeikyu);
+                    }
+                }
+            }
+            return syunoSeikyus;
+        }
+
+        public static List<SyunoNyukin> ReadSyunoNyukin()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "AccountingRepository", "AccountingRepositorySample.xlsx");
+            var syunoNyukins = new List<SyunoNyukin>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SyunoNyukin").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var syunoNyukin = new SyunoNyukin();
+                        syunoNyukin.CreateId = 1;
+                        syunoNyukin.CreateDate = DateTime.UtcNow;
+                        syunoNyukin.UpdateId = 1;
+                        syunoNyukin.UpdateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    syunoNyukin.HpId = hpId;
+                                    break;
+                                case "B":
+                                    long.TryParse(text, out long raiiNo);
+                                    syunoNyukin.RaiinNo = raiiNo;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int ptId);
+                                    syunoNyukin.PtId = ptId;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int sinDate);
+                                    syunoNyukin.SinDate = sinDate;
+                                    break;                                
+                                default:
+                                    break;
+                            }
+                        }
+                        syunoNyukins.Add(syunoNyukin);
+                    }
+                }
+            }
+            return syunoNyukins;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
