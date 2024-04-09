@@ -42,9 +42,9 @@ namespace Interactor.Yousiki
         public Dictionary<bool, string> ValidationData(int hpId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, string valueDefault = "")
         {
             Dictionary<bool, string> result = new();
-            var birthDayModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 1, yousiki1InfDetailModels, yousiki1InfModel);
+            var birthDayModel = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_Attributes && x.RowNo == 0 && x.Payload == 1);
 
-            if (birthDayModel.Value.AsInteger() <= 0)
+            if (birthDayModel?.Value.AsInteger() <= 0)
             {
                 string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 属性 - 生年月日");
                 result.Add(false, message);
@@ -52,7 +52,9 @@ namespace Interactor.Yousiki
                 return result;
             }
 
-            if (GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 2, yousiki1InfDetailModels, yousiki1InfModel).Value.AsInteger() <= 0)
+            var sexModel = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_Attributes && x.RowNo == 0 && x.Payload == 2);
+
+            if (sexModel?.Value.AsInteger() <= 0)
             {
                 string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 属性 - 性別");
                 result.Add(false, message);
@@ -60,7 +62,7 @@ namespace Interactor.Yousiki
                 return result;
             }
 
-            var homePostModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 2, yousiki1InfDetailModels, yousiki1InfModel).Value;
+            var homePostModel = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_Attributes && x.RowNo == 0 && x.Payload == 3)?.Value;
 
             if (string.IsNullOrEmpty(homePostModel))
             {
@@ -70,8 +72,8 @@ namespace Interactor.Yousiki
                 return result;
             }
 
-            var bodyHeight = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_HeightAndWeight, 0, 1, yousiki1InfDetailModels, yousiki1InfModel).Value ?? string.Empty;
-            var bodyWeight = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_HeightAndWeight, 0, 2, yousiki1InfDetailModels, yousiki1InfModel).Value ?? string.Empty;
+            var bodyHeight = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_HeightAndWeight && x.RowNo == 0 && x.Payload == 1)?.Value ?? string.Empty;
+            var bodyWeight = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_HeightAndWeight && x.RowNo == 0 && x.Payload == 2)?.Value ?? string.Empty;
 
             if (!bodyHeight.Equals("000") && bodyHeight.AsInteger() <= 0)
             {
@@ -89,13 +91,13 @@ namespace Interactor.Yousiki
                 return result;
             }
 
-            var smokingTypeModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 1, yousiki1InfDetailModels, yousiki1InfModel, "0");
-            var smokingNumberOfDayModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 2, yousiki1InfDetailModels, yousiki1InfModel);
-            var smokingYearModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 3, yousiki1InfDetailModels, yousiki1InfModel);
+            var smokingTypeModel = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_SmokingHistory && x.RowNo == 0 && x.Payload == 1);
+            var smokingNumberOfDayModel = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_SmokingHistory && x.RowNo == 0 && x.Payload == 2);
+            var smokingYearModel = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_SmokingHistory && x.RowNo == 0 && x.Payload == 3);
 
-            if (smokingTypeModel.Value.AsInteger() > 0)
+            if (smokingTypeModel?.Value.AsInteger() > 0)
             {
-                if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || !smokingNumberOfDayModel.Value.Equals("000") && smokingNumberOfDayModel.Value.AsInteger() <= 0)
+                if (string.IsNullOrEmpty(smokingNumberOfDayModel?.Value) || !smokingNumberOfDayModel.Value.Equals("000") && smokingNumberOfDayModel.Value.AsInteger() <= 0)
                 {
                     string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 喫煙歴 - 1日の喫煙本数");
                     result.Add(false, message);
@@ -103,7 +105,7 @@ namespace Interactor.Yousiki
                     return result;
                 }
 
-                if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || !smokingYearModel.Value.Equals("000") && smokingYearModel.Value.AsInteger() <= 0)
+                if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || !(smokingYearModel?.Value ?? "").Equals("000") && smokingYearModel?.Value.AsInteger() <= 0)
                 {
                     string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 喫煙歴 - 喫煙年数");
                     result.Add(false, message);
@@ -113,13 +115,13 @@ namespace Interactor.Yousiki
             }
 
             int sinDate = CIUtil.GetLastDateOfMonth(yousiki1InfModel.SinYm * 100 + 1);
-            int age = CIUtil.SDateToAge(birthDayModel.Value.AsInteger(), sinDate);
-            var elderlyInfModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_NursingCareInf, 0, 1, yousiki1InfDetailModels, yousiki1InfModel);
-            var careRequiedLevelModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_NursingCareInf, 0, 2, yousiki1InfDetailModels, yousiki1InfModel);
+            int age = CIUtil.SDateToAge(birthDayModel?.Value.AsInteger() ?? 0, sinDate);
+            var elderlyInfModel = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_NursingCareInf && x.RowNo == 0 && x.Payload == 1);
+            var careRequiedLevelModel = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_NursingCareInf && x.RowNo == 0 && x.Payload == 2);
 
             if (age >= 65)
             {
-                if (elderlyInfModel.Value.AsInteger() < 0)
+                if (elderlyInfModel?.Value.AsInteger() < 0)
                 {
                     string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 介護情報 - 高齢者情報");
                     result.Add(false, message);
@@ -127,7 +129,7 @@ namespace Interactor.Yousiki
                     return result;
                 }
 
-                if (careRequiedLevelModel.Value.AsInteger() < 0)
+                if (careRequiedLevelModel?.Value.AsInteger() < 0)
                 {
                     string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 介護情報 - 要介護度");
                     result.Add(false, message);
