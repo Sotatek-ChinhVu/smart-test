@@ -189,7 +189,7 @@ namespace CloudUnitTest.Repository.AccountDueRepo
         }
 
         [Test]
-        public void TC_004_AccountDueRepository_UpdateStatusRaiin_Update_Menjo()
+        public void TC_004_AccountDueRepository_SaveAccountDueList_UpdateStatusRaiin_Update_Menjo()
         {
             //Arrange
             var accountDueRepository = new AccountDueRepository(TenantProvider);
@@ -262,7 +262,7 @@ namespace CloudUnitTest.Repository.AccountDueRepo
         }
 
         [Test]
-        public void TC_005_AccountDueRepository_UpdateStatusSyunoSeikyu_Return_null()
+        public void TC_005_AccountDueRepository_SaveAccountDueList_UpdateStatusSyunoSeikyu_Return_Null()
         {
             //Arrange
             var accountDueRepository = new AccountDueRepository(TenantProvider);
@@ -336,7 +336,7 @@ namespace CloudUnitTest.Repository.AccountDueRepo
         }
 
         [Test]
-        public void TC_006_AccountDueRepository_UpdateSyunoNyukin_Return_null()
+        public void TC_006_AccountDueRepository_SaveAccountDueList_UpdateSyunoNyukin_Return_Null()
         {
             //Arrange
             var accountDueRepository = new AccountDueRepository(TenantProvider);
