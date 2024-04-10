@@ -20,6 +20,7 @@ using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.UpdateYosiki;
+using Helper.Constants;
 using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 
 namespace EmrCloudApi.Controller;
@@ -30,6 +31,7 @@ public class YousikiController : BaseParamControllerBase
 {
     private readonly UseCaseBus _bus;
     private readonly IMessenger _messenger;
+
     public YousikiController(UseCaseBus bus, IMessenger messenger, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _bus = bus;
@@ -168,7 +170,6 @@ public class YousikiController : BaseParamControllerBase
         string suffixString;
         string fullByomei;
         string codeNo = "";
-        int dataType;
 
         foreach (var categorie in request.Yousiki1Inf.CategoryRequests)
         {
@@ -198,7 +199,6 @@ public class YousikiController : BaseParamControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
-            dataType = 0;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList ?? new())
@@ -304,7 +304,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   dataType,
+                   DataType.TabCommon,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -1241,7 +1241,6 @@ public class YousikiController : BaseParamControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
-            dataType = 2;
             codeNo = "HCH0001";
 
             var rowNo = yousiki1InfDetailRequest.SortNo;
@@ -1252,7 +1251,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   dataType,
+                   DataType.TabAtHome,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -1431,7 +1430,6 @@ public class YousikiController : BaseParamControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
-            dataType = 2;
             codeNo = "HCHC001";
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
@@ -1441,7 +1439,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   dataType,
+                   DataType.TabAtHome,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -2158,7 +2156,6 @@ public class YousikiController : BaseParamControllerBase
             suffixString = "";
             fullByomei = "";
             codeNo = "RCD0001";
-            dataType = 3;
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
@@ -2167,7 +2164,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   dataType,
+                   DataType.TabRehabilitation,
                    seqNo,
                    codeNo,
                    rowNo,
