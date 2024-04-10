@@ -8,13 +8,16 @@ namespace CloudUnitTest.Repository.Accounting
     public class GetListRaiinInfTest : BaseUT
     {
         [Test]
-        public void GetListRaiinInf_001_getAll_Faild()
+        public void GetListRaiinInf_001_GetAll_Faild()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
+            int hpId = 1; long ptId = 1; int sinDate = 20230303; long raiinNo = -1; bool isGetHeader = false; bool getAll = false;
             try
             {
-                int hpId = 1; long ptId = 1; int sinDate = 20230303; long raiinNo = -1; bool isGetHeader = false; bool getAll = false;
+                //Act
                 var result = accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo, isGetHeader, getAll);
+                //Assert
                 Assert.True(result.Count == 0);
             }
             finally
@@ -24,13 +27,16 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListRaiinInf_002_getAll_True()
+        public void GetListRaiinInf_002_GetAll_True()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
+            int hpId = 1; long ptId = 1; int sinDate = 20230303; long raiinNo = -1; bool isGetHeader = false; bool getAll = true;
             try
             {
-                int hpId = 1; long ptId = 1; int sinDate = 20230303; long raiinNo = -1; bool isGetHeader = false; bool getAll = true;
+                //Act
                 var result = accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo, isGetHeader, getAll);
+                //Assert
                 Assert.True(result.Count == 0);
             }
             finally
@@ -40,8 +46,9 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListRaiinInf_003_isGetHeader_faild()
+        public void GetListRaiinInf_003_IsGetHeader_Faild()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
             int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; bool isGetHeader = false; bool getAll = true;
@@ -50,7 +57,9 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo, isGetHeader, getAll);
+                //Assert
                 Assert.True(result.Count == 2);
             }
             finally
@@ -62,8 +71,9 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListRaiinInf_004_isGetHeader()
+        public void GetListRaiinInf_004_IsGetHeader()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
             int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; bool isGetHeader = true; bool getAll = true;
@@ -72,7 +82,9 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo, isGetHeader, getAll);
+                //Assert
                 Assert.True(result.Count == 2);
             }
             finally
@@ -84,8 +96,9 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListRaiinInf_005_count_listRaiinInf()
+        public void GetListRaiinInf_005_Count_ListRaiinInf()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
             int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; bool isGetHeader = true; bool getAll = true;
@@ -94,7 +107,9 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo, isGetHeader, getAll);
+                //Assert
                 Assert.True(result.Count == 2 && result.Select(i => i.PersonNumber).Contains(0));
             }
             finally
@@ -106,8 +121,9 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListRaiinInf_006_count_listRaiinInf()
+        public void GetListRaiinInf_006_Count_ListRaiinInf()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetNoTrackingDataContext();
             int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; bool isGetHeader = true; bool getAll = true;
@@ -119,7 +135,9 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo, isGetHeader, getAll);
+                //Assert
                 Assert.True(result.Count == 1 && result.Select(i => i.PersonNumber).Contains(0));
             }
             finally
