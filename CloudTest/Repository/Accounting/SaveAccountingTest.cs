@@ -30,7 +30,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void SaveAccountingTest_002_thisCredit()
+        public void SaveAccountingTest_002_ThisCredit()
         {
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
@@ -65,7 +65,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void SaveAccountingTest_003_thisCredit_02()
+        public void SaveAccountingTest_003_ThisCredit_02()
         {
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
@@ -100,7 +100,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void SaveAccountingTest_004_isDisCharged()
+        public void SaveAccountingTest_004_IsDisCharged()
         {
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
@@ -135,7 +135,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void SaveAccountingTest_005_thisSeikyuGaku()
+        public void SaveAccountingTest_005_ThisSeikyuGaku()
         {
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
@@ -355,6 +355,99 @@ namespace CloudUnitTest.Repository.Accounting
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
                 Assert.True(result && listRaiinNoPrint.Count == 3);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(syunoSeikyus);
+                tenant.SaveChanges();
+                CleanupResources(accountingRepository);
+            }
+        }
+
+        [Test]
+        public void SaveAccountingTest_010_AdjustWariExecute()
+        {
+            SetupTestEnvironment(out AccountingRepository accountingRepository);
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+            int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 2; int sumAdjust = 2; int thisWari = 1; int thisCredit = 1;
+            int payType = 0; string comment = ""; bool isDisCharged = true; string kaikeiTime = "";
+            var syunoNyukinModel = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, 0, 1234321,1,0,0,0,0,0,0,"",0,0,"")
+            };
+            var kaikeiInfModel = new List<KaikeiInfModel>()
+            {
+                new KaikeiInfModel()
+            };
+            var syunoRaiinInfModel = new SyunoRaiinInfModel();
+            List<SyunoSeikyuModel> listAllSyunoSeikyu = new List<SyunoSeikyuModel>()
+            {
+                new SyunoSeikyuModel(hpId, ptId,0,1234323,0,0,0,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
+            };
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
+            {
+                 //new SyunoSeikyuModel(hpId, ptId,0,1234321,0,0,1,5,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10),
+                 //new SyunoSeikyuModel(hpId, ptId,0,1234322,0,0,1,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
+            };
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(syunoSeikyus);
+            try
+            {
+                tenant.SaveChanges();
+                var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
+                                                                thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                Assert.True(result && listRaiinNoPrint.Count == 1);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(syunoSeikyus);
+                tenant.SaveChanges();
+                CleanupResources(accountingRepository);
+            }
+        }
+
+        /// <summary>
+        /// Check isSettled = true
+        /// </summary>
+        [Test]
+        public void SaveAccountingTest_011_ParseEarmarkedValueUpdate()
+        {
+            SetupTestEnvironment(out AccountingRepository accountingRepository);
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+            int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 2; int sumAdjust = 2; int thisWari = 1; int thisCredit = 2;
+            int payType = 0; string comment = ""; bool isDisCharged = true; string kaikeiTime = "";
+            var syunoNyukinModel = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, 0, 1234321,1,0,0,0,0,0,0,"",0,0,"")
+            };
+            var kaikeiInfModel = new List<KaikeiInfModel>()
+            {
+                new KaikeiInfModel()
+            };
+            var syunoRaiinInfModel = new SyunoRaiinInfModel();
+            List<SyunoSeikyuModel> listAllSyunoSeikyu = new List<SyunoSeikyuModel>()
+            {
+                new SyunoSeikyuModel(hpId, ptId,0,1234323,0,0,0,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
+            };
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
+            {
+                //new SyunoSeikyuModel(hpId, ptId,0,1234321,0,0,1,5,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10),
+                //new SyunoSeikyuModel(hpId, ptId,0,1234322,0,0,1,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
+            };
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(syunoSeikyus);
+            try
+            {
+                tenant.SaveChanges();
+                var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
+                                                                thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
