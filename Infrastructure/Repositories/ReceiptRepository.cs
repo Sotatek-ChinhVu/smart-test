@@ -583,11 +583,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                        && item.SinDate >= minSinYm
                                                                                        && listPtIds.Contains(item.PtId)
                                                                                        && listSinYm.Contains(item.SinDate / 100)
-                                                                                       && (item.ItemCd != null && orderItemList.Contains(item.ItemCd)) // For normal item
-                                                                                       || (listFreeComment.Any() // For free comment
-                                                                                       && item.ItemCd == null
-                                                                                       && item.ItemName != null
-                                                                                       ))
+                                                                                       && ((item.ItemCd != null && orderItemList.Contains(item.ItemCd)) // For normal item
+                                                                                           || (listFreeComment.Any() // For free comment
+                                                                                               && (item.ItemCd == null
+                                                                                                   || item.ItemCd == "")
+                                                                                               && item.ItemName != null))
+                                                                                               )
                                                                         .Select(item => new OrdInfDetailModel(
                                                                             item.HpId,
                                                                             item.SinDate,
@@ -610,11 +611,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                             from tenMst in tenMstLeft.Where(item => item.StartDate <= odrDetail.SinDate && item.EndDate >= odrDetail.SinDate).DefaultIfEmpty()
                                             where odrDetail.SinDate <= maxSinYm
                                                   && odrDetail.SinDate >= minSinYm
-                                                  && (odrDetail.ItemCd != null && orderItemList.Contains(odrDetail.ItemCd)) // For normal item
+                                                  && ((odrDetail.ItemCd != null && orderItemList.Contains(odrDetail.ItemCd)) // For normal item
                                                   || (listFreeComment.Any() // For free comment
-                                                  && odrDetail.ItemCd == null
+                                                  && (odrDetail.ItemCd == null
+                                                     || odrDetail.ItemCd == "")
                                                   && odrDetail.ItemName != null
-                                                  && listFreeComment.Any(str => odrDetail.ItemName.Contains(str)))
+                                                  && listFreeComment.Any(str => odrDetail.ItemName.Contains(str))))
                                             select new
                                             {
                                                 odrDetail.PtId,
