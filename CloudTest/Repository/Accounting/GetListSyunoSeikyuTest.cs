@@ -10,13 +10,14 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void GetListSyunoSeikyuTest_001_Default()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
-            var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 1; long ptId = 12345; int sinDate = 20230303; List<long> listRaiinNo = new List<long>(); bool getAll = false;
             try
             {
-                tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListSyunoSeikyu(hpId, ptId, sinDate, listRaiinNo, getAll);
+                //Assert
                 Assert.True(result.Count == 0);
             }
             finally
@@ -27,8 +28,9 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListSyunoSeikyuTest_002_CheckNull_listHokenPattern()
+        public void GetListSyunoSeikyuTest_002_CheckNull_ListHokenPattern()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int sinDate = 20180807; List<long> listRaiinNo = new List<long>() { 1234321 }; bool getAll = false;
@@ -45,7 +47,9 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListSyunoSeikyu(hpId, ptId, sinDate, listRaiinNo, getAll);
+                //Assert
                 Assert.True(result.Count == 1 && result[0].HokenId == 0);
             }
             finally
@@ -62,8 +66,9 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListSyunoSeikyuTest_003_CheckHokenPId_listHokenPattern()
+        public void GetListSyunoSeikyuTest_003_CheckHokenPId_ListHokenPattern()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int sinDate = 20180807; List<long> listRaiinNo = new List<long>() { 1234321 }; bool getAll = false;
@@ -84,7 +89,9 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListSyunoSeikyu(hpId, ptId, sinDate, listRaiinNo, getAll);
+                //Assert
                 Assert.True(result.Count == 1 && result[0].HokenId == 10);
             }
             finally
@@ -104,8 +111,9 @@ namespace CloudUnitTest.Repository.Accounting
         /// CHeck listRaiinNo = raiino table SyunoSeikyus
         /// </summary>
         [Test]
-        public void GetListSyunoSeikyuTest_004_getAll_True()
+        public void GetListSyunoSeikyuTest_004_GetAll_True()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int sinDate = 20180807; List<long> listRaiinNo = new List<long>() { 1234321 }; bool getAll = true;
@@ -122,7 +130,9 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListSyunoSeikyu(hpId, ptId, sinDate, listRaiinNo, getAll);
+                //Assert
                 Assert.True(result.Count == 0);
             }
             finally
@@ -141,8 +151,9 @@ namespace CloudUnitTest.Repository.Accounting
         /// CHeck listRaiinNo != raiino table SyunoSeikyus
         /// </summary>
         [Test]
-        public void GetListSyunoSeikyuTest_005_getAll_True()
+        public void GetListSyunoSeikyuTest_005_GetAll_True()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int sinDate = 20180807; List<long> listRaiinNo = new List<long>() { 123 }; bool getAll = true;
@@ -159,7 +170,9 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.GetListSyunoSeikyu(hpId, ptId, sinDate, listRaiinNo, getAll);
+                //Assert
                 Assert.True(result.Count == 1 && result[0].HokenId == 0);
             }
             finally
