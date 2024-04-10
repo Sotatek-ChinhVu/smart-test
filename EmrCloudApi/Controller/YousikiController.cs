@@ -168,6 +168,7 @@ public class YousikiController : BaseParamControllerBase
         string suffixString;
         string fullByomei;
         string codeNo = "";
+        int dataType;
 
         foreach (var categorie in request.Yousiki1Inf.CategoryRequests)
         {
@@ -197,6 +198,7 @@ public class YousikiController : BaseParamControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
+            dataType = 0;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList ?? new())
@@ -302,7 +304,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   dataType,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -1239,8 +1241,9 @@ public class YousikiController : BaseParamControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
-
+            dataType = 2;
             codeNo = "HCH0001";
+
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
@@ -1249,7 +1252,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   dataType,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -1428,7 +1431,7 @@ public class YousikiController : BaseParamControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
-
+            dataType = 2;
             codeNo = "HCHC001";
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
@@ -1438,7 +1441,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   dataType,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -2155,6 +2158,7 @@ public class YousikiController : BaseParamControllerBase
             suffixString = "";
             fullByomei = "";
             codeNo = "RCD0001";
+            dataType = 3;
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
@@ -2163,7 +2167,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   dataType,
                    seqNo,
                    codeNo,
                    rowNo,
