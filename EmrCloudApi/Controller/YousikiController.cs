@@ -304,7 +304,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   DataType.TabCommon,
+                   DataTypeOutpatient.TabCommon,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -1251,7 +1251,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   DataType.TabAtHome,
+                   DataTypeOutpatient.TabAtHome,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -1439,7 +1439,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   DataType.TabAtHome,
+                   DataTypeOutpatient.TabAtHome,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -2164,7 +2164,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   DataType.TabRehabilitation,
+                   DataTypeOutpatient.TabRehabilitation,
                    seqNo,
                    codeNo,
                    rowNo,

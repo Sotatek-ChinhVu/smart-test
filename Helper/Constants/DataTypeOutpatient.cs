@@ -1,6 +1,6 @@
 ﻿namespace Helper.Constants
 {
-    public static class DataType
+    public static class DataTypeOutpatient
     {
         public const int TabCommon = 0;
         public const int TabLiving = 1;
