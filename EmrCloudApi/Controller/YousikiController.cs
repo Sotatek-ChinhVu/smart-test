@@ -23,6 +23,7 @@ using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.SaveDetailDefault;
 using UseCase.Yousiki.UpdateYosiki;
 using ZstdSharp.Unsafe;
+using Helper.Constants;
 using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 
 namespace EmrCloudApi.Controller;
@@ -334,7 +335,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   DataTypeOutpatient.TabCommon,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -1271,8 +1272,8 @@ public class YousikiController : BaseParamControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
-
             codeNo = "HCH0001";
+
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
@@ -1281,7 +1282,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   DataTypeOutpatient.TabAtHome,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -1460,7 +1461,6 @@ public class YousikiController : BaseParamControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
-
             codeNo = "HCHC001";
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
@@ -1470,7 +1470,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   DataTypeOutpatient.TabAtHome,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -2195,7 +2195,7 @@ public class YousikiController : BaseParamControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   DataTypeOutpatient.TabRehabilitation,
                    seqNo,
                    codeNo,
                    rowNo,
