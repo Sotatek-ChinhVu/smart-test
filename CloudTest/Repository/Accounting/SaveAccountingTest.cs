@@ -12,6 +12,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_001_Faild()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             List<SyunoSeikyuModel> listAllSyunoSeikyu = new List<SyunoSeikyuModel>();
             List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>();
@@ -19,8 +20,10 @@ namespace CloudUnitTest.Repository.Accounting
             int payType = 0; string comment = ""; bool isDisCharged = false; string kaikeiTime = "";
             try
             {
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(!result);
             }
             finally
@@ -32,6 +35,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_002_ThisCredit()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 0; int sumAdjust = 0; int thisWari = 0; int thisCredit = 0;
@@ -51,12 +55,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -67,6 +74,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_003_ThisCredit_02()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 1; int sumAdjust = 0; int thisWari = 0; int thisCredit = 0;
@@ -86,12 +94,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -102,6 +113,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_004_IsDisCharged()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 0; int sumAdjust = 0; int thisWari = 0; int thisCredit = 0;
@@ -121,12 +133,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -137,6 +152,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_005_ThisSeikyuGaku()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 0; int sumAdjust = 0; int thisWari = 0; int thisCredit = 0;
@@ -165,12 +181,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -181,6 +200,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_006()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 0; int sumAdjust = 0; int thisWari = 0; int thisCredit = 0;
@@ -209,12 +229,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -228,6 +251,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_007_ParseValueUpdate()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 0; int sumAdjust = 1; int thisWari = 0; int thisCredit = 0;
@@ -256,12 +280,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -275,6 +302,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_008_ParseValueUpdate_02()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 0; int sumAdjust = 2; int thisWari = 2; int thisCredit = 0;
@@ -304,12 +332,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 3);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -323,6 +354,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_009_ParseValueUpdate_03()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 0; int sumAdjust = 2; int thisWari = 1; int thisCredit = 1;
@@ -352,12 +384,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 3);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -368,6 +403,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_010_AdjustWariExecute()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 2; int sumAdjust = 2; int thisWari = 1; int thisCredit = 1;
@@ -385,11 +421,7 @@ namespace CloudUnitTest.Repository.Accounting
             {
                 new SyunoSeikyuModel(hpId, ptId,0,1234323,0,0,0,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
             };
-            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
-            {
-                 //new SyunoSeikyuModel(hpId, ptId,0,1234321,0,0,1,5,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10),
-                 //new SyunoSeikyuModel(hpId, ptId,0,1234322,0,0,1,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
-            };
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>();
             var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
             var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
             tenant.AddRange(raiinInfs);
@@ -397,12 +429,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -416,6 +451,7 @@ namespace CloudUnitTest.Repository.Accounting
         [Test]
         public void SaveAccountingTest_011_ParseEarmarkedValueUpdate()
         {
+            // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 2; int sumAdjust = 2; int thisWari = 1; int thisCredit = 2;
@@ -433,11 +469,7 @@ namespace CloudUnitTest.Repository.Accounting
             {
                 new SyunoSeikyuModel(hpId, ptId,0,1234323,0,0,0,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
             };
-            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
-            {
-                //new SyunoSeikyuModel(hpId, ptId,0,1234321,0,0,1,5,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10),
-                //new SyunoSeikyuModel(hpId, ptId,0,1234322,0,0,1,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
-            };
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>();
             var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
             var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
             tenant.AddRange(raiinInfs);
@@ -445,12 +477,15 @@ namespace CloudUnitTest.Repository.Accounting
             try
             {
                 tenant.SaveChanges();
+                //Act
                 var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
                                                                 thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
+                //Assert
                 Assert.True(result && listRaiinNoPrint.Count == 1);
             }
             finally
             {
+                DeleteSyunoNyukin(hpId, ptId);
                 tenant.RemoveRange(raiinInfs);
                 tenant.RemoveRange(syunoSeikyus);
                 tenant.SaveChanges();
@@ -468,6 +503,17 @@ namespace CloudUnitTest.Repository.Accounting
         private void CleanupResources(AccountingRepository accountingRepository)
         {
             accountingRepository.ReleaseResource();
+        }
+
+        private void DeleteSyunoNyukin(int hpId, long ptId)
+        {
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+            var syunoNyukins = tenant.SyunoNyukin.Where(i => i.HpId == hpId && i.PtId == ptId).ToList();
+            if (syunoNyukins.Any())
+            {
+                tenant.RemoveRange(syunoNyukins);
+                tenant.SaveChanges();
+            }
         }
     }
 }
