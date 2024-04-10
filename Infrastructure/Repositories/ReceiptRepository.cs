@@ -648,11 +648,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                             && listPtIds.Contains(item.PtId)
                                                                                             && item.SinYm <= maxSinYm
                                                                                             && item.SinYm >= minSinYm
-                                                                                            && (santeiItemList.Contains(item.ItemCd) && !string.IsNullOrEmpty(item.ItemCd)) // for santei item
-                                                                                            || (listFreeComment.Any() // For free comment
-                                                                                                && (item.ItemCd == null || ItemCdConst.CommentFree == item.ItemCd)
-                                                                                                && item.ItemName != null
-                                                                                                && listFreeComment.Any(str => item.ItemName.Contains(str))
+                                                                                            && ((item.ItemCd != null && item.ItemCd != "" && santeiItemList.Contains(item.ItemCd)) // for santei item
+                                                                                                || (listFreeComment.Any() // For free comment
+                                                                                                && (item.ItemCd == null || item.ItemCd == "" || ItemCdConst.CommentFree == item.ItemCd)
+                                                                                                && item.ItemName != null)
                                                                                ));
 
                     var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
@@ -678,6 +677,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                      where detail.SinYm <= maxSinYm
                                          && detail.SinYm >= minSinYm
                                          && ((sinkoui.InoutKbn != 1 && tenMst != null) || detail.ItemCd == ItemCdConst.CommentFree)
+                                         && ((detail.ItemCd != null && detail.ItemCd != "" && santeiItemList.Contains(detail.ItemCd)) // for santei item
+                                              || (listFreeComment.Any() // For free comment
+                                              && (detail.ItemCd == null || detail.ItemCd == "" || ItemCdConst.CommentFree == detail.ItemCd)
+                                              && detail.ItemName != null
+                                              && listFreeComment.Any(str => detail.ItemName!.Contains(str))))
                                      select new
                                      {
                                          detail.HpId,
