@@ -572,5 +572,6 @@
         public const string GetByomeisInMonth = "GetByomeisInMonth";
         public const string CreateYuIchiFile = "CreateYuIchiFile";
         public const string UpdateYousiki = "UpdateYousiki";
+        public const string SaveDetailDefault = "SaveDetailDefault";
     }
 }

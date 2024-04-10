@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Yousiki;
+using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Yousiki;
 using EmrCloudApi.Requests.Yousiki;
@@ -19,7 +20,9 @@ using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
+using UseCase.Yousiki.SaveDetailDefault;
 using UseCase.Yousiki.UpdateYosiki;
+using ZstdSharp.Unsafe;
 using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 
 namespace EmrCloudApi.Controller;
@@ -141,6 +144,35 @@ public class YousikiController : BaseParamControllerBase
         var presenter = new GetKacodeYousikiMstDictPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetKacodeYousikiMstDictResponse>>(presenter.Result);
+    }
+
+    /// <summary>
+    /// SaveDetailDefault
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpPost(ApiPath.SaveDetailDefault)]
+    public ActionResult<Response<SaveDetailDefaultResponse>> SaveDetailDefault([FromBody] SaveDetailDefaultRequest request)
+    {
+        var input = new SaveDetailDefaultInputData(HpId,
+                                                   request.Mode,
+                                                   request.DataType,
+                                                   request.BarthelIndexList.Select(item => new PatientStatusModel(item.StatusLabel, item.StatusValue)).ToList(),
+                                                   request.FIMList.Select(item => new PatientStatusModel(item.StatusLabel, item.StatusValue)).ToList(),
+                                                   request.Yousiki1InfDetailList.Select(item => new Yousiki1InfDetailModel(
+                                                                                                    item.PtId,
+                                                                                                    item.SinYm,
+                                                                                                    request.DataType,
+                                                                                                    item.SeqNo,
+                                                                                                    item.CodeNo,
+                                                                                                    item.RowNo,
+                                                                                                    item.Payload,
+                                                                                                    item.Value
+                                                                                 )).ToList());
+        var output = _bus.Handle(input);
+        var presenter = new SaveDetailDefaultPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<SaveDetailDefaultResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.UpdateYousiki)]
