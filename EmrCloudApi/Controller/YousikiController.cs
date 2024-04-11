@@ -5,6 +5,7 @@ using EmrCloudApi.Presenters.Yousiki;
 using EmrCloudApi.Requests.Yousiki;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Yousiki;
+using Helper.Constants;
 using Helper.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -22,8 +23,6 @@ using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.SaveDetailDefault;
 using UseCase.Yousiki.UpdateYosiki;
-using ZstdSharp.Unsafe;
-using Helper.Constants;
 using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 
 namespace EmrCloudApi.Controller;
@@ -450,7 +449,9 @@ public class YousikiController : BaseParamControllerBase
 
         if (!string.IsNullOrEmpty(byomeiInfCommon.ByomeiCd))
         {
-            result.Add(new Yousiki1InfDetailModel(
+            result.AddRange(new List<Yousiki1InfDetailModel>
+            {
+                new Yousiki1InfDetailModel(
                ptId,
                sinYm,
                0,
@@ -460,9 +461,8 @@ public class YousikiController : BaseParamControllerBase
                4,
                byomeiInfCommon.ByomeiCd,
                byomeiInfCommon.IsDeleted ? 1 : 0
-               ));
-
-            result.Add(new Yousiki1InfDetailModel(
+               ),
+               new Yousiki1InfDetailModel(
                ptId,
                sinYm,
                0,
@@ -472,7 +472,8 @@ public class YousikiController : BaseParamControllerBase
                5,
                valueModifier,
                byomeiInfCommon.IsDeleted ? 1 : 0
-               ));
+               )
+            });
         }
 
         if (byomeiInfCommon.DateOfHospitalization != null)
