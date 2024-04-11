@@ -151,7 +151,7 @@ namespace CloudUnitTest.Repository.Accounting
         /// CHeck listRaiinNo != raiino table SyunoSeikyus
         /// </summary>
         [Test]
-        public void GetListSyunoSeikyuTest_005_GetAll_True()
+        public void GetListSyunoSeikyuTest_005_GetAll_True_CheckListRaiinNo()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);

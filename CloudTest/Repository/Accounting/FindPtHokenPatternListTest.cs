@@ -253,7 +253,7 @@ namespace CloudUnitTest.Repository.Accounting
         /// HokenGrp = 2, HokenId == ptKohi1.HokenId
         /// </summary>
         [Test]
-        public void FindPtHokenPatternList_008_Check_ReturnModel()
+        public void FindPtHokenPatternList_008_Check_ReturnModel_PtKohi1()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -298,7 +298,7 @@ namespace CloudUnitTest.Repository.Accounting
         /// HokenGrp = 2, HokenId == ptKohi2.HokenId
         /// </summary>
         [Test]
-        public void FindPtHokenPatternList_009_Check_ReturnModel()
+        public void FindPtHokenPatternList_009_Check_ReturnModel_PtKohi2()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -345,7 +345,7 @@ namespace CloudUnitTest.Repository.Accounting
         /// HokenGrp = 2, HokenId == ptKohi3.HokenId
         /// </summary>
         [Test]
-        public void FindPtHokenPatternList_010_Check_ReturnModel()
+        public void FindPtHokenPatternList_010_Check_ReturnModel_PtKohi3()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -389,10 +389,10 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         /// <summary>
-        /// HokenGrp = 2, HokenId == ptKohi3.HokenId
+        /// HokenGrp = 2, HokenId == ptKohi4.HokenId
         /// </summary>
         [Test]
-        public void FindPtHokenPatternList_011_Check_ReturnModel()
+        public void FindPtHokenPatternList_011_Check_ReturnModel_PtKohi4()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
