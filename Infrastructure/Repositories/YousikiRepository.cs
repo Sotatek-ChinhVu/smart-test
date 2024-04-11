@@ -186,7 +186,10 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                                                 item.Payload,
                                                                                                 item.Value ?? string.Empty))
                                                                             .ToList();
+
+        // Get default param for common tab
         GetDefaultYousiki1InfDetailList(hpId, dataType, yousiki1Inf, ref yousiki1InfDetailList);
+
         return new Yousiki1InfModel(hpId,
                                     ptInf.PtNum,
                                     ptInf.Name ?? string.Empty,
@@ -219,60 +222,96 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     private void GetDefaultYousiki1InfDetailList(int hpId, int dataType, Yousiki1Inf yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         #region Common
-        #region 属性
-        bool isExistAttributes = yousiki1InfDetailList.Any(item => item.DataType == dataType && item.CodeNo == CodeNo_Attributes);
-        if (!isExistAttributes)
+        if (dataType == 0)
         {
-            var ptInf = _patientInforRepository.GetPtInf(hpId, yousiki1Inf.PtId);
+            #region 属性
+            bool isExistAttributes = yousiki1InfDetailList.Any(item => item.DataType == dataType && item.CodeNo == CodeNo_Attributes);
+            if (!isExistAttributes)
+            {
+                var ptInf = _patientInforRepository.GetPtInf(hpId, yousiki1Inf.PtId);
 
-            // BirthDay
-            yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 1, ptInf.Birthday.AsString()));
+                // BirthDay
+                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 1, ptInf.Birthday.AsString()));
 
-            //Sex
-            yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 2, ptInf.Sex.AsString()));
+                //Sex
+                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 2, ptInf.Sex.AsString()));
 
-            // HomePost
-            string homePost = ptInf.HomePost.AsString();
-            homePost = homePost.Replace("-", "");
-            homePost = homePost.Replace("ー", "");
-            homePost = homePost.Replace(" ", "");
-            homePost = homePost.Replace("　", "");
-            homePost = homePost.PadRight(7, '0');
-            yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 3, homePost));
+                // HomePost
+                string homePost = ptInf.HomePost.AsString();
+                homePost = homePost.Replace("-", "");
+                homePost = homePost.Replace("ー", "");
+                homePost = homePost.Replace(" ", "");
+                homePost = homePost.Replace("　", "");
+                homePost = homePost.PadRight(7, '0');
+                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 3, homePost));
+            }
+            #endregion
+
+            #region 身長・体重
+            bool isExistHeightAndWeightPtInf = yousiki1InfDetailList.Any(item => item.DataType == dataType && item.CodeNo == CodeNo_HeightAndWeight);
+            if (!isExistHeightAndWeightPtInf)
+            {
+                int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+                if (yousiki1Inf.SinYm > 0)
+                {
+                    sinDate = yousiki1Inf.SinYm * 100 + 31;
+                }
+
+                string bodyHeight = "000";
+                string bodyWeight = "000";
+                var ptPhysicalInfoList = _patientInfoRepository.GetPtPhysicalInfoToYousiki(hpId, yousiki1Inf.PtId, sinDate);
+
+                // BodyHeight
+                var kensaInfHeight = ptPhysicalInfoList.FirstOrDefault(item => item.KensaItemCd == "V0001");
+                if (kensaInfHeight != null && !string.IsNullOrEmpty(kensaInfHeight.ResultVal))
+                {
+                    bodyHeight = Math.Round(kensaInfHeight.ResultVal.AsDouble(), 0, MidpointRounding.AwayFromZero).AsInteger().AsString();
+                    yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_HeightAndWeight, 0, 1, bodyHeight));
+                }
+
+                // BodyWeight
+                var kensaInfWeight = ptPhysicalInfoList.FirstOrDefault(item => item.KensaItemCd == "V0002");
+                if (kensaInfWeight != null && !string.IsNullOrEmpty(kensaInfWeight.ResultVal))
+                {
+                    bodyWeight = Math.Round(kensaInfWeight.ResultVal.AsDouble(), 1, MidpointRounding.AwayFromZero).ToString("0.0");
+                    yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_HeightAndWeight, 0, 2, bodyWeight));
+                }
+            }
+            #endregion
         }
         #endregion
 
-        #region 身長・体重
-        bool isExistHeightAndWeightPtInf = yousiki1InfDetailList.Any(item => item.DataType == dataType && item.CodeNo == CodeNo_HeightAndWeight);
-        if (!isExistHeightAndWeightPtInf)
+        #region Rehabilitation
+        if (dataType == 3)
         {
-            int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
-            if (yousiki1Inf.SinYm > 0)
-            {
-                sinDate = yousiki1Inf.SinYm * 100 + 31;
-            }
+            var detailDefaultList = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.HpId == hpId
+                                                                                           && item.SinYm == 0
+                                                                                           && item.PtId == 0
+                                                                                           && item.SeqNo == 1
+                                                                                           && item.SeqNo == 1
+                                                                                           && item.DataType == dataType)
+                                                                            .Select(item => new Yousiki1InfDetailModel(
+                                                                                                item.PtId,
+                                                                                                item.SinYm,
+                                                                                                item.DataType,
+                                                                                                item.SeqNo,
+                                                                                                item.CodeNo ?? string.Empty,
+                                                                                                item.RowNo,
+                                                                                                item.Payload,
+                                                                                                item.Value ?? string.Empty))
+                                                                            .ToList();
 
-            string bodyHeight = "000";
-            string bodyWeight = "000";
-            var ptPhysicalInfoList = _patientInfoRepository.GetPtPhysicalInfoToYousiki(hpId, yousiki1Inf.PtId, sinDate);
-
-            // BodyHeight
-            var kensaInfHeight = ptPhysicalInfoList.FirstOrDefault(item => item.KensaItemCd == "V0001");
-            if (kensaInfHeight != null && !string.IsNullOrEmpty(kensaInfHeight.ResultVal))
+            foreach (var defaultItem in detailDefaultList)
             {
-                bodyHeight = Math.Round(kensaInfHeight.ResultVal.AsDouble(), 0, MidpointRounding.AwayFromZero).AsInteger().AsString();
-                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_HeightAndWeight, 0, 1, bodyHeight));
-            }
-
-            // BodyWeight
-            var kensaInfWeight = ptPhysicalInfoList.FirstOrDefault(item => item.KensaItemCd == "V0002");
-            if (kensaInfWeight != null && !string.IsNullOrEmpty(kensaInfWeight.ResultVal))
-            {
-                bodyWeight = Math.Round(kensaInfWeight.ResultVal.AsDouble(), 1, MidpointRounding.AwayFromZero).ToString("0.0");
-                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_HeightAndWeight, 0, 2, bodyWeight));
+                if (yousiki1InfDetailList.Any(item => item.DataType == defaultItem.DataType
+                                                      && item.CodeNo == defaultItem.CodeNo
+                                                      && item.Payload == defaultItem.Payload))
+                {
+                    continue;
+                }
+                yousiki1InfDetailList.Add(defaultItem);
             }
         }
-        #endregion
         #endregion
     }
 
@@ -858,7 +897,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return true;
     }
 
-    public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> categoryModels, bool isTemporarySave)
+    public void UpdateYousiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> categoryModels, bool isTemporarySave)
     {
         yousiki1InfDetailModels = yousiki1InfDetailModels.Where(x => x.Value != "undefined").ToList();
         UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
@@ -873,10 +912,11 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             {
                 if (categoryModel.Status == 2)
                 {
-                    var seqNoMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == categoryModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
-                    AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, seqNoMax);
+                    var seqNoInfDEtailMax = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == categoryModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
+                    var seqNoInfMax = NoTrackingDataContext.Yousiki1Infs.Where(x => x.PtId == yousiki1InfModel.PtId && x.SinYm == yousiki1InfModel.SinYm && x.DataType == categoryModel.DataType).Select(x => x.SeqNo).DefaultIfEmpty()?.Max() ?? 0;
+                    AddYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, seqNoInfMax);
                     var yousiki1InfDetailModelChanges = yousiki1InfDetailModels.Where(x => x.DataType == categoryModel.DataType).ToList();
-                    UpdateSeqNo(yousiki1InfDetailModelChanges, seqNoMax);
+                    UpdateSeqNo(yousiki1InfDetailModelChanges, seqNoInfDEtailMax);
                 }
             }
 
@@ -1004,6 +1044,48 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             yousikiInf.UpdateId = userId;
         }
 
+        return true;
+    }
+
+    public bool SaveYousiki1InfDetailDefault(int hpId, int dataType, List<Yousiki1InfDetailModel> defaultList)
+    {
+        if (!defaultList.Any())
+        {
+            return false;
+        }
+        var payLoadList = defaultList.Select(item => item.Payload).Distinct().ToList();
+        var codeNo = defaultList.First().CodeNo;
+        var yousiki1InfDetailList = TrackingDataContext.Yousiki1InfDetails.Where(item => item.HpId == hpId
+                                                                                         && item.PtId == 0
+                                                                                         && item.SinYm == 0
+                                                                                         && item.SeqNo == 1
+                                                                                         && item.DataType == dataType
+                                                                                         && item.CodeNo == codeNo
+                                                                                         && payLoadList.Contains(item.Payload))
+                                                                          .ToList();
+        foreach (var model in defaultList)
+        {
+            bool isAddNew = false;
+            var yousiki1InfDetai = yousiki1InfDetailList.FirstOrDefault(item => item.Payload == model.Payload);
+            if (yousiki1InfDetai == null)
+            {
+                yousiki1InfDetai = new Yousiki1InfDetail();
+                yousiki1InfDetai.HpId = hpId;
+                yousiki1InfDetai.PtId = 0;
+                yousiki1InfDetai.SinYm = 0;
+                yousiki1InfDetai.SeqNo = 1;
+                yousiki1InfDetai.DataType = dataType;
+                yousiki1InfDetai.CodeNo = codeNo;
+                yousiki1InfDetai.Payload = model.Payload;
+                isAddNew = true;
+            }
+            yousiki1InfDetai.Value = model.Value;
+            if (isAddNew)
+            {
+                TrackingDataContext.Add(yousiki1InfDetai);
+            }
+        }
+        TrackingDataContext.SaveChanges();
         return true;
     }
 
