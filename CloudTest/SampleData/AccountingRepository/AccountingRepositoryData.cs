@@ -126,6 +126,22 @@ namespace CloudUnitTest.SampleData.AccountingRepository
                                     int.TryParse(text, out int raiinNo);
                                     kaikeiInf.RaiinNo = raiinNo;
                                     break;
+                                case "V":
+                                    int.TryParse(text, out int kohi1Id);
+                                    kaikeiInf.Kohi1Id = kohi1Id;
+                                    break;
+                                case "W":
+                                    int.TryParse(text, out int kohi2Id);
+                                    kaikeiInf.Kohi2Id = kohi2Id;
+                                    break;
+                                case "X":
+                                    int.TryParse(text, out int kohi3Id);
+                                    kaikeiInf.Kohi3Id = kohi3Id;
+                                    break;
+                                case "Y":
+                                    int.TryParse(text, out int kohi4Id);
+                                    kaikeiInf.Kohi4Id = kohi4Id;
+                                    break;
                                 default:
                                     break;
                             }
@@ -491,6 +507,10 @@ namespace CloudUnitTest.SampleData.AccountingRepository
                                 case "D":
                                     int.TryParse(text, out int hokenEdaNo);
                                     hokenMst.HokenEdaNo = hokenEdaNo;
+                                    break;
+                                case "AP":
+                                    int.TryParse(text, out int monthLimitCount);
+                                    hokenMst.MonthLimitCount = monthLimitCount;
                                     break;
                                 default:
                                     break;
