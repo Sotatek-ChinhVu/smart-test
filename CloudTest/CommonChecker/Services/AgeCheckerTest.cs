@@ -324,6 +324,7 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_008_TestAgeChecker_HandleCheckOrderList_Test_CheckedResult_IsNotNull_And_CountMoreThan_0()
     {
         int hpId = 999;
+        int ptId = 111;
         // Arrange
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -355,6 +356,13 @@ public class AgeCheckerTest : BaseUT
         var m14 = CommonCheckerData.ReadM14AgeCheck();
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS003");
         var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
+        var ptInf = CommonCheckerData.ReadPtInf().FirstOrDefault();
+        if (ptInf != null)
+        {
+            ptInf.PtId = ptId;
+            ptInf.HpId = hpId;
+            tenantTracking.PtInfs.Add(ptInf);
+        }
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M14AgeCheck.AddRange(m14);
 
@@ -373,16 +381,16 @@ public class AgeCheckerTest : BaseUT
         };
 
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
-                                                                    RealtimeCheckerType.Age, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+                                                                    RealtimeCheckerType.Age, odrInfoModel, 20230101, ptId, new(new(), new(), new()), new(), new(), true);
 
             var ageChecker = new AgeChecker<OrdInfoModel, OrdInfoDetailModel>();
             ageChecker.HpID = hpId;
-            ageChecker.PtID = 111;
+            ageChecker.PtID = ptId;
             ageChecker.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
-            var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(ageChecker.HpID, new List<string>() { "6220816AGE" }, 20230101, 111);
+           var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(ageChecker.HpID, new List<string>() { "6220816AGE" }, 20230101, ptId);
             ageChecker.InitFinder(TenantProvider, cache);
 
             var result = ageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
@@ -399,6 +407,7 @@ public class AgeCheckerTest : BaseUT
         {
             tenantTracking.TenMsts.RemoveRange(tenMsts);
             tenantTracking.M14AgeCheck.RemoveRange(m14);
+            if (ptInf != null) tenantTracking.PtInfs.Remove(ptInf);
             if (systemConf != null) systemConf.Val = temp;
             tenantTracking.SaveChanges();
         }
