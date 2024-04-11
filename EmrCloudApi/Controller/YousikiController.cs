@@ -461,10 +461,7 @@ public class YousikiController : BaseParamControllerBase
                byomeiInfCommon.ByomeiCd,
                byomeiInfCommon.IsDeleted ? 1 : 0
                ));
-        }
 
-        if (!string.IsNullOrEmpty(byomeiInfCommon.ByomeiCd))
-        {
             result.Add(new Yousiki1InfDetailModel(
                ptId,
                sinYm,
