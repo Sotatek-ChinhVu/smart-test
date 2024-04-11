@@ -72,7 +72,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void SaveAccountingTest_003_ThisCredit_02()
+        public void SaveAccountingTest_003_ThisCredit_isDisCharged()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -249,7 +249,7 @@ namespace CloudUnitTest.Repository.Accounting
         /// Check isLastRecord
         /// </summary>
         [Test]
-        public void SaveAccountingTest_007_ParseValueUpdate()
+        public void SaveAccountingTest_007_ParseValueUpdate_IsLastRecord()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -300,7 +300,7 @@ namespace CloudUnitTest.Repository.Accounting
         /// CHeck adjustFutan >= thisSeikyuGaku
         /// </summary>
         [Test]
-        public void SaveAccountingTest_008_ParseValueUpdate_02()
+        public void SaveAccountingTest_008_ParseValueUpdate_GreaterThan()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -348,11 +348,8 @@ namespace CloudUnitTest.Repository.Accounting
             }
         }
 
-        /// <summary>
-        /// CHeck adjustFutan >= thisSeikyuGaku
-        /// </summary>
         [Test]
-        public void SaveAccountingTest_009_ParseValueUpdate_03()
+        public void SaveAccountingTest_009_ParseValueUpdate_CheckElse()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
