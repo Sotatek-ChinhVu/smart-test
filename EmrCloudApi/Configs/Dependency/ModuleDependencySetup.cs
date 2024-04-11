@@ -809,6 +809,7 @@ using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
+using UseCase.Yousiki.SaveDetailDefault;
 using UseCase.Yousiki.UpdateYosiki;
 using GetDefaultSelectedTimeInputDataOfMedical = UseCase.MedicalExamination.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
 using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
@@ -1940,6 +1941,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<AddYousikiInputData, AddYousikiInteractor>();
             busBuilder.RegisterUseCase<DeleteYousikiInfInputData, DeleteYousikiInfInteractor>();
             busBuilder.RegisterUseCase<CreateYuIchiFileInputData, CreateYuIchiFileInteractor>();
+            busBuilder.RegisterUseCase<SaveDetailDefaultInputData, SaveDetailDefaultInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

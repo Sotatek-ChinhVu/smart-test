@@ -1,5 +1,4 @@
-﻿using EmrCloudApi.Responses.Yousiki.Dto;
-using EmrCloudApi.Responses.Yousiki;
+﻿using EmrCloudApi.Responses.Yousiki;
 using UseCase.Yousiki.AddYousiki;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Constants;
