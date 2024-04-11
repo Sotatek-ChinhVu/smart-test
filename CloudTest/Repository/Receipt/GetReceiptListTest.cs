@@ -1,4 +1,5 @@
-﻿using Domain.CalculationInf;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.CalculationInf;
 using Domain.Constant;
 using Domain.Models.MstItem;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
@@ -8283,7 +8284,7 @@ public class GetReceiptListTest : BaseUT
     }
 
     [Test]
-    public void TC_048_ActionGetReceiptList_Test_ItemList_ByomeiCdList_Any()
+    public void TC_048_ActionGetReceiptList_Test_ByomeiCdList_Any()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
@@ -8519,9 +8520,9 @@ public class GetReceiptListTest : BaseUT
             tenant.SaveChanges();
         }
     }
-    
+
     [Test]
-    public void TC_049_ActionGetReceiptList_Test_ItemList_ByomeiCdList_QuerySearchEnumAND()
+    public void TC_049_ActionGetReceiptList_Test_ByomeiCdList_QuerySearchEnumAND()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
@@ -8758,9 +8759,9 @@ public class GetReceiptListTest : BaseUT
             tenant.SaveChanges();
         }
     }
-    
+
     [Test]
-    public void TC_050_ActionGetReceiptList_Test_ItemList_ByomeiCdList_QuerySearchEnumOR()
+    public void TC_050_ActionGetReceiptList_Test_ByomeiCdList_QuerySearchEnumOR()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
@@ -8994,6 +8995,2572 @@ public class GetReceiptListTest : BaseUT
             tenant.OdrInfs.Remove(odrInf);
             tenant.OdrInfDetails.Remove(odrInfDetail);
             tenant.PtByomeis.Remove(ptByomei);
+            tenant.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void TC_051_ActionGetReceiptList_Test_ByomeiCdList_IsOnlySuspectedDisease()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        bool isAll = true;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        string itemCd = "ItemCdUT";
+        string santeiItemCd = string.Empty;
+        string itemName = "ItemNameUT";
+        string byomeiCd = "ByoCd";
+        string inputName = "InputName";
+        bool isComment = false;
+        List<SearchByoMstModel> byomeiCdList = new()
+        {
+            new(byomeiCd, inputName, isComment)
+        };
+
+        PtByomei ptByomei = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            ByomeiCd = byomeiCd,
+            Byomei = inputName,
+            StartDate = sinDate,
+            TenkiDate = sinDate,
+            HokenPid = hokenId,
+            TenkiKbn = TenkiKbnConst.Continued,
+            SyusyokuCd1 = ByomeiConstant.SuspectedCode
+        };
+
+        TenMst tenMst = new()
+        {
+            HpId = hpId,
+            ItemCd = itemCd,
+            SanteiItemCd = santeiItemCd,
+            IsDeleted = 0
+        };
+
+        PtHokenPattern ptHokenPattern = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            HokenPid = hokenPId,
+            IsDeleted = 0
+        };
+
+        OdrInf odrInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            HokenPid = hokenPId,
+            IsDeleted = 0,
+            RpEdaNo = rpEdaNo,
+            RpNo = rpNo
+        };
+
+        OdrInfDetail odrInfDetail = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            RpNo = rpNo,
+            RpEdaNo = rpEdaNo,
+            RowNo = rowNo,
+            SinDate = sinDate,
+            ItemCd = itemCd,
+            ItemName = itemName
+        };
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.PtHokenPatterns.Add(ptHokenPattern);
+            tenant.TenMsts.Add(tenMst);
+            tenant.OdrInfs.Add(odrInf);
+            tenant.OdrInfDetails.Add(odrInfDetail);
+            tenant.PtByomeis.Add(ptByomei);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                    ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.PtHokenPatterns.Remove(ptHokenPattern);
+            tenant.TenMsts.Remove(tenMst);
+            tenant.OdrInfs.Remove(odrInf);
+            tenant.OdrInfDetails.Remove(odrInfDetail);
+            tenant.PtByomeis.Remove(ptByomei);
+            tenant.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void TC_052_ActionGetReceiptList_Test_FullParam()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        bool isAll = true;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int statusKbn = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string itemCd = "ItemCdUT";
+        string santeiItemCd = string.Empty;
+        string itemName = "ItemNameUT";
+        string byomeiCd = "ByoCd";
+        string inputName = "InputName";
+        string message1 = "Message1";
+        string message2 = "Message2";
+
+        PtByomei ptByomei = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            ByomeiCd = byomeiCd,
+            Byomei = inputName,
+            StartDate = sinDate,
+            TenkiDate = sinDate,
+            HokenPid = hokenId,
+            TenkiKbn = TenkiKbnConst.Continued,
+            SyusyokuCd1 = ByomeiConstant.SuspectedCode
+        };
+
+        TenMst tenMst = new()
+        {
+            HpId = hpId,
+            ItemCd = itemCd,
+            SanteiItemCd = santeiItemCd,
+            IsDeleted = 0
+        };
+
+        PtHokenPattern ptHokenPattern = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            HokenPid = hokenPId,
+            IsDeleted = 0
+        };
+
+        OdrInf odrInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            HokenPid = hokenPId,
+            IsDeleted = 0,
+            RpEdaNo = rpEdaNo,
+            RpNo = rpNo
+        };
+
+        OdrInfDetail odrInfDetail = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            RpNo = rpNo,
+            RpEdaNo = rpEdaNo,
+            RowNo = rowNo,
+            SinDate = sinDate,
+            ItemCd = itemCd,
+            ItemName = itemName
+        };
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        ReceStatus receStatus = new()
+        {
+            HpId = hpId,
+            SeikyuYm = seikyuYm,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            StatusKbn = statusKbn,
+            FusenKbn = fusenKbn,
+            IsPaperRece = isPaperRece,
+            Output = output
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        ReceInfEdit receInfEdit = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            IsDeleted = 0,
+            SinYm = sinYm,
+            HokenId = hokenId
+        };
+
+        ReceCheckCmt receCheckCmt = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            IsChecked = 0,
+            SinYm = sinYm,
+            IsDeleted = 0,
+            HokenId = hokenId
+        };
+
+        ReceCheckErr receCheckErr = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            IsChecked = 0,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            Message1 = message1,
+            Message2 = message2
+        };
+
+        ReceCmt receCmt = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SinYm = sinYm,
+            IsDeleted = 0,
+        };
+
+        ReceSeikyu receSeikyu = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            SeikyuYm = seikyuYm,
+            IsDeleted = 0,
+            Cmt = "ReceSeikyuCmt"
+        };
+
+        SyoukiInf syoukiInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsDeleted = 0,
+        };
+
+        SyobyoKeika syobyoKeika = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            Keika = "Keika",
+            IsDeleted = 0,
+        };
+
+        KaikeiInf kaikeiInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SinDate = sinDate
+        };
+
+        PtKyusei ptKyusei = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            IsDeleted = 0,
+            EndDate = sinDate,
+            KanaName = "ptKyuseiKanaName",
+            Name = "ptKyuseiName",
+        };
+
+        KaMst kaMst = new()
+        {
+            HpId = hpId,
+            IsDeleted = 0,
+            KaName = "KaName"
+        };
+
+        UserMst userMst = new()
+        {
+            HpId = hpId,
+            UserId = tantoId,
+            Name = "UserMstName",
+            JobCd = 1,
+            StartDate = 20220201,
+            EndDate = 20220228
+        };
+
+        PtKohi ptKohi1 = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            IsDeleted = 0,
+            HokenId = kohi1Id,
+            FutansyaNo = random.Next(100, 99999999).ToString()
+        };
+
+        PtKohi ptKohi2 = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            IsDeleted = 0,
+            HokenId = kohi2Id,
+            FutansyaNo = random.Next(100, 99999999).ToString()
+        };
+
+        PtKohi ptKohi3 = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            IsDeleted = 0,
+            HokenId = kohi3Id,
+            FutansyaNo = random.Next(100, 99999999).ToString()
+        };
+
+        PtKohi ptKohi4 = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            IsDeleted = 0,
+            HokenId = kohi4Id,
+            FutansyaNo = random.Next(100, 99999999).ToString()
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.PtHokenPatterns.Add(ptHokenPattern);
+            tenant.TenMsts.Add(tenMst);
+            tenant.OdrInfs.Add(odrInf);
+            tenant.OdrInfDetails.Add(odrInfDetail);
+            tenant.PtByomeis.Add(ptByomei);
+            tenant.ReceInfEdits.Add(receInfEdit);
+            tenant.ReceStatuses.Add(receStatus);
+            tenant.ReceCheckCmts.Add(receCheckCmt);
+            tenant.ReceCheckErrs.Add(receCheckErr);
+            tenant.ReceCmts.Add(receCmt);
+            tenant.ReceSeikyus.Add(receSeikyu);
+            tenant.SyoukiInfs.Add(syoukiInf);
+            tenant.SyobyoKeikas.Add(syobyoKeika);
+            tenant.KaikeiInfs.Add(kaikeiInf);
+            tenant.PtKyuseis.Add(ptKyusei);
+            tenant.KaMsts.Add(kaMst);
+            tenant.UserMsts.Add(userMst);
+            tenant.PtKohis.Add(ptKohi1);
+            tenant.PtKohis.Add(ptKohi2);
+            tenant.PtKohis.Add(ptKohi3);
+            tenant.PtKohis.Add(ptKohi4);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     && item.IsReceInfDetailExist == 1
+                                                     && item.ReceCheckCmt == (receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? (receCheckErr?.Message1 ?? string.Empty) + (receCheckErr?.Message2 ?? string.Empty) : string.Empty))
+                                                     && item.IsPending == (receCheckCmt != null ? receCheckCmt.IsPending : -1)
+                                                     && item.IsPaperRece == (receStatus != null ? receStatus.IsPaperRece : 0)
+                                                     && item.Output == (receStatus != null ? receStatus.Output : 0)
+                                                     && item.FusenKbn == (receStatus != null ? receStatus.FusenKbn : 0)
+                                                     && item.StatusKbn == (receStatus != null ? receStatus.StatusKbn : 0)
+                                                     && item.IsReceCmtExist == (receCmt != null ? 1 : 0)
+                                                     && item.ReceSeikyuCmt == (receSeikyu != null ? receSeikyu.Cmt ?? string.Empty : string.Empty)
+                                                     && item.IsSyoukiInfExist == (syoukiInf != null ? 1 : 0)
+                                                     && item.LastSinDateByHokenId == (kaikeiInf?.SinDate ?? 0)
+                                                     && item.Name == (ptKyusei != null ? ptKyusei.Name : ptInf.Name)
+                                                     && item.KanaName == (ptKyusei != null ? ptKyusei.KanaName : ptInf.KanaName)
+                                                     && item.IsPtKyuseiExist == (ptKyusei != null ? 1 : 0)
+                                                     && item.KaName == (kaMst != null ? kaMst.KaName : string.Empty)
+                                                     && item.SName == (userMst?.Name ?? string.Empty)
+                                                     && item.IsSyobyoKeikaExist == (syobyoKeika != null ? 1 : 0)
+                                                     && item.FutansyaNoKohi1 == (ptKohi1 != null ? ptKohi1.FutansyaNo : string.Empty)
+                                                     && item.FutansyaNoKohi2 == (ptKohi2 != null ? ptKohi2.FutansyaNo : string.Empty)
+                                                     && item.FutansyaNoKohi3 == (ptKohi3 != null ? ptKohi3.FutansyaNo : string.Empty)
+                                                     && item.FutansyaNoKohi4 == (ptKohi4 != null ? ptKohi4.FutansyaNo : string.Empty)
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.PtHokenPatterns.Remove(ptHokenPattern);
+            tenant.TenMsts.Remove(tenMst);
+            tenant.OdrInfs.Remove(odrInf);
+            tenant.OdrInfDetails.Remove(odrInfDetail);
+            tenant.PtByomeis.Remove(ptByomei);
+            tenant.ReceInfEdits.Remove(receInfEdit);
+            tenant.ReceStatuses.Remove(receStatus);
+            tenant.ReceCheckCmts.Remove(receCheckCmt);
+            tenant.ReceCheckErrs.Remove(receCheckErr);
+            tenant.ReceCmts.Remove(receCmt);
+            tenant.ReceSeikyus.Remove(receSeikyu);
+            tenant.SyoukiInfs.Remove(syoukiInf);
+            tenant.SyobyoKeikas.Remove(syobyoKeika);
+            tenant.KaikeiInfs.Remove(kaikeiInf);
+            tenant.PtKyuseis.Remove(ptKyusei);
+            tenant.KaMsts.Remove(kaMst);
+            tenant.UserMsts.Remove(userMst);
+            tenant.PtKohis.Remove(ptKohi1);
+            tenant.PtKohis.Remove(ptKohi2);
+            tenant.PtKohis.Remove(ptKohi3);
+            tenant.PtKohis.Remove(ptKohi4);
+            tenant.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void TC_053_ActionGetReceiptList_Test_SeikyuKbnDenshi()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = random.Next(99, 999);
+        List<int> hokenSbts = new();
+        bool isAll = true;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int statusKbn = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string itemCd = "ItemCdUT";
+        string santeiItemCd = string.Empty;
+        string itemName = "ItemNameUT";
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = true;
+        bool seikyuKbnPaper = false;
+
+        TenMst tenMst = new()
+        {
+            HpId = hpId,
+            ItemCd = itemCd,
+            SanteiItemCd = santeiItemCd,
+            IsDeleted = 0
+        };
+
+        PtHokenPattern ptHokenPattern = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            HokenPid = hokenPId,
+            IsDeleted = 0
+        };
+
+        OdrInf odrInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            HokenPid = hokenPId,
+            IsDeleted = 0,
+            RpEdaNo = rpEdaNo,
+            RpNo = rpNo
+        };
+
+        OdrInfDetail odrInfDetail = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            RpNo = rpNo,
+            RpEdaNo = rpEdaNo,
+            RowNo = rowNo,
+            SinDate = sinDate,
+            ItemCd = itemCd,
+            ItemName = itemName
+        };
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        ReceInfEdit receInfEdit = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            IsDeleted = 0,
+            SinYm = sinYm,
+            HokenId = hokenId
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.PtHokenPatterns.Add(ptHokenPattern);
+            tenant.TenMsts.Add(tenMst);
+            tenant.OdrInfs.Add(odrInf);
+            tenant.OdrInfDetails.Add(odrInfDetail);
+            tenant.ReceInfEdits.Add(receInfEdit);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.PtHokenPatterns.Remove(ptHokenPattern);
+            tenant.TenMsts.Remove(tenMst);
+            tenant.OdrInfs.Remove(odrInf);
+            tenant.OdrInfDetails.Remove(odrInfDetail);
+            tenant.ReceInfEdits.Remove(receInfEdit);
+            tenant.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void TC_054_ActionGetReceiptList_Test_SeikyuKbnPaper()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        bool isAll = true;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int statusKbn = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string itemCd = "ItemCdUT";
+        string santeiItemCd = string.Empty;
+        string itemName = "ItemNameUT";
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = true;
+
+        TenMst tenMst = new()
+        {
+            HpId = hpId,
+            ItemCd = itemCd,
+            SanteiItemCd = santeiItemCd,
+            IsDeleted = 0
+        };
+
+        PtHokenPattern ptHokenPattern = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            HokenPid = hokenPId,
+            IsDeleted = 0
+        };
+
+        OdrInf odrInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            HokenPid = hokenPId,
+            IsDeleted = 0,
+            RpEdaNo = rpEdaNo,
+            RpNo = rpNo
+        };
+
+        OdrInfDetail odrInfDetail = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            RpNo = rpNo,
+            RpEdaNo = rpEdaNo,
+            RowNo = rowNo,
+            SinDate = sinDate,
+            ItemCd = itemCd,
+            ItemName = itemName
+        };
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        ReceInfEdit receInfEdit = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            IsDeleted = 0,
+            SinYm = sinYm,
+            HokenId = hokenId
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.PtHokenPatterns.Add(ptHokenPattern);
+            tenant.TenMsts.Add(tenMst);
+            tenant.OdrInfs.Add(odrInf);
+            tenant.OdrInfDetails.Add(odrInfDetail);
+            tenant.ReceInfEdits.Add(receInfEdit);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.PtHokenPatterns.Remove(ptHokenPattern);
+            tenant.TenMsts.Remove(tenMst);
+            tenant.OdrInfs.Remove(odrInf);
+            tenant.OdrInfDetails.Remove(odrInfDetail);
+            tenant.ReceInfEdits.Remove(receInfEdit);
+            tenant.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void TC_055_ActionGetReceiptList_Test_IsSystemSave()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string santeiItemCd = string.Empty;
+        int statusKbn = (int)ReceCheckStatusEnum.SystemPending;
+
+        bool isAll = false;
+        bool isNoSetting = false;
+        bool isSystemSave = true;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        ReceStatus receStatus = new()
+        {
+            HpId = hpId,
+            SeikyuYm = seikyuYm,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            StatusKbn = statusKbn,
+            FusenKbn = fusenKbn,
+            IsPaperRece = isPaperRece,
+            Output = output
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.ReceStatuses.Add(receStatus);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     && item.IsPaperRece == (receStatus != null ? receStatus.IsPaperRece : 0)
+                                                     && item.Output == (receStatus != null ? receStatus.Output : 0)
+                                                     && item.FusenKbn == (receStatus != null ? receStatus.FusenKbn : 0)
+                                                     && item.StatusKbn == (receStatus != null ? receStatus.StatusKbn : 0)
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.ReceStatuses.Remove(receStatus);
+            tenant.SaveChanges();
+        }
+    }
+    
+    [Test]
+    public void TC_056_ActionGetReceiptList_Test_IsSave1()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string santeiItemCd = string.Empty;
+        int statusKbn = (int)ReceCheckStatusEnum.Keep1;
+
+        bool isAll = false;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = true;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        ReceStatus receStatus = new()
+        {
+            HpId = hpId,
+            SeikyuYm = seikyuYm,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            StatusKbn = statusKbn,
+            FusenKbn = fusenKbn,
+            IsPaperRece = isPaperRece,
+            Output = output
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.ReceStatuses.Add(receStatus);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     && item.IsPaperRece == (receStatus != null ? receStatus.IsPaperRece : 0)
+                                                     && item.Output == (receStatus != null ? receStatus.Output : 0)
+                                                     && item.FusenKbn == (receStatus != null ? receStatus.FusenKbn : 0)
+                                                     && item.StatusKbn == (receStatus != null ? receStatus.StatusKbn : 0)
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.ReceStatuses.Remove(receStatus);
+            tenant.SaveChanges();
+        }
+    }
+    
+    [Test]
+    public void TC_057_ActionGetReceiptList_Test_IsSave2()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string santeiItemCd = string.Empty;
+        int statusKbn = (int)ReceCheckStatusEnum.Keep2;
+
+        bool isAll = false;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = true;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        ReceStatus receStatus = new()
+        {
+            HpId = hpId,
+            SeikyuYm = seikyuYm,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            StatusKbn = statusKbn,
+            FusenKbn = fusenKbn,
+            IsPaperRece = isPaperRece,
+            Output = output
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.ReceStatuses.Add(receStatus);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     && item.IsPaperRece == (receStatus != null ? receStatus.IsPaperRece : 0)
+                                                     && item.Output == (receStatus != null ? receStatus.Output : 0)
+                                                     && item.FusenKbn == (receStatus != null ? receStatus.FusenKbn : 0)
+                                                     && item.StatusKbn == (receStatus != null ? receStatus.StatusKbn : 0)
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.ReceStatuses.Remove(receStatus);
+            tenant.SaveChanges();
+        }
+    }
+    
+    [Test]
+    public void TC_058_ActionGetReceiptList_Test_IsSave3()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string santeiItemCd = string.Empty;
+        int statusKbn = (int)ReceCheckStatusEnum.Keep3;
+
+        bool isAll = false;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = true;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        ReceStatus receStatus = new()
+        {
+            HpId = hpId,
+            SeikyuYm = seikyuYm,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            StatusKbn = statusKbn,
+            FusenKbn = fusenKbn,
+            IsPaperRece = isPaperRece,
+            Output = output
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.ReceStatuses.Add(receStatus);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     && item.IsPaperRece == (receStatus != null ? receStatus.IsPaperRece : 0)
+                                                     && item.Output == (receStatus != null ? receStatus.Output : 0)
+                                                     && item.FusenKbn == (receStatus != null ? receStatus.FusenKbn : 0)
+                                                     && item.StatusKbn == (receStatus != null ? receStatus.StatusKbn : 0)
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.ReceStatuses.Remove(receStatus);
+            tenant.SaveChanges();
+        }
+    }
+    
+    [Test]
+    public void TC_059_ActionGetReceiptList_Test_IsTempSave()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string santeiItemCd = string.Empty;
+        int statusKbn = (int)ReceCheckStatusEnum.TempComfirmed;
+
+        bool isAll = false;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = true;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        ReceStatus receStatus = new()
+        {
+            HpId = hpId,
+            SeikyuYm = seikyuYm,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            StatusKbn = statusKbn,
+            FusenKbn = fusenKbn,
+            IsPaperRece = isPaperRece,
+            Output = output
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.ReceStatuses.Add(receStatus);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     && item.IsPaperRece == (receStatus != null ? receStatus.IsPaperRece : 0)
+                                                     && item.Output == (receStatus != null ? receStatus.Output : 0)
+                                                     && item.FusenKbn == (receStatus != null ? receStatus.FusenKbn : 0)
+                                                     && item.StatusKbn == (receStatus != null ? receStatus.StatusKbn : 0)
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.ReceStatuses.Remove(receStatus);
+            tenant.SaveChanges();
+        }
+    }
+    
+    [Test]
+    public void TC_060_ActionGetReceiptList_Test_IsDone()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string santeiItemCd = string.Empty;
+        int statusKbn = (int)ReceCheckStatusEnum.Confirmed;
+
+        bool isAll = false;
+        bool isNoSetting = false;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = true;
+        bool isIncludeSingle = false;
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        ReceStatus receStatus = new()
+        {
+            HpId = hpId,
+            SeikyuYm = seikyuYm,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            StatusKbn = statusKbn,
+            FusenKbn = fusenKbn,
+            IsPaperRece = isPaperRece,
+            Output = output
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.ReceStatuses.Add(receStatus);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                     && item.IsPaperRece == (receStatus != null ? receStatus.IsPaperRece : 0)
+                                                     && item.Output == (receStatus != null ? receStatus.Output : 0)
+                                                     && item.FusenKbn == (receStatus != null ? receStatus.FusenKbn : 0)
+                                                     && item.StatusKbn == (receStatus != null ? receStatus.StatusKbn : 0)
+                                                     ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
+            tenant.ReceStatuses.Remove(receStatus);
+            tenant.SaveChanges();
+        }
+    }
+    
+    [Test]
+    public void TC_061_ActionGetReceiptList_Test_IsNoSetting()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int sinDate = 20220202;
+        int seikyuYm = 202202;
+        int sinYm = 202202;
+        long ptId = random.Next(999, 999999999);
+        long ptNum = random.Next(999, 999999999);
+        int hokenId = random.Next(999, 999999);
+        int seqNo = random.Next(999, 999999);
+        bool isAdvanceSearch = true;
+        string tokki = string.Empty;
+        int hokenKbn = 14;
+        List<int> hokenSbts = new();
+        string hokenHoubetu = string.Empty;
+        string hokensyaNoFrom = string.Empty;
+        string hokensyaNoTo = string.Empty;
+        PtIdSearchOptionEnum ptSearchOption = PtIdSearchOptionEnum.IndividualSearch;
+        int kohi1Houbetu = 0;
+        int kohi2Houbetu = 0;
+        int kohi3Houbetu = 0;
+        int kohi4Houbetu = 0;
+        QuerySearchEnum itemQuery = (QuerySearchEnum)1;
+        bool isOnlySuspectedDisease = true;
+        QuerySearchEnum byomeiQuery = 0;
+        bool isFutanIncludeSingle = false;
+        long futansyaNoFromLong = -1;
+        long futansyaNoToLong = -1;
+        int receSbtRight = -1;
+        int receSbtCenter = -1;
+        long hokensyaNoFromLong = -1;
+        long hokensyaNoToLong = -1;
+        int tensuFrom = -1;
+        long tensuTo = -1;
+        int lastRaiinDateFrom = -1;
+        int lastRaiinDateTo = -1;
+        long ptIdFrom = -1;
+        int tantoId = 0;
+        int doctorId = 0;
+        string name = string.Empty;
+        int kaId = 0;
+        long ptIdTo = -1;
+        int birthDayFrom = 0;
+        int birthDayTo = 0;
+        Dictionary<int, string> groupSearchModels = new();
+        List<SearchByoMstModel> byomeiCdList = new();
+        bool isTestPatientSearch = false;
+        bool isNotDisplayPrinted = false;
+        bool seikyuKbnAll = false;
+        bool seikyuKbnDenshi = false;
+        bool seikyuKbnPaper = false;
+        string ptIdString = string.Empty;
+        List<ItemSearchModel> itemList = new();
+        int isTester = 0;
+        string receSbt = random.Next(1000, 9999).ToString();
+        string houbetu = random.Next(100, 999).ToString();
+        string kohi1HoubetuInput = random.Next(100, 999).ToString();
+        string kohi2HoubetuInput = random.Next(100, 999).ToString();
+        string kohi3HoubetuInput = random.Next(100, 999).ToString();
+        string kohi4HoubetuInput = random.Next(100, 999).ToString();
+        int kohi4ReceKisai = 1;
+        string hokensyaNo = random.Next(100, 99999999).ToString();
+        int tensu = random.Next(100, 999);
+        int raiinNo = random.Next(100, 999999999);
+        int hokenPId = random.Next(100, 999999999);
+        int rpNo = random.Next(100, 999999999);
+        int rpEdaNo = random.Next(100, 999999999);
+        int rowNo = random.Next(100, 999999999);
+        int fusenKbn = random.Next(100, 999999999);
+        int output = random.Next(100, 999999999);
+        int isPaperRece = random.Next(100, 999999999);
+        int kohi1Id = random.Next(100, 999999999);
+        int kohi2Id = random.Next(100, 999999999);
+        int kohi3Id = random.Next(100, 999999999);
+        int kohi4Id = random.Next(100, 999999999);
+        string santeiItemCd = string.Empty;
+        int statusKbn = (int)ReceCheckStatusEnum.UnConfirmed;
+
+        bool isAll = false;
+        bool isNoSetting = true;
+        bool isSystemSave = false;
+        bool isSave1 = false;
+        bool isSave2 = false;
+        bool isSave3 = false;
+        bool isTempSave = false;
+        bool isDone = false;
+        bool isIncludeSingle = false;
+
+        ReceInf receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsTester = isTester,
+            HokenKbn = hokenKbn,
+            ReceSbt = receSbt,
+            Houbetu = houbetu,
+            Kohi1Houbetu = kohi1HoubetuInput,
+            Kohi2Houbetu = kohi2HoubetuInput,
+            Kohi3Houbetu = kohi3HoubetuInput,
+            Kohi4Houbetu = kohi4HoubetuInput,
+            Kohi4ReceKisai = kohi4ReceKisai,
+            HokensyaNo = hokensyaNo,
+            Tensu = tensu,
+            TantoId = tantoId,
+            Kohi1Id = kohi1Id,
+            Kohi2Id = kohi2Id,
+            Kohi3Id = kohi3Id,
+            Kohi4Id = kohi4Id,
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            Status = RaiinState.Calculate,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            IsDeleted = 0,
+            KaId = kaId,
+            TantoId = tantoId
+        };
+
+        PtHokenInf ptHokenInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            HokensyaNo = hokensyaNo,
+        };
+
+        PtInf ptInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            PtNum = ptNum,
+            SeqNo = seqNo,
+            Name = "ptInfName",
+            KanaName = "ptInfKanaName"
+        };
+
+        try
+        {
+            tenant.ReceInfs.Add(receInf);
+            tenant.PtInfs.Add(ptInf);
+            tenant.PtHokenInfs.Add(ptHokenInf);
+            tenant.RaiinInfs.Add(raiinInf);
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceiptList(hpId, seikyuYm, new ReceiptListAdvancedSearchInput(isAdvanceSearch, tokki, hokenSbts, isAll, isNoSetting, isSystemSave, isSave1, isSave2, isSave3, isTempSave, isDone, receSbtCenter, receSbtRight, hokenHoubetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, isIncludeSingle, hokensyaNoFrom, hokensyaNoTo, hokensyaNoFromLong, hokensyaNoToLong, ptIdString, ptIdFrom, ptIdTo, ptSearchOption, tensuFrom, tensuTo, lastRaiinDateFrom, lastRaiinDateTo, birthDayFrom, birthDayTo, itemList, itemQuery, isOnlySuspectedDisease, byomeiQuery, byomeiCdList, isFutanIncludeSingle, futansyaNoFromLong, futansyaNoToLong, kaId, doctorId, name, isTestPatientSearch, isNotDisplayPrinted, groupSearchModels, seikyuKbnAll, seikyuKbnDenshi, seikyuKbnPaper));
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item.HpId == hpId
+                                                     && item.PtId == ptId
+                                                     && item.SinYm == sinYm
+                                                     && item.HokenId == hokenId
+                                                     && item.HokenKbn == hokenKbn
+                                                     && item.ReceSbt == receSbt
+                                                     && item.HokensyaNo == hokensyaNo
+                                                    ));
+        }
+        finally
+        {
+            receiptRepository.ReleaseResource();
+            tenant.ReceInfs.Remove(receInf);
+            tenant.PtInfs.Remove(ptInf);
+            tenant.PtHokenInfs.Remove(ptHokenInf);
+            tenant.RaiinInfs.Remove(raiinInf);
             tenant.SaveChanges();
         }
     }
