@@ -96,7 +96,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListRaiinInf_005_Count_ListRaiinInf()
+        public void GetListRaiinInf_005_Count_2_ListRaiinInf()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -121,7 +121,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetListRaiinInf_006_Count_ListRaiinInf()
+        public void GetListRaiinInf_006_Count_1_ListRaiinInf_KaikeiInf()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
