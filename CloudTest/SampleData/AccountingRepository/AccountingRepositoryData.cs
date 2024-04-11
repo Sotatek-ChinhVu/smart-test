@@ -550,7 +550,7 @@ namespace CloudUnitTest.SampleData.AccountingRepository
                                 case "D":
                                     long.TryParse(text, out long raiiNo);
                                     syunoSeikyu.RaiinNo = raiiNo;
-                                    break;                               
+                                    break;
                                 case "E":
                                     int.TryParse(text, out int nyukinKbn);
                                     syunoSeikyu.NyukinKbn = nyukinKbn;
@@ -613,7 +613,7 @@ namespace CloudUnitTest.SampleData.AccountingRepository
                                 case "D":
                                     int.TryParse(text, out int sinDate);
                                     syunoNyukin.SinDate = sinDate;
-                                    break;                                
+                                    break;
                                 default:
                                     break;
                             }
@@ -623,6 +623,61 @@ namespace CloudUnitTest.SampleData.AccountingRepository
                 }
             }
             return syunoNyukins;
+        }
+
+        public static List<HpInf> ReadHpInf()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "AccountingRepository", "AccountingRepositorySample.xlsx");
+            var hpInfs = new List<HpInf>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "HpInf").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var hpInf = new HpInf();
+                        hpInf.CreateId = 1;
+                        hpInf.CreateDate = DateTime.UtcNow;
+                        hpInf.UpdateId = 1;
+                        hpInf.UpdateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    hpInf.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int startDate);
+                                    hpInf.StartDate = startDate;
+                                    break;
+                                case "I":
+                                    int.TryParse(text, out int prefNo);
+                                    hpInf.PrefNo = prefNo;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        hpInfs.Add(hpInf);
+                    }
+                }
+            }
+            return hpInfs;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
