@@ -17,7 +17,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_001_ReturnsEmptyList_WhenPatientInfoIsNull()
     {
-        //Setup
+        // Arrange
         int hpId = 999;
         long ptId = 0;
         int sinDay = 20230605;
@@ -27,7 +27,6 @@ public class AgeCheckerTest : BaseUT
         var kensaInfDetailModels = new List<KensaInfDetailModel>();
         bool isDataOfDb = true;
 
-        // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
@@ -42,7 +41,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_002_ReturnErrorList_WhenPatientInfoWasBorn1940()
     {
-        //Setup
+        // Arrange
         int hpId = 1;
         long ptId = 123;
         int sinDay = 20230605;
@@ -64,7 +63,6 @@ public class AgeCheckerTest : BaseUT
         var kensaInfDetailModels = new List<KensaInfDetailModel>();
         bool isDataOfDb = true;
 
-        // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620001936" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
@@ -79,7 +77,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_003_ReturnErrorList_WhenPatientInfoWasBorn2000()
     {
-        //Setup
+        // Arrange
         int hpId = 1;
         long ptId = 6215;
         int sinDay = 20230605;
@@ -101,7 +99,6 @@ public class AgeCheckerTest : BaseUT
         var kensaInfDetailModels = new List<KensaInfDetailModel>();
         bool isDataOfDb = true;
 
-        // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620001936" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
@@ -116,7 +113,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_004_ReturnErrorList_WhenPatientInfoWasBorn2020()
     {
-        //Setup
+        // Arrange
         int hpId = 1;
         long ptId = 99999637;
         int sinDay = 20230605;
@@ -138,7 +135,6 @@ public class AgeCheckerTest : BaseUT
         var kensaInfDetailModels = new List<KensaInfDetailModel>();
         bool isDataOfDb = true;
 
-        // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
@@ -153,7 +149,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_005_TestAgeChecker_WhenAgeTypeCheckSettingValueIs0()
     {
-        //Setup
+        // Arrange
         int hpId = 1;
         long ptId = 99999637;
         int sinDay = 20230605;
@@ -175,7 +171,6 @@ public class AgeCheckerTest : BaseUT
         var kensaInfDetailModels = new List<KensaInfDetailModel>();
         bool isDataOfDb = true;
 
-        // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider, cache);
@@ -190,7 +185,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_006_TestAgeChecker_HandleCheckOrderList_TestSettingLevelIs0()
     {
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -234,15 +229,16 @@ public class AgeCheckerTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
-
-        var cache = new MasterDataCacheService(TenantProvider);
-
-        cache.InitCache(ageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        ageChecker.InitFinder(TenantProvider, cache);
 
         try
         {
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+
+            cache.InitCache(ageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
+            ageChecker.InitFinder(TenantProvider, cache);
+
             var result = ageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
             // Assert
@@ -258,8 +254,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_007_TestAgeChecker_HandleCheckOrderList_TestSettingLevelIsMoreThan10()
     {
-        int hpId = 999;
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -303,15 +298,16 @@ public class AgeCheckerTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
-
-        var cache = new MasterDataCacheService(TenantProvider);
-
-        cache.InitCache(ageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
-        ageChecker.InitFinder(TenantProvider, cache);
 
         try
         {
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+
+            cache.InitCache(ageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
+            ageChecker.InitFinder(TenantProvider, cache);
+
             var result = ageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
             // Assert
@@ -328,7 +324,8 @@ public class AgeCheckerTest : BaseUT
     public void CheckAge_008_TestAgeChecker_HandleCheckOrderList_Test_CheckedResult_IsNotNull_And_CountMoreThan_0()
     {
         int hpId = 999;
-        //Setup
+        int ptId = 111;
+        // Arrange
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //AgeLevelSetting
@@ -359,35 +356,43 @@ public class AgeCheckerTest : BaseUT
         var m14 = CommonCheckerData.ReadM14AgeCheck();
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS003");
         var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
+        var ptInf = CommonCheckerData.ReadPtInf().FirstOrDefault();
+        if (ptInf != null)
+        {
+            ptInf.PtId = ptId;
+            ptInf.HpId = hpId;
+            tenantTracking.PtInfs.Add(ptInf);
+        }
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M14AgeCheck.AddRange(m14);
-        tenantTracking.SaveChanges();
 
-        var ordInfDetails = new List<OrdInfoDetailModel>()
+        try
+        {
+            tenantTracking.SaveChanges();
+
+            var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "6220816AGE", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
         };
 
-        var odrInfoModel = new List<OrdInfoModel>()
+            var odrInfoModel = new List<OrdInfoModel>()
         {
             new OrdInfoModel(21, 0, ordInfDetails)
         };
 
-        var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
-                                                                RealtimeCheckerType.Age, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                    RealtimeCheckerType.Age, odrInfoModel, 20230101, ptId, new(new(), new(), new()), new(), new(), true);
 
-        var ageChecker = new AgeChecker<OrdInfoModel, OrdInfoDetailModel>();
-        ageChecker.HpID = hpId;
-        ageChecker.PtID = 111;
-        ageChecker.Sinday = 20230101;
-        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var ageChecker = new AgeChecker<OrdInfoModel, OrdInfoDetailModel>();
+            ageChecker.HpID = hpId;
+            ageChecker.PtID = ptId;
+            ageChecker.Sinday = 20230101;
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
-        var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(ageChecker.HpID, new List<string>() { "6220816AGE" }, 20230101, 111);
-        ageChecker.InitFinder(TenantProvider, cache);
-        
-        try
-        {
+           var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(ageChecker.HpID, new List<string>() { "6220816AGE" }, 20230101, ptId);
+            ageChecker.InitFinder(TenantProvider, cache);
+
             var result = ageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
             // Assert
@@ -402,6 +407,7 @@ public class AgeCheckerTest : BaseUT
         {
             tenantTracking.TenMsts.RemoveRange(tenMsts);
             tenantTracking.M14AgeCheck.RemoveRange(m14);
+            if (ptInf != null) tenantTracking.PtInfs.Remove(ptInf);
             if (systemConf != null) systemConf.Val = temp;
             tenantTracking.SaveChanges();
         }
@@ -411,7 +417,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_009_HandleCheckOrder_ThrowsNotImplementedException()
     {
-        //Setup
+        // Arrange
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -420,7 +426,7 @@ public class AgeCheckerTest : BaseUT
 
         var odrInfoModel = new OrdInfoModel(21, 0, ordInfDetails);
 
-        // Arrange
+
         var ageChecker = new AgeChecker<OrdInfoModel, OrdInfoDetailModel>();
         var unitChecker = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                 RealtimeCheckerType.Age, odrInfoModel, 20230101, 111);

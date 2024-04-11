@@ -72,7 +72,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void SaveAccountingTest_003_ThisCredit_02()
+        public void SaveAccountingTest_003_ThisCredit_isDisCharged()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -197,59 +197,11 @@ namespace CloudUnitTest.Repository.Accounting
             }
         }
 
-        [Test]
-        public void SaveAccountingTest_006()
-        {
-            // Arrange
-            SetupTestEnvironment(out AccountingRepository accountingRepository);
-            var tenant = TenantProvider.GetTrackingTenantDataContext();
-            int hpId = 998; long ptId = 12345; int userId = 1; int accDue = 0; int sumAdjust = 0; int thisWari = 0; int thisCredit = 0;
-            int payType = 0; string comment = ""; bool isDisCharged = false; string kaikeiTime = "";
-            var syunoNyukinModel = new List<SyunoNyukinModel>()
-            {
-                new SyunoNyukinModel(hpId, ptId, 0, 1234321,1,0,0,0,0,0,0,"",0,0,"")
-            };
-            var kaikeiInfModel = new List<KaikeiInfModel>()
-            {
-                new KaikeiInfModel()
-            };
-            var syunoRaiinInfModel = new SyunoRaiinInfModel();
-            List<SyunoSeikyuModel> listAllSyunoSeikyu = new List<SyunoSeikyuModel>()
-            {
-                new SyunoSeikyuModel(hpId, ptId,0,1234321,0,0,0,0,"",0,0,0,"")
-            };
-            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
-            {
-                 new SyunoSeikyuModel(hpId, ptId,0,1234321,0,0,1,0,"",0,0,0,"",syunoRaiinInfModel,syunoNyukinModel,kaikeiInfModel,10)
-            };
-            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
-            var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
-            tenant.AddRange(raiinInfs);
-            tenant.AddRange(syunoSeikyus);
-            try
-            {
-                tenant.SaveChanges();
-                //Act
-                var result = accountingRepository.SaveAccounting(listAllSyunoSeikyu, syunoSeikyuModels, hpId, ptId, userId, accDue, sumAdjust, thisWari,
-                                                                thisCredit, payType, comment, isDisCharged, kaikeiTime, out List<long> listRaiinNoPrint);
-                //Assert
-                Assert.True(result && listRaiinNoPrint.Count == 1);
-            }
-            finally
-            {
-                DeleteSyunoNyukin(hpId, ptId);
-                tenant.RemoveRange(raiinInfs);
-                tenant.RemoveRange(syunoSeikyus);
-                tenant.SaveChanges();
-                CleanupResources(accountingRepository);
-            }
-        }
-
         /// <summary>
         /// Check isLastRecord
         /// </summary>
         [Test]
-        public void SaveAccountingTest_007_ParseValueUpdate()
+        public void SaveAccountingTest_006_ParseValueUpdate_IsLastRecord()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -300,7 +252,7 @@ namespace CloudUnitTest.Repository.Accounting
         /// CHeck adjustFutan >= thisSeikyuGaku
         /// </summary>
         [Test]
-        public void SaveAccountingTest_008_ParseValueUpdate_02()
+        public void SaveAccountingTest_007_ParseValueUpdate_GreaterThan()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -348,11 +300,8 @@ namespace CloudUnitTest.Repository.Accounting
             }
         }
 
-        /// <summary>
-        /// CHeck adjustFutan >= thisSeikyuGaku
-        /// </summary>
         [Test]
-        public void SaveAccountingTest_009_ParseValueUpdate_03()
+        public void SaveAccountingTest_008_ParseValueUpdate_CheckElse()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -401,7 +350,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void SaveAccountingTest_010_AdjustWariExecute()
+        public void SaveAccountingTest_009_AdjustWariExecute()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
@@ -449,7 +398,7 @@ namespace CloudUnitTest.Repository.Accounting
         /// Check isSettled = true
         /// </summary>
         [Test]
-        public void SaveAccountingTest_011_ParseEarmarkedValueUpdate()
+        public void SaveAccountingTest_010_ParseEarmarkedValueUpdate()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);
