@@ -451,27 +451,27 @@ public class YousikiController : BaseParamControllerBase
         {
             result.AddRange(new List<Yousiki1InfDetailModel>
             {
-                new Yousiki1InfDetailModel(
-               ptId,
-               sinYm,
-               0,
-               seqNo,
-               "CH00001",
-               byomeiInfCommon.SortNo,
-               4,
-               byomeiInfCommon.ByomeiCd,
-               byomeiInfCommon.IsDeleted ? 1 : 0
+               new Yousiki1InfDetailModel(
+                   ptId,
+                   sinYm,
+                   0,
+                   seqNo,
+                   "CH00001",
+                   byomeiInfCommon.SortNo,
+                   4,
+                   byomeiInfCommon.ByomeiCd,
+                   byomeiInfCommon.IsDeleted ? 1 : 0
                ),
                new Yousiki1InfDetailModel(
-               ptId,
-               sinYm,
-               0,
-               seqNo,
-               "CH00001",
-               byomeiInfCommon.SortNo,
-               5,
-               valueModifier,
-               byomeiInfCommon.IsDeleted ? 1 : 0
+                   ptId,
+                   sinYm,
+                   0,
+                   seqNo,
+                   "CH00001",
+                   byomeiInfCommon.SortNo,
+                   5,
+                   valueModifier,
+                   byomeiInfCommon.IsDeleted ? 1 : 0
                )
             });
         }
