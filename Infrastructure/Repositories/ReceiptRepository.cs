@@ -3083,7 +3083,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     #endregion
 
     #region Private function
-    private double GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int defaultValue = 0)
+    public double GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int defaultValue = 0)
     {
         var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
                                                                                && p.GrpCd == groupCd
@@ -3091,7 +3091,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return systemConf != null ? systemConf.Val : defaultValue;
     }
 
-    private string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0)
+    public string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0)
     {
         var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
                                                                                && p.GrpCd == groupCd
