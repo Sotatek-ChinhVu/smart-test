@@ -27,7 +27,7 @@ public class ReceiptListAdvancedSearchInteractor : IReceiptListAdvancedSearchInp
         }
     }
 
-    private ReceiptListAdvancedSearchInput ConvertToInputAdvancedSearch(ReceiptListAdvancedSearchInputData inputData)
+    public ReceiptListAdvancedSearchInput ConvertToInputAdvancedSearch(ReceiptListAdvancedSearchInputData inputData)
     {
         var itemList = inputData.ItemList.Select(item => new ItemSearchModel(
                                                                                 item.ItemCd,
