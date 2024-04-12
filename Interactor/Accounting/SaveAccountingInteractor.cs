@@ -22,7 +22,7 @@ namespace Interactor.Accounting
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IReceptionRepository _receptionRepository;
         private readonly IAuditLogRepository _auditLogRepository;
-        private readonly ILoggingHandler _loggingHandler;
+        private readonly ILoggingHandler? _loggingHandler;
         private readonly ITenantProvider _tenantProvider;
 
         public SaveAccountingInteractor(ITenantProvider tenantProvider, IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
@@ -35,7 +35,11 @@ namespace Interactor.Accounting
             _receptionRepository = receptionRepository;
             _auditLogRepository = auditLogRepository;
             _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            var dbContextOptions = tenantProvider.CreateNewTrackingAdminDbContextOption();
+            if (dbContextOptions != null)
+            {
+                _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+            }
         }
 
         public SaveAccountingOutputData Handle(SaveAccountingInputData inputData)
@@ -93,7 +97,7 @@ namespace Interactor.Accounting
             }
             catch (Exception ex)
             {
-                _loggingHandler.WriteLogExceptionAsync(ex);
+                _loggingHandler?.WriteLogExceptionAsync(ex);
                 throw;
             }
             finally
@@ -106,7 +110,7 @@ namespace Interactor.Accounting
                 _receptionRepository.ReleaseResource();
                 _auditLogRepository.ReleaseResource();
                 _tenantProvider.DisposeDataContext();
-                _loggingHandler.Dispose();
+                _loggingHandler?.Dispose();
             }
         }
 

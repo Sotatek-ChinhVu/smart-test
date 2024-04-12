@@ -700,6 +700,144 @@ namespace CloudUnitTest.SampleData.AccountingRepository
             return hpInfs;
         }
 
+        public static List<UserMst> ReadUserMst()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "AccountingRepository", "AccountingRepositorySample.xlsx");
+            var userMsts = new List<UserMst>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "UserMst").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var userMst = new UserMst();
+                        userMst.CreateId = 1;
+                        userMst.CreateDate = DateTime.UtcNow;
+                        userMst.UpdateId = 1;
+                        userMst.UpdateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    userMst.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int userId);
+                                    userMst.UserId = userId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int jobCd);
+                                    userMst.JobCd = jobCd;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int managerKbn);
+                                    userMst.ManagerKbn = managerKbn;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int kaId);
+                                    userMst.KaId = kaId;
+                                    break;
+                                case "L":
+                                    int.TryParse(text, out int endDate);
+                                    userMst.EndDate = endDate;
+                                    break;
+                                case "G":
+                                    userMst.Name = text;
+                                    break;
+                                case "H":
+                                    userMst.Sname = text;
+                                    break;
+                                case "I":
+                                    userMst.LoginId = text;
+                                    break;
+                                case "M":
+                                    int.TryParse(text, out int sortNo);
+                                    userMst.SortNo = sortNo;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        userMsts.Add(userMst);
+                    }
+                }
+            }
+            return userMsts;
+        }
+
+        public static List<UserPermission> ReadUserPermission()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "AccountingRepository", "AccountingRepositorySample.xlsx");
+            var userPermissions = new List<UserPermission>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "UserPermission").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var userPermission = new UserPermission();
+                        userPermission.CreateId = 1;
+                        userPermission.CreateDate = DateTime.UtcNow;
+                        userPermission.UpdateId = 1;
+                        userPermission.UpdateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    userPermission.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int userId);
+                                    userPermission.UserId = userId;
+                                    break;
+                                case "C":
+                                    userPermission.FunctionCd = text;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int permission);
+                                    userPermission.Permission = permission;
+                                    break;                               
+                                default:
+                                    break;
+                            }
+                        }
+                        userPermissions.Add(userPermission);
+                    }
+                }
+            }
+            return userPermissions;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
