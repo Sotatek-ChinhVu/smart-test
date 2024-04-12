@@ -5,7 +5,6 @@ using EmrCloudApi.Presenters.Yousiki;
 using EmrCloudApi.Requests.Yousiki;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Yousiki;
-using Helper.Constants;
 using Helper.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -23,6 +22,8 @@ using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.SaveDetailDefault;
 using UseCase.Yousiki.UpdateYosiki;
+using ZstdSharp.Unsafe;
+using Helper.Constants;
 using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 
 namespace EmrCloudApi.Controller;
@@ -469,7 +470,7 @@ public class YousikiController : BaseParamControllerBase
                    seqNo,
                    "CH00001",
                    byomeiInfCommon.SortNo,
-                   5,
+                   3,
                    valueModifier,
                    byomeiInfCommon.IsDeleted ? 1 : 0
                )
