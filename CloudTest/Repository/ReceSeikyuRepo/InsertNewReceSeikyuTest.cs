@@ -101,7 +101,7 @@ public class InsertNewReceSeikyuTest : BaseUT
             if (receSeikyu != null)
             {
                 tenant.ReceSeikyus.Remove(receSeikyu);
-                tenant.Remove(receSeikyu);
+                tenant.SaveChanges();
             }
         }
     }
@@ -201,7 +201,7 @@ public class InsertNewReceSeikyuTest : BaseUT
             if (receSeikyu != null)
             {
                 tenant.ReceSeikyus.Remove(receSeikyu);
-                tenant.Remove(receSeikyu);
+                tenant.SaveChanges();
             }
         }
     }
@@ -301,7 +301,7 @@ public class InsertNewReceSeikyuTest : BaseUT
             if (receSeikyu != null)
             {
                 tenant.ReceSeikyus.Remove(receSeikyu);
-                tenant.Remove(receSeikyu);
+                tenant.SaveChanges();
             }
         }
     }
