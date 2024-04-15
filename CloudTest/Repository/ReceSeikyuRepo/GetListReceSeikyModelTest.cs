@@ -81,6 +81,7 @@ public class GetListReceSeikyModelTest : BaseUT
             tenant.ReceSeikyus.Remove(receSeikyu);
             tenant.PtHokenInfs.Remove(ptHokenInf);
             tenant.RecedenHenJiyuus.Remove(recedenHenJiyuu);
+            tenant.SaveChanges();
         }
     }
 
@@ -158,6 +159,7 @@ public class GetListReceSeikyModelTest : BaseUT
             tenant.ReceSeikyus.Remove(receSeikyu);
             tenant.PtHokenInfs.Remove(ptHokenInf);
             tenant.RecedenHenJiyuus.Remove(recedenHenJiyuu);
+            tenant.SaveChanges();
         }
     }
 
@@ -195,6 +197,7 @@ public class GetListReceSeikyModelTest : BaseUT
             tenant.ReceSeikyus.Remove(receSeikyu);
             tenant.PtHokenInfs.Remove(ptHokenInf);
             tenant.RecedenHenJiyuus.Remove(recedenHenJiyuu);
+            tenant.SaveChanges();
         }
     }
 
@@ -226,6 +229,7 @@ public class GetListReceSeikyModelTest : BaseUT
             tenant.PtInfs.Remove(ptInf);
             tenant.PtHokenInfs.Remove(ptHokenInf);
             tenant.RecedenHenJiyuus.Remove(recedenHenJiyuu);
+            tenant.SaveChanges();
         }
     }
 
