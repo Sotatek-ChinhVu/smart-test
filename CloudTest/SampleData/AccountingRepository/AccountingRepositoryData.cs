@@ -257,6 +257,10 @@ namespace CloudUnitTest.SampleData.AccountingRepository
                                     int.TryParse(text, out int seqNo);
                                     ptHokenInf.SeqNo = seqNo;
                                     break;
+                                case "K":
+                                    int.TryParse(text, out int hokenKbn);
+                                    ptHokenInf.HokenKbn = hokenKbn;
+                                    break;
                                 default:
                                     break;
                             }
