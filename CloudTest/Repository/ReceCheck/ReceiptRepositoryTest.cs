@@ -922,8 +922,276 @@ public class ReceiptRepositoryTest : BaseUT
         // Assert
         Assert.IsTrue(syoukiInfAfter == null);
     }
-
     #endregion GetSyobyoKeikaList
+
+    #region SaveSyobyoKeikaList
+    [Test]
+    public void TC_017_SaveSyobyoKeikaList_TestCreateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = 0;
+        int hokenKbn = random.Next(11, 13);
+        int sinDay = 20220201;
+        int sinYm = 202202;
+        string keika = "Keika";
+        bool isDeleted = false;
+
+        SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
+
+        SyobyoKeika? syobyoKeika = null;
+
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyobyoKeikaList(hpId, userId, new() { syobyoKeikaModel });
+
+            syobyoKeika = tenant.SyobyoKeikas.FirstOrDefault(item => item.PtId == ptId
+                                                                     && item.HpId == hpId
+                                                                     && item.SinYm == sinYm
+                                                                     && item.SinDay == sinDay
+                                                                     && item.HokenId == hokenId
+                                                                     && item.Keika == keika
+                                                                     && item.IsDeleted == 0);
+
+            // Assert
+            Assert.IsTrue(result && syobyoKeika != null);
+        }
+        finally
+        {
+            if (syobyoKeika != null)
+            {
+                tenant.SyobyoKeikas.Remove(syobyoKeika);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_018_SaveSyobyoKeikaList_TestContinueCondition()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int hokenKbn = random.Next(11, 13);
+        int sinDay = 20220201;
+        int sinYm = 202202;
+        string keika = "Keika";
+        bool isDeleted = false;
+
+        SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
+
+        SyobyoKeika? syobyoKeika = null;
+
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyobyoKeikaList(hpId, userId, new() { syobyoKeikaModel });
+
+            syobyoKeika = tenant.SyobyoKeikas.FirstOrDefault(item => item.PtId == ptId
+                                                                     && item.HpId == hpId
+                                                                     && item.SinYm == sinYm
+                                                                     && item.SinDay == sinDay
+                                                                     && item.HokenId == hokenId
+                                                                     && item.Keika == keika
+                                                                     && item.IsDeleted == 0);
+
+            // Assert
+            Assert.IsTrue(!result && syobyoKeika == null);
+        }
+        finally
+        {
+            if (syobyoKeika != null)
+            {
+                tenant.SyobyoKeikas.Remove(syobyoKeika);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_019_SaveSyobyoKeikaList_TestSyobyoKeikaListNotAny()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int hokenKbn = random.Next(11, 13);
+        int sinDay = 20220201;
+        int sinYm = 202202;
+        string keika = "Keika";
+
+        SyobyoKeika? syobyoKeika = null;
+
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyobyoKeikaList(hpId, userId, new());
+
+            syobyoKeika = tenant.SyobyoKeikas.FirstOrDefault(item => item.PtId == ptId
+                                                                     && item.HpId == hpId
+                                                                     && item.SinYm == sinYm
+                                                                     && item.SinDay == sinDay
+                                                                     && item.HokenId == hokenId
+                                                                     && item.Keika == keika
+                                                                     && item.IsDeleted == 0);
+
+            // Assert
+            Assert.IsTrue(!result && syobyoKeika == null);
+        }
+        finally
+        {
+            if (syobyoKeika != null)
+            {
+                tenant.SyobyoKeikas.Remove(syobyoKeika);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_020_SaveSyobyoKeikaList_TestUpdateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int hokenKbn = random.Next(11, 13);
+        int sinDay = 20220201;
+        int sinYm = 202202;
+        string keika = "Keika";
+        bool isDeleted = false;
+
+        SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
+
+        SyobyoKeika? syobyoKeika = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsDeleted = 0,
+            SeqNo = seqNo,
+        };
+
+        tenant.SyobyoKeikas.Add(syobyoKeika);
+
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyobyoKeikaList(hpId, userId, new() { syobyoKeikaModel });
+
+            var syobyoKeikaAfter = tenant.SyobyoKeikas.FirstOrDefault(item => item.PtId == ptId
+                                                                              && item.HpId == hpId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.SinDay == sinDay
+                                                                              && item.HokenId == hokenId
+                                                                              && item.Keika == keika
+                                                                              && item.SeqNo == seqNo
+                                                                              && item.IsDeleted == 1);
+
+            // Assert
+            Assert.IsTrue(result && syobyoKeikaAfter != null);
+        }
+        finally
+        {
+            if (syobyoKeika != null)
+            {
+                tenant.SyobyoKeikas.Remove(syobyoKeika);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_021_SaveSyobyoKeikaList_TestDeletedSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int hokenKbn = random.Next(11, 13);
+        int sinDay = 20220201;
+        int sinYm = 202202;
+        string keika = "Keika";
+        bool isDeleted = true;
+
+        SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
+
+        SyobyoKeika? syobyoKeika = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsDeleted = 0,
+            SeqNo = seqNo,
+        };
+
+        tenant.SyobyoKeikas.Add(syobyoKeika);
+
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyobyoKeikaList(hpId, userId, new() { syobyoKeikaModel });
+
+            var syobyoKeikaAfter = tenant.SyobyoKeikas.FirstOrDefault(item => item.PtId == ptId
+                                                                              && item.HpId == hpId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.HokenId == hokenId
+                                                                              && item.SeqNo == seqNo
+                                                                              && item.IsDeleted == 1);
+
+            // Assert
+            Assert.IsTrue(result && syobyoKeikaAfter != null);
+        }
+        finally
+        {
+            if (syobyoKeika != null)
+            {
+                tenant.SyobyoKeikas.Remove(syobyoKeika);
+                tenant.SaveChanges();
+            }
+        }
+    }
+    #endregion SaveSyobyoKeikaList
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
