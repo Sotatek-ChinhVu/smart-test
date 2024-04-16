@@ -167,9 +167,22 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                                     && item.HpId == hpId
                                                                                     && item.IsDeleted == 0);
         var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId && item.IsDelete == 0);
-        if (yousiki1Inf == null || ptInf == null)
+        if (ptInf == null)
         {
             return new();
+        }
+
+        // if yousiki1Inf == null and dataType == 3, get default yousikiInfDetail
+        if (yousiki1Inf == null)
+        {
+            if (dataType == 3)
+            {
+                yousiki1Inf = new();
+            }
+            else
+            {
+                return new();
+            }
         }
         var yousiki1InfDetailList = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.SinYm == sinYm
                                                                                            && item.PtId == ptId
@@ -188,7 +201,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                             .ToList();
 
         // Get default param for common tab
-        GetDefaultYousiki1InfDetailList(hpId, dataType, yousiki1Inf, ref yousiki1InfDetailList);
+        GetDefaultYousiki1InfDetailList(hpId, sinYm, ptId, dataType, seqNo, ref yousiki1InfDetailList);
 
         return new Yousiki1InfModel(hpId,
                                     ptInf.PtNum,
@@ -219,7 +232,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     /// <param name="dataType"></param>
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
-    private void GetDefaultYousiki1InfDetailList(int hpId, int dataType, Yousiki1Inf yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private void GetDefaultYousiki1InfDetailList(int hpId, int sinYm, long ptId, int dataType, int seqNo, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         #region Common
         if (dataType == 0)
@@ -228,13 +241,13 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             bool isExistAttributes = yousiki1InfDetailList.Any(item => item.DataType == dataType && item.CodeNo == CodeNo_Attributes);
             if (!isExistAttributes)
             {
-                var ptInf = _patientInforRepository.GetPtInf(hpId, yousiki1Inf.PtId);
+                var ptInf = _patientInforRepository.GetPtInf(hpId, ptId);
 
                 // BirthDay
-                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 1, ptInf.Birthday.AsString()));
+                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(sinYm, ptId, dataType, seqNo, CodeNo_Attributes, 0, 1, ptInf.Birthday.AsString()));
 
                 //Sex
-                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 2, ptInf.Sex.AsString()));
+                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(sinYm, ptId, dataType, seqNo, CodeNo_Attributes, 0, 2, ptInf.Sex.AsString()));
 
                 // HomePost
                 string homePost = ptInf.HomePost.AsString();
@@ -243,7 +256,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                 homePost = homePost.Replace(" ", "");
                 homePost = homePost.Replace("　", "");
                 homePost = homePost.PadRight(7, '0');
-                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_Attributes, 0, 3, homePost));
+                yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(sinYm, ptId, dataType, seqNo, CodeNo_Attributes, 0, 3, homePost));
             }
             #endregion
 
@@ -252,21 +265,21 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             if (!isExistHeightAndWeightPtInf)
             {
                 int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
-                if (yousiki1Inf.SinYm > 0)
+                if (sinYm > 0)
                 {
-                    sinDate = yousiki1Inf.SinYm * 100 + 31;
+                    sinDate = sinYm * 100 + 31;
                 }
 
                 string bodyHeight = "000";
                 string bodyWeight = "000";
-                var ptPhysicalInfoList = _patientInfoRepository.GetPtPhysicalInfoToYousiki(hpId, yousiki1Inf.PtId, sinDate);
+                var ptPhysicalInfoList = _patientInfoRepository.GetPtPhysicalInfoToYousiki(hpId, ptId, sinDate);
 
                 // BodyHeight
                 var kensaInfHeight = ptPhysicalInfoList.FirstOrDefault(item => item.KensaItemCd == "V0001");
                 if (kensaInfHeight != null && !string.IsNullOrEmpty(kensaInfHeight.ResultVal))
                 {
                     bodyHeight = Math.Round(kensaInfHeight.ResultVal.AsDouble(), 0, MidpointRounding.AwayFromZero).AsInteger().AsString();
-                    yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_HeightAndWeight, 0, 1, bodyHeight));
+                    yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(sinYm, ptId, dataType, seqNo, CodeNo_HeightAndWeight, 0, 1, bodyHeight));
                 }
 
                 // BodyWeight
@@ -274,7 +287,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                 if (kensaInfWeight != null && !string.IsNullOrEmpty(kensaInfWeight.ResultVal))
                 {
                     bodyWeight = Math.Round(kensaInfWeight.ResultVal.AsDouble(), 1, MidpointRounding.AwayFromZero).ToString("0.0");
-                    yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(yousiki1Inf, CodeNo_HeightAndWeight, 0, 2, bodyWeight));
+                    yousiki1InfDetailList.Add(CreateYousiki1InfDetailModel(sinYm, ptId, dataType, seqNo, CodeNo_HeightAndWeight, 0, 2, bodyWeight));
                 }
             }
             #endregion
@@ -291,10 +304,10 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                                            && item.SeqNo == 1
                                                                                            && item.DataType == dataType)
                                                                             .Select(item => new Yousiki1InfDetailModel(
-                                                                                                item.PtId,
-                                                                                                item.SinYm,
-                                                                                                item.DataType,
-                                                                                                item.SeqNo,
+                                                                                                ptId,
+                                                                                                sinYm,
+                                                                                                dataType,
+                                                                                                seqNo,
                                                                                                 item.CodeNo ?? string.Empty,
                                                                                                 item.RowNo,
                                                                                                 item.Payload,
@@ -323,9 +336,9 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     /// <param name="payLoad"></param>
     /// <param name="valueDefault"></param>
     /// <returns></returns>
-    private Yousiki1InfDetailModel CreateYousiki1InfDetailModel(Yousiki1Inf yousiki1Inf, string codeNo, int rowNo, int payLoad, string value)
+    private Yousiki1InfDetailModel CreateYousiki1InfDetailModel(int sinYm, long ptId, int dataType, int seqNo, string codeNo, int rowNo, int payLoad, string value)
     {
-        var detail = new Yousiki1InfDetailModel(yousiki1Inf.PtId, yousiki1Inf.SinYm, yousiki1Inf.DataType, yousiki1Inf.SeqNo, codeNo, rowNo, payLoad, value);
+        var detail = new Yousiki1InfDetailModel(ptId, sinYm, dataType, seqNo, codeNo, rowNo, payLoad, value);
         return detail;
     }
 
