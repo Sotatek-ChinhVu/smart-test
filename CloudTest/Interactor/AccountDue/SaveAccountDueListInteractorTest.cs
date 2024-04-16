@@ -873,7 +873,7 @@ namespace CloudUnitTest.Interactor.AccountDue
         }
 
         [Test]
-        public void TC_020_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
+        public void TC_020_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_Any_AccountDueList()
         {
             //Arrange
             var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
