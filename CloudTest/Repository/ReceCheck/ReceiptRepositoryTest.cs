@@ -501,13 +501,11 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.GetSyoukiInfList(hpId, sinYm, ptId, hokenId, false);
 
-            var syoukiInfAfter = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
-                                                                          && item.HpId == hpId
-                                                                          && item.SinYm == sinYm
-                                                                          && item.HokenId == hokenId
-                                                                          && item.SyoukiKbn == syoukiKbn
-                                                                          && item.Syouki == syouki
-                                                                          && item.IsDeleted == 0);
+            var syoukiInfAfter = result.FirstOrDefault(item => item.PtId == ptId
+                                                               && item.SinYm == sinYm
+                                                               && item.HokenId == hokenId
+                                                               && item.SyoukiKbn == syoukiKbn
+                                                               && item.Syouki == syouki);
             // Assert
             Assert.IsTrue(syoukiInfAfter != null);
         }
