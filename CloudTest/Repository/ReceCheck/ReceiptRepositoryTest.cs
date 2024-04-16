@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.CalculationInf;
 using Domain.Models.MstItem;
 using Domain.Models.Receipt;
@@ -464,6 +465,374 @@ public class ReceiptRepositoryTest : BaseUT
         }
     }
     #endregion SaveReceCmtList
+
+    #region GetSyoukiInfList
+    [Test]
+    public void TC_008_GetSyoukiInfList_TestSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int syoukiKbn = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        string syouki = "Syouki";
+        SyoukiInf? syoukiInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsDeleted = 0,
+            SeqNo = seqNo,
+            SyoukiKbn = syoukiKbn,
+            Syouki = syouki,
+        };
+
+        tenant.SyoukiInfs.Add(syoukiInf);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetSyoukiInfList(hpId, sinYm, ptId, hokenId, false);
+
+            var syoukiInfAfter = result.FirstOrDefault(item => item.PtId == ptId
+                                                               && item.SinYm == sinYm
+                                                               && item.HokenId == hokenId
+                                                               && item.SyoukiKbn == syoukiKbn
+                                                               && item.Syouki == syouki);
+            // Assert
+            Assert.IsTrue(syoukiInfAfter != null);
+        }
+        finally
+        {
+            if (syoukiInf != null)
+            {
+                tenant.SyoukiInfs.Remove(syoukiInf);
+                tenant.SaveChanges();
+            }
+        }
+    }
+    #endregion GetSyoukiInfList
+
+    #region GetSyoukiKbnMstList
+    [Test]
+    public void TC_009_GetSyoukiKbnMstList_TestReloadCache()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(9999, 999999999);
+        int syoukiKbn = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int startYm = 202201;
+        int endYm = 202203;
+        string name = "Name";
+        SyoukiKbnMst? syoukiKbnMst = new()
+        {
+            HpId = hpId,
+            SyoukiKbn = syoukiKbn,
+            StartYm = startYm,
+            EndYm = endYm,
+            Name = name
+        };
+
+        tenant.SyoukiKbnMsts.Add(syoukiKbnMst);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetSyoukiKbnMstList(hpId, sinYm);
+
+            var syoukiInfMst = result.FirstOrDefault(item => item.SyoukiKbn == syoukiKbn
+                                                             && item.StartYm == startYm
+                                                             && item.EndYm == endYm
+                                                             && item.Name == name);
+            // Assert
+            Assert.IsTrue(syoukiInfMst != null);
+        }
+        finally
+        {
+            if (syoukiKbnMst != null)
+            {
+                tenant.SyoukiKbnMsts.Remove(syoukiKbnMst);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_010_GetSyoukiKbnMstList_TestReadCache()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(9999, 999999999);
+        int syoukiKbn = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int startYm = 202201;
+        int endYm = 202203;
+        string name = "Name";
+        SyoukiKbnMst? syoukiKbnMst = new()
+        {
+            HpId = hpId,
+            SyoukiKbn = syoukiKbn,
+            StartYm = startYm,
+            EndYm = endYm,
+            Name = name
+        };
+
+        tenant.SyoukiKbnMsts.Add(syoukiKbnMst);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetSyoukiKbnMstList(hpId, sinYm);
+            result = receiptRepository.GetSyoukiKbnMstList(hpId, sinYm);
+
+            var syoukiInfMst = result.FirstOrDefault(item => item.SyoukiKbn == syoukiKbn
+                                                             && item.StartYm == startYm
+                                                             && item.EndYm == endYm
+                                                             && item.Name == name);
+            // Assert
+            Assert.IsTrue(syoukiInfMst != null);
+        }
+        finally
+        {
+            if (syoukiKbnMst != null)
+            {
+                tenant.SyoukiKbnMsts.Remove(syoukiKbnMst);
+                tenant.SaveChanges();
+            }
+        }
+    }
+    #endregion GetSyoukiKbnMstList
+
+    #region SaveSyoukiInfList
+    [Test]
+    public void TC_011_SaveSyoukiInfList_TestCreateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int seqNo = 0;
+        int sortNo = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int syoukiKbn = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        string syouki = "Syouki";
+        bool isDeleted = false;
+
+        SyoukiInfModel syoukiInfModel = new SyoukiInfModel(ptId, sinYm, hokenId, seqNo, sortNo, syoukiKbn, syouki, isDeleted);
+        SyoukiInf? syoukiInf = null;
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyoukiInfList(hpId, userId, new() { syoukiInfModel });
+
+            syoukiInf = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
+                                                                 && item.HpId == hpId
+                                                                 && item.SinYm == sinYm
+                                                                 && item.HokenId == hokenId
+                                                                 && item.SortNo == sortNo
+                                                                 && item.SyoukiKbn == syoukiKbn
+                                                                 && item.Syouki == syouki
+                                                                 && item.IsDeleted == 0);
+            // Assert
+            Assert.IsTrue(syoukiInf != null);
+        }
+        finally
+        {
+            if (syoukiInf != null)
+            {
+                tenant.SyoukiInfs.Remove(syoukiInf);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_012_SaveSyoukiInfList_TestUpdateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int syoukiKbn = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        string syouki = "Syouki";
+        bool isDeleted = false;
+
+        SyoukiInf? syoukiInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsDeleted = 0,
+            SeqNo = seqNo,
+        };
+
+        tenant.SyoukiInfs.Add(syoukiInf);
+        SyoukiInfModel syoukiInfModel = new SyoukiInfModel(ptId, sinYm, hokenId, seqNo, sortNo, syoukiKbn, syouki, isDeleted);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyoukiInfList(hpId, userId, new() { syoukiInfModel });
+
+            syoukiInf = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
+                                                                 && item.HpId == hpId
+                                                                 && item.SinYm == sinYm
+                                                                 && item.HokenId == hokenId
+                                                                 && item.SyoukiKbn == syoukiKbn
+                                                                 && item.Syouki == syouki
+                                                                 && item.SeqNo == seqNo
+                                                                 && item.SortNo == sortNo
+                                                                 && item.IsDeleted == 0);
+            // Assert
+            Assert.IsTrue(syoukiInf != null);
+        }
+        finally
+        {
+            if (syoukiInf != null)
+            {
+                tenant = TenantProvider.GetNoTrackingDataContext();
+                tenant.SyoukiInfs.Remove(syoukiInf);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_013_SaveSyoukiInfList_TestContinueCondition()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int syoukiKbn = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        string syouki = "Syouki";
+        bool isDeleted = false;
+
+        SyoukiInf? syoukiInf = null;
+        SyoukiInfModel syoukiInfModel = new SyoukiInfModel(ptId, sinYm, hokenId, seqNo, sortNo, syoukiKbn, syouki, isDeleted);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyoukiInfList(hpId, userId, new() { syoukiInfModel });
+
+            syoukiInf = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
+                                                                 && item.HpId == hpId
+                                                                 && item.SinYm == sinYm
+                                                                 && item.HokenId == hokenId
+                                                                 && item.SyoukiKbn == syoukiKbn
+                                                                 && item.Syouki == syouki
+                                                                 && item.SeqNo == seqNo
+                                                                 && item.SortNo == sortNo
+                                                                 && item.IsDeleted == 0);
+            // Assert
+            Assert.IsTrue(syoukiInf == null);
+        }
+        finally
+        {
+            if (syoukiInf != null)
+            {
+                tenant = TenantProvider.GetNoTrackingDataContext();
+                tenant.SyoukiInfs.Remove(syoukiInf);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_014_SaveSyoukiInfList_TestDeleteSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int syoukiKbn = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        string syouki = "Syouki";
+        bool isDeleted = true;
+
+        SyoukiInf? syoukiInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsDeleted = 0,
+            SeqNo = seqNo,
+        };
+
+        tenant.SyoukiInfs.Add(syoukiInf);
+        SyoukiInfModel syoukiInfModel = new SyoukiInfModel(ptId, sinYm, hokenId, seqNo, sortNo, syoukiKbn, syouki, isDeleted);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyoukiInfList(hpId, userId, new() { syoukiInfModel });
+
+            syoukiInf = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
+                                                                 && item.HpId == hpId
+                                                                 && item.SinYm == sinYm
+                                                                 && item.HokenId == hokenId
+                                                                 && item.SeqNo == seqNo
+                                                                 && item.IsDeleted == 1);
+            // Assert
+            Assert.IsTrue(syoukiInf != null);
+        }
+        finally
+        {
+            if (syoukiInf != null)
+            {
+                tenant = TenantProvider.GetNoTrackingDataContext();
+                tenant.SyoukiInfs.Remove(syoukiInf);
+                tenant.SaveChanges();
+            }
+        }
+    }
+    #endregion SaveSyoukiInfList
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
