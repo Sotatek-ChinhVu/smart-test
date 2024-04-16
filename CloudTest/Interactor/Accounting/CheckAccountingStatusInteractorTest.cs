@@ -37,20 +37,30 @@ namespace CloudUnitTest.Interactor.Accounting
             Assert.True(result.ErrorType == string.Empty && result.Message == string.Empty && result.Status == CheckAccountingStatus.Successed);
         }
 
-        //[Test]
-        //public void CheckAccountingStatusInteractorTest_002_IsDisCharge_Check_SyunoSeikyusChecking()
-        //{
-        //    // Arrange 
-        //    SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor,out StackExchange.Redis.IDatabase cache);
-        //    int hpId = 998; long ptId = 12345; int sinDate = 0; long raiinNo = 1234321; int debitBalance = 0; int sumAdjust = 0; int credit = 0; int wari = 0; bool isDisCharge = true; bool isSaveAccounting = false;
-        //    List<SyunoSeikyuDto> syunoSeikyuDtos = new List<SyunoSeikyuDto>();
-        //    List<SyunoSeikyuDto> allSyunoSeikyuDtos = new List<SyunoSeikyuDto>();
-        //    var inputData = new CheckAccountingStatusInputData(hpId, ptId, sinDate, raiinNo, debitBalance, sumAdjust, credit, wari, isDisCharge, isSaveAccounting, syunoSeikyuDtos, allSyunoSeikyuDtos);
-        //    //Act
-        //    var result = checkAccountingStatusInteractor.Handle(inputData);
-        //    //Assert
-        //    Assert.True(result.ErrorType == mbOk && result.Message == billUpdate && result.Status == CheckAccountingStatus.BillUpdated);
-        //}
+        [Test]
+        public void CheckAccountingStatusInteractorTest_002_IsDisCharge_Check_SyunoSeikyusChecking_NotAny()
+        {
+            // Arrange 
+            SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
+            int hpId = 998; long ptId = 12345; int sinDate = 0; long raiinNo = 1234321; int debitBalance = 0; int sumAdjust = 0; int credit = 0; int wari = 0; bool isDisCharge = true; bool isSaveAccounting = false;
+            var syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate,raiinNo,0,0,0,0,0,0,0,"",0,0,"")
+            };
+            List<SyunoSeikyuDto> syunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, raiinNo, 1,0,0,3,"",0,0,0,"",syunoNyukinModels)
+            };
+            List<SyunoSeikyuDto> allSyunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, 12345321, 1,0,0,0,"",0,0,1,"",syunoNyukinModels)
+            };
+            var inputData = new CheckAccountingStatusInputData(hpId, ptId, sinDate, raiinNo, debitBalance, sumAdjust, credit, wari, isDisCharge, isSaveAccounting, syunoSeikyuDtos, allSyunoSeikyuDtos);
+            //Act
+            var result = checkAccountingStatusInteractor.Handle(inputData);
+            //Assert
+            Assert.True(result.ErrorType == mbOk && result.Message == billUpdate && result.Status == CheckAccountingStatus.BillUpdated);
+        }
 
         [Test]
         public void CheckAccountingStatusInteractorTest_003_IsDisCharge_Check_SyunoChanged()
@@ -651,7 +661,39 @@ namespace CloudUnitTest.Interactor.Accounting
         }
 
         [Test]
-        public void CheckAccountingStatusInteractorTest_015_IsSaveAccounting_CheckSyunoChanged_Faild()
+        public void CheckAccountingStatusInteractorTest_015_IsSaveAccounting_SyunoSeikyusChecking_NotAny()
+        {
+            // Arrange 
+            SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; int debitBalance = 1; int sumAdjust = 0; int credit = 1; int wari = 0; bool isDisCharge = false; bool isSaveAccounting = true;
+            var syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate,raiinNo,0,0,0,0,0,0,0,"",0,0,"")
+            };
+            List<SyunoSeikyuDto> syunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, 1234322, 1,0,0,0,"",0,0,0,"",syunoNyukinModels)
+            };
+            List<SyunoSeikyuDto> allSyunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, 12345321, 1,0,0,0,"",0,0,1,"",syunoNyukinModels)
+            };
+            var inputData = new CheckAccountingStatusInputData(hpId, ptId, sinDate, raiinNo, debitBalance, sumAdjust, credit, wari, isDisCharge, isSaveAccounting, syunoSeikyuDtos, allSyunoSeikyuDtos);
+            try
+            {
+                //Act
+                var result = checkAccountingStatusInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.ErrorType == mbOk && result.Message == billUpdate && result.Status == CheckAccountingStatus.BillUpdated);
+            }
+            finally
+            {
+            }
+
+        }
+
+        [Test]
+        public void CheckAccountingStatusInteractorTest_016_IsSaveAccounting_CheckSyunoChanged_Faild()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -708,7 +750,7 @@ namespace CloudUnitTest.Interactor.Accounting
         }
 
         [Test]
-        public void CheckAccountingStatusInteractorTest_016_IsSaveAccounting_CheckCredit_Faild()
+        public void CheckAccountingStatusInteractorTest_017_IsSaveAccounting_CheckCredit_Faild()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -768,7 +810,7 @@ namespace CloudUnitTest.Interactor.Accounting
         /// credit + wari <= sumAdjust
         /// </summary>
         [Test]
-        public void CheckAccountingStatusInteractorTest_016_IsSaveAccounting_CheckCredit_True()
+        public void CheckAccountingStatusInteractorTest_018_IsSaveAccounting_CheckCredit_True()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -828,7 +870,7 @@ namespace CloudUnitTest.Interactor.Accounting
         /// accDue < 0 && sumCredit == 0
         /// </summary>
         [Test]
-        public void CheckAccountingStatusInteractorTest_017_IsSaveAccounting_CheckCredit_True()
+        public void CheckAccountingStatusInteractorTest_019_IsSaveAccounting_CheckCredit_True()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -888,7 +930,7 @@ namespace CloudUnitTest.Interactor.Accounting
         /// accDue < 0 sumCredit <= sumAdjust
         /// </summary>
         [Test]
-        public void CheckAccountingStatusInteractorTest_018_IsSaveAccounting_CheckCredit_True()
+        public void CheckAccountingStatusInteractorTest_020_IsSaveAccounting_CheckCredit_True()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -945,7 +987,7 @@ namespace CloudUnitTest.Interactor.Accounting
         }
 
         [Test]
-        public void CheckAccountingStatusInteractorTest_019_IsSaveAccounting_ParseValueUpdate()
+        public void CheckAccountingStatusInteractorTest_021_IsSaveAccounting_ParseValueUpdate()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -1002,6 +1044,254 @@ namespace CloudUnitTest.Interactor.Accounting
 
         }
 
+        /// <summary>
+        /// AccDue=0
+        /// </summary>
+        [Test]
+        public void CheckAccountingStatusInteractorTest_022_CheckAccDue_IsDisCharge_Faild()
+        {
+            // Arrange 
+            SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; int debitBalance = -1; int sumAdjust = 1; int credit = 1; int wari = 0; bool isDisCharge = false; bool isSaveAccounting = true;
+            var syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate,raiinNo,0,0,0,0,0,0,0,"",0,0,"")
+            };
+            List<SyunoSeikyuDto> syunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, raiinNo, 1,0,0,3,"",0,0,0,"",syunoNyukinModels)
+            };
+            List<SyunoSeikyuDto> allSyunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, 12345321, 1,0,0,1,"",0,0,1,"",syunoNyukinModels)
+            };
+            var inputData = new CheckAccountingStatusInputData(hpId, ptId, sinDate, raiinNo, debitBalance, sumAdjust, credit, wari, isDisCharge, isSaveAccounting, syunoSeikyuDtos, allSyunoSeikyuDtos);
+            var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
+            syunoSeikyus[0].SeikyuGaku = 3;
+            var syunoSeikyu2s = AccountingRepositoryData.ReadSyunoSeikyu();
+            syunoSeikyu2s[0].RaiinNo = 12345321;
+            syunoSeikyu2s[0].SeikyuGaku = 1;
+            syunoSeikyu2s[0].NewSeikyuGaku = 1;
+            var syunoNyukins = AccountingRepositoryData.ReadSyunoNyukin();
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[1].OyaRaiinNo = 801265567;
+            var hokenPatterns = AccountingRepositoryData.ReadPtHokenPattern();
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            tenant.AddRange(syunoSeikyus);
+            tenant.AddRange(syunoSeikyu2s);
+            tenant.AddRange(syunoNyukins);
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(hokenPatterns);
+            tenant.AddRange(kaikeiInfs);
+            try
+            {
+                UpdateValueSystemConf2(cache, hpId, tenant);
+                tenant.SaveChanges();
+                //Act
+                var result = checkAccountingStatusInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.ErrorType == string.Empty && result.Status == CheckAccountingStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(syunoSeikyus);
+                tenant.RemoveRange(syunoSeikyu2s);
+                tenant.RemoveRange(syunoNyukins);
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(hokenPatterns);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.SaveChanges();
+            }
+
+        }
+
+        /// <summary>
+        /// AccDue = 0
+        /// </summary>
+        [Test]
+        public void CheckAccountingStatusInteractorTest_023_CheckAccDue_IsDisCharge_True()
+        {
+            // Arrange 
+            SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; int debitBalance = -1; int sumAdjust = 1; int credit = 1; int wari = 0; bool isDisCharge = true; bool isSaveAccounting = true;
+            var syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate,raiinNo,0,0,0,0,0,0,0,"",0,0,"")
+            };
+            List<SyunoSeikyuDto> syunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, raiinNo, 1,0,0,3,"",0,0,0,"",syunoNyukinModels)
+            };
+            List<SyunoSeikyuDto> allSyunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, 12345321, 1,0,0,1,"",0,0,1,"",syunoNyukinModels)
+            };
+            var inputData = new CheckAccountingStatusInputData(hpId, ptId, sinDate, raiinNo, debitBalance, sumAdjust, credit, wari, isDisCharge, isSaveAccounting, syunoSeikyuDtos, allSyunoSeikyuDtos);
+            var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
+            syunoSeikyus[0].SeikyuGaku = 3;
+            var syunoSeikyu2s = AccountingRepositoryData.ReadSyunoSeikyu();
+            syunoSeikyu2s[0].RaiinNo = 12345321;
+            syunoSeikyu2s[0].SeikyuGaku = 1;
+            syunoSeikyu2s[0].NewSeikyuGaku = 1;
+            var syunoNyukins = AccountingRepositoryData.ReadSyunoNyukin();
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[1].OyaRaiinNo = 801265567;
+            var hokenPatterns = AccountingRepositoryData.ReadPtHokenPattern();
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            tenant.AddRange(syunoSeikyus);
+            tenant.AddRange(syunoSeikyu2s);
+            tenant.AddRange(syunoNyukins);
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(hokenPatterns);
+            tenant.AddRange(kaikeiInfs);
+            try
+            {
+                UpdateValueSystemConf2(cache, hpId, tenant);
+                tenant.SaveChanges();
+                //Act
+                var result = checkAccountingStatusInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.ErrorType == string.Empty && result.Status == CheckAccountingStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(syunoSeikyus);
+                tenant.RemoveRange(syunoSeikyu2s);
+                tenant.RemoveRange(syunoNyukins);
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(hokenPatterns);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.SaveChanges();
+            }
+
+        }
+
+        /// <summary>
+        /// AccDue != 0
+        /// </summary>
+        [Test]
+        public void CheckAccountingStatusInteractorTest_024_CheckAccDue_IsDisCharge_IsSaveAccounting_True()
+        {
+            // Arrange 
+            SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; int debitBalance = -1; int sumAdjust = 1; int credit = 1; int wari = 0; bool isDisCharge = true; bool isSaveAccounting = true;
+            var syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate,raiinNo,0,0,0,0,0,0,0,"",0,0,"")
+            };
+            List<SyunoSeikyuDto> syunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, raiinNo, 1,0,0,3,"",0,0,0,"",syunoNyukinModels)
+            };
+            List<SyunoSeikyuDto> allSyunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, 12345321, 1,0,0,1,"",0,0,1,"",syunoNyukinModels)
+            };
+            var inputData = new CheckAccountingStatusInputData(hpId, ptId, sinDate, raiinNo, debitBalance, sumAdjust, credit, wari, isDisCharge, isSaveAccounting, syunoSeikyuDtos, allSyunoSeikyuDtos);
+            var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
+            syunoSeikyus[0].SeikyuGaku = 3;
+            var syunoSeikyu2s = AccountingRepositoryData.ReadSyunoSeikyu();
+            syunoSeikyu2s[0].RaiinNo = 12345321;
+            syunoSeikyu2s[0].SeikyuGaku = 1;
+            syunoSeikyu2s[0].NewSeikyuGaku = 1;
+            var syunoNyukins = AccountingRepositoryData.ReadSyunoNyukin();
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[1].OyaRaiinNo = 801265567;
+            var hokenPatterns = AccountingRepositoryData.ReadPtHokenPattern();
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            tenant.AddRange(syunoSeikyus);
+            tenant.AddRange(syunoSeikyu2s);
+            tenant.AddRange(syunoNyukins);
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(hokenPatterns);
+            tenant.AddRange(kaikeiInfs);
+            try
+            {
+                UpdateValueSystemConf(cache, hpId, tenant);
+                tenant.SaveChanges();
+                //Act
+                var result = checkAccountingStatusInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.ErrorType == mbClose && result.Message == validAmount && result.Status == CheckAccountingStatus.ValidPaymentAmount);
+            }
+            finally
+            {
+                tenant.RemoveRange(syunoSeikyus);
+                tenant.RemoveRange(syunoSeikyu2s);
+                tenant.RemoveRange(syunoNyukins);
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(hokenPatterns);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.SaveChanges();
+            }
+
+        }
+
+        /// <summary>
+        /// AccDue > 0
+        /// </summary>
+        [Test]
+        public void CheckAccountingStatusInteractorTest_025_CheckAccDue_IsDisCharge_IsSaveAccounting_True()
+        {
+            // Arrange 
+            SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
+            var tenant = TenantProvider.GetTrackingTenantDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321; int debitBalance = 1; int sumAdjust = 1; int credit = 1; int wari = 0; bool isDisCharge = true; bool isSaveAccounting = true;
+            var syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate,raiinNo,0,0,0,0,0,0,0,"",0,0,"")
+            };
+            List<SyunoSeikyuDto> syunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, raiinNo, 1,0,0,3,"",0,0,0,"",syunoNyukinModels)
+            };
+            List<SyunoSeikyuDto> allSyunoSeikyuDtos = new List<SyunoSeikyuDto>()
+            {
+                new SyunoSeikyuDto(hpId,ptId, sinDate, 12345321, 1,0,0,1,"",0,0,1,"",syunoNyukinModels)
+            };
+            var inputData = new CheckAccountingStatusInputData(hpId, ptId, sinDate, raiinNo, debitBalance, sumAdjust, credit, wari, isDisCharge, isSaveAccounting, syunoSeikyuDtos, allSyunoSeikyuDtos);
+            var syunoSeikyus = AccountingRepositoryData.ReadSyunoSeikyu();
+            syunoSeikyus[0].SeikyuGaku = 3;
+            var syunoSeikyu2s = AccountingRepositoryData.ReadSyunoSeikyu();
+            syunoSeikyu2s[0].RaiinNo = 12345321;
+            syunoSeikyu2s[0].SeikyuGaku = 1;
+            syunoSeikyu2s[0].NewSeikyuGaku = 1;
+            var syunoNyukins = AccountingRepositoryData.ReadSyunoNyukin();
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[1].OyaRaiinNo = 801265567;
+            var hokenPatterns = AccountingRepositoryData.ReadPtHokenPattern();
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            tenant.AddRange(syunoSeikyus);
+            tenant.AddRange(syunoSeikyu2s);
+            tenant.AddRange(syunoNyukins);
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(hokenPatterns);
+            tenant.AddRange(kaikeiInfs);
+            try
+            {
+                UpdateValueSystemConf(cache, hpId, tenant);
+                tenant.SaveChanges();
+                //Act
+                var result = checkAccountingStatusInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.ErrorType == string.Empty && result.Message == string.Empty && result.Status == CheckAccountingStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(syunoSeikyus);
+                tenant.RemoveRange(syunoSeikyu2s);
+                tenant.RemoveRange(syunoNyukins);
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(hokenPatterns);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.SaveChanges();
+            }
+
+        }
+
         private void SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache)
         {
             var mockConfiguration = new Mock<IConfiguration>();
@@ -1035,6 +1325,33 @@ namespace CloudUnitTest.Interactor.Accounting
                     CreateId = 1,
                     UpdateId = 1,
                     Val = 0
+                };
+                tenant.SystemConfs.Add(systemConf);
+            }
+        }
+
+        private void UpdateValueSystemConf2(StackExchange.Redis.IDatabase cache, int hpId, TenantDataContext tenant)
+        {
+            var keySystemConfig = TenantProvider.GetDomainName() + CacheKeyConstant.GetListSystemConf + "_" + hpId;
+            if (cache.KeyExists(keySystemConfig))
+            {
+                cache.KeyDelete(keySystemConfig);
+            }
+            var systemConf = tenant.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 3020 && p.GrpEdaNo == 0);
+            var temp = systemConf?.Val ?? 0;
+            if (systemConf != null) systemConf.Val = 1;
+            else
+            {
+                systemConf = new SystemConf
+                {
+                    HpId = hpId,
+                    GrpCd = 3020,
+                    GrpEdaNo = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 1,
+                    UpdateId = 1,
+                    Val = 1
                 };
                 tenant.SystemConfs.Add(systemConf);
             }
