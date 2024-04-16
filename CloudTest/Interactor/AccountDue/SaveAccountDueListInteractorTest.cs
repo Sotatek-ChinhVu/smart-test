@@ -663,5 +663,351 @@ namespace CloudUnitTest.Interactor.AccountDue
 
             Assert.That(result.Status == SaveAccountDueListStatus.NoItemChange);
         }
+
+        #region ValidateInvalidNyukinKbn
+        // NyukinKbn = 1
+        [Test]
+        public void TC_017_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
+        {
+            //Arrange
+            var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
+            var mockIUserRepository = new Mock<IUserRepository>();
+            var mockIHpInfRepository = new Mock<IHpInfRepository>();
+            var mockIPatientInforRepository = new Mock<IPatientInforRepository>();
+            var mockIEventProcessorService = new Mock<IEventProcessorService>();
+            var mockIReceptionRepository = new Mock<IReceptionRepository>();
+            var mockILoggingHandler = new Mock<ILoggingHandler>();
+
+            var saveAccountDueListInteractor = new SaveAccountDueListInteractor(mockIAccountDueRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object,
+                                                                                mockIPatientInforRepository.Object, mockIEventProcessorService.Object, mockIReceptionRepository.Object, TenantProvider);
+
+            Random random = new Random();
+
+            int hpId = random.Next(999, 99999); ;
+            int userId = random.Next(999, 99999);
+            long ptId = random.Next(999, 99999);
+            int sinDate = random.Next(10000000, 99999999);
+            string kaikeiTime = "";
+            int nyukinKbn = 1, nyukinjiTensu = 0, nyukinjiSeikyu = 0, newSeikyuTensu = 0, newAdjustFutan = 0, newSeikyuGaku = 0, sortNo = 0, adjustFutan = 0, nyukinGaku = 0, paymentMethodCd = 1, nyukinDate = 1, uketukeSbt = 0, seikyuGaku = 0, seikyuTensu = 0, raiinInfStatus = 0, seikyuAdjustFutan = 0, seikyuSinDate = 0;
+            long raiinNo = 1, seqNo = 0;
+            string nyukinCmt = "", seikyuDetail = "", newSeikyuDetail = "", nyukinjiDetail = "";
+            bool isDelete = false, isUpdated = true;
+
+            List<SyunoNyukinInputItem> syunoNyukinInputItems = new List<SyunoNyukinInputItem>()
+            {
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo+1, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan + 1, seikyuSinDate, isDelete)
+            };
+
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
+            {
+                new SyunoSeikyuModel(hpId, ptId, sinDate, raiinNo, nyukinKbn, seikyuTensu, adjustFutan, seikyuGaku + 1, seikyuDetail, newSeikyuTensu, newAdjustFutan, newSeikyuGaku, newSeikyuDetail)
+            };
+
+            List<SyunoNyukinModel> syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate, raiinNo, seqNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, nyukinjiTensu, nyukinjiSeikyu, nyukinjiDetail)
+            };
+
+            List<AccountDueModel> listAccountDueModel = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            List<AccountDueModel> listAccountDue = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            mockIHpInfRepository.Setup(finder => finder.CheckHpId(hpId)).Returns((int hpId) => true);
+            mockIUserRepository.Setup(finder => finder.CheckExistedUserId(hpId, userId)).Returns((int hpId, int userId) => true);
+            mockIPatientInforRepository.Setup(finder => finder.CheckExistIdList(hpId, new List<long> { ptId })).Returns((int hpId, List<long> ptId) => true);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoSeikyuModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoSeikyuModels);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoNyukinModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoNyukinModels);
+            var inputData = new SaveAccountDueListInputData(hpId, userId, ptId, sinDate, kaikeiTime, syunoNyukinInputItems);
+
+            mockIAccountDueRepository.Setup(x => x.SaveAccountDueList(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<AccountDueModel>>(), It.IsAny<string>()))
+            .Returns((int input1, long input2, int input3, int input4, List<AccountDueModel> input5, string input6) => listAccountDue);
+
+            var result = saveAccountDueListInteractor.Handle(inputData);
+
+            Assert.That(result.Status == SaveAccountDueListStatus.InvalidNyukinKbn);
+        }
+
+        // NyukinKbn = 2
+        [Test]
+        public void TC_018_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
+        {
+            //Arrange
+            var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
+            var mockIUserRepository = new Mock<IUserRepository>();
+            var mockIHpInfRepository = new Mock<IHpInfRepository>();
+            var mockIPatientInforRepository = new Mock<IPatientInforRepository>();
+            var mockIEventProcessorService = new Mock<IEventProcessorService>();
+            var mockIReceptionRepository = new Mock<IReceptionRepository>();
+            var mockILoggingHandler = new Mock<ILoggingHandler>();
+
+            var saveAccountDueListInteractor = new SaveAccountDueListInteractor(mockIAccountDueRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object,
+                                                                                mockIPatientInforRepository.Object, mockIEventProcessorService.Object, mockIReceptionRepository.Object, TenantProvider);
+
+            Random random = new Random();
+
+            int hpId = random.Next(999, 99999); ;
+            int userId = random.Next(999, 99999);
+            long ptId = random.Next(999, 99999);
+            int sinDate = random.Next(10000000, 99999999);
+            string kaikeiTime = "";
+            int nyukinKbn = 2, nyukinjiTensu = 0, nyukinjiSeikyu = 0, newSeikyuTensu = 0, newAdjustFutan = 0, newSeikyuGaku = 0, sortNo = 0, adjustFutan = 1, nyukinGaku = 0, paymentMethodCd = 1, nyukinDate = 1, uketukeSbt = 0, seikyuGaku = 1, seikyuTensu = 0, raiinInfStatus = 0, seikyuAdjustFutan = 0, seikyuSinDate = 0;
+            long raiinNo = 1, seqNo = 0;
+            string nyukinCmt = "", seikyuDetail = "", newSeikyuDetail = "", nyukinjiDetail = "";
+            bool isDelete = false, isUpdated = true;
+
+            List<SyunoNyukinInputItem> syunoNyukinInputItems = new List<SyunoNyukinInputItem>()
+            {
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo+1, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan + 1, seikyuSinDate, isDelete)
+            };
+
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
+            {
+                new SyunoSeikyuModel(hpId, ptId, sinDate, raiinNo, nyukinKbn, seikyuTensu, adjustFutan, seikyuGaku, seikyuDetail, newSeikyuTensu, newAdjustFutan, newSeikyuGaku, newSeikyuDetail)
+            };
+
+            List<SyunoNyukinModel> syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate, raiinNo, seqNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, nyukinjiTensu, nyukinjiSeikyu, nyukinjiDetail)
+            };
+
+            List<AccountDueModel> listAccountDueModel = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            List<AccountDueModel> listAccountDue = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            mockIHpInfRepository.Setup(finder => finder.CheckHpId(hpId)).Returns((int hpId) => true);
+            mockIUserRepository.Setup(finder => finder.CheckExistedUserId(hpId, userId)).Returns((int hpId, int userId) => true);
+            mockIPatientInforRepository.Setup(finder => finder.CheckExistIdList(hpId, new List<long> { ptId })).Returns((int hpId, List<long> ptId) => true);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoSeikyuModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoSeikyuModels);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoNyukinModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoNyukinModels);
+            var inputData = new SaveAccountDueListInputData(hpId, userId, ptId, sinDate, kaikeiTime, syunoNyukinInputItems);
+
+            mockIAccountDueRepository.Setup(x => x.SaveAccountDueList(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<AccountDueModel>>(), It.IsAny<string>()))
+            .Returns((int input1, long input2, int input3, int input4, List<AccountDueModel> input5, string input6) => listAccountDue);
+
+            var result = saveAccountDueListInteractor.Handle(inputData);
+
+            Assert.That(result.Status == SaveAccountDueListStatus.InvalidNyukinKbn);
+        }
+
+        // NyukinKbn = 3
+        [Test]
+        public void TC_019_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
+        {
+            //Arrange
+            var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
+            var mockIUserRepository = new Mock<IUserRepository>();
+            var mockIHpInfRepository = new Mock<IHpInfRepository>();
+            var mockIPatientInforRepository = new Mock<IPatientInforRepository>();
+            var mockIEventProcessorService = new Mock<IEventProcessorService>();
+            var mockIReceptionRepository = new Mock<IReceptionRepository>();
+            var mockILoggingHandler = new Mock<ILoggingHandler>();
+
+            var saveAccountDueListInteractor = new SaveAccountDueListInteractor(mockIAccountDueRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object,
+                                                                                mockIPatientInforRepository.Object, mockIEventProcessorService.Object, mockIReceptionRepository.Object, TenantProvider);
+
+            Random random = new Random();
+
+            int hpId = random.Next(999, 99999); ;
+            int userId = random.Next(999, 99999);
+            long ptId = random.Next(999, 99999);
+            int sinDate = random.Next(10000000, 99999999);
+            string kaikeiTime = "";
+            int nyukinKbn = 3, nyukinjiTensu = 0, nyukinjiSeikyu = 0, newSeikyuTensu = 0, newAdjustFutan = 0, newSeikyuGaku = 0, sortNo = 0, adjustFutan = 0, nyukinGaku = 0, paymentMethodCd = 1, nyukinDate = 1, uketukeSbt = 0, seikyuGaku = 1, seikyuTensu = 0, raiinInfStatus = 0, seikyuAdjustFutan = 0, seikyuSinDate = 0;
+            long raiinNo = 1, seqNo = 0;
+            string nyukinCmt = "", seikyuDetail = "", newSeikyuDetail = "", nyukinjiDetail = "";
+            bool isDelete = false, isUpdated = true;
+
+            List<SyunoNyukinInputItem> syunoNyukinInputItems = new List<SyunoNyukinInputItem>()
+            {
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo + 1, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan + 1, seikyuSinDate, isDelete)
+            };
+
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
+            {
+                new SyunoSeikyuModel(hpId, ptId, sinDate, raiinNo, nyukinKbn, seikyuTensu, adjustFutan, seikyuGaku, seikyuDetail, newSeikyuTensu, newAdjustFutan, newSeikyuGaku, newSeikyuDetail)
+            };
+
+            List<SyunoNyukinModel> syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate, raiinNo, seqNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, nyukinjiTensu, nyukinjiSeikyu, nyukinjiDetail)
+            };
+
+            List<AccountDueModel> listAccountDueModel = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            List<AccountDueModel> listAccountDue = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            mockIHpInfRepository.Setup(finder => finder.CheckHpId(hpId)).Returns((int hpId) => true);
+            mockIUserRepository.Setup(finder => finder.CheckExistedUserId(hpId, userId)).Returns((int hpId, int userId) => true);
+            mockIPatientInforRepository.Setup(finder => finder.CheckExistIdList(hpId, new List<long> { ptId })).Returns((int hpId, List<long> ptId) => true);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoSeikyuModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoSeikyuModels);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoNyukinModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoNyukinModels);
+            var inputData = new SaveAccountDueListInputData(hpId, userId, ptId, sinDate, kaikeiTime, syunoNyukinInputItems);
+
+            mockIAccountDueRepository.Setup(x => x.SaveAccountDueList(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<AccountDueModel>>(), It.IsAny<string>()))
+            .Returns((int input1, long input2, int input3, int input4, List<AccountDueModel> input5, string input6) => listAccountDue);
+
+            var result = saveAccountDueListInteractor.Handle(inputData);
+
+            Assert.That(result.Status == SaveAccountDueListStatus.InvalidNyukinKbn);
+        }
+
+        [Test]
+        public void TC_020_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
+        {
+            //Arrange
+            var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
+            var mockIUserRepository = new Mock<IUserRepository>();
+            var mockIHpInfRepository = new Mock<IHpInfRepository>();
+            var mockIPatientInforRepository = new Mock<IPatientInforRepository>();
+            var mockIEventProcessorService = new Mock<IEventProcessorService>();
+            var mockIReceptionRepository = new Mock<IReceptionRepository>();
+            var mockILoggingHandler = new Mock<ILoggingHandler>();
+
+            var saveAccountDueListInteractor = new SaveAccountDueListInteractor(mockIAccountDueRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object,
+                                                                                mockIPatientInforRepository.Object, mockIEventProcessorService.Object, mockIReceptionRepository.Object, TenantProvider);
+
+            Random random = new Random();
+
+            int hpId = random.Next(999, 99999); ;
+            int userId = random.Next(999, 99999);
+            long ptId = random.Next(999, 99999);
+            int sinDate = random.Next(10000000, 99999999);
+            string kaikeiTime = "";
+            int nyukinKbn = 4, nyukinjiTensu = 0, nyukinjiSeikyu = 0, newSeikyuTensu = 0, newAdjustFutan = 0, newSeikyuGaku = 0, sortNo = 0, adjustFutan = 0, nyukinGaku = 0, paymentMethodCd = 1, nyukinDate = 1, uketukeSbt = 0, seikyuGaku = 1, seikyuTensu = 0, raiinInfStatus = 0, seikyuAdjustFutan = 0, seikyuSinDate = 0;
+            long raiinNo = 1, seqNo = 0;
+            string nyukinCmt = "", seikyuDetail = "", newSeikyuDetail = "", nyukinjiDetail = "";
+            bool isDelete = false, isUpdated = true;
+
+            List<SyunoNyukinInputItem> syunoNyukinInputItems = new List<SyunoNyukinInputItem>()
+            {
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo + 1, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan + 1, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo + 1, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan + 1, seikyuSinDate, isDelete)
+            };
+
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
+            {
+                new SyunoSeikyuModel(hpId, ptId, sinDate, raiinNo, nyukinKbn, seikyuTensu, adjustFutan, seikyuGaku, seikyuDetail, newSeikyuTensu, newAdjustFutan, newSeikyuGaku, newSeikyuDetail)
+            };
+
+            List<SyunoNyukinModel> syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate, raiinNo, seqNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, nyukinjiTensu, nyukinjiSeikyu, nyukinjiDetail)
+            };
+
+            List<AccountDueModel> listAccountDueModel = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            List<AccountDueModel> listAccountDue = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            mockIHpInfRepository.Setup(finder => finder.CheckHpId(hpId)).Returns((int hpId) => true);
+            mockIUserRepository.Setup(finder => finder.CheckExistedUserId(hpId, userId)).Returns((int hpId, int userId) => true);
+            mockIPatientInforRepository.Setup(finder => finder.CheckExistIdList(hpId, new List<long> { ptId })).Returns((int hpId, List<long> ptId) => true);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoSeikyuModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoSeikyuModels);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoNyukinModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoNyukinModels);
+            var inputData = new SaveAccountDueListInputData(hpId, userId, ptId, sinDate, kaikeiTime, syunoNyukinInputItems);
+
+            mockIAccountDueRepository.Setup(x => x.SaveAccountDueList(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<AccountDueModel>>(), It.IsAny<string>()))
+            .Returns((int input1, long input2, int input3, int input4, List<AccountDueModel> input5, string input6) => listAccountDue);
+
+            var result = saveAccountDueListInteractor.Handle(inputData);
+
+            Assert.That(result.AccountDueModel.AccountDueList.Any(x => x.RaiinNo == raiinNo));
+        }
+
+        [Test]
+        public void TC_021_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_False()
+        {
+            //Arrange
+            var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
+            var mockIUserRepository = new Mock<IUserRepository>();
+            var mockIHpInfRepository = new Mock<IHpInfRepository>();
+            var mockIPatientInforRepository = new Mock<IPatientInforRepository>();
+            var mockIEventProcessorService = new Mock<IEventProcessorService>();
+            var mockIReceptionRepository = new Mock<IReceptionRepository>();
+            var mockILoggingHandler = new Mock<ILoggingHandler>();
+
+            var saveAccountDueListInteractor = new SaveAccountDueListInteractor(mockIAccountDueRepository.Object, mockIUserRepository.Object, mockIHpInfRepository.Object,
+                                                                                mockIPatientInforRepository.Object, mockIEventProcessorService.Object, mockIReceptionRepository.Object, TenantProvider);
+
+            Random random = new Random();
+
+            int hpId = random.Next(999, 99999); ;
+            int userId = random.Next(999, 99999);
+            long ptId = random.Next(999, 99999);
+            int sinDate = random.Next(10000000, 99999999);
+            string kaikeiTime = "";
+            int nyukinKbn = 4, nyukinjiTensu = 0, nyukinjiSeikyu = 0, newSeikyuTensu = 0, newAdjustFutan = 0, newSeikyuGaku = 0, sortNo = 0, adjustFutan = 0, nyukinGaku = 0, paymentMethodCd = 1, nyukinDate = 1, uketukeSbt = 0, seikyuGaku = 1, seikyuTensu = 0, raiinInfStatus = 0, seikyuAdjustFutan = 0, seikyuSinDate = 0;
+            long raiinNo = 1, seqNo = 0;
+            string nyukinCmt = "", seikyuDetail = "", newSeikyuDetail = "", nyukinjiDetail = "";
+            bool isDelete = false, isUpdated = true;
+
+            List<SyunoNyukinInputItem> syunoNyukinInputItems = new List<SyunoNyukinInputItem>()
+            {
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo + 1, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan + 1, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete),
+                new SyunoNyukinInputItem(nyukinKbn, raiinNo + 1, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, isUpdated, seqNo, raiinInfStatus, seikyuAdjustFutan + 1, seikyuSinDate, isDelete)
+            };
+
+            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>()
+            {
+                new SyunoSeikyuModel(hpId, ptId, sinDate, raiinNo, nyukinKbn, seikyuTensu, adjustFutan, seikyuGaku, seikyuDetail, newSeikyuTensu, newAdjustFutan, newSeikyuGaku, newSeikyuDetail)
+            };
+
+            List<SyunoNyukinModel> syunoNyukinModels = new List<SyunoNyukinModel>()
+            {
+                new SyunoNyukinModel(hpId, ptId, sinDate, raiinNo, seqNo, sortNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, nyukinjiTensu, nyukinjiSeikyu, nyukinjiDetail)
+            };
+
+            List<AccountDueModel> listAccountDueModel = new List<AccountDueModel>()
+            {
+                new AccountDueModel(nyukinKbn, sortNo, raiinNo, adjustFutan, nyukinGaku, paymentMethodCd, nyukinDate, uketukeSbt, nyukinCmt, seikyuGaku, seikyuTensu, seikyuDetail, seqNo, raiinInfStatus, seikyuAdjustFutan, seikyuSinDate, isDelete)
+            };
+
+            List<AccountDueModel> listAccountDue = new List<AccountDueModel>();
+
+            mockIHpInfRepository.Setup(finder => finder.CheckHpId(hpId)).Returns((int hpId) => true);
+            mockIUserRepository.Setup(finder => finder.CheckExistedUserId(hpId, userId)).Returns((int hpId, int userId) => true);
+            mockIPatientInforRepository.Setup(finder => finder.CheckExistIdList(hpId, new List<long> { ptId })).Returns((int hpId, List<long> ptId) => true);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoSeikyuModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoSeikyuModels);
+            mockIAccountDueRepository.Setup(finder => finder.GetListSyunoNyukinModel(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int hpId, List<long> listRaiinNo) => syunoNyukinModels);
+            var inputData = new SaveAccountDueListInputData(hpId, userId, ptId, sinDate, kaikeiTime, syunoNyukinInputItems);
+
+            mockIAccountDueRepository.Setup(x => x.SaveAccountDueList(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<AccountDueModel>>(), It.IsAny<string>()))
+            .Returns((int input1, long input2, int input3, int input4, List<AccountDueModel> input5, string input6) => listAccountDue);
+
+            var result = saveAccountDueListInteractor.Handle(inputData);
+
+            Assert.That(result.Status == SaveAccountDueListStatus.Failed);
+        }
+        #endregion
     }
 }
