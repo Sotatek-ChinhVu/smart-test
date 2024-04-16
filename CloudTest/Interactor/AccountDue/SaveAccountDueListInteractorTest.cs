@@ -871,7 +871,9 @@ namespace CloudUnitTest.Interactor.AccountDue
 
             Assert.That(result.Status == SaveAccountDueListStatus.InvalidNyukinKbn);
         }
+        #endregion
 
+        #region Covert Function Handle
         [Test]
         public void TC_020_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_Any_AccountDueList()
         {
