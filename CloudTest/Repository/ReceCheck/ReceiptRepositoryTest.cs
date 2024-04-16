@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using PostgreDataContext;
 using System;
+using System.Linq.Dynamic.Core.Tokenizer;
+using ZstdSharp.Unsafe;
 
 namespace CloudUnitTest.Repository.ReceCheck;
 
@@ -835,6 +837,95 @@ public class ReceiptRepositoryTest : BaseUT
         }
     }
     #endregion SaveSyoukiInfList
+
+    #region GetSyobyoKeikaList
+    [Test]
+    public void TC_015_GetSyobyoKeikaList_TestSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = 0;
+        int seqNo = random.Next(9999, 999999999);
+        int hokenKbn = random.Next(11, 13);
+        int sinDay = 20220201;
+        int sinYm = 202202;
+        string keika = "Keika";
+
+        SyobyoKeika? syobyoKeika = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsDeleted = 0,
+            SeqNo = seqNo,
+            SinDay = sinDay,
+            Keika = keika
+        };
+
+        tenant.SyobyoKeikas.Add(syobyoKeika);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetSyobyoKeikaList(hpId, sinYm, ptId, hokenId, hokenKbn);
+
+            var syoukiInfAfter = result.FirstOrDefault(item => item.PtId == ptId
+                                                               && item.SinYm == sinYm
+                                                               && item.SinDay == sinDay
+                                                               && item.HokenId == hokenId
+                                                               && item.SeqNo == seqNo
+                                                               && item.Keika == keika);
+
+            // Assert
+            Assert.IsTrue(syoukiInfAfter != null);
+        }
+        finally
+        {
+            if (syobyoKeika != null)
+            {
+                tenant.SyobyoKeikas.Remove(syobyoKeika);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_016_GetSyobyoKeikaList_TestContinueProgress()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int hokenKbn = random.Next(14, 9999);
+        int sinDay = 20220201;
+        int sinYm = 202202;
+        string keika = "Keika";
+
+        // Act
+        var result = receiptRepository.GetSyobyoKeikaList(hpId, sinYm, ptId, hokenId, hokenKbn);
+
+        var syoukiInfAfter = result.FirstOrDefault(item => item.PtId == ptId
+                                                           && item.SinYm == sinYm
+                                                           && item.SinDay == sinDay
+                                                           && item.HokenId == hokenId
+                                                           && item.SeqNo == seqNo
+                                                           && item.Keika == keika);
+
+        // Assert
+        Assert.IsTrue(syoukiInfAfter == null);
+    }
+
+    #endregion GetSyobyoKeikaList
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
