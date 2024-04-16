@@ -976,7 +976,71 @@ public class ReceiptRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_018_SaveSyobyoKeikaList_TestContinueCondition()
+    public void TC_018_SaveSyobyoKeikaList_TestCreateAndContinueSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = 0;
+        int hokenKbn = random.Next(11, 13);
+        int sinDay = 20220201;
+        int sinYm = 202202;
+        string keika = "Keika";
+        bool isDeleted = false;
+
+        SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
+
+        SyobyoKeika syobyoKeika2 = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            IsDeleted = 0,
+            SinDay = sinDay,
+            SeqNo = seqNo,
+        };
+
+        tenant.SyobyoKeikas.Add(syobyoKeika2);
+
+        SyobyoKeika? syobyoKeika = null;
+
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveSyobyoKeikaList(hpId, userId, new() { syobyoKeikaModel });
+
+            syobyoKeika = tenant.SyobyoKeikas.FirstOrDefault(item => item.PtId == ptId
+                                                                     && item.HpId == hpId
+                                                                     && item.SinYm == sinYm
+                                                                     && item.SinDay == sinDay
+                                                                     && item.HokenId == hokenId
+                                                                     && item.Keika == keika
+                                                                     && item.IsDeleted == 0);
+
+            // Assert
+            Assert.IsTrue(result && syobyoKeika != null);
+        }
+        finally
+        {
+            tenant.SyobyoKeikas.Remove(syobyoKeika2);
+            if (syobyoKeika != null)
+            {
+                tenant.SyobyoKeikas.Remove(syobyoKeika);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_019_SaveSyobyoKeikaList_TestContinueCondition()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
@@ -1026,7 +1090,7 @@ public class ReceiptRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_019_SaveSyobyoKeikaList_TestSyobyoKeikaListNotAny()
+    public void TC_020_SaveSyobyoKeikaList_TestSyobyoKeikaListNotAny()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
@@ -1073,7 +1137,7 @@ public class ReceiptRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_020_SaveSyobyoKeikaList_TestUpdateSuccess()
+    public void TC_021_SaveSyobyoKeikaList_TestUpdateSuccess()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
@@ -1099,6 +1163,7 @@ public class ReceiptRepositoryTest : BaseUT
             SinYm = sinYm,
             HokenId = hokenId,
             IsDeleted = 0,
+            SinDay = sinDay,
             SeqNo = seqNo,
         };
 
@@ -1118,7 +1183,7 @@ public class ReceiptRepositoryTest : BaseUT
                                                                               && item.HokenId == hokenId
                                                                               && item.Keika == keika
                                                                               && item.SeqNo == seqNo
-                                                                              && item.IsDeleted == 1);
+                                                                              && item.IsDeleted == 0);
 
             // Assert
             Assert.IsTrue(result && syobyoKeikaAfter != null);
@@ -1134,7 +1199,7 @@ public class ReceiptRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_021_SaveSyobyoKeikaList_TestDeletedSuccess()
+    public void TC_022_SaveSyobyoKeikaList_TestDeletedSuccess()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
