@@ -1258,6 +1258,96 @@ public class ReceiptRepositoryTest : BaseUT
     }
     #endregion SaveSyobyoKeikaList
 
+    #region GetReceReasonList
+    [Test]
+    public void TC_023_GetReceReasonList_TestSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = 0;
+        int seqNo = random.Next(9999, 999999999);
+        int hokenKbn = random.Next(11, 13);
+        int sinDate = 20220201;
+        int sinYm = 202202;
+        int seikyuYm = 202202;
+        string henreiJiyuuCd = "HenreiCd";
+        string henreiJiyuu = "HenreiJiyuu";
+        string hosoku = "Hosoku";
+
+        ReceInf? receInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            SeikyuYm = seikyuYm,
+            HokenId = hokenId,
+        };
+
+        ReceSeikyu? receSeikyu = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            SeikyuYm = seikyuYm,
+            HokenId = hokenId,
+            IsDeleted = 0
+        };
+
+        RecedenHenJiyuu recedenHenJiyuu = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            HenreiJiyuuCd = henreiJiyuuCd,
+            HenreiJiyuu = henreiJiyuu,
+            Hosoku = hosoku,
+            IsDeleted = 0
+        };
+
+        tenant.ReceInfs.Add(receInf);
+        tenant.ReceSeikyus.Add(receSeikyu);
+        tenant.RecedenHenJiyuus.Add(recedenHenJiyuu);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceReasonList(hpId, seikyuYm, sinDate, ptId, hokenId);
+
+            var syoukiInfAfter = result.FirstOrDefault(item => item.HokenId == hokenId
+                                                               && item.SinYm == sinYm
+                                                               && item.HenreiJiyuuCd == henreiJiyuuCd
+                                                               && item.HenreiJiyuu == henreiJiyuu
+                                                               && item.Hosoku == hosoku);
+
+            // Assert
+            Assert.IsTrue(syoukiInfAfter != null);
+        }
+        finally
+        {
+            if (receInf != null)
+            {
+                tenant.ReceInfs.Remove(receInf);
+            }
+            if (receSeikyu != null)
+            {
+                tenant.ReceSeikyus.Remove(receSeikyu);
+            }
+            if (recedenHenJiyuu != null)
+            {
+                tenant.RecedenHenJiyuus.Remove(recedenHenJiyuu);
+            }
+            tenant.SaveChanges();
+        }
+    }
+
+    #endregion GetReceReasonList
+
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
         var mockICalculationInfRepository = new Mock<ICalculationInfRepository>();
