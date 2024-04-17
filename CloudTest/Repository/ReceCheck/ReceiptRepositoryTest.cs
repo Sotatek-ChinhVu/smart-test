@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
+﻿using DocumentFormat.OpenXml.Office.Word;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.CalculationInf;
 using Domain.Models.MstItem;
@@ -6,6 +7,7 @@ using Domain.Models.Receipt;
 using Entity.Tenant;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using PostgreDataContext;
 using System;
@@ -1268,7 +1270,7 @@ public class ReceiptRepositoryTest : BaseUT
         Random random = new();
         int hpId = random.Next(999, 999999);
         long ptId = random.Next(9999, 999999999);
-        int hokenId = 0;
+        int hokenId = random.Next(9999, 999999999);
         int seqNo = random.Next(9999, 999999999);
         int hokenKbn = random.Next(11, 13);
         int sinDate = 20220201;
@@ -1319,14 +1321,14 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.GetReceReasonList(hpId, seikyuYm, sinDate, ptId, hokenId);
 
-            var syoukiInfAfter = result.FirstOrDefault(item => item.HokenId == hokenId
-                                                               && item.SinYm == sinYm
-                                                               && item.HenreiJiyuuCd == henreiJiyuuCd
-                                                               && item.HenreiJiyuu == henreiJiyuu
-                                                               && item.Hosoku == hosoku);
+            var receReasonAfter = result.FirstOrDefault(item => item.HokenId == hokenId
+                                                                && item.SinYm == sinYm
+                                                                && item.HenreiJiyuuCd == henreiJiyuuCd
+                                                                && item.HenreiJiyuu == henreiJiyuu
+                                                                && item.Hosoku == hosoku);
 
             // Assert
-            Assert.IsTrue(syoukiInfAfter != null);
+            Assert.IsTrue(receReasonAfter != null);
         }
         finally
         {
@@ -1357,7 +1359,7 @@ public class ReceiptRepositoryTest : BaseUT
         Random random = new();
         int hpId = random.Next(999, 999999);
         long ptId = random.Next(9999, 999999999);
-        int hokenId = 0;
+        int hokenId = random.Next(9999, 999999999);
         int seqNo = random.Next(9999, 999999999);
         int isPending = random.Next(9999, 999999999);
         int sortNo = random.Next(9999, 999999999);
@@ -1386,17 +1388,17 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.GetReceCheckCmtList(hpId, sinYm, ptId, hokenId);
 
-            var syoukiInfAfter = result.FirstOrDefault(item => item.PtId == ptId
-                                                               && item.SeqNo == seqNo
-                                                               && item.SinYm == sinYm
-                                                               && item.HokenId == hokenId
-                                                               && item.IsPending == isPending
-                                                               && item.Cmt == cmt
-                                                               && item.IsChecked == isChecked
-                                                               && item.SortNo == sortNo);
+            var receCheckCmtAfter = result.FirstOrDefault(item => item.PtId == ptId
+                                                                  && item.SeqNo == seqNo
+                                                                  && item.SinYm == sinYm
+                                                                  && item.HokenId == hokenId
+                                                                  && item.IsPending == isPending
+                                                                  && item.Cmt == cmt
+                                                                  && item.IsChecked == isChecked
+                                                                  && item.SortNo == sortNo);
 
             // Assert
-            Assert.IsTrue(syoukiInfAfter != null);
+            Assert.IsTrue(receCheckCmtAfter != null);
         }
         finally
         {
@@ -1407,8 +1409,78 @@ public class ReceiptRepositoryTest : BaseUT
             }
         }
     }
-
     #endregion GetReceCheckCmtList
+
+    #region GetReceCheckErrList
+    [Test]
+    public void TC_025_GetReceCheckErrList_TestSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int sinDate = 20220201;
+        string errCd = "ErrCd";
+        string aCd = "ACd";
+        string bCd = "BCd";
+        string message1 = "Message1";
+        string message2 = "Message2";
+
+        ReceCheckErr? receCheckErr = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            ErrCd = errCd,
+            SinDate = sinDate,
+            ACd = aCd,
+            BCd = bCd,
+            Message1 = message1,
+            Message2 = message2,
+            IsChecked = isChecked,
+        };
+
+        tenant.ReceCheckErrs.Add(receCheckErr);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceCheckErrList(hpId, sinYm, ptId, hokenId);
+
+            var receCheckErrAfter = result.FirstOrDefault(item => item.PtId == ptId
+                                                                  && item.SinYm == sinYm
+                                                                  && item.HokenId == hokenId
+                                                                  && item.ErrCd == errCd
+                                                                  && item.SinDate == sinDate
+                                                                  && item.ACd == aCd
+                                                                  && item.BCd == bCd
+                                                                  && item.Message1 == message1
+                                                                  && item.Message2 == message2
+                                                                  && item.IsChecked == isChecked);
+
+            // Assert
+            Assert.IsTrue(receCheckErrAfter != null);
+        }
+        finally
+        {
+            if (receCheckErr != null)
+            {
+                tenant.ReceCheckErrs.Remove(receCheckErr);
+                tenant.SaveChanges();
+            }
+        }
+    }
+    #endregion GetReceCheckErrList
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
