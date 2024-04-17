@@ -29,8 +29,12 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
         _eventProcessorService = eventProcessorService;
-        _receptionRepository = receptionRepository;
-        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _receptionRepository = receptionRepository; 
+        var dbContextOptions = tenantProvider.CreateNewTrackingAdminDbContextOption();
+        if (dbContextOptions != null)
+        {
+            _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+        }
     }
 
     public SaveAccountDueListOutputData Handle(SaveAccountDueListInputData inputData)
@@ -89,7 +93,10 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
             _userRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _hpInfRepository.ReleaseResource();
-            _loggingHandler.Dispose();
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.Dispose();
+            }
         }
         return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Failed);
     }
@@ -176,7 +183,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         return listTraiLogModels;
     }
 
-    private SaveAccountDueListStatus ValidateInputData(SaveAccountDueListInputData inputData)
+    public SaveAccountDueListStatus ValidateInputData(SaveAccountDueListInputData inputData)
     {
         if (inputData.HpId <= 0 || !_hpInfRepository.CheckHpId(inputData.HpId))
         {
@@ -188,7 +195,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         }
         else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long> { inputData.PtId }))
         {
-            return SaveAccountDueListStatus.InvalidUserId;
+            return SaveAccountDueListStatus.InvalidPtId;
         }
         else if (inputData.SinDate.ToString().Length != 8)
         {
