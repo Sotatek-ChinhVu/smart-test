@@ -1482,6 +1482,192 @@ public class ReceiptRepositoryTest : BaseUT
     }
     #endregion GetReceCheckErrList
 
+    #region SaveReceCheckErrList
+    [Test]
+    public void TC_026_SaveReceCheckErrList_TestCreateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int sinDate = 20220201;
+        string errCd = "ErrCd";
+        string aCd = "ACd";
+        string bCd = "BCd";
+        string message1 = "Message1";
+        string message2 = "Message2";
+
+        ReceCheckErr? receCheckErr = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            ErrCd = errCd,
+            SinDate = sinDate,
+            ACd = aCd,
+            BCd = bCd,
+            Message1 = message1,
+            Message2 = message2,
+            IsChecked = 0,
+        };
+
+        ReceCheckErrModel receCheckErrModel = new ReceCheckErrModel(errCd, sinDate, aCd, bCd, isChecked);
+
+        tenant.ReceCheckErrs.Add(receCheckErr);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveReceCheckErrList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckErrModel });
+
+            var receCheckErrAfter = tenant.ReceCheckErrs.FirstOrDefault(item => item.PtId == ptId
+                                                                                && item.SinYm == sinYm
+                                                                                && item.HokenId == hokenId
+                                                                                && item.ErrCd == errCd
+                                                                                && item.SinDate == sinDate
+                                                                                && item.ACd == aCd
+                                                                                && item.BCd == bCd
+                                                                                && item.Message1 == message1
+                                                                                && item.Message2 == message2
+                                                                                && item.IsChecked == isChecked);
+
+            // Assert
+            Assert.IsTrue(result && receCheckErrAfter != null);
+        }
+        finally
+        {
+            if (receCheckErr != null)
+            {
+                tenant.ReceCheckErrs.Remove(receCheckErr);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_027_SaveReceCheckErrList_TestReceCheckErrorListNotAny()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int sinDate = 20220201;
+        string errCd = "ErrCd";
+        string aCd = "ACd";
+        string bCd = "BCd";
+        string message1 = "Message1";
+        string message2 = "Message2";
+
+        ReceCheckErr? receCheckErr = null;
+
+        try
+        {
+            // Act
+            var result = receiptRepository.SaveReceCheckErrList(hpId, userId, hokenId, sinYm, ptId, new());
+
+            var receCheckErrAfter = tenant.ReceCheckErrs.FirstOrDefault(item => item.PtId == ptId
+                                                                                && item.SinYm == sinYm
+                                                                                && item.HokenId == hokenId
+                                                                                && item.ErrCd == errCd
+                                                                                && item.SinDate == sinDate
+                                                                                && item.ACd == aCd
+                                                                                && item.BCd == bCd
+                                                                                && item.Message1 == message1
+                                                                                && item.Message2 == message2
+                                                                                && item.IsChecked == isChecked);
+
+            // Assert
+            Assert.IsTrue(result && receCheckErrAfter == null);
+        }
+        finally
+        {
+            if (receCheckErr != null)
+            {
+                tenant.ReceCheckErrs.Remove(receCheckErr);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_028_SaveReceCheckErrList_TestContinueCondition()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int sinDate = 20220201;
+        string errCd = "ErrCd";
+        string aCd = "ACd";
+        string bCd = "BCd";
+        string message1 = "Message1";
+        string message2 = "Message2";
+
+        ReceCheckErr? receCheckErr = null;
+
+        ReceCheckErrModel receCheckErrModel = new ReceCheckErrModel(errCd, sinDate, aCd, bCd, isChecked);
+
+        try
+        {
+            // Act
+            var result = receiptRepository.SaveReceCheckErrList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckErrModel });
+
+            var receCheckErrAfter = tenant.ReceCheckErrs.FirstOrDefault(item => item.PtId == ptId
+                                                                                && item.SinYm == sinYm
+                                                                                && item.HokenId == hokenId
+                                                                                && item.ErrCd == errCd
+                                                                                && item.SinDate == sinDate
+                                                                                && item.ACd == aCd
+                                                                                && item.BCd == bCd
+                                                                                && item.Message1 == message1
+                                                                                && item.Message2 == message2
+                                                                                && item.IsChecked == isChecked);
+
+            // Assert
+            Assert.IsTrue(!result && receCheckErrAfter == null);
+        }
+        finally
+        {
+            if (receCheckErr != null)
+            {
+                tenant.ReceCheckErrs.Remove(receCheckErr);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+
+    #endregion SaveReceCheckErrList
+
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
         var mockICalculationInfRepository = new Mock<ICalculationInfRepository>();
