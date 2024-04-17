@@ -108,7 +108,7 @@ namespace CloudUnitTest.Interactor.AccountDue
         }
 
         [Test]
-        public void TC_004_GetAccountDueListInteractor_Handle()
+        public void TC_004_GetAccountDueListInteractor_Handle_NyukinKbn()
         {
             //Arrange
             var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
@@ -119,14 +119,6 @@ namespace CloudUnitTest.Interactor.AccountDue
 
             Random random = new Random();
             var tennal = TenantProvider.GetTrackingTenantDataContext();
-            /*int hpId = 1;
-            long ptId = 99999999;
-            long seqNo = 99999999;
-            c
-            int status = random.Next(999, 99999);
-            long id = random.Next(999, 99999);
-            long raiinNo = 99999999;
-            bool isUnpaidChecked = true;*/
             int hpId = 99999999;
             long ptId = random.Next(999, 99999);
             int sinDate = 20010328;
@@ -238,7 +230,7 @@ namespace CloudUnitTest.Interactor.AccountDue
         }
 
         [Test]
-        public void TC_005_GetAccountDueListInteractor_Handle()
+        public void TC_005_GetAccountDueListInteractor_Handle_Equals_RaiinNo()
         {
             //Arrange
             var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
@@ -249,14 +241,7 @@ namespace CloudUnitTest.Interactor.AccountDue
 
             Random random = new Random();
             var tennal = TenantProvider.GetTrackingTenantDataContext();
-            /*int hpId = 1;
-            long ptId = 99999999;
-            long seqNo = 99999999;
-            c
-            int status = random.Next(999, 99999);
-            long id = random.Next(999, 99999);
-            long raiinNo = 99999999;
-            bool isUnpaidChecked = true;*/
+
             int hpId = 99999999;
             long ptId = random.Next(999, 99999);
             int sinDate = 20010328;
@@ -368,7 +353,7 @@ namespace CloudUnitTest.Interactor.AccountDue
         }
 
         [Test]
-        public void TC_006_GetAccountDueListInteractor_Handle()
+        public void TC_006_GetAccountDueListInteractor_Handle_NotEquals_RaiinNo()
         {
             //Arrange
             var mockIAccountDueRepository = new Mock<IAccountDueRepository>();

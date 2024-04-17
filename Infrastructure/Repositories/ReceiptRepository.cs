@@ -200,14 +200,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             // レセプト種別
             if (searchModel.HokenSbts != null && searchModel.HokenSbts.Count > 0)
             {
-                receInfs = receInfs.Where(item => ((searchModel.HokenSbts.Contains(1) && item.HokenKbn == 1 && item.ReceSbt != null && item.ReceSbt.StartsWith("11"))
+                receInfs = receInfs.Where(item => (searchModel.HokenSbts.Contains(1) && item.HokenKbn == 1 && item.ReceSbt != null && item.ReceSbt.StartsWith("11"))
                                                 || (searchModel.HokenSbts.Contains(2) && item.HokenKbn == 2 && item.ReceSbt != null && item.ReceSbt.StartsWith("11"))
                                                 || (searchModel.HokenSbts.Contains(5) && item.ReceSbt != null && item.ReceSbt.StartsWith("12"))
                                                 || (searchModel.HokenSbts.Contains(3) && item.ReceSbt != null && item.ReceSbt.StartsWith("13"))
                                                 || (searchModel.HokenSbts.Contains(4) && item.ReceSbt != null && item.ReceSbt.StartsWith("14"))
                                                 || (searchModel.HokenSbts.Contains(0) && item.HokenKbn == 0)
                                                 || (searchModel.HokenSbts.Contains(11) && (item.HokenKbn == 11 || item.HokenKbn == 12 || item.HokenKbn == 13))
-                                                || (searchModel.HokenSbts.Contains(14) && (item.HokenKbn == 14))));
+                                                || (searchModel.HokenSbts.Contains(14) && (item.HokenKbn == 14)));
                 if (searchModel.ReceSbtCenter >= 0)
                 {
                     receInfs = receInfs.Where(item => ((searchModel.HokenSbts.Contains(1)
@@ -362,8 +362,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             // 診療科 + 担当医 + SYSTEM_CONFIG 6002
             if (searchModel.KaId > 0
                 && searchModel.DoctorId > 0
-                && GetSettingValue(6002, 0, 0) == 1
-                && GetSettingValue(6002, 1, 0) == 1)
+                && GetSettingValue(hpId, 6002, 0, 0) == 1
+                && GetSettingValue(hpId, 6002, 1, 0) == 1)
             {
                 var raiinInfKaIdTantoIds = NoTrackingDataContext.RaiinInfs.Where(item => (item.SinDate >= fromDay || item.SinDate >= minSinYM)
                                                                                       && item.SinDate <= toDay
@@ -391,7 +391,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 // 診療科
                 if (searchModel.KaId > 0)
                 {
-                    if (GetSettingValue(6002, 0, 0) == 0)
+                    if (GetSettingValue(hpId, 6002, 0, 0) == 0)
                     {
                         receInfs = receInfs.Where(item => item.KaId == searchModel.KaId);
                     }
@@ -422,7 +422,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 // 担当医
                 if (searchModel.DoctorId > 0)
                 {
-                    if (GetSettingValue(6002, 1, 0) == 0)
+                    if (GetSettingValue(hpId, 6002, 1, 0) == 0)
                     {
                         receInfs = receInfs.Where(item => item.TantoId == searchModel.DoctorId);
                     }
@@ -583,11 +583,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                        && item.SinDate >= minSinYm
                                                                                        && listPtIds.Contains(item.PtId)
                                                                                        && listSinYm.Contains(item.SinDate / 100)
-                                                                                       && (item.ItemCd != null && orderItemList.Contains(item.ItemCd)) // For normal item
-                                                                                       || (listFreeComment.Any() // For free comment
-                                                                                       && item.ItemCd == null
-                                                                                       && item.ItemName != null
-                                                                                       ))
+                                                                                       && ((item.ItemCd != null && orderItemList.Contains(item.ItemCd)) // For normal item
+                                                                                           || (listFreeComment.Any() // For free comment
+                                                                                               && (item.ItemCd == null
+                                                                                                   || item.ItemCd == "")
+                                                                                               && item.ItemName != null))
+                                                                                               )
                                                                         .Select(item => new OrdInfDetailModel(
                                                                             item.HpId,
                                                                             item.SinDate,
@@ -610,11 +611,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                             from tenMst in tenMstLeft.Where(item => item.StartDate <= odrDetail.SinDate && item.EndDate >= odrDetail.SinDate).DefaultIfEmpty()
                                             where odrDetail.SinDate <= maxSinYm
                                                   && odrDetail.SinDate >= minSinYm
-                                                  && (odrDetail.ItemCd != null && orderItemList.Contains(odrDetail.ItemCd)) // For normal item
+                                                  && ((odrDetail.ItemCd != null && orderItemList.Contains(odrDetail.ItemCd)) // For normal item
                                                   || (listFreeComment.Any() // For free comment
-                                                  && odrDetail.ItemCd == null
+                                                  && (odrDetail.ItemCd == null
+                                                     || odrDetail.ItemCd == "")
                                                   && odrDetail.ItemName != null
-                                                  && listFreeComment.Any(str => odrDetail.ItemName.Contains(str)))
+                                                  && listFreeComment.Any(str => odrDetail.ItemName.Contains(str))))
                                             select new
                                             {
                                                 odrDetail.PtId,
@@ -646,11 +648,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                             && listPtIds.Contains(item.PtId)
                                                                                             && item.SinYm <= maxSinYm
                                                                                             && item.SinYm >= minSinYm
-                                                                                            && (santeiItemList.Contains(item.ItemCd) && !string.IsNullOrEmpty(item.ItemCd)) // for santei item
-                                                                                            || (listFreeComment.Any() // For free comment
-                                                                                                && (item.ItemCd == null || ItemCdConst.CommentFree == item.ItemCd)
-                                                                                                && item.ItemName != null
-                                                                                                && listFreeComment.Any(str => item.ItemName.Contains(str))
+                                                                                            && ((item.ItemCd != null && item.ItemCd != "" && santeiItemList.Contains(item.ItemCd)) // for santei item
+                                                                                                || (listFreeComment.Any() // For free comment
+                                                                                                && (item.ItemCd == null || item.ItemCd == "" || ItemCdConst.CommentFree == item.ItemCd)
+                                                                                                && item.ItemName != null)
                                                                                ));
 
                     var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
@@ -676,6 +677,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                      where detail.SinYm <= maxSinYm
                                          && detail.SinYm >= minSinYm
                                          && ((sinkoui.InoutKbn != 1 && tenMst != null) || detail.ItemCd == ItemCdConst.CommentFree)
+                                         && ((detail.ItemCd != null && detail.ItemCd != "" && santeiItemList.Contains(detail.ItemCd)) // for santei item
+                                              || (listFreeComment.Any() // For free comment
+                                              && (detail.ItemCd == null || detail.ItemCd == "" || ItemCdConst.CommentFree == detail.ItemCd)
+                                              && detail.ItemName != null
+                                              && listFreeComment.Any(str => detail.ItemName!.Contains(str))))
                                      select new
                                      {
                                          detail.HpId,
@@ -1129,6 +1135,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         #region Convert to list model
         var result = query.Select(
                         data => new ReceiptListModel(
+                                data.HpId,
                                 data.SeikyuKbn,
                                 data.SinYm,
                                 data.IsReceInfDetailExist,
@@ -3076,7 +3083,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     #endregion
 
     #region Private function
-    private double GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int defaultValue = 0)
+    public double GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int defaultValue = 0)
     {
         var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
                                                                                && p.GrpCd == groupCd
@@ -3084,7 +3091,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return systemConf != null ? systemConf.Val : defaultValue;
     }
 
-    private string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0)
+    public string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0)
     {
         var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
                                                                                && p.GrpCd == groupCd
