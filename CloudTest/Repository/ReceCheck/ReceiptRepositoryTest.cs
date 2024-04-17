@@ -1345,8 +1345,70 @@ public class ReceiptRepositoryTest : BaseUT
             tenant.SaveChanges();
         }
     }
-
     #endregion GetReceReasonList
+
+    #region GetReceCheckCmtList
+    [Test]
+    public void TC_024_GetReceCheckCmtList_TestSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = 0;
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        string cmt = "Cmt";
+
+        ReceCheckCmt? receCheckCmt = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            IsPending = isPending,
+            Cmt = cmt,
+            IsChecked = isChecked,
+            SortNo = sortNo
+        };
+
+        tenant.ReceCheckCmts.Add(receCheckCmt);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceCheckCmtList(hpId, sinYm, ptId, hokenId);
+
+            var syoukiInfAfter = result.FirstOrDefault(item => item.PtId == ptId
+                                                               && item.SeqNo == seqNo
+                                                               && item.SinYm == sinYm
+                                                               && item.HokenId == hokenId
+                                                               && item.IsPending == isPending
+                                                               && item.Cmt == cmt
+                                                               && item.IsChecked == isChecked
+                                                               && item.SortNo == sortNo);
+
+            // Assert
+            Assert.IsTrue(syoukiInfAfter != null);
+        }
+        finally
+        {
+            if (receCheckCmt != null)
+            {
+                tenant.ReceCheckCmts.Remove(receCheckCmt);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    #endregion GetReceCheckCmtList
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
