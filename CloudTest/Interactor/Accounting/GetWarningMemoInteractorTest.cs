@@ -72,6 +72,7 @@ namespace CloudUnitTest.Interactor.Accounting
             raiinInfs.RemoveAt(1);
             var ptInfs = AccountingRepositoryData.ReadPtInf();
             var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 0;
             var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
             var ptKohis = AccountingRepositoryData.ReadPtKohi();
             ptKohis[0].HokenNo = 0;
@@ -173,9 +174,10 @@ namespace CloudUnitTest.Interactor.Accounting
             raiinInfs.RemoveAt(1);
             var ptInfs = AccountingRepositoryData.ReadPtInf();
             var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 12;
             var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
             var ptKohis = AccountingRepositoryData.ReadPtKohi();
-            ptKohis[0].HokenNo = 12;
+            ptKohis[0].HokenNo = 0;
             var ptHokenCheck = AccountingRepositoryData.ReadPtHokenCheck();
             var hokenMsts = AccountingRepositoryData.ReadHokenMst();
             tenant.AddRange(raiinInfs);
@@ -194,6 +196,377 @@ namespace CloudUnitTest.Interactor.Accounting
                 var result = getWarningMemoInteractor.Handle(inputData);
                 //Assert
                 Assert.True(result.WarningMemoModels.Count == 3 && result.Status == GetWarningMemoStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.RemoveRange(ptInfs);
+                tenant.RemoveRange(hokenInfs);
+                tenant.RemoveRange(hokenPattern);
+                tenant.RemoveRange(ptKohis);
+                tenant.RemoveRange(ptHokenCheck);
+                tenant.RemoveRange(hokenMsts);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void GetWarningMemoInteractorTest_006_GetWarningMemo_CheckHokenIsExpirated_IsJibai()
+        {
+            // Arrange 
+            SetupTestEnvironment(out GetWarningMemoInteractor getWarningMemoInteractor);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321;
+            var inputData = new GetWarningMemoInputData(hpId, ptId, sinDate, raiinNo);
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[0].HokenPid = 10;
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            raiinInfs.RemoveAt(1);
+            var ptInfs = AccountingRepositoryData.ReadPtInf();
+            var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 14;
+            var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
+            var ptKohis = AccountingRepositoryData.ReadPtKohi();
+            ptKohis[0].HokenNo = 0;
+            var ptHokenCheck = AccountingRepositoryData.ReadPtHokenCheck();
+            var hokenMsts = AccountingRepositoryData.ReadHokenMst();
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(kaikeiInfs);
+            tenant.AddRange(ptInfs);
+            tenant.AddRange(hokenInfs);
+            tenant.AddRange(hokenPattern);
+            tenant.AddRange(ptKohis);
+            tenant.AddRange(ptHokenCheck);
+            tenant.AddRange(hokenMsts);
+
+            try
+            {
+                tenant.SaveChanges();
+                //Act
+                var result = getWarningMemoInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.WarningMemoModels.Count == 3 && result.Status == GetWarningMemoStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.RemoveRange(ptInfs);
+                tenant.RemoveRange(hokenInfs);
+                tenant.RemoveRange(hokenPattern);
+                tenant.RemoveRange(ptKohis);
+                tenant.RemoveRange(ptHokenCheck);
+                tenant.RemoveRange(hokenMsts);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void GetWarningMemoInteractorTest_007_GetWarningMemo_HokenPatternModel_Kohi2()
+        {
+            // Arrange 
+            SetupTestEnvironment(out GetWarningMemoInteractor getWarningMemoInteractor);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321;
+            var inputData = new GetWarningMemoInputData(hpId, ptId, sinDate, raiinNo);
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[0].HokenPid = 10;
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            raiinInfs.RemoveAt(1);
+            var ptInfs = AccountingRepositoryData.ReadPtInf();
+            var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 0;
+            var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
+            hokenPattern[0].Kohi1Id = 0;
+            hokenPattern[0].Kohi2Id = 10;
+            var ptKohis = AccountingRepositoryData.ReadPtKohi();
+            ptKohis[0].HokenNo = 0;
+            var ptHokenCheck = AccountingRepositoryData.ReadPtHokenCheck();
+            var hokenMsts = AccountingRepositoryData.ReadHokenMst();
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(kaikeiInfs);
+            tenant.AddRange(ptInfs);
+            tenant.AddRange(hokenInfs);
+            tenant.AddRange(hokenPattern);
+            tenant.AddRange(ptKohis);
+            tenant.AddRange(ptHokenCheck);
+            tenant.AddRange(hokenMsts);
+
+            try
+            {
+                tenant.SaveChanges();
+                //Act
+                var result = getWarningMemoInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.WarningMemoModels.Count == 2 && result.Status == GetWarningMemoStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.RemoveRange(ptInfs);
+                tenant.RemoveRange(hokenInfs);
+                tenant.RemoveRange(hokenPattern);
+                tenant.RemoveRange(ptKohis);
+                tenant.RemoveRange(ptHokenCheck);
+                tenant.RemoveRange(hokenMsts);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void GetWarningMemoInteractorTest_008_GetWarningMemo_HokenPatternModel_Kohi3()
+        {
+            // Arrange 
+            SetupTestEnvironment(out GetWarningMemoInteractor getWarningMemoInteractor);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321;
+            var inputData = new GetWarningMemoInputData(hpId, ptId, sinDate, raiinNo);
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[0].HokenPid = 10;
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            raiinInfs.RemoveAt(1);
+            var ptInfs = AccountingRepositoryData.ReadPtInf();
+            var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 0;
+            var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
+            hokenPattern[0].Kohi1Id = 0;
+            hokenPattern[0].Kohi3Id = 10;
+            var ptKohis = AccountingRepositoryData.ReadPtKohi();
+            ptKohis[0].HokenNo = 0;
+            var ptHokenCheck = AccountingRepositoryData.ReadPtHokenCheck();
+            var hokenMsts = AccountingRepositoryData.ReadHokenMst();
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(kaikeiInfs);
+            tenant.AddRange(ptInfs);
+            tenant.AddRange(hokenInfs);
+            tenant.AddRange(hokenPattern);
+            tenant.AddRange(ptKohis);
+            tenant.AddRange(ptHokenCheck);
+            tenant.AddRange(hokenMsts);
+
+            try
+            {
+                tenant.SaveChanges();
+                //Act
+                var result = getWarningMemoInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.WarningMemoModels.Count == 2 && result.Status == GetWarningMemoStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.RemoveRange(ptInfs);
+                tenant.RemoveRange(hokenInfs);
+                tenant.RemoveRange(hokenPattern);
+                tenant.RemoveRange(ptKohis);
+                tenant.RemoveRange(ptHokenCheck);
+                tenant.RemoveRange(hokenMsts);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void GetWarningMemoInteractorTest_009_GetWarningMemo_HokenPatternModel_Kohi4()
+        {
+            // Arrange 
+            SetupTestEnvironment(out GetWarningMemoInteractor getWarningMemoInteractor);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321;
+            var inputData = new GetWarningMemoInputData(hpId, ptId, sinDate, raiinNo);
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[0].HokenPid = 10;
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            raiinInfs.RemoveAt(1);
+            var ptInfs = AccountingRepositoryData.ReadPtInf();
+            var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 0;
+            var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
+            hokenPattern[0].Kohi1Id = 0;
+            hokenPattern[0].Kohi4Id = 10;
+            var ptKohis = AccountingRepositoryData.ReadPtKohi();
+            ptKohis[0].HokenNo = 0;
+            var ptHokenCheck = AccountingRepositoryData.ReadPtHokenCheck();
+            var hokenMsts = AccountingRepositoryData.ReadHokenMst();
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(kaikeiInfs);
+            tenant.AddRange(ptInfs);
+            tenant.AddRange(hokenInfs);
+            tenant.AddRange(hokenPattern);
+            tenant.AddRange(ptKohis);
+            tenant.AddRange(ptHokenCheck);
+            tenant.AddRange(hokenMsts);
+
+            try
+            {
+                tenant.SaveChanges();
+                //Act
+                var result = getWarningMemoInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.WarningMemoModels.Count == 2 && result.Status == GetWarningMemoStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.RemoveRange(ptInfs);
+                tenant.RemoveRange(hokenInfs);
+                tenant.RemoveRange(hokenPattern);
+                tenant.RemoveRange(ptKohis);
+                tenant.RemoveRange(ptHokenCheck);
+                tenant.RemoveRange(hokenMsts);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void GetWarningMemoInteractorTest_010_GetWarningMemo_CheckKohiIsExpirated_IsExpirated_Faild()
+        {
+            // Arrange 
+            SetupTestEnvironment(out GetWarningMemoInteractor getWarningMemoInteractor);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321;
+            var inputData = new GetWarningMemoInputData(hpId, ptId, sinDate, raiinNo);
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[0].HokenPid = 10;
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            raiinInfs.RemoveAt(1);
+            var ptInfs = AccountingRepositoryData.ReadPtInf();
+            var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 0;
+            var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
+            hokenPattern[0].Kohi1Id = 10;
+            var ptKohis = AccountingRepositoryData.ReadPtKohi();
+            ptKohis[0].HokenNo = 0;
+            ptKohis[0].EndDate = 99999999;
+            var ptHokenCheck = AccountingRepositoryData.ReadPtHokenCheck();
+            var hokenMsts = AccountingRepositoryData.ReadHokenMst();
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(kaikeiInfs);
+            tenant.AddRange(ptInfs);
+            tenant.AddRange(hokenInfs);
+            tenant.AddRange(hokenPattern);
+            tenant.AddRange(ptKohis);
+            tenant.AddRange(ptHokenCheck);
+            tenant.AddRange(hokenMsts);
+
+            try
+            {
+                tenant.SaveChanges();
+                //Act
+                var result = getWarningMemoInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.WarningMemoModels.Count == 1 && result.Status == GetWarningMemoStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.RemoveRange(ptInfs);
+                tenant.RemoveRange(hokenInfs);
+                tenant.RemoveRange(hokenPattern);
+                tenant.RemoveRange(ptKohis);
+                tenant.RemoveRange(ptHokenCheck);
+                tenant.RemoveRange(hokenMsts);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void GetWarningMemoInteractorTest_011_GetWarningMemo_PtKohiModel_CheckKohiHasDateConfirmed_HasDateConfirmed_Faild()
+        {
+            // Arrange 
+            SetupTestEnvironment(out GetWarningMemoInteractor getWarningMemoInteractor);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321;
+            var inputData = new GetWarningMemoInputData(hpId, ptId, sinDate, raiinNo);
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[0].HokenPid = 10;
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            raiinInfs.RemoveAt(1);
+            var ptInfs = AccountingRepositoryData.ReadPtInf();
+            var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 0;
+            var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
+            hokenPattern[0].Kohi1Id = 10;
+            var ptKohis = AccountingRepositoryData.ReadPtKohi();
+            ptKohis[0].HokenNo = 0;
+            ptKohis[0].EndDate = 99999999;
+            var ptHokenCheck = AccountingRepositoryData.ReadPtHokenCheck();
+            var hokenMsts = AccountingRepositoryData.ReadHokenMst();
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(kaikeiInfs);
+            tenant.AddRange(ptInfs);
+            tenant.AddRange(hokenInfs);
+            tenant.AddRange(hokenPattern);
+            tenant.AddRange(ptKohis);
+            tenant.AddRange(ptHokenCheck);
+            tenant.AddRange(hokenMsts);
+
+            try
+            {
+                tenant.SaveChanges();
+                //Act
+                var result = getWarningMemoInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.WarningMemoModels.Count == 1 && result.Status == GetWarningMemoStatus.Successed);
+            }
+            finally
+            {
+                tenant.RemoveRange(raiinInfs);
+                tenant.RemoveRange(kaikeiInfs);
+                tenant.RemoveRange(ptInfs);
+                tenant.RemoveRange(hokenInfs);
+                tenant.RemoveRange(hokenPattern);
+                tenant.RemoveRange(ptKohis);
+                tenant.RemoveRange(ptHokenCheck);
+                tenant.RemoveRange(hokenMsts);
+                tenant.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void GetWarningMemoInteractorTest_012_GetWarningMemo_CheckFutansyaNo()
+        {
+            // Arrange 
+            SetupTestEnvironment(out GetWarningMemoInteractor getWarningMemoInteractor);
+            var tenant = TenantProvider.GetNoTrackingDataContext();
+            int hpId = 998; long ptId = 12345; int sinDate = 20180807; long raiinNo = 1234321;
+            var inputData = new GetWarningMemoInputData(hpId, ptId, sinDate, raiinNo);
+            var raiinInfs = AccountingRepositoryData.ReadRaiinInf();
+            raiinInfs[0].HokenPid = 10;
+            var kaikeiInfs = AccountingRepositoryData.ReadKaikeiInf();
+            raiinInfs.RemoveAt(1);
+            var ptInfs = AccountingRepositoryData.ReadPtInf();
+            var hokenInfs = AccountingRepositoryData.ReadPtHokenInf();
+            hokenInfs[0].HokenKbn = 0;
+            var hokenPattern = AccountingRepositoryData.ReadPtHokenPattern();
+            hokenPattern[0].Kohi1Id = 0;
+            hokenPattern[0].Kohi4Id = 10;
+            var ptKohis = AccountingRepositoryData.ReadPtKohi();
+            ptKohis[0].HokenNo = 0;
+            ptKohis[0].FutansyaNo = "test";
+            var ptHokenCheck = AccountingRepositoryData.ReadPtHokenCheck();
+            var hokenMsts = AccountingRepositoryData.ReadHokenMst();
+            hokenMsts[0].HokenNo = 0;
+            tenant.AddRange(raiinInfs);
+            tenant.AddRange(kaikeiInfs);
+            tenant.AddRange(ptInfs);
+            tenant.AddRange(hokenInfs);
+            tenant.AddRange(hokenPattern);
+            tenant.AddRange(ptKohis);
+            tenant.AddRange(ptHokenCheck);
+            tenant.AddRange(hokenMsts);
+
+            try
+            {
+                tenant.SaveChanges();
+                //Act
+                var result = getWarningMemoInteractor.Handle(inputData);
+                //Assert
+                Assert.True(result.WarningMemoModels.Count == 2 && result.Status == GetWarningMemoStatus.Successed);
             }
             finally
             {
