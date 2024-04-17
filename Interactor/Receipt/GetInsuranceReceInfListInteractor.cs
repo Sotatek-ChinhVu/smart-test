@@ -2,6 +2,7 @@
 using Domain.Models.Receipt;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using UseCase.Receipt.GetInsuranceReceInfList;
 
 namespace Interactor.Receipt;
@@ -53,7 +54,7 @@ public class GetInsuranceReceInfListInteractor : IGetInsuranceReceInfListInputPo
 
                     if (haveKohi)
                     {
-                        int kohiCount = receSbt[2];
+                        int kohiCount = receSbt[2].AsInteger();
                         string prefix = GetKohiCountName(kohiCount);
                         return result + prefix;
                     }
