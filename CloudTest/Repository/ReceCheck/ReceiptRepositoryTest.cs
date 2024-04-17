@@ -1664,9 +1664,283 @@ public class ReceiptRepositoryTest : BaseUT
             }
         }
     }
-
-
     #endregion SaveReceCheckErrList
+
+    #region SaveReceCheckCmtList
+    [Test]
+    public void TC_029_SaveReceCheckCmtList_TestCreateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = 0;
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        bool isDeleted = false;
+        int sinYm = 202202;
+        string cmt = "Cmt";
+
+        ReceCheckCmt? receCheckCmt = null;
+        ReceCheckCmtModel receCheckCmtModel = new ReceCheckCmtModel(seqNo, isPending, cmt, isChecked, sortNo, isDeleted);
+
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckCmtModel });
+
+            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+                                                                       && item.SinYm == sinYm
+                                                                       && item.HokenId == hokenId
+                                                                       && item.IsPending == isPending
+                                                                       && item.Cmt == cmt
+                                                                       && item.SortNo == sortNo
+                                                                       && item.IsDeleted == 0
+                                                                       && item.IsChecked == isChecked);
+
+            // Assert
+            Assert.IsTrue(result.Any() && receCheckCmt != null);
+        }
+        finally
+        {
+            if (receCheckCmt != null)
+            {
+                tenant.ReceCheckCmts.Remove(receCheckCmt);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_030_SaveReceCheckCmtList_TestContinueCondition()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        bool isDeleted = false;
+        int sinYm = 202202;
+        string cmt = "Cmt";
+
+        ReceCheckCmt? receCheckCmt = null;
+        ReceCheckCmtModel receCheckCmtModel = new ReceCheckCmtModel(seqNo, isPending, cmt, isChecked, sortNo, isDeleted);
+
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckCmtModel });
+
+            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+                                                                       && item.SinYm == sinYm
+                                                                       && item.HokenId == hokenId
+                                                                       && item.SeqNo == seqNo
+                                                                       && item.IsPending == isPending
+                                                                       && item.Cmt == cmt
+                                                                       && item.SortNo == sortNo
+                                                                       && item.IsDeleted == 0
+                                                                       && item.IsChecked == isChecked);
+
+            // Assert
+            Assert.IsTrue(!result.Any() && receCheckCmt == null);
+        }
+        finally
+        {
+            if (receCheckCmt != null)
+            {
+                tenant.ReceCheckCmts.Remove(receCheckCmt);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_031_SaveReceCheckCmtList_TestReceCheckCmtListNotAny()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        string cmt = "Cmt";
+
+        ReceCheckCmt? receCheckCmt = null;
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new());
+
+            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+                                                                       && item.SinYm == sinYm
+                                                                       && item.HokenId == hokenId
+                                                                       && item.SeqNo == seqNo
+                                                                       && item.IsPending == isPending
+                                                                       && item.Cmt == cmt
+                                                                       && item.SortNo == sortNo
+                                                                       && item.IsDeleted == 0
+                                                                       && item.IsChecked == isChecked);
+
+            // Assert
+            Assert.IsTrue(!result.Any() && receCheckCmt == null);
+        }
+        finally
+        {
+            if (receCheckCmt != null)
+            {
+                tenant.ReceCheckCmts.Remove(receCheckCmt);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_032_SaveReceCheckCmtList_TestUpdateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        bool isDeleted = false;
+        int sinYm = 202202;
+        string cmt = "Cmt";
+
+        ReceCheckCmt? receCheckCmt = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            IsChecked = isChecked,
+        };
+
+        ReceCheckCmtModel receCheckCmtModel = new ReceCheckCmtModel(seqNo, isPending, cmt, isChecked, sortNo, isDeleted);
+
+        tenant.ReceCheckCmts.Add(receCheckCmt);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckCmtModel });
+
+            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+                                                                       && item.SinYm == sinYm
+                                                                       && item.HokenId == hokenId
+                                                                       && item.IsPending == isPending
+                                                                       && item.Cmt == cmt
+                                                                       && item.SortNo == sortNo
+                                                                       && item.IsDeleted == 0
+                                                                       && item.IsChecked == isChecked);
+
+            // Assert
+            Assert.IsTrue(result.Any() && receCheckCmt != null);
+        }
+        finally
+        {
+            if (receCheckCmt != null)
+            {
+                tenant = TenantProvider.GetNoTrackingDataContext();
+                tenant.ReceCheckCmts.Remove(receCheckCmt);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_033_SaveReceCheckCmtList_TestDeleteSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int isPending = random.Next(9999, 999999999);
+        int sortNo = random.Next(9999, 999999999);
+        int isChecked = random.Next(9999, 999999999);
+        bool isDeleted = true;
+        int sinYm = 202202;
+        string cmt = "Cmt";
+
+        ReceCheckCmt? receCheckCmt = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            IsChecked = isChecked,
+        };
+
+        ReceCheckCmtModel receCheckCmtModel = new ReceCheckCmtModel(seqNo, isPending, cmt, isChecked, sortNo, isDeleted);
+
+        tenant.ReceCheckCmts.Add(receCheckCmt);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckCmtModel });
+
+            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+                                                                       && item.SinYm == sinYm
+                                                                       && item.HokenId == hokenId
+                                                                       && item.IsDeleted == 1);
+
+            // Assert
+            Assert.IsTrue(result.Any() && receCheckCmt != null);
+        }
+        finally
+        {
+            if (receCheckCmt != null)
+            {
+                tenant = TenantProvider.GetNoTrackingDataContext();
+                tenant.ReceCheckCmts.Remove(receCheckCmt);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+
+    #endregion SaveReceCheckCmtList
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
