@@ -2466,8 +2466,10 @@ public class ReceiptRepositoryTest : BaseUT
         }
     }
     #endregion GetTokkiMstDictionary
+
+    #region GetReceInfEdit
     [Test]
-    public void TC_037_GetTokkiMstDictionary_TestSuccess()
+    public void TC_037_GetReceInfEdit_TestSuccess()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
@@ -2587,7 +2589,7 @@ public class ReceiptRepositoryTest : BaseUT
     }
 
     [Test]
-    public void TC_038_GetTokkiMstDictionary_TestReceInfEditIsNull()
+    public void TC_038_GetReceInfEdit_TestReceInfEditIsNull()
     {
         // Arrange
         SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
@@ -2656,9 +2658,196 @@ public class ReceiptRepositoryTest : BaseUT
         // Assert
         Assert.IsTrue(!success);
     }
-    #region GetReceInfEdit
+    #endregion GetReceInfEdit
 
-    #endregion
+    #region GetReceInfPreEdit
+    [Test]
+    public void TC_037_GetReceInfPreEdit_TestSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int seikyuYm = 202202;
+        string tokki1 = random.Next(9999, 999999999).ToString();
+        string tokki2 = random.Next(9999, 999999999).ToString();
+        string tokki3 = random.Next(9999, 999999999).ToString();
+        string tokki4 = random.Next(9999, 999999999).ToString();
+        string tokki5 = random.Next(9999, 999999999).ToString();
+        int hokenNissu = random.Next(9999, 999999999);
+        int kohi1Nissu = random.Next(9999, 999999999);
+        int kohi2Nissu = random.Next(9999, 999999999);
+        int kohi3Nissu = random.Next(9999, 999999999);
+        int kohi4Nissu = random.Next(9999, 999999999);
+        int kohi1ReceKyufu = random.Next(9999, 999999999);
+        int kohi2ReceKyufu = random.Next(9999, 999999999);
+        int kohi3ReceKyufu = random.Next(9999, 999999999);
+        int kohi4ReceKyufu = random.Next(9999, 999999999);
+        int hokenReceTensu = random.Next(9999, 999999999);
+        int hokenReceFutan = random.Next(9999, 999999999);
+        int kohi1ReceTensu = random.Next(9999, 999999999);
+        int kohi1ReceFutan = random.Next(9999, 999999999);
+        int kohi2ReceTensu = random.Next(9999, 999999999);
+        int kohi2ReceFutan = random.Next(9999, 999999999);
+        int kohi3ReceTensu = random.Next(9999, 999999999);
+        int kohi3ReceFutan = random.Next(9999, 999999999);
+        int kohi4ReceTensu = random.Next(9999, 999999999);
+        int kohi4ReceFutan = random.Next(9999, 999999999);
+
+        ReceInfPreEdit? recePreInfEdit = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenId = hokenId,
+            SeikyuYm = seikyuYm,
+            SinYm = sinYm,
+            Tokki1 = tokki1,
+            Tokki2 = tokki2,
+            Tokki3 = tokki3,
+            Tokki4 = tokki4,
+            Tokki5 = tokki5,
+            HokenNissu = hokenNissu,
+            Kohi1Nissu = kohi1Nissu,
+            Kohi2Nissu = kohi2Nissu,
+            Kohi3Nissu = kohi3Nissu,
+            Kohi4Nissu = kohi4Nissu,
+            Kohi1ReceKyufu = kohi1ReceKyufu,
+            Kohi2ReceKyufu = kohi2ReceKyufu,
+            Kohi3ReceKyufu = kohi3ReceKyufu,
+            Kohi4ReceKyufu = kohi4ReceKyufu,
+            HokenReceTensu = hokenReceTensu,
+            HokenReceFutan = hokenReceFutan,
+            Kohi1ReceTensu = kohi1ReceTensu,
+            Kohi2ReceTensu = kohi2ReceTensu,
+            Kohi3ReceTensu = kohi3ReceTensu,
+            Kohi4ReceTensu = kohi4ReceTensu,
+            Kohi1ReceFutan = kohi1ReceFutan,
+            Kohi2ReceFutan = kohi2ReceFutan,
+            Kohi3ReceFutan = kohi3ReceFutan,
+            Kohi4ReceFutan = kohi4ReceFutan,
+        };
+
+        tenant.ReceInfPreEdits.Add(recePreInfEdit);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetReceInfPreEdit(hpId, seikyuYm, ptId, sinYm, hokenId);
+
+            bool success = result.Tokki1 == tokki1
+                           && result.Tokki2 == tokki2
+                           && result.Tokki3 == tokki3
+                           && result.Tokki4 == tokki4
+                           && result.Tokki5 == tokki5
+                           && result.HokenNissu == hokenNissu
+                           && result.Kohi1Nissu == kohi1Nissu
+                           && result.Kohi2Nissu == kohi2Nissu
+                           && result.Kohi3Nissu == kohi3Nissu
+                           && result.Kohi4Nissu == kohi4Nissu
+                           && result.Kohi1ReceKyufu == kohi1ReceKyufu
+                           && result.Kohi2ReceKyufu == kohi2ReceKyufu
+                           && result.Kohi3ReceKyufu == kohi3ReceKyufu
+                           && result.Kohi4ReceKyufu == kohi4ReceKyufu
+                           && result.HokenReceTensu == hokenReceTensu
+                           && result.HokenReceFutan == hokenReceFutan
+                           && result.Kohi1ReceTensu == kohi1ReceTensu
+                           && result.Kohi1ReceFutan == kohi1ReceFutan
+                           && result.Kohi2ReceTensu == kohi2ReceTensu
+                           && result.Kohi2ReceFutan == kohi2ReceFutan
+                           && result.Kohi3ReceTensu == kohi3ReceTensu
+                           && result.Kohi3ReceFutan == kohi3ReceFutan
+                           && result.Kohi4ReceTensu == kohi4ReceTensu
+                           && result.Kohi4ReceFutan == kohi4ReceFutan;
+
+            // Assert
+            Assert.IsTrue(success);
+        }
+        finally
+        {
+            if (recePreInfEdit != null)
+            {
+                tenant.ReceInfPreEdits.Remove(recePreInfEdit);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_038_GetReceInfPreEdit_TestReceInfEditIsNull()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int seikyuYm = 202202;
+        string tokki1 = random.Next(9999, 999999999).ToString();
+        string tokki2 = random.Next(9999, 999999999).ToString();
+        string tokki3 = random.Next(9999, 999999999).ToString();
+        string tokki4 = random.Next(9999, 999999999).ToString();
+        string tokki5 = random.Next(9999, 999999999).ToString();
+        int hokenNissu = random.Next(9999, 999999999);
+        int kohi1Nissu = random.Next(9999, 999999999);
+        int kohi2Nissu = random.Next(9999, 999999999);
+        int kohi3Nissu = random.Next(9999, 999999999);
+        int kohi4Nissu = random.Next(9999, 999999999);
+        int kohi1ReceKyufu = random.Next(9999, 999999999);
+        int kohi2ReceKyufu = random.Next(9999, 999999999);
+        int kohi3ReceKyufu = random.Next(9999, 999999999);
+        int kohi4ReceKyufu = random.Next(9999, 999999999);
+        int hokenReceTensu = random.Next(9999, 999999999);
+        int hokenReceFutan = random.Next(9999, 999999999);
+        int kohi1ReceTensu = random.Next(9999, 999999999);
+        int kohi1ReceFutan = random.Next(9999, 999999999);
+        int kohi2ReceTensu = random.Next(9999, 999999999);
+        int kohi2ReceFutan = random.Next(9999, 999999999);
+        int kohi3ReceTensu = random.Next(9999, 999999999);
+        int kohi3ReceFutan = random.Next(9999, 999999999);
+        int kohi4ReceTensu = random.Next(9999, 999999999);
+        int kohi4ReceFutan = random.Next(9999, 999999999);
+
+        // Act
+        var result = receiptRepository.GetReceInfPreEdit(hpId, seikyuYm, ptId, sinYm, hokenId);
+
+        bool success = result.Tokki1 == tokki1
+                       && result.Tokki2 == tokki2
+                       && result.Tokki3 == tokki3
+                       && result.Tokki4 == tokki4
+                       && result.Tokki5 == tokki5
+                       && result.HokenNissu == hokenNissu
+                       && result.Kohi1Nissu == kohi1Nissu
+                       && result.Kohi2Nissu == kohi2Nissu
+                       && result.Kohi3Nissu == kohi3Nissu
+                       && result.Kohi4Nissu == kohi4Nissu
+                       && result.Kohi1ReceKyufu == kohi1ReceKyufu
+                       && result.Kohi2ReceKyufu == kohi2ReceKyufu
+                       && result.Kohi3ReceKyufu == kohi3ReceKyufu
+                       && result.Kohi4ReceKyufu == kohi4ReceKyufu
+                       && result.HokenReceTensu == hokenReceTensu
+                       && result.HokenReceFutan == hokenReceFutan
+                       && result.Kohi1ReceTensu == kohi1ReceTensu
+                       && result.Kohi1ReceFutan == kohi1ReceFutan
+                       && result.Kohi2ReceTensu == kohi2ReceTensu
+                       && result.Kohi2ReceFutan == kohi2ReceFutan
+                       && result.Kohi3ReceTensu == kohi3ReceTensu
+                       && result.Kohi3ReceFutan == kohi3ReceFutan
+                       && result.Kohi4ReceTensu == kohi4ReceTensu
+                       && result.Kohi4ReceFutan == kohi4ReceFutan;
+
+        // Assert
+        Assert.IsTrue(!success);
+    }
+    #endregion GetReceInfPreEdit
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
