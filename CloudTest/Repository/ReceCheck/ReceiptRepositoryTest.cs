@@ -2288,7 +2288,6 @@ public class ReceiptRepositoryTest : BaseUT
         int hokenPId = random.Next(9999, 999999999);
         int sinYm = 202202;
         int seikyuYm = 202202;
-        int sinDate = 20220201;
         int kohi1Id = random.Next(9999, 999999999);
         int kohi2Id = random.Next(9999, 999999999);
         int kohi3Id = random.Next(9999, 999999999);
@@ -2426,6 +2425,48 @@ public class ReceiptRepositoryTest : BaseUT
         Assert.IsTrue(!success);
     }
     #endregion GetInsuranceReceInfList
+
+    #region GetTokkiMstDictionary
+    [Test]
+    public void TC_036_GetTokkiMstDictionary_TestSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int sinDate = 20220202;
+        string tokkiCd = "T" + random.Next(1, 9).ToString();
+        string tokkiName = "TokkiNameUT";
+
+        TokkiMst? tokkiMst = new()
+        {
+            TokkiCd = tokkiCd,
+            TokkiName = tokkiName,
+        };
+
+        tenant.TokkiMsts.Add(tokkiMst);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetTokkiMstDictionary(sinDate);
+
+            bool success = result.ContainsKey(tokkiCd) && result[tokkiCd] == tokkiName;
+
+            // Assert
+            Assert.IsTrue(success);
+        }
+        finally
+        {
+            if (tokkiMst != null)
+            {
+                tenant.TokkiMsts.Remove(tokkiMst);
+                tenant.SaveChanges();
+            }
+        }
+    }
+    #endregion GetTokkiMstDictionary
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
