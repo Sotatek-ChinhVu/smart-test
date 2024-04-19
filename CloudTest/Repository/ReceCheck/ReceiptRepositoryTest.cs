@@ -5,6 +5,7 @@ using Domain.CalculationInf;
 using Domain.Models.MstItem;
 using Domain.Models.Receipt;
 using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
@@ -3123,6 +3124,68 @@ public class ReceiptRepositoryTest : BaseUT
         Assert.IsTrue(!success);
     }
     #endregion GetReceInf
+
+    #region GetSinDateRaiinInfList
+    [Test]
+    public void TC_041_GetSinDateRaiinInfList_TestSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        long raiinNo = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int hokenPId = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int sinDate = 20220202;
+
+        PtHokenPattern? ptHokenPattern = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            HokenPid = hokenPId,
+            HokenId = hokenId,
+            IsDeleted = 0
+        };
+
+        RaiinInf raiinInf = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            RaiinNo = raiinNo,
+            SinDate = sinDate,
+            HokenPid = hokenPId,
+            Status = RaiinState.Calculate,
+        };
+
+        tenant.PtHokenPatterns.Add(ptHokenPattern);
+        tenant.RaiinInfs.Add(raiinInf);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.GetSinDateRaiinInfList(hpId, ptId, sinYm, hokenId);
+
+            // Assert
+            Assert.IsTrue(result.Any(item => item == sinDate));
+        }
+        finally
+        {
+            if (ptHokenPattern != null)
+            {
+                tenant.PtHokenPatterns.Remove(ptHokenPattern);
+            }
+            if (raiinInf != null)
+            {
+                tenant.RaiinInfs.Remove(raiinInf);
+            }
+            tenant.SaveChanges();
+        }
+    }
+    #endregion GetSinDateRaiinInfList
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
