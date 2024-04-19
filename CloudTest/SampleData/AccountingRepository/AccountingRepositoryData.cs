@@ -830,7 +830,7 @@ namespace CloudUnitTest.SampleData.AccountingRepository
                                 case "D":
                                     int.TryParse(text, out int permission);
                                     userPermission.Permission = permission;
-                                    break;                               
+                                    break;
                                 default:
                                     break;
                             }
@@ -840,6 +840,76 @@ namespace CloudUnitTest.SampleData.AccountingRepository
                 }
             }
             return userPermissions;
+        }
+
+        public static List<CalcLog> ReadCalcLog()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "AccountingRepository", "AccountingRepositorySample.xlsx");
+            var calcLogs = new List<CalcLog>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "CalcLog").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var calcLog = new CalcLog();
+                        calcLog.CreateId = 1;
+                        calcLog.CreateDate = DateTime.UtcNow;
+                        calcLog.UpdateId = 1;
+                        calcLog.UpdateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    calcLog.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int ptId);
+                                    calcLog.PtId = ptId;
+                                    break;
+                                case "C":
+                                    long.TryParse(text, out long raiinNo);
+                                    calcLog.RaiinNo = raiinNo;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int seqNo);
+                                    calcLog.SeqNo = seqNo;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int sinDate);
+                                    calcLog.SinDate = sinDate;
+                                    break;
+                                case "F":
+                                    int.TryParse(text, out int logSbt);
+                                    calcLog.LogSbt = logSbt;
+                                    break;
+                                case "G":
+                                    calcLog.Text = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        calcLogs.Add(calcLog);
+                    }
+                }
+            }
+            return calcLogs;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
