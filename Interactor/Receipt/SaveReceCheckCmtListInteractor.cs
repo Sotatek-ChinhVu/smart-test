@@ -26,7 +26,11 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
         _insuranceRepository = insuranceRepository;
         _mstItemRepository = mstItemRepository;
         _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        var dbContextOptions = _tenantProvider.CreateNewTrackingAdminDbContextOption();
+        if (dbContextOptions != null)
+        {
+            _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+        }
     }
 
     public SaveReceCheckCmtListOutputData Handle(SaveReceCheckCmtListInputData inputData)
@@ -53,7 +57,10 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
         }
         catch (Exception ex)
         {
-            _loggingHandler.WriteLogExceptionAsync(ex);
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+            }
             throw;
         }
         finally
@@ -62,7 +69,10 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
-            _loggingHandler.Dispose();
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.Dispose();
+            }
         }
     }
 
