@@ -2438,7 +2438,7 @@ public class ReceiptRepositoryTest : BaseUT
         string tokkiCd = "T" + random.Next(1, 9).ToString();
         string tokkiName = "TokkiNameUT";
 
-        TokkiMst? tokkiMst = new()
+        TokkiMst tokkiMst = new()
         {
             TokkiCd = tokkiCd,
             TokkiName = tokkiName,
@@ -2507,7 +2507,7 @@ public class ReceiptRepositoryTest : BaseUT
         int kohi4ReceTensu = random.Next(9999, 999999999);
         int kohi4ReceFutan = random.Next(9999, 999999999);
 
-        ReceInfEdit? receInfEdit = new()
+        ReceInfEdit receInfEdit = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -2699,7 +2699,7 @@ public class ReceiptRepositoryTest : BaseUT
         int kohi4ReceTensu = random.Next(9999, 999999999);
         int kohi4ReceFutan = random.Next(9999, 999999999);
 
-        ReceInfPreEdit? recePreInfEdit = new()
+        ReceInfPreEdit recePreInfEdit = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -2902,7 +2902,7 @@ public class ReceiptRepositoryTest : BaseUT
         int kohi4Id = random.Next(9999, 999999999);
         int honkeKbn = random.Next(9999, 999999999);
 
-        ReceInf? receInf = new()
+        ReceInf receInf = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -3141,7 +3141,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         int sinDate = 20220202;
 
-        PtHokenPattern? ptHokenPattern = new()
+        PtHokenPattern ptHokenPattern = new()
         {
             HpId = hpId,
             PtId = ptId,
