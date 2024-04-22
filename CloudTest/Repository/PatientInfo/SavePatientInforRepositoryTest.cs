@@ -6296,6 +6296,43 @@ namespace CloudUnitTest.Repository.PatientInfo
             }
         }
 
+        [Test]
+        public void TC_038_PatientInforRepository_PtKyuseiInfModels()
+        {
+            // Arrange
+            var mockReceptionRepos = new Mock<IReceptionRepository>();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
+
+            int hpId = 99999999;
+            long ptId = 28032001;
+            bool isDeleted = true;
+
+            PtKyusei ptKyusei = new PtKyusei()
+            {
+                HpId = hpId,
+                PtId = ptId,
+            };
+
+            tenantNoTracking.Add(ptKyusei);
+
+            try
+            {
+                // Act
+                tenantNoTracking.SaveChanges();
+                var result = savePatientInfo.PtKyuseiInfModels(hpId, ptId, isDeleted);
+
+                // Assert
+                Assert.That(result.Any(x => x.HpId == hpId && x.PtId == ptId) == true);
+            }
+            finally
+            {
+                savePatientInfo.ReleaseResource();
+                tenantNoTracking.PtKyuseis.Remove(ptKyusei);
+                tenantNoTracking.SaveChanges();
+            }
+        }
+
         private static Stream GetSampleFileStream()
         {
             byte[] data = Encoding.UTF8.GetBytes("Sample file content.");
