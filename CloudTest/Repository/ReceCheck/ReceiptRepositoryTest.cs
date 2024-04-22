@@ -1280,7 +1280,7 @@ public class ReceiptRepositoryTest : BaseUT
         string henreiJiyuu = "HenreiJiyuu";
         string hosoku = "Hosoku";
 
-        ReceInf? receInf = new()
+        ReceInf receInf = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1289,7 +1289,7 @@ public class ReceiptRepositoryTest : BaseUT
             HokenId = hokenId,
         };
 
-        ReceSeikyu? receSeikyu = new()
+        ReceSeikyu receSeikyu = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1367,7 +1367,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string cmt = "Cmt";
 
-        ReceCheckCmt? receCheckCmt = new()
+        ReceCheckCmt receCheckCmt = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1434,7 +1434,7 @@ public class ReceiptRepositoryTest : BaseUT
         string message1 = "Message1";
         string message2 = "Message2";
 
-        ReceCheckErr? receCheckErr = new()
+        ReceCheckErr receCheckErr = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1506,7 +1506,7 @@ public class ReceiptRepositoryTest : BaseUT
         string message1 = "Message1";
         string message2 = "Message2";
 
-        ReceCheckErr? receCheckErr = new()
+        ReceCheckErr receCheckErr = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1838,7 +1838,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string cmt = "Cmt";
 
-        ReceCheckCmt? receCheckCmt = new()
+        ReceCheckCmt receCheckCmt = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1858,17 +1858,17 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckCmtModel });
 
-            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
-                                                                       && item.SinYm == sinYm
-                                                                       && item.HokenId == hokenId
-                                                                       && item.IsPending == isPending
-                                                                       && item.Cmt == cmt
-                                                                       && item.SortNo == sortNo
-                                                                       && item.IsDeleted == 0
-                                                                       && item.IsChecked == isChecked);
+            var receCheckCmtAfter = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+                                                                        && item.SinYm == sinYm
+                                                                        && item.HokenId == hokenId
+                                                                        && item.IsPending == isPending
+                                                                        && item.Cmt == cmt
+                                                                        && item.SortNo == sortNo
+                                                                        && item.IsDeleted == 0
+                                                                        && item.IsChecked == isChecked);
 
             // Assert
-            Assert.IsTrue(result.Any() && receCheckCmt != null);
+            Assert.IsTrue(result.Any() && receCheckCmtAfter != null);
         }
         finally
         {
@@ -1900,7 +1900,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string cmt = "Cmt";
 
-        ReceCheckCmt? receCheckCmt = new()
+        ReceCheckCmt receCheckCmt = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1920,13 +1920,13 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckCmtModel });
 
-            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+            var receCheckCmtAfter = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
                                                                        && item.SinYm == sinYm
                                                                        && item.HokenId == hokenId
                                                                        && item.IsDeleted == 1);
 
             // Assert
-            Assert.IsTrue(result.Any() && receCheckCmt != null);
+            Assert.IsTrue(result.Any() && receCheckCmtAfter != null);
         }
         finally
         {
