@@ -11,7 +11,9 @@ namespace CloudUnitTest.Interactor.Receipt
 {
     public class GetInsuranceReceInfListInteractorTest : BaseUT
     {
-        // receSbt[0] == '8' and hokenKbn == 0
+        /// <summary>
+        /// receSbt[0] == '8' and hokenKbn == 0
+        /// </summary>
         [Test]
         public void TC_001_GetInsuranceReceInfListInteractor_Handle_hokenKbn_0()
         {
@@ -64,7 +66,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.True(result.InsuranceReceInf.InsuranceName == "自費" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // receSbt[0] == '9' and hokenKbn == 0
+        /// <summary>
+        /// receSbt[0] == '9' and hokenKbn == 0
+        /// </summary>
         [Test]
         public void TC_002_GetInsuranceReceInfListInteractor_Handle_hokenKbn_0()
         {
@@ -117,7 +121,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.InsuranceReceInf.InsuranceName == "自費レセ単独" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // hokenKbn == 1
+        /// <summary>
+        /// hokenKbn == 1
+        /// </summary>
         [Test]
         public void TC_003_GetInsuranceReceInfListInteractor_Handle_hokenKbn_1()
         {
@@ -170,7 +176,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.InsuranceReceInf.InsuranceName == "社保単独・本人" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // hokenKbn == 2
+        /// <summary>
+        /// hokenKbn == 2
+        /// </summary>
         [Test]
         public void TC_004_GetInsuranceReceInfListInteractor_Handle_hokenKbn_2()
         {
@@ -223,7 +231,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.InsuranceReceInf.InsuranceName == "国保単独・本人" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // hokenKbn == 11
+        /// <summary>
+        /// hokenKbn == 11
+        /// </summary>
         [Test]
         public void TC_005_GetInsuranceReceInfListInteractor_Handle_hokenKbn_11()
         {
@@ -276,7 +286,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.InsuranceReceInf.InsuranceName == "労災(短期給付)" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // hokenKbn == 12
+        /// <summary>
+        /// hokenKbn == 12
+        /// </summary>
         [Test]
         public void TC_006_GetInsuranceReceInfListInteractor_Handle_hokenKbn_12()
         {
@@ -329,7 +341,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.InsuranceReceInf.InsuranceName == "労災(傷病年金)" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // hokenKbn == 13
+        /// <summary>
+        /// hokenKbn == 13
+        /// </summary>
         [Test]
         public void TC_007_GetInsuranceReceInfListInteractor_Handle_hokenKbn_13()
         {
@@ -382,7 +396,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.InsuranceReceInf.InsuranceName == "アフターケア" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // hokenKbn == 14
+        /// <summary>
+        /// hokenKbn == 14
+        /// </summary>
         [Test]
         public void TC_008_GetInsuranceReceInfListInteractor_Handle_hokenKbn_14()
         {
@@ -435,7 +451,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.InsuranceReceInf.InsuranceName == "自賠責" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // receSbt[2] != {0,1}
+        /// <summary>
+        /// receSbt[2] != {0,1}
+        /// </summary>
         [Test]
         public void TC_009_GetInsuranceReceInfListInteractor_Handle()
         {
@@ -488,7 +506,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.InsuranceReceInf.InsuranceName == "自費レセ２併" && result.Status == GetInsuranceReceInfListStatus.Successed);
         }
 
-        // receSbt.Length != 4
+        /// <summary>
+        /// receSbt.Length != 4
+        /// </summary>
         [Test]
         public void TC_010_GetInsuranceReceInfListInteractor_Handle()
         {
