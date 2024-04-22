@@ -10,7 +10,7 @@ namespace CloudUnitTest.Repository.ReceSeikyuRepo
         {
             //Arrange
             var receSeikyuRepository = new ReceSeikyuRepository(TenantProvider);
-            var tennal = TenantProvider.GetNoTrackingDataContext();
+            var tenant = TenantProvider.GetNoTrackingDataContext();
 
             int hpId = 99999999;
             int sinYm = 202404;
@@ -27,12 +27,12 @@ namespace CloudUnitTest.Repository.ReceSeikyuRepo
                 HokenId = hokenId
             };
 
-            tennal.Add(receSeikyu);
+            tenant.Add(receSeikyu);
 
             try
             {
                 // Act
-                tennal.SaveChanges();
+                tenant.SaveChanges();
                 var result = receSeikyuRepository.GetReceSeikyuDuplicate(hpId, ptId, sinYm, hokenId);
 
                 // Assert
@@ -41,8 +41,8 @@ namespace CloudUnitTest.Repository.ReceSeikyuRepo
             finally
             {
                 receSeikyuRepository.ReleaseResource();
-                tennal.Remove(receSeikyu);
-                tennal.SaveChanges();
+                tenant.Remove(receSeikyu);
+                tenant.SaveChanges();
             }
         }
 
