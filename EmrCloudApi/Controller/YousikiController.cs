@@ -469,7 +469,7 @@ public class YousikiController : BaseParamControllerBase
                    seqNo,
                    "CH00001",
                    byomeiInfCommon.SortNo,
-                   5,
+                   3,
                    valueModifier,
                    byomeiInfCommon.IsDeleted ? 1 : 0
                )

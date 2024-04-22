@@ -60,8 +60,9 @@ public class ReceiptListModel
         RousaiPrefName = string.Empty;
     }
 
-    public ReceiptListModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptId, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki, int hokenNissu, string receCheckCmt, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, string rousaiCityName, string rousaiJigyosyoName, string rousaiKofuNo, string rousaiPrefName)
+    public ReceiptListModel(int hpId, int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptId, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki, int hokenNissu, string receCheckCmt, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, string rousaiCityName, string rousaiJigyosyoName, string rousaiKofuNo, string rousaiPrefName)
     {
+        HpId = hpId;
         SeikyuKbn = seikyuKbn;
         SinYm = sinYm;
         IsReceInfDetailExist = isReceInfDetailExist;
@@ -113,6 +114,8 @@ public class ReceiptListModel
         RousaiKofuNo = rousaiKofuNo;
         RousaiPrefName = rousaiPrefName;
     }
+
+    public int HpId { get; private set; }
 
     public int SeikyuKbn { get; private set; }
 
