@@ -46,9 +46,10 @@ namespace CloudUnitTest.Interactor.Receipt
 
             GetReceiCheckListInputData inputData = new GetReceiCheckListInputData(hpId, sinYm, ptId, hokenIid);
 
-            // Act
+            //Act
             var result = getReceiCheckListInteractor.Handle(inputData);
 
+            //Assert
             Assert.True(result.ReceiptCheckCmtErrList.Any() && result.Status == GetReceiCheckListStatus.Successed);
         }
     }
