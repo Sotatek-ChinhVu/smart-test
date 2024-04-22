@@ -18,13 +18,17 @@ namespace Interactor.Accounting
     {
         private readonly IAccountingRepository _accountingRepository;
         private readonly ICalculateService _calculateService;
-        private readonly ILoggingHandler _loggingHandler;
+        private readonly ILoggingHandler? _loggingHandler;
 
         public GetMeiHoGaiInteractor(IAccountingRepository accountingRepository, ICalculateService calculateService, ITenantProvider tenantProvider)
         {
             _accountingRepository = accountingRepository;
             _calculateService = calculateService;
-            _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            var dbContextOptions = tenantProvider.CreateNewTrackingAdminDbContextOption();
+            if (dbContextOptions != null)
+            {
+                _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+            }
         }
 
         public GetMeiHoGaiOutputData Handle(GetMeiHoGaiInputData inputData)
@@ -47,13 +51,13 @@ namespace Interactor.Accounting
             }
             catch (Exception ex)
             {
-                _loggingHandler.WriteLogExceptionAsync(ex);
+                _loggingHandler?.WriteLogExceptionAsync(ex);
             }
             finally
             {
                 _accountingRepository.ReleaseResource();
                 _calculateService.ReleaseSource();
-                _loggingHandler.Dispose();
+                _loggingHandler?.Dispose();
             }
             return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.Failed);
         }
