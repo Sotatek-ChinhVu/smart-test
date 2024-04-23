@@ -1952,7 +1952,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public Dictionary<string, string> GetTokkiMstDictionary(int hpId, int sinDate = 0)
+    public Dictionary<string, string> GetTokkiMstDictionary(int sinDate = 0)
     {
         Dictionary<string, string> result = new();
         var tokkiMstList = NoTrackingDataContext.TokkiMsts.Where(item => (item.StartDate == 0 && item.EndDate == 0) ||
