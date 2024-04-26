@@ -6296,6 +6296,209 @@ namespace CloudUnitTest.Repository.PatientInfo
             }
         }
 
+        [Test]
+        public void TC_038_PatientInforRepository_PtKyuseiInfModels()
+        {
+            // Arrange
+            var mockReceptionRepos = new Mock<IReceptionRepository>();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
+
+            int hpId = 99999999;
+            long ptId = 28032001;
+            bool isDeleted = true;
+
+            PtKyusei ptKyusei = new PtKyusei()
+            {
+                HpId = hpId,
+                PtId = ptId,
+            };
+
+            tenantNoTracking.Add(ptKyusei);
+
+            try
+            {
+                // Act
+                tenantNoTracking.SaveChanges();
+                var result = savePatientInfo.PtKyuseiInfModels(hpId, ptId, isDeleted);
+
+                // Assert
+                Assert.That(result.Any(x => x.HpId == hpId && x.PtId == ptId) == true);
+            }
+            finally
+            {
+                savePatientInfo.ReleaseResource();
+                tenantNoTracking.PtKyuseis.Remove(ptKyusei);
+                tenantNoTracking.SaveChanges();
+            }
+        }
+
+        #region SavePtKyusei
+
+        [Test]
+        public void TC_039_PatientInforRepository_SavePtKyusei_AddNew()
+        {
+            // Arrange
+            var mockReceptionRepos = new Mock<IReceptionRepository>();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
+
+            int hpId = 99999999;
+            int userId = 28032001;
+            long ptId = 28032001;
+            long seqNo = 0;
+            string kanaName = "";
+            string name = "";
+            int endDate = 0;
+            bool isDeleted = false;
+
+            List<PtKyuseiModel> ptKyuseiModels = new List<PtKyuseiModel>()
+            {
+                new PtKyuseiModel(hpId, ptId, seqNo, kanaName, name, endDate, isDeleted)
+            };
+
+            List<PtKyusei> ptKyuseis = new List<PtKyusei>();
+
+            try
+            {
+                // Act
+                var result = savePatientInfo.SavePtKyusei(hpId, userId, ptKyuseiModels);
+                ptKyuseis = tenantNoTracking.PtKyuseis.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+
+                // Assert
+                Assert.That(result == true && ptKyuseis.Any(x => x.HpId == hpId && x.PtId == ptId) == true);
+            }
+            finally
+            {
+                savePatientInfo.ReleaseResource();
+                tenantNoTracking.PtKyuseis.RemoveRange(ptKyuseis);
+                tenantNoTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_040_PatientInforRepository_SavePtKyusei_Update()
+        {
+            // Arrange
+            var mockReceptionRepos = new Mock<IReceptionRepository>();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
+
+            int hpId = 99999999;
+            int userId = 28032001;
+            long ptId = 28032001;
+            long seqNo = 99999999;
+            string kanaName = "Kaito";
+            string name = "";
+            int endDate = 0;
+            bool isDeleted = false;
+
+            List<PtKyuseiModel> ptKyuseiModels = new List<PtKyuseiModel>()
+            {
+                new PtKyuseiModel(hpId, ptId, seqNo, kanaName, name, endDate, isDeleted)
+            };
+
+            List<PtKyusei> ptKyuseis = new List<PtKyusei>();
+
+            PtKyusei ptKyusei = new PtKyusei()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SeqNo = seqNo
+            };
+
+            tenantNoTracking.Add(ptKyusei);
+
+            try
+            {
+                // Act
+                tenantNoTracking.SaveChanges();
+                var result = savePatientInfo.SavePtKyusei(hpId, userId, ptKyuseiModels);
+                ptKyuseis = tenantNoTracking.PtKyuseis.Where(x => x.HpId == hpId && x.PtId == ptId && x.KanaName == kanaName).ToList();
+
+                // Assert
+                Assert.That(result == true && ptKyuseis.Any() == true);
+            }
+            finally
+            {
+                savePatientInfo.ReleaseResource();
+                tenantNoTracking.PtKyuseis.RemoveRange(ptKyusei);
+                tenantNoTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_041_PatientInforRepository_SavePtKyusei_Delete()
+        {
+            // Arrange
+            var mockReceptionRepos = new Mock<IReceptionRepository>();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
+
+            int hpId = 99999999;
+            int userId = 28032001;
+            long ptId = 28032001;
+            long seqNo = 99999999;
+            string kanaName = "Kaito";
+            string name = "";
+            int endDate = 0;
+            bool isDeleted = true;
+
+            List<PtKyuseiModel> ptKyuseiModels = new List<PtKyuseiModel>()
+            {
+                new PtKyuseiModel(hpId, ptId, seqNo, kanaName, name, endDate, isDeleted)
+            };
+
+            List<PtKyusei> ptKyuseis = new List<PtKyusei>();
+
+            PtKyusei ptKyusei = new PtKyusei()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SeqNo = seqNo
+            };
+
+            tenantNoTracking.Add(ptKyusei);
+
+            try
+            {
+                // Act
+                tenantNoTracking.SaveChanges();
+                var result = savePatientInfo.SavePtKyusei(hpId, userId, ptKyuseiModels);
+                ptKyuseis = tenantNoTracking.PtKyuseis.Where(x => x.HpId == hpId && x.PtId == ptId && x.KanaName == kanaName && x.IsDeleted == 1).ToList();
+
+                // Assert
+                Assert.That(result == true && ptKyuseis.Any() == true);
+            }
+            finally
+            {
+                savePatientInfo.ReleaseResource();
+                tenantNoTracking.PtKyuseis.RemoveRange(ptKyusei);
+                tenantNoTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_042_PatientInforRepository_SavePtKyusei_False()
+        {
+            // Arrange
+            var mockReceptionRepos = new Mock<IReceptionRepository>();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var savePatientInfo = new PatientInforRepository(TenantProvider, mockReceptionRepos.Object);
+
+            int hpId = 99999999;
+            int userId = 28032001;
+
+            List<PtKyuseiModel> ptKyuseiModels = new List<PtKyuseiModel>();
+
+            // Act
+            var result = savePatientInfo.SavePtKyusei(hpId, userId, ptKyuseiModels);
+
+            // Assert
+            Assert.That(result == false);
+        }
+        #endregion
+
         private static Stream GetSampleFileStream()
         {
             byte[] data = Encoding.UTF8.GetBytes("Sample file content.");
