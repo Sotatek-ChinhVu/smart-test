@@ -856,7 +856,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string keika = "Keika";
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1159,7 +1159,7 @@ public class ReceiptRepositoryTest : BaseUT
 
         SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1221,7 +1221,7 @@ public class ReceiptRepositoryTest : BaseUT
 
         SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -3328,7 +3328,7 @@ public class ReceiptRepositoryTest : BaseUT
         string houbetu = random.Next(9, 999).ToString();
         bool isDeleted = false;
 
-        ReceInfEdit? receInfEdit = new()
+        ReceInfEdit receInfEdit = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -3439,7 +3439,7 @@ public class ReceiptRepositoryTest : BaseUT
         string houbetu = random.Next(9, 999).ToString();
         bool isDeleted = true;
 
-        ReceInfEdit? receInfEdit = new()
+        ReceInfEdit receInfEdit = new()
         {
             HpId = hpId,
             PtId = ptId,
