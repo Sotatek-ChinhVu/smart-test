@@ -359,7 +359,7 @@ public class ReceiptRepositoryTest : BaseUT
         string cmtData = "CmtData";
         string itemCd = "ItemCdUT";
         ReceCmtModel receCmtModel = new ReceCmtModel(id, ptId, seqNo, sinYm, hokenId, cmtKbn, cmtSbt, cmt, cmtData, itemCd, cmtCol1, cmtCol2, cmtCol3, cmtCol4, cmtColKeta1, cmtColKeta2, cmtColKeta3, cmtColKeta4, false);
-        ReceCmt? receCmt = new()
+        ReceCmt receCmt = new()
         {
             Id = id,
             HpId = hpId,
@@ -426,7 +426,7 @@ public class ReceiptRepositoryTest : BaseUT
         string cmtData = "CmtData";
         string itemCd = "ItemCdUT";
         ReceCmtModel receCmtModel = new ReceCmtModel(id, ptId, seqNo, sinYm, hokenId, cmtKbn, cmtSbt, cmt, cmtData, itemCd, cmtCol1, cmtCol2, cmtCol3, cmtCol4, cmtColKeta1, cmtColKeta2, cmtColKeta3, cmtColKeta4, true);
-        ReceCmt? receCmt = new()
+        ReceCmt receCmt = new()
         {
             Id = id,
             HpId = hpId,
@@ -479,7 +479,7 @@ public class ReceiptRepositoryTest : BaseUT
         int syoukiKbn = random.Next(9999, 999999999);
         int sinYm = 202202;
         string syouki = "Syouki";
-        SyoukiInf? syoukiInf = new()
+        SyoukiInf syoukiInf = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -532,7 +532,7 @@ public class ReceiptRepositoryTest : BaseUT
         int startYm = 202201;
         int endYm = 202203;
         string name = "Name";
-        SyoukiKbnMst? syoukiKbnMst = new()
+        SyoukiKbnMst syoukiKbnMst = new()
         {
             HpId = hpId,
             SyoukiKbn = syoukiKbn,
@@ -579,7 +579,7 @@ public class ReceiptRepositoryTest : BaseUT
         int startYm = 202201;
         int endYm = 202203;
         string name = "Name";
-        SyoukiKbnMst? syoukiKbnMst = new()
+        SyoukiKbnMst syoukiKbnMst = new()
         {
             HpId = hpId,
             SyoukiKbn = syoukiKbn,
@@ -682,7 +682,7 @@ public class ReceiptRepositoryTest : BaseUT
         string syouki = "Syouki";
         bool isDeleted = false;
 
-        SyoukiInf? syoukiInf = new()
+        SyoukiInf syoukiInf = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -701,17 +701,17 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.SaveSyoukiInfList(hpId, userId, new() { syoukiInfModel });
 
-            syoukiInf = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
-                                                                 && item.HpId == hpId
-                                                                 && item.SinYm == sinYm
-                                                                 && item.HokenId == hokenId
-                                                                 && item.SyoukiKbn == syoukiKbn
-                                                                 && item.Syouki == syouki
-                                                                 && item.SeqNo == seqNo
-                                                                 && item.SortNo == sortNo
-                                                                 && item.IsDeleted == 0);
+            var syoukiInfAfter = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
+                                                                  && item.HpId == hpId
+                                                                  && item.SinYm == sinYm
+                                                                  && item.HokenId == hokenId
+                                                                  && item.SyoukiKbn == syoukiKbn
+                                                                  && item.Syouki == syouki
+                                                                  && item.SeqNo == seqNo
+                                                                  && item.SortNo == sortNo
+                                                                  && item.IsDeleted == 0);
             // Assert
-            Assert.IsTrue(syoukiInf != null);
+            Assert.IsTrue(syoukiInfAfter != null);
         }
         finally
         {
@@ -792,7 +792,7 @@ public class ReceiptRepositoryTest : BaseUT
         string syouki = "Syouki";
         bool isDeleted = true;
 
-        SyoukiInf? syoukiInf = new()
+        SyoukiInf syoukiInf = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -811,14 +811,14 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.SaveSyoukiInfList(hpId, userId, new() { syoukiInfModel });
 
-            syoukiInf = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
+            var syoukiInfAfter = tenant.SyoukiInfs.FirstOrDefault(item => item.PtId == ptId
                                                                  && item.HpId == hpId
                                                                  && item.SinYm == sinYm
                                                                  && item.HokenId == hokenId
                                                                  && item.SeqNo == seqNo
                                                                  && item.IsDeleted == 1);
             // Assert
-            Assert.IsTrue(syoukiInf != null);
+            Assert.IsTrue(syoukiInfAfter != null);
         }
         finally
         {
@@ -849,7 +849,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string keika = "Keika";
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1152,7 +1152,7 @@ public class ReceiptRepositoryTest : BaseUT
 
         SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1214,7 +1214,7 @@ public class ReceiptRepositoryTest : BaseUT
 
         SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1274,7 +1274,7 @@ public class ReceiptRepositoryTest : BaseUT
         string henreiJiyuu = "HenreiJiyuu";
         string hosoku = "Hosoku";
 
-        ReceInf? receInf = new()
+        ReceInf receInf = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1283,7 +1283,7 @@ public class ReceiptRepositoryTest : BaseUT
             HokenId = hokenId,
         };
 
-        ReceSeikyu? receSeikyu = new()
+        ReceSeikyu receSeikyu = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1361,7 +1361,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string cmt = "Cmt";
 
-        ReceCheckCmt? receCheckCmt = new()
+        ReceCheckCmt receCheckCmt = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1428,7 +1428,7 @@ public class ReceiptRepositoryTest : BaseUT
         string message1 = "Message1";
         string message2 = "Message2";
 
-        ReceCheckErr? receCheckErr = new()
+        ReceCheckErr receCheckErr = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1500,7 +1500,7 @@ public class ReceiptRepositoryTest : BaseUT
         string message1 = "Message1";
         string message2 = "Message2";
 
-        ReceCheckErr? receCheckErr = new()
+        ReceCheckErr receCheckErr = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1832,7 +1832,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string cmt = "Cmt";
 
-        ReceCheckCmt? receCheckCmt = new()
+        ReceCheckCmt receCheckCmt = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1852,17 +1852,17 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckCmtModel });
 
-            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
-                                                                       && item.SinYm == sinYm
-                                                                       && item.HokenId == hokenId
-                                                                       && item.IsPending == isPending
-                                                                       && item.Cmt == cmt
-                                                                       && item.SortNo == sortNo
-                                                                       && item.IsDeleted == 0
-                                                                       && item.IsChecked == isChecked);
+            var receCheckCmtAfter = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+                                                                        && item.SinYm == sinYm
+                                                                        && item.HokenId == hokenId
+                                                                        && item.IsPending == isPending
+                                                                        && item.Cmt == cmt
+                                                                        && item.SortNo == sortNo
+                                                                        && item.IsDeleted == 0
+                                                                        && item.IsChecked == isChecked);
 
             // Assert
-            Assert.IsTrue(result.Any() && receCheckCmt != null);
+            Assert.IsTrue(result.Any() && receCheckCmtAfter != null);
         }
         finally
         {
@@ -1894,7 +1894,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string cmt = "Cmt";
 
-        ReceCheckCmt? receCheckCmt = new()
+        ReceCheckCmt receCheckCmt = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1914,13 +1914,13 @@ public class ReceiptRepositoryTest : BaseUT
             // Act
             var result = receiptRepository.SaveReceCheckCmtList(hpId, userId, hokenId, sinYm, ptId, new() { receCheckCmtModel });
 
-            receCheckCmt = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
+            var receCheckCmtAfter = tenant.ReceCheckCmts.FirstOrDefault(item => item.PtId == ptId
                                                                        && item.SinYm == sinYm
                                                                        && item.HokenId == hokenId
                                                                        && item.IsDeleted == 1);
 
             // Assert
-            Assert.IsTrue(result.Any() && receCheckCmt != null);
+            Assert.IsTrue(result.Any() && receCheckCmtAfter != null);
         }
         finally
         {
@@ -2087,7 +2087,7 @@ public class ReceiptRepositoryTest : BaseUT
             SeqNo = random.Next(9999, 9999999)
         };
 
-        ReceInf? receInf = new()
+        ReceInf receInf = new()
         {
             HpId = hpId,
             SeikyuYm = seikyuYm,
@@ -2431,7 +2431,7 @@ public class ReceiptRepositoryTest : BaseUT
         string tokkiCd = "T" + random.Next(1, 9).ToString();
         string tokkiName = "TokkiNameUT";
 
-        TokkiMst? tokkiMst = new()
+        TokkiMst tokkiMst = new()
         {
             TokkiCd = tokkiCd,
             TokkiName = tokkiName,
@@ -2500,7 +2500,7 @@ public class ReceiptRepositoryTest : BaseUT
         int kohi4ReceTensu = random.Next(9999, 999999999);
         int kohi4ReceFutan = random.Next(9999, 999999999);
 
-        ReceInfEdit? receInfEdit = new()
+        ReceInfEdit receInfEdit = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -2692,7 +2692,7 @@ public class ReceiptRepositoryTest : BaseUT
         int kohi4ReceTensu = random.Next(9999, 999999999);
         int kohi4ReceFutan = random.Next(9999, 999999999);
 
-        ReceInfPreEdit? recePreInfEdit = new()
+        ReceInfPreEdit recePreInfEdit = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -2895,7 +2895,7 @@ public class ReceiptRepositoryTest : BaseUT
         int kohi4Id = random.Next(9999, 999999999);
         int honkeKbn = random.Next(9999, 999999999);
 
-        ReceInf? receInf = new()
+        ReceInf receInf = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -3134,7 +3134,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         int sinDate = 20220202;
 
-        PtHokenPattern? ptHokenPattern = new()
+        PtHokenPattern ptHokenPattern = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -3321,7 +3321,7 @@ public class ReceiptRepositoryTest : BaseUT
         string houbetu = random.Next(9, 999).ToString();
         bool isDeleted = false;
 
-        ReceInfEdit? receInfEdit = new()
+        ReceInfEdit receInfEdit = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -3432,7 +3432,7 @@ public class ReceiptRepositoryTest : BaseUT
         string houbetu = random.Next(9, 999).ToString();
         bool isDeleted = true;
 
-        ReceInfEdit? receInfEdit = new()
+        ReceInfEdit receInfEdit = new()
         {
             HpId = hpId,
             PtId = ptId,
