@@ -665,7 +665,9 @@ namespace CloudUnitTest.Interactor.AccountDue
         }
 
         #region ValidateInvalidNyukinKbn
-        // NyukinKbn = 1
+        /// <summary>
+        ///  NyukinKbn = 1
+        /// </summary>
         [Test]
         public void TC_017_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
         {
@@ -734,7 +736,9 @@ namespace CloudUnitTest.Interactor.AccountDue
             Assert.That(result.Status == SaveAccountDueListStatus.InvalidNyukinKbn);
         }
 
-        // NyukinKbn = 2
+        /// <summary>
+        ///  NyukinKbn = 2
+        /// </summary>
         [Test]
         public void TC_018_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
         {
@@ -803,7 +807,9 @@ namespace CloudUnitTest.Interactor.AccountDue
             Assert.That(result.Status == SaveAccountDueListStatus.InvalidNyukinKbn);
         }
 
-        // NyukinKbn = 3
+        /// <summary>
+        /// NyukinKbn = 3
+        /// </summary>
         [Test]
         public void TC_019_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
         {
