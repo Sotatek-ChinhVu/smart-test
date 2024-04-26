@@ -669,7 +669,7 @@ namespace CloudUnitTest.Interactor.AccountDue
         ///  NyukinKbn = 1
         /// </summary>
         [Test]
-        public void TC_017_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
+        public void TC_017_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_NyukinKbn_1_Return_InvalidNyukinKbn()
         {
             //Arrange
             var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
@@ -740,7 +740,7 @@ namespace CloudUnitTest.Interactor.AccountDue
         ///  NyukinKbn = 2
         /// </summary>
         [Test]
-        public void TC_018_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
+        public void TC_018_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_NyukinKbn_2_Return_InvalidNyukinKbn()
         {
             //Arrange
             var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
@@ -811,7 +811,7 @@ namespace CloudUnitTest.Interactor.AccountDue
         /// NyukinKbn = 3
         /// </summary>
         [Test]
-        public void TC_019_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_Return_InvalidNyukinKbn()
+        public void TC_019_SaveAccountDueListInteractor_Handle_ValidateInvalidNyukinKbn_NyukinKbn_3_Return_InvalidNyukinKbn()
         {
             //Arrange
             var mockIAccountDueRepository = new Mock<IAccountDueRepository>();
@@ -1012,8 +1012,10 @@ namespace CloudUnitTest.Interactor.AccountDue
             mockIAccountDueRepository.Setup(x => x.SaveAccountDueList(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<AccountDueModel>>(), It.IsAny<string>()))
             .Returns((int input1, long input2, int input3, int input4, List<AccountDueModel> input5, string input6) => listAccountDue);
 
+            // Act
             var result = saveAccountDueListInteractor.Handle(inputData);
 
+            //Assert
             Assert.That(result.Status == SaveAccountDueListStatus.Failed);
         }
         #endregion
