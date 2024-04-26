@@ -856,7 +856,7 @@ public class ReceiptRepositoryTest : BaseUT
         int sinYm = 202202;
         string keika = "Keika";
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1159,7 +1159,7 @@ public class ReceiptRepositoryTest : BaseUT
 
         SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -1221,7 +1221,7 @@ public class ReceiptRepositoryTest : BaseUT
 
         SyobyoKeikaModel syobyoKeikaModel = new(ptId, sinYm, sinDay, hokenId, seqNo, keika, isDeleted);
 
-        SyobyoKeika? syobyoKeika = new()
+        SyobyoKeika syobyoKeika = new()
         {
             HpId = hpId,
             PtId = ptId,
@@ -3186,6 +3186,302 @@ public class ReceiptRepositoryTest : BaseUT
         }
     }
     #endregion GetSinDateRaiinInfList
+
+    #region SaveReceiptEdit
+    [Test]
+    public void TC_042_SaveReceiptEdit_TestCreateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = 0;
+        int sinYm = 202202;
+        int seikyuYm = 202202;
+        string tokki = random.Next(9999, 999999999).ToString();
+        string tokki1 = random.Next(9999, 999999999).ToString();
+        string tokki2 = random.Next(9999, 999999999).ToString();
+        string tokki3 = random.Next(9999, 999999999).ToString();
+        string tokki4 = random.Next(9999, 999999999).ToString();
+        string tokki5 = random.Next(9999, 999999999).ToString();
+        int hokenNissu = random.Next(9999, 999999999);
+        int kohi1Nissu = random.Next(9999, 999999999);
+        int kohi2Nissu = random.Next(9999, 999999999);
+        int kohi3Nissu = random.Next(9999, 999999999);
+        int kohi4Nissu = random.Next(9999, 999999999);
+        int kohi1ReceKyufu = random.Next(9999, 999999999);
+        int kohi2ReceKyufu = random.Next(9999, 999999999);
+        int kohi3ReceKyufu = random.Next(9999, 999999999);
+        int kohi4ReceKyufu = random.Next(9999, 999999999);
+        int hokenReceTensu = random.Next(9999, 999999999);
+        int hokenReceFutan = random.Next(9999, 999999999);
+        int kohi1ReceTensu = random.Next(9999, 999999999);
+        int kohi1ReceFutan = random.Next(9999, 999999999);
+        int kohi2ReceTensu = random.Next(9999, 999999999);
+        int kohi2ReceFutan = random.Next(9999, 999999999);
+        int kohi3ReceTensu = random.Next(9999, 999999999);
+        int kohi3ReceFutan = random.Next(9999, 999999999);
+        int kohi4ReceTensu = random.Next(9999, 999999999);
+        int kohi4ReceFutan = random.Next(9999, 999999999);
+        string receSbt = random.Next(9, 9999).ToString();
+        string houbetu = random.Next(9, 999).ToString();
+        bool isDeleted = false;
+
+        ReceInfEdit? receInfEdit = null;
+        ReceiptEditModel receiptEditModel = new ReceiptEditModel(seqNo, tokki1, tokki2, tokki3, tokki4, tokki5, hokenNissu, kohi1Nissu, kohi2Nissu, kohi3Nissu, kohi4Nissu, kohi1ReceKyufu, kohi2ReceKyufu, kohi3ReceKyufu, kohi4ReceKyufu, hokenReceTensu, hokenReceFutan, kohi1ReceTensu, kohi1ReceFutan, kohi2ReceTensu, kohi2ReceFutan, kohi3ReceTensu, kohi3ReceFutan, kohi4ReceTensu, kohi4ReceFutan, receSbt, houbetu, tokki, isDeleted);
+        try
+        {
+            // Act
+            var result = receiptRepository.SaveReceiptEdit(hpId, userId, seikyuYm, ptId, sinYm, hokenId, receiptEditModel);
+
+            receInfEdit = tenant.ReceInfEdits.FirstOrDefault(item => item.HpId == hpId
+                                                                     && item.SeikyuYm == seikyuYm
+                                                                     && item.PtId == ptId
+                                                                     && item.SinYm == sinYm
+                                                                     && item.HokenId == hokenId
+                                                                     && item.ReceSbt == receiptEditModel.ReceSbt
+                                                                     && item.Houbetu == receiptEditModel.Houbetu
+                                                                     && item.HokenReceTensu == receiptEditModel.HokenReceTensu
+                                                                     && item.HokenReceFutan == receiptEditModel.HokenReceFutan
+                                                                     && item.Kohi1ReceTensu == receiptEditModel.Kohi1ReceTensu
+                                                                     && item.Kohi1ReceFutan == receiptEditModel.Kohi1ReceFutan
+                                                                     && item.Kohi2ReceTensu == receiptEditModel.Kohi2ReceTensu
+                                                                     && item.Kohi2ReceFutan == receiptEditModel.Kohi2ReceFutan
+                                                                     && item.Kohi3ReceTensu == receiptEditModel.Kohi3ReceTensu
+                                                                     && item.Kohi3ReceFutan == receiptEditModel.Kohi3ReceFutan
+                                                                     && item.Kohi4ReceTensu == receiptEditModel.Kohi4ReceTensu
+                                                                     && item.Kohi4ReceFutan == receiptEditModel.Kohi4ReceFutan
+                                                                     && item.Kohi1ReceKyufu == receiptEditModel.Kohi1ReceKyufu
+                                                                     && item.Kohi2ReceKyufu == receiptEditModel.Kohi2ReceKyufu
+                                                                     && item.Kohi3ReceKyufu == receiptEditModel.Kohi3ReceKyufu
+                                                                     && item.Kohi4ReceKyufu == receiptEditModel.Kohi4ReceKyufu
+                                                                     && item.HokenNissu == receiptEditModel.HokenNissu
+                                                                     && item.Kohi1Nissu == receiptEditModel.Kohi1Nissu
+                                                                     && item.Kohi2Nissu == receiptEditModel.Kohi2Nissu
+                                                                     && item.Kohi3Nissu == receiptEditModel.Kohi3Nissu
+                                                                     && item.Kohi4Nissu == receiptEditModel.Kohi4Nissu
+                                                                     && item.Tokki == receiptEditModel.Tokki
+                                                                     && item.Tokki1 == receiptEditModel.Tokki1
+                                                                     && item.Tokki2 == receiptEditModel.Tokki2
+                                                                     && item.Tokki3 == receiptEditModel.Tokki3
+                                                                     && item.Tokki4 == receiptEditModel.Tokki4
+                                                                     && item.Tokki5 == receiptEditModel.Tokki5
+                                                                     && item.IsDeleted == 0);
+
+            // Assert
+            Assert.IsTrue(result && receInfEdit != null);
+        }
+        finally
+        {
+            if (receInfEdit != null)
+            {
+                tenant.ReceInfEdits.Remove(receInfEdit);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_043_SaveReceiptEdit_TestUpdateSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int seikyuYm = 202202;
+        string tokki = random.Next(9999, 999999999).ToString();
+        string tokki1 = random.Next(9999, 999999999).ToString();
+        string tokki2 = random.Next(9999, 999999999).ToString();
+        string tokki3 = random.Next(9999, 999999999).ToString();
+        string tokki4 = random.Next(9999, 999999999).ToString();
+        string tokki5 = random.Next(9999, 999999999).ToString();
+        int hokenNissu = random.Next(9999, 999999999);
+        int kohi1Nissu = random.Next(9999, 999999999);
+        int kohi2Nissu = random.Next(9999, 999999999);
+        int kohi3Nissu = random.Next(9999, 999999999);
+        int kohi4Nissu = random.Next(9999, 999999999);
+        int kohi1ReceKyufu = random.Next(9999, 999999999);
+        int kohi2ReceKyufu = random.Next(9999, 999999999);
+        int kohi3ReceKyufu = random.Next(9999, 999999999);
+        int kohi4ReceKyufu = random.Next(9999, 999999999);
+        int hokenReceTensu = random.Next(9999, 999999999);
+        int hokenReceFutan = random.Next(9999, 999999999);
+        int kohi1ReceTensu = random.Next(9999, 999999999);
+        int kohi1ReceFutan = random.Next(9999, 999999999);
+        int kohi2ReceTensu = random.Next(9999, 999999999);
+        int kohi2ReceFutan = random.Next(9999, 999999999);
+        int kohi3ReceTensu = random.Next(9999, 999999999);
+        int kohi3ReceFutan = random.Next(9999, 999999999);
+        int kohi4ReceTensu = random.Next(9999, 999999999);
+        int kohi4ReceFutan = random.Next(9999, 999999999);
+        string receSbt = random.Next(9, 9999).ToString();
+        string houbetu = random.Next(9, 999).ToString();
+        bool isDeleted = false;
+
+        ReceInfEdit receInfEdit = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            SeikyuYm = seikyuYm,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            IsDeleted = 0
+        };
+
+        tenant.Add(receInfEdit);
+        ReceiptEditModel receiptEditModel = new ReceiptEditModel(seqNo, tokki1, tokki2, tokki3, tokki4, tokki5, hokenNissu, kohi1Nissu, kohi2Nissu, kohi3Nissu, kohi4Nissu, kohi1ReceKyufu, kohi2ReceKyufu, kohi3ReceKyufu, kohi4ReceKyufu, hokenReceTensu, hokenReceFutan, kohi1ReceTensu, kohi1ReceFutan, kohi2ReceTensu, kohi2ReceFutan, kohi3ReceTensu, kohi3ReceFutan, kohi4ReceTensu, kohi4ReceFutan, receSbt, houbetu, tokki, isDeleted);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveReceiptEdit(hpId, userId, seikyuYm, ptId, sinYm, hokenId, receiptEditModel);
+
+            var receInfEditAfter = tenant.ReceInfEdits.FirstOrDefault(item => item.HpId == hpId
+                                                                              && item.SeikyuYm == seikyuYm
+                                                                              && item.SeqNo == seqNo
+                                                                              && item.PtId == ptId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.HokenId == hokenId
+                                                                              && item.ReceSbt == receiptEditModel.ReceSbt
+                                                                              && item.Houbetu == receiptEditModel.Houbetu
+                                                                              && item.HokenReceTensu == receiptEditModel.HokenReceTensu
+                                                                              && item.HokenReceFutan == receiptEditModel.HokenReceFutan
+                                                                              && item.Kohi1ReceTensu == receiptEditModel.Kohi1ReceTensu
+                                                                              && item.Kohi1ReceFutan == receiptEditModel.Kohi1ReceFutan
+                                                                              && item.Kohi2ReceTensu == receiptEditModel.Kohi2ReceTensu
+                                                                              && item.Kohi2ReceFutan == receiptEditModel.Kohi2ReceFutan
+                                                                              && item.Kohi3ReceTensu == receiptEditModel.Kohi3ReceTensu
+                                                                              && item.Kohi3ReceFutan == receiptEditModel.Kohi3ReceFutan
+                                                                              && item.Kohi4ReceTensu == receiptEditModel.Kohi4ReceTensu
+                                                                              && item.Kohi4ReceFutan == receiptEditModel.Kohi4ReceFutan
+                                                                              && item.Kohi1ReceKyufu == receiptEditModel.Kohi1ReceKyufu
+                                                                              && item.Kohi2ReceKyufu == receiptEditModel.Kohi2ReceKyufu
+                                                                              && item.Kohi3ReceKyufu == receiptEditModel.Kohi3ReceKyufu
+                                                                              && item.Kohi4ReceKyufu == receiptEditModel.Kohi4ReceKyufu
+                                                                              && item.HokenNissu == receiptEditModel.HokenNissu
+                                                                              && item.Kohi1Nissu == receiptEditModel.Kohi1Nissu
+                                                                              && item.Kohi2Nissu == receiptEditModel.Kohi2Nissu
+                                                                              && item.Kohi3Nissu == receiptEditModel.Kohi3Nissu
+                                                                              && item.Kohi4Nissu == receiptEditModel.Kohi4Nissu
+                                                                              && item.Tokki == receiptEditModel.Tokki
+                                                                              && item.Tokki1 == receiptEditModel.Tokki1
+                                                                              && item.Tokki2 == receiptEditModel.Tokki2
+                                                                              && item.Tokki3 == receiptEditModel.Tokki3
+                                                                              && item.Tokki4 == receiptEditModel.Tokki4
+                                                                              && item.Tokki5 == receiptEditModel.Tokki5
+                                                                              && item.IsDeleted == 0);
+
+            // Assert
+            Assert.IsTrue(result && receInfEditAfter != null);
+        }
+        finally
+        {
+            if (receInfEdit != null)
+            {
+                tenant.ReceInfEdits.Remove(receInfEdit);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+    [Test]
+    public void TC_044_SaveReceiptEdit_TestDeleteSuccess()
+    {
+        // Arrange
+        SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant);
+
+        Random random = new();
+        int hpId = random.Next(999, 999999);
+        int userId = random.Next(999, 999999);
+        long ptId = random.Next(9999, 999999999);
+        int hokenId = random.Next(9999, 999999999);
+        int seqNo = random.Next(9999, 999999999);
+        int sinYm = 202202;
+        int seikyuYm = 202202;
+        string tokki = random.Next(9999, 999999999).ToString();
+        string tokki1 = random.Next(9999, 999999999).ToString();
+        string tokki2 = random.Next(9999, 999999999).ToString();
+        string tokki3 = random.Next(9999, 999999999).ToString();
+        string tokki4 = random.Next(9999, 999999999).ToString();
+        string tokki5 = random.Next(9999, 999999999).ToString();
+        int hokenNissu = random.Next(9999, 999999999);
+        int kohi1Nissu = random.Next(9999, 999999999);
+        int kohi2Nissu = random.Next(9999, 999999999);
+        int kohi3Nissu = random.Next(9999, 999999999);
+        int kohi4Nissu = random.Next(9999, 999999999);
+        int kohi1ReceKyufu = random.Next(9999, 999999999);
+        int kohi2ReceKyufu = random.Next(9999, 999999999);
+        int kohi3ReceKyufu = random.Next(9999, 999999999);
+        int kohi4ReceKyufu = random.Next(9999, 999999999);
+        int hokenReceTensu = random.Next(9999, 999999999);
+        int hokenReceFutan = random.Next(9999, 999999999);
+        int kohi1ReceTensu = random.Next(9999, 999999999);
+        int kohi1ReceFutan = random.Next(9999, 999999999);
+        int kohi2ReceTensu = random.Next(9999, 999999999);
+        int kohi2ReceFutan = random.Next(9999, 999999999);
+        int kohi3ReceTensu = random.Next(9999, 999999999);
+        int kohi3ReceFutan = random.Next(9999, 999999999);
+        int kohi4ReceTensu = random.Next(9999, 999999999);
+        int kohi4ReceFutan = random.Next(9999, 999999999);
+        string receSbt = random.Next(9, 9999).ToString();
+        string houbetu = random.Next(9, 999).ToString();
+        bool isDeleted = true;
+
+        ReceInfEdit receInfEdit = new()
+        {
+            HpId = hpId,
+            PtId = ptId,
+            SinYm = sinYm,
+            SeikyuYm = seikyuYm,
+            HokenId = hokenId,
+            SeqNo = seqNo,
+            IsDeleted = 0
+        };
+
+        tenant.Add(receInfEdit);
+        ReceiptEditModel receiptEditModel = new ReceiptEditModel(seqNo, tokki1, tokki2, tokki3, tokki4, tokki5, hokenNissu, kohi1Nissu, kohi2Nissu, kohi3Nissu, kohi4Nissu, kohi1ReceKyufu, kohi2ReceKyufu, kohi3ReceKyufu, kohi4ReceKyufu, hokenReceTensu, hokenReceFutan, kohi1ReceTensu, kohi1ReceFutan, kohi2ReceTensu, kohi2ReceFutan, kohi3ReceTensu, kohi3ReceFutan, kohi4ReceTensu, kohi4ReceFutan, receSbt, houbetu, tokki, isDeleted);
+        try
+        {
+            tenant.SaveChanges();
+
+            // Act
+            var result = receiptRepository.SaveReceiptEdit(hpId, userId, seikyuYm, ptId, sinYm, hokenId, receiptEditModel);
+
+            var receInfEditAfter = tenant.ReceInfEdits.FirstOrDefault(item => item.HpId == hpId
+                                                                              && item.SeikyuYm == seikyuYm
+                                                                              && item.SeqNo == seqNo
+                                                                              && item.PtId == ptId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.HokenId == hokenId
+                                                                              && item.IsDeleted == 1);
+
+            // Assert
+            Assert.IsTrue(result && receInfEditAfter != null);
+        }
+        finally
+        {
+            if (receInfEdit != null)
+            {
+                tenant.ReceInfEdits.Remove(receInfEdit);
+                tenant.SaveChanges();
+            }
+        }
+    }
+
+
+    #endregion SaveReceiptEdit
 
     private void SetupTestEnvironment(out ReceiptRepository receiptRepository, out TenantNoTrackingDataContext tenant)
     {
