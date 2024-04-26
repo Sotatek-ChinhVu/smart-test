@@ -61,7 +61,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     ReceiptEditModel GetReceInfPreEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
 
-    Dictionary<string, string> GetTokkiMstDictionary(int hpId, int sinDate = 0);
+    Dictionary<string, string> GetTokkiMstDictionary(int sinDate = 0);
 
     List<int> GetSinDateRaiinInfList(int hpId, long ptId, int sinYm, int hokenId);
 
