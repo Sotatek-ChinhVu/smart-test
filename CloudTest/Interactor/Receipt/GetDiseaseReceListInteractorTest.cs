@@ -9,9 +9,11 @@ namespace CloudUnitTest.Interactor.Receipt
 {
     public class GetDiseaseReceListInteractorTest : BaseUT
     {
-        // sikkanKbn = 3
+        /// <summary>
+        /// sikkanKbn = 3
+        /// </summary>
         [Test]
-        public void TC_001_GetDiseaseReceListInteractorTest_Handle_sikkanKbn_3()
+        public void TC_001_GetDiseaseReceListInteractorTest_Handle_SikkanKbn_3()
         {
             //Arrange
             var mockIPtDiseaseRepository = new Mock<IPtDiseaseRepository>();
@@ -48,9 +50,11 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.DiseaseReceList.Any(x => x.Byomei == "(主)(皮1)(難)前頭部(" + hosokuCmt + ")") && result.Status == GetDiseaseReceListStatus.Successed);
         }
 
-        // sikkanKbn = 4
+        /// <summary>
+        /// sikkanKbn = 4
+        /// </summary>
         [Test]
-        public void TC_002_GetDiseaseReceListInteractorTest_Handle_sikkanKbn_4()
+        public void TC_002_GetDiseaseReceListInteractorTest_Handle_SikkanKbn_4()
         {
             //Arrange
             var mockIPtDiseaseRepository = new Mock<IPtDiseaseRepository>();
@@ -87,9 +91,11 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.DiseaseReceList.Any(x => x.Byomei == "(主)(皮2)(難)前頭部(" + hosokuCmt + ")") && result.Status == GetDiseaseReceListStatus.Successed);
         }
 
-        // sikkanKbn = 5
+        /// <summary>
+        /// sikkanKbn = 5
+        /// </summary>
         [Test]
-        public void TC_003_GetDiseaseReceListInteractorTest_Handle_sikkanKbn_5()
+        public void TC_003_GetDiseaseReceListInteractorTest_Handle_SikkanKbn_5()
         {
             //Arrange
             var mockIPtDiseaseRepository = new Mock<IPtDiseaseRepository>();
@@ -126,9 +132,11 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.DiseaseReceList.Any(x => x.Byomei == "(主)(特)(難)前頭部(" + hosokuCmt + ")") && result.Status == GetDiseaseReceListStatus.Successed);
         }
 
-        // sikkanKbn = 7
+        /// <summary>
+        /// sikkanKbn = 7
+        /// </summary>
         [Test]
-        public void TC_004_GetDiseaseReceListInteractorTest_Handle_sikkanKbn_7()
+        public void TC_004_GetDiseaseReceListInteractorTest_Handle_SikkanKbn_7()
         {
             //Arrange
             var mockIPtDiseaseRepository = new Mock<IPtDiseaseRepository>();
@@ -165,9 +173,11 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.DiseaseReceList.Any(x => x.Byomei == "(主)(て)(難)前頭部(" + hosokuCmt + ")") && result.Status == GetDiseaseReceListStatus.Successed);
         }
 
-        // sikkanKbn = 8
+        /// <summary>
+        /// sikkanKbn = 8
+        /// </summary>
         [Test]
-        public void TC_005_GetDiseaseReceListInteractorTest_Handle_sikkanKbn_8()
+        public void TC_005_GetDiseaseReceListInteractorTest_Handle_SikkanKbn_8()
         {
             //Arrange
             var mockIPtDiseaseRepository = new Mock<IPtDiseaseRepository>();
