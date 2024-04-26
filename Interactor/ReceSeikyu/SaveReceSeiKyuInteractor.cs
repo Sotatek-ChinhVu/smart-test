@@ -55,7 +55,11 @@ namespace Interactor.ReceSeikyu
             _drugDetailRepository = drugDetailRepository;
             _tenantProvider = tenantProvider;
             _commonReceRecalculation = commonReceRecalculation;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            var dbContextOptions = _tenantProvider.CreateNewTrackingAdminDbContextOption();
+            if (dbContextOptions != null)
+            {
+                _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+            }
         }
 
         public SaveReceSeiKyuOutputData Handle(SaveReceSeiKyuInputData inputData)
@@ -231,7 +235,11 @@ namespace Interactor.ReceSeikyu
             }
             catch (Exception ex)
             {
-                _loggingHandler.WriteLogExceptionAsync(ex);
+                var dbContextOptions = _tenantProvider.CreateNewTrackingAdminDbContextOption();
+                if (dbContextOptions != null)
+                {
+                    _loggingHandler.WriteLogExceptionAsync(ex);
+                }
                 throw;
             }
             finally
@@ -248,7 +256,11 @@ namespace Interactor.ReceSeikyu
                 _drugDetailRepository.ReleaseResource();
                 _tenantProvider.DisposeDataContext();
                 _commonReceRecalculation.ReleaseResource();
-                _loggingHandler.Dispose();
+                var dbContextOptions = _tenantProvider.CreateNewTrackingAdminDbContextOption();
+                if (dbContextOptions != null)
+                {
+                    _loggingHandler.Dispose();
+                }
             }
         }
     }

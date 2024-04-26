@@ -7,7 +7,9 @@ namespace CloudUnitTest.Interactor.Receipt
 {
     public class GetReceiptEditInteractorTest : BaseUT
     {
-        // SeqNo != 0
+        /// <summary>
+        /// SeqNo != 0
+        /// </summary>
         [Test]
         public void TC_001_GetReceiptEditInteractorTest_Handle_SeqNo_1()
         {
@@ -38,7 +40,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.Status == GetReceiptEditStatus.Successed && result.SeqNo == seqNo);
         }
 
-        // SeqNo == 0
+        /// <summary>
+        /// SeqNo == 0
+        /// </summary>
         [Test]
         public void TC_002_GetReceiptEditInteractorTest_Handle_SeqNo_0()
         {

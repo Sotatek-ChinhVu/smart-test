@@ -61,7 +61,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.Status == GetReceByomeiCheckingStatus.Successed);
         }
 
-        // ItemCd = "@BUNKATU"
+        /// <summary>
+        /// ItemCd = "@BUNKATU"
+        /// </summary>
         [Test]
         public void TC_002_GetReceByomeiCheckingInteractorTest_Handle_ItemCd()
         {
@@ -112,7 +114,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.Status == GetReceByomeiCheckingStatus.Successed);
         }
 
-        // todayOrderList.ItemCd != tenMstItemList.ItemCd
+        /// <summary>
+        /// todayOrderList.ItemCd != tenMstItemList.ItemCd
+        /// </summary>
         [Test]
         public void TC_003_GetReceByomeiCheckingInteractorTest_Handle_TodayOrderList_TenMstItemList()
         {
@@ -163,7 +167,9 @@ namespace CloudUnitTest.Interactor.Receipt
             Assert.That(result.Status == GetReceByomeiCheckingStatus.Successed);
         }
 
-        // allByomeisByOdr.Count() == 0
+        /// <summary>
+        /// allByomeisByOdr.Count() == 0
+        /// </summary>
         [Test]
         public void TC_004_GetReceByomeiCheckingInteractorTest_Handle_AllByomeisByOdr()
         {
