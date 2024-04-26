@@ -119,7 +119,7 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
     private ReceiptEditModel ConvertToReceiptEditModel(SaveReceiptEditInputData inputData)
     {
         var receInf = _receiptRepository.GetReceInf(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId);
-        var tokkiMstDictionary = _receiptRepository.GetTokkiMstDictionary(inputData.HpId);
+        var tokkiMstDictionary = _receiptRepository.GetTokkiMstDictionary();
 
         var receEdit = inputData.ReceiptEdit;
         StringBuilder tokki = new();

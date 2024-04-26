@@ -19,7 +19,7 @@ public class GetReceiptEditInteractor : IGetReceiptEditInputPort
         {
             ReceiptEditItem receiptEditOrigin = new();
             ReceiptEditItem receiptEditCurrent = new();
-            var tokkiMstDictionary = _receiptRepository.GetTokkiMstDictionary(inputData.HpId);
+            var tokkiMstDictionary = _receiptRepository.GetTokkiMstDictionary();
 
             var receInfEdit = _receiptRepository.GetReceInfEdit(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId);
             var receInfPreEdit = _receiptRepository.GetReceInfPreEdit(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId);
