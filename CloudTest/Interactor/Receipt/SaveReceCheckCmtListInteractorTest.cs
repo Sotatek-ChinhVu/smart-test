@@ -11,7 +11,6 @@ namespace CloudUnitTest.Interactor.Receipt
 {
     public class SaveReceCheckCmtListInteractorTest : BaseUT
     {
-        #region
         [Test]
         public void TC_001_SaveReceCheckCmtListInteractor_Handle_ValidateInput_InvalidPtId()
         {
@@ -63,6 +62,7 @@ namespace CloudUnitTest.Interactor.Receipt
             List<ReceCheckErrModel> receCheckErrModels = new List<ReceCheckErrModel>();
             SaveReceCheckCmtListInputData inputData = new SaveReceCheckCmtListInputData(hpId, userId, ptId, sinYm, hokenId, receCheckCmtItems, receCheckErrorItems);
             mockIPatientInforRepository.Setup(x => x.CheckExistIdList(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int input1, List<long> input2) => true);
+
             // Act
             var result = saveReceCheckCmtListInteractor.Handle(inputData);
 
@@ -92,6 +92,7 @@ namespace CloudUnitTest.Interactor.Receipt
             List<ReceCheckErrModel> receCheckErrModels = new List<ReceCheckErrModel>();
             SaveReceCheckCmtListInputData inputData = new SaveReceCheckCmtListInputData(hpId, userId, ptId, sinYm, hokenId, receCheckCmtItems, receCheckErrorItems);
             mockIPatientInforRepository.Setup(x => x.CheckExistIdList(It.IsAny<int>(), It.IsAny<List<long>>())).Returns((int input1, List<long> input2) => true);
+
             // Act
             var result = saveReceCheckCmtListInteractor.Handle(inputData);
 
@@ -323,7 +324,6 @@ namespace CloudUnitTest.Interactor.Receipt
             // Assert
             Assert.That(result.Status == SaveReceCheckCmtListStatus.InvalidReceCheckErrorItem);
         }
-        #endregion
 
         [Test]
         public void TC_009_SaveReceCheckCmtListInteractor_Handle_Successed()
