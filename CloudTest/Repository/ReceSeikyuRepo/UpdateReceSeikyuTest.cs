@@ -63,7 +63,7 @@ namespace CloudUnitTest.Repository.ReceSeikyuRepo
         }
 
         [Test]
-        public void TC_002_UpdateReceSeikyuTest_Update()
+        public void TC_002_UpdateReceSeikyuTest_Insert()
         {
             //Arrange
             var receSeikyuRepository = new ReceSeikyuRepository(TenantProvider);

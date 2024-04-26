@@ -25,7 +25,11 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
         _insuranceRepository = insuranceRepository;
         _mstItemRepository = mstItemRepository;
         _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        var dbContextOptions = _tenantProvider.CreateNewTrackingAdminDbContextOption();
+        if (dbContextOptions != null)
+        {
+            _loggingHandler = new LoggingHandler(dbContextOptions, tenantProvider);
+        }
     }
 
     public SaveReceiptEditOutputData Handle(SaveReceiptEditInputData inputData)
@@ -48,7 +52,10 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
         }
         catch (Exception ex)
         {
-            _loggingHandler.WriteLogExceptionAsync(ex);
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+            }
             throw;
         }
         finally
@@ -57,7 +64,10 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
-            _loggingHandler.Dispose();
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.Dispose();
+            }
         }
     }
 
@@ -109,7 +119,7 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
     private ReceiptEditModel ConvertToReceiptEditModel(SaveReceiptEditInputData inputData)
     {
         var receInf = _receiptRepository.GetReceInf(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId);
-        var tokkiMstDictionary = _receiptRepository.GetTokkiMstDictionary(inputData.HpId);
+        var tokkiMstDictionary = _receiptRepository.GetTokkiMstDictionary();
 
         var receEdit = inputData.ReceiptEdit;
         StringBuilder tokki = new();
