@@ -15,7 +15,7 @@ namespace CloudUnitTest.Interactor.Receipt
         /// receSbt[0] == '8' and hokenKbn == 0
         /// </summary>
         [Test]
-        public void TC_001_GetInsuranceReceInfListInteractor_Handle_HokenKbn_0()
+        public void TC_001_GetInsuranceReceInfListInteractor_Handle_ReceSbt_8()
         {
             //Arrange
             var mockIReceiptRepository = new Mock<IReceiptRepository>();
@@ -70,7 +70,7 @@ namespace CloudUnitTest.Interactor.Receipt
         /// receSbt[0] == '9' and hokenKbn == 0
         /// </summary>
         [Test]
-        public void TC_002_GetInsuranceReceInfListInteractor_Handle_HokenKbn_0()
+        public void TC_002_GetInsuranceReceInfListInteractor_Handle_ReceSbt_9()
         {
             //Arrange
             var mockIReceiptRepository = new Mock<IReceiptRepository>();
