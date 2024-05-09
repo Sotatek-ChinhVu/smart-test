@@ -809,11 +809,9 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
                 };
 
-            var raiins = raiinQuery.AsEnumerable().DistinctBy(r => r.raiinInf.RaiinNo)
-                                                  .OrderBy(item => item.raiinInf.RaiinNo)
-                                                  .Skip(offset)
-                                                  .Take(limit)
-                                                  .ToList();
+            var raiins = raiinQuery.Skip(offset)
+                                   .Take(limit)
+                                   .ToList();
 
             var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
