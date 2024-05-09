@@ -670,12 +670,12 @@ namespace Infrastructure.Repositories
             var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // Rsv (Reservation)
-            var rsvInfs = NoTrackingDataContext.RsvInfs.Where(i => i.HpId == hpId).DistinctBy(item => item.RaiinNo);
+            var rsvInfs = NoTrackingDataContext.RsvInfs.Where(i => i.HpId == hpId);
             var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // User (Doctor)
-            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).DistinctBy(item => item.UserId);
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // Ka (Department)
-            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).DistinctBy(item => item.KaId);
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
             var lockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId &&
                 x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte || x.FunctionCd == FunctionCode.SwitchOrderCode);
