@@ -14,6 +14,22 @@ namespace Domain.Models.Reception
 
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false);
 
+        /// <summary>
+        ///  get reception paging list
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="sinDate"></param>
+        /// <param name="raiinNo"></param>
+        /// <param name="ptId"></param>
+        /// <param name="isGetAccountDue"></param>
+        /// <param name="isGetFamily"></param>
+        /// <param name="isDeleted"></param>
+        /// <param name="searchSameVisit"></param>
+        /// <param name="limit"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        (List<ReceptionRowModel> receptionInfos, int totalItems) GetPagingList(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false, int limit = 0, int offset = 0);
+
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
         ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate);
@@ -60,7 +76,7 @@ namespace Domain.Models.Reception
 
         List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
 
-        ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate,bool isGetSysosaisin = false);
+        ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate, bool isGetSysosaisin = false);
 
         List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
 

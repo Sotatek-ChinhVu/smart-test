@@ -642,6 +642,259 @@ namespace Infrastructure.Repositories
 
         }
 
+        /// <summary>
+        ///  get reception paging list
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="sinDate"></param>
+        /// <param name="raiinNo"></param>
+        /// <param name="ptId"></param>
+        /// <param name="isGetAccountDue"></param>
+        /// <param name="isGetFamily"></param>
+        /// <param name="isDeleted"></param>
+        /// <param name="searchSameVisit"></param>
+        /// <param name="limit"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public (List<ReceptionRowModel> receptionInfos, int totalItems) GetPagingList(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false, int limit = 0, int offset = 0)
+        {
+            // 1. Prepare all the necessary collections for the join operation
+            // Raiin (Reception)
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && (isDeleted == 2 || x.IsDeleted == isDeleted));
+            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+            var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            // Pt (Patient)
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && (isDeleted == 2 || x.IsDelete == isDeleted));
+            var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            // Rsv (Reservation)
+            var rsvInfs = NoTrackingDataContext.RsvInfs.Where(i => i.HpId == hpId);
+            var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            // User (Doctor)
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            // Ka (Department)
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            // Lock (Function lock)
+            var lockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId &&
+                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte || x.FunctionCd == FunctionCode.SwitchOrderCode);
+            // Uketuke
+            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+
+            // 2. Filter collections by parameters
+            var filteredRaiinInfs = raiinInfs;
+            if (!isGetAccountDue)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
+            }
+            if (raiinNo != CommonConstants.InvalidId && !searchSameVisit)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.RaiinNo == raiinNo);
+            }
+            if (searchSameVisit && ptId != CommonConstants.InvalidId)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(item => item.PtId == ptId);
+            }
+
+            var filteredPtInfs = ptInfs;
+            if (ptId != CommonConstants.InvalidId && !isGetFamily)
+            {
+                filteredPtInfs = filteredPtInfs.Where(x => x.PtId == ptId);
+            }
+            else if (ptId != CommonConstants.InvalidId && isGetFamily)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(item => item.Status >= 3);
+            }
+
+            // 3. Perform the join operation
+            var raiinQuery =
+                from raiinInf in filteredRaiinInfs
+                join ptInf in filteredPtInfs on
+                    new { raiinInf.HpId, raiinInf.PtId } equals
+                    new { ptInf.HpId, ptInf.PtId }
+                join raiinCmtInfComment in raiinCmtInfs.Where(x => x.CmtKbn == CmtKbns.Comment) on
+                    new { raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, raiinInf.RaiinNo } equals
+                    new { raiinCmtInfComment.HpId, raiinCmtInfComment.PtId, raiinCmtInfComment.SinDate, raiinCmtInfComment.RaiinNo } into relatedRaiinCmtInfComments
+                from relatedRaiinCmtInfComment in relatedRaiinCmtInfComments.DefaultIfEmpty()
+                join raiinCmtInfRemark in raiinCmtInfs.Where(x => x.CmtKbn == CmtKbns.Remark) on
+                    new { raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, raiinInf.RaiinNo } equals
+                    new { raiinCmtInfRemark.HpId, raiinCmtInfRemark.PtId, raiinCmtInfRemark.SinDate, raiinCmtInfRemark.RaiinNo } into relatedRaiinCmtInfRemarks
+                from relatedRaiinCmtInfRemark in relatedRaiinCmtInfRemarks.DefaultIfEmpty()
+                from ptCmtInf in ptCmtInfs.Where(x => x.PtId == ptInf.PtId).OrderByDescending(x => x.UpdateDate).Take(1).DefaultIfEmpty()
+                join rsvInf in rsvInfs on raiinInf.RaiinNo equals rsvInf.RaiinNo into relatedRsvInfs
+                from relatedRsvInf in relatedRsvInfs.DefaultIfEmpty()
+                join rsvFrameMst in rsvFrameMsts on relatedRsvInf.RsvFrameId equals rsvFrameMst.RsvFrameId into relatedRsvFrameMsts
+                from relatedRsvFrameMst in relatedRsvFrameMsts.DefaultIfEmpty()
+                join lockInf in lockInfs on raiinInf.RaiinNo equals lockInf.RaiinNo into relatedLockInfs
+                from relatedLockInf in relatedLockInfs.DefaultIfEmpty()
+                join uketukeSbtMst in uketukeSbtMsts on raiinInf.UketukeSbt equals uketukeSbtMst.KbnId into relatedUketukeSbtMsts
+                from relatedUketukeSbtMst in relatedUketukeSbtMsts.DefaultIfEmpty()
+                join tanto in userMsts on
+                    new { raiinInf.HpId, UserId = raiinInf.TantoId } equals
+                    new { tanto.HpId, tanto.UserId } into relatedTantos
+                from relatedTanto in relatedTantos.DefaultIfEmpty()
+                join primaryDoctor in userMsts on
+                    new { raiinInf.HpId, UserId = ptInf.PrimaryDoctor } equals
+                    new { primaryDoctor.HpId, primaryDoctor.UserId } into relatedPrimaryDoctors
+                from relatedPrimaryDoctor in relatedPrimaryDoctors.DefaultIfEmpty()
+                join kaMst in kaMsts on
+                    new { raiinInf.HpId, raiinInf.KaId } equals
+                    new { kaMst.HpId, kaMst.KaId } into relatedKaMsts
+                from relatedKaMst in relatedKaMsts.DefaultIfEmpty()
+                join ptHokenPattern in ptHokenPatterns on
+                    new { raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid } equals
+                    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid } into relatedPtHokenPatterns
+                from relatedPtHokenPattern in relatedPtHokenPatterns.DefaultIfEmpty()
+                from ptKohi1 in ptKohis.Where(x => x.PtId == ptInf.PtId && x.HokenId == relatedPtHokenPattern.Kohi1Id).Take(1).DefaultIfEmpty()
+                from ptKohi2 in ptKohis.Where(x => x.PtId == ptInf.PtId && x.HokenId == relatedPtHokenPattern.Kohi2Id).Take(1).DefaultIfEmpty()
+                from ptKohi3 in ptKohis.Where(x => x.PtId == ptInf.PtId && x.HokenId == relatedPtHokenPattern.Kohi3Id).Take(1).DefaultIfEmpty()
+                from ptKohi4 in ptKohis.Where(x => x.PtId == ptInf.PtId && x.HokenId == relatedPtHokenPattern.Kohi4Id).Take(1).DefaultIfEmpty()
+                select new
+                {
+                    raiinInf,
+                    ptInf,
+                    ptCmtInf,
+                    primaryDoctorName = relatedPrimaryDoctor.Sname,
+                    relatedUketukeSbtMst,
+                    relatedTanto,
+                    relatedKaMst,
+                    relatedRaiinCmtInfComment,
+                    relatedRaiinCmtInfRemark,
+                    relatedRsvFrameMst,
+                    relatedLockInf,
+                    relatedPtHokenPattern,
+                    ptKohi1,
+                    ptKohi2,
+                    ptKohi3,
+                    ptKohi4,
+                    raiinKbnDetails = (
+                        from inf in raiinKbnInfs
+                        join detail in raiinKbnDetails on
+                            new { inf.HpId, inf.GrpId, inf.KbnCd } equals
+                            new { detail.HpId, GrpId = detail.GrpCd, detail.KbnCd }
+                        where inf.HpId == hpId
+                            && inf.PtId == raiinInf.PtId
+                            && inf.SinDate == sinDate
+                            && inf.RaiinNo == raiinInf.RaiinNo
+                        select detail
+                    ).ToList(),
+                    parentRaiinNo = (
+                        from r in raiinInfs
+                        where r.HpId == hpId
+                            && r.PtId == raiinInf.PtId
+                            && r.SinDate == raiinInf.SinDate
+                            && r.OyaRaiinNo == raiinInf.OyaRaiinNo
+                            && r.RaiinNo != r.OyaRaiinNo
+                        select r.OyaRaiinNo
+                    ).FirstOrDefault(),
+                    lastVisitDate = (
+                        from x in raiinInfs
+                        where x.HpId == hpId
+                            && x.PtId == raiinInf.PtId
+                            && x.SinDate < sinDate
+                            && x.Status >= RaiinState.TempSave
+                        orderby x.SinDate descending, x.RaiinNo descending
+                        select x.SinDate
+                    ).FirstOrDefault(),
+                    firstVisitDate = (
+                        from x in raiinInfs
+                        where x.HpId == hpId
+                            && x.PtId == raiinInf.PtId
+                            && x.SinDate < sinDate
+                            && x.Status >= RaiinState.TempSave
+                            && x.SyosaisinKbn == SyosaiConst.Syosin
+                        orderby x.SinDate descending
+                        select x.SinDate
+                    ).FirstOrDefault()
+                };
+
+            var raiins = raiinQuery.AsEnumerable().DistinctBy(r => r.raiinInf.RaiinNo)
+                                                  .OrderBy(item => item.raiinInf.RaiinNo)
+                                                  .Skip(offset)
+                                                  .Take(limit)
+                                                  .ToList();
+
+            var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
+            var models = raiins.Select(r => new ReceptionRowModel(
+                r.raiinInf.RaiinNo,
+                r.raiinInf.PtId,
+                r.parentRaiinNo,
+                r.raiinInf.UketukeNo,
+                r.relatedLockInf is not null,
+                r.raiinInf.Status,
+                r.raiinInf.IsDeleted,
+                r.ptInf.PtNum,
+                r.ptInf.KanaName ?? string.Empty,
+                r.ptInf.Name ?? string.Empty,
+                r.ptInf.Sex,
+                r.ptInf.Birthday,
+                r.raiinInf.YoyakuTime ?? string.Empty,
+                r.raiinInf.ConfirmationType,
+                r.raiinInf.InfoConsFlg ?? string.Empty,
+                r.relatedRsvFrameMst?.RsvFrameName ?? string.Empty,
+                r.relatedUketukeSbtMst?.KbnId ?? CommonConstants.InvalidId,
+                r.raiinInf.UketukeTime ?? string.Empty,
+                r.raiinInf.SinStartTime ?? string.Empty,
+                r.raiinInf.SinEndTime ?? string.Empty,
+                r.raiinInf.KaikeiTime ?? string.Empty,
+                r.relatedRaiinCmtInfComment?.Text ?? string.Empty,
+                r.ptCmtInf?.Text ?? string.Empty,
+                r.relatedTanto?.UserId ?? CommonConstants.InvalidId,
+                string.IsNullOrEmpty(r.relatedTanto?.DrName) ? r.relatedTanto?.Name ?? string.Empty : r.relatedTanto?.DrName ?? string.Empty,
+                r.relatedTanto?.KanaName ?? string.Empty,
+                r.relatedKaMst?.KaId ?? CommonConstants.InvalidId,
+                r.relatedKaMst?.KaName ?? string.Empty,
+                r.lastVisitDate,
+                r.firstVisitDate,
+                r.primaryDoctorName ?? string.Empty,
+                r.relatedRaiinCmtInfRemark?.Text ?? string.Empty,
+                r.raiinInf.ConfirmationState,
+                r.raiinInf.ConfirmationResult ?? string.Empty,
+                grpIds,
+                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd?.Length > 0 ? "#" + d.ColorCd : string.Empty)).ToList(),
+                r.raiinInf.SinDate,
+                // Fields needed to create Hoken name
+                r.relatedPtHokenPattern?.HokenPid ?? CommonConstants.InvalidId,
+                r.relatedPtHokenPattern?.StartDate ?? 0,
+                r.relatedPtHokenPattern?.EndDate ?? 0,
+                r.relatedPtHokenPattern?.HokenSbtCd ?? CommonConstants.InvalidId,
+                r.relatedPtHokenPattern?.HokenKbn ?? CommonConstants.InvalidId,
+                r.ptKohi1?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.ptKohi1?.Houbetu ?? string.Empty,
+                r.ptKohi2?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.ptKohi2?.Houbetu ?? string.Empty,
+                r.ptKohi3?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.ptKohi3?.Houbetu ?? string.Empty,
+                r.ptKohi4?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.ptKohi4?.Houbetu ?? string.Empty
+            )).ToList();
+
+            foreach (var model in models)
+            {
+                var kanaName = model.KanaName?.Replace("　", " ") ?? "";
+                var list = models
+                    .Where(vs => vs.KanaName?.Replace("　", " ") == kanaName && vs.PtId != model.PtId && model.PtNum != vs.PtNum);
+                if (!string.IsNullOrWhiteSpace(kanaName) && list != null && list.Any())
+                {
+                    model.IsNameDuplicate = true;
+                }
+                else
+                {
+                    model.IsNameDuplicate = false;
+                }
+            }
+
+            // Get total items
+            int totalItems = (from raiinInf in filteredRaiinInfs
+                              join ptInf in filteredPtInfs on
+                                  new { raiinInf.HpId, raiinInf.PtId } equals
+                                  new { ptInf.HpId, ptInf.PtId }
+                              select raiinInf.RaiinNo)
+                              .Count();
+            return (models, totalItems);
+        }
+
         public ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate)
         {
             var entity = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
