@@ -35,7 +35,7 @@ namespace CloudUnitTest.Interactor.Accounting
 
 
         /// <summary>
-        /// Check NyukinKbn =1
+        /// Check NyukinKbn = 1
         /// </summary>
         [Test]
         public void GetAccountingInteractorTest_002_Check_NyukinKbnEqual1()
@@ -79,7 +79,7 @@ namespace CloudUnitTest.Interactor.Accounting
         }
 
         /// <summary>
-        /// Check NyukinKbn =0
+        /// Check NyukinKbn = 0
         /// </summary>
         [Test]
         public void GetAccountingInteractorTest_003_Check_NyukinKbnEqual0()
