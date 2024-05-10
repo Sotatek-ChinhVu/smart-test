@@ -1,7 +1,5 @@
-﻿using Amazon.Runtime.Internal.Util;
-using CloudUnitTest.SampleData.AccountingRepository;
+﻿using CloudUnitTest.SampleData.AccountingRepository;
 using Domain.Models.AccountDue;
-using Entity.SuperAdmin;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Repositories;
@@ -393,7 +391,7 @@ namespace CloudUnitTest.Interactor.Accounting
         }
 
         [Test]
-        public void CheckAccountingStatusInteractorTest_010_IsDisCharge_CheckCredit_Faild()
+        public void CheckAccountingStatusInteractorTest_010_IsDisCharge_CheckCredit_Failed()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -492,7 +490,7 @@ namespace CloudUnitTest.Interactor.Accounting
         }
 
         [Test]
-        public void CheckAccountingStatusInteractorTest_012_dateNotVerify_Empty()
+        public void CheckAccountingStatusInteractorTest_012_DateNotVerify_Empty()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -693,7 +691,7 @@ namespace CloudUnitTest.Interactor.Accounting
         }
 
         [Test]
-        public void CheckAccountingStatusInteractorTest_016_IsSaveAccounting_CheckSyunoChanged_Faild()
+        public void CheckAccountingStatusInteractorTest_016_IsSaveAccounting_CheckSyunoChanged_Failed()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
@@ -750,7 +748,7 @@ namespace CloudUnitTest.Interactor.Accounting
         }
 
         [Test]
-        public void CheckAccountingStatusInteractorTest_017_IsSaveAccounting_CheckCredit_Faild()
+        public void CheckAccountingStatusInteractorTest_017_IsSaveAccounting_CheckCredit_Failed()
         {
             // Arrange 
             SetupTestEnvironment(out CheckAccountingStatusInteractor checkAccountingStatusInteractor, out StackExchange.Redis.IDatabase cache);
