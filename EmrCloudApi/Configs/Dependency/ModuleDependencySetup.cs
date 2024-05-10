@@ -682,6 +682,7 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetNextUketukeNoBySetting;
 using UseCase.Reception.GetOutDrugOrderList;
+using UseCase.Reception.GetPagingList;
 using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.Reception.GetRaiinListWithKanInf;
 using UseCase.Reception.GetReceptionDefault;
@@ -1295,6 +1296,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<InsertReceptionInputData, InsertReceptionInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionInputData, UpdateReceptionInteractor>();
             busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionPagingListInputData, GetReceptionPagingListInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionStaticCellInputData, UpdateReceptionStaticCellInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();

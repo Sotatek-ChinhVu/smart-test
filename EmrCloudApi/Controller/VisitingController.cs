@@ -21,6 +21,7 @@ using UseCase.Reception.UpdateStaticCell;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.Reception.GetPagingList;
 
 namespace EmrCloudApi.Controller;
 
@@ -52,6 +53,16 @@ public class VisitingController : BaseParamControllerBase
         var input = new GetReceptionListInputData(HpId, request.SinDate, request.RaiinNo, request.PtId, request.IsGetFamily, request.IsDeleted, request.SearchSameVisit);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionListPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet("GetPagingList")]
+    public ActionResult<Response<GetReceptionListResponse>> GetPagingList([FromQuery] GetReceptionPagingListRequest request)
+    {
+        var input = new GetReceptionPagingListInputData(HpId, request.SinDate, request.RaiinNo, request.PtId, request.IsGetFamily, request.IsDeleted, request.SearchSameVisit, request.Limit, request.Offset);
+        var output = _bus.Handle(input);
+        var presenter = new GetReceptionPagingListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
