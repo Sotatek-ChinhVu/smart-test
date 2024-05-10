@@ -431,9 +431,9 @@ namespace CloudUnitTest.Interactor.Accounting
         /// NyukinKbn != 0
         /// </summary>
         [Test]
-        public void SaveAccountingInteractorTest_012_Handle_Check_NyukinKbn()
+        public void SaveAccountingInteractorTest_012_Handle_Check_NyukinKbnNotEqual0()
         {
-            // Arrange           
+            // Arrange
             var keyUser = TenantProvider.GetDomainName() + CacheKeyConstant.UserInfoCacheService;
             var tenant = TenantProvider.GetTrackingTenantDataContext();
             int hpId = 998; long ptId = 12345; int userId = 96789049; int sinDate = 20180807; long raiinNo = 1234321;
@@ -494,7 +494,7 @@ namespace CloudUnitTest.Interactor.Accounting
         /// NyukinKbn == 0
         /// </summary>
         [Test]
-        public void SaveAccountingInteractorTest_013_Handle_Check_NyukinKbn()
+        public void SaveAccountingInteractorTest_013_Handle_Check_NyukinKbnEqual0()
         {
             // Arrange           
             var keyUser = TenantProvider.GetDomainName() + CacheKeyConstant.UserInfoCacheService;

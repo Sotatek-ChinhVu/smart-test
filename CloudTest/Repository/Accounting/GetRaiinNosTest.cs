@@ -52,7 +52,7 @@ namespace CloudUnitTest.Repository.Accounting
         }
 
         [Test]
-        public void GetRaiinNosTest_003_GetAll_Faild()
+        public void GetRaiinNosTest_003_GetAll_Failed()
         {
             // Arrange
             SetupTestEnvironment(out AccountingRepository accountingRepository);

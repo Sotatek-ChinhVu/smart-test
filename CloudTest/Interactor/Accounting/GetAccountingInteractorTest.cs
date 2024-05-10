@@ -26,17 +26,11 @@ namespace CloudUnitTest.Interactor.Accounting
             int sinDate = 0;
             long raiinNo = 0;
             var inputData = new GetAccountingInputData(hpId, ptId, sinDate, raiinNo);
-            try
-            {
-                //Act
-                var result = getAccountingInteractor.Handle(inputData);
-                //Assert
-                Assert.True(result.GetAccountingStatus == GetAccountingStatus.NoData);
-            }
-            finally
-            {
 
-            }
+            //Act
+            var result = getAccountingInteractor.Handle(inputData);
+            //Assert
+            Assert.True(result.GetAccountingStatus == GetAccountingStatus.NoData);
         }
 
 
@@ -44,7 +38,7 @@ namespace CloudUnitTest.Interactor.Accounting
         /// Check NyukinKbn =1
         /// </summary>
         [Test]
-        public void GetAccountingInteractorTest_002_Check_NyukinKbn()
+        public void GetAccountingInteractorTest_002_Check_NyukinKbnEqual1()
         {
             // Arrange
             SetupTestEnvironment(out GetAccountingInteractor getAccountingInteractor, out StackExchange.Redis.IDatabase cache);
@@ -88,7 +82,7 @@ namespace CloudUnitTest.Interactor.Accounting
         /// Check NyukinKbn =0
         /// </summary>
         [Test]
-        public void GetAccountingInteractorTest_003_Check_NyukinKbn()
+        public void GetAccountingInteractorTest_003_Check_NyukinKbnEqual0()
         {
             // Arrange
             SetupTestEnvironment(out GetAccountingInteractor getAccountingInteractor, out StackExchange.Redis.IDatabase cache);
