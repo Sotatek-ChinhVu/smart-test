@@ -5,12 +5,7 @@ using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Xml.Linq;
-using System;
-using System.Linq.Dynamic.Core.Tokenizer;
 
 namespace Infrastructure.Repositories
 {
